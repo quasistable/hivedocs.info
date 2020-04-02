@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>Use beempy to access the internal HIVE/HBD market | Hive Chain Documentation</title>
+<meta name="generator" content="Jekyll v4.0.0" />
+<meta property="og:title" content="Use beempy to access the internal HIVE/HBD market" />
+<meta name="author" content="site curated by: @inertia" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="source Although not visible, the internal market is already working and HBD can be exchanged for HIVE. Prepare beempy You need to have an up to date beem version 0.22.8 beempy updatenodes --hive beempy currentnode should return now +----------+-----------------------+ | Key | Value | +----------+-----------------------+ | Node-Url | https://api.hive.blog | | Version | 0.23.0 | | HIVE | True | +----------+-----------------------+ Check the orderbook beempy orderbook --chart Orderbook 1701.93 $ ┼ 1595.59 $ ┼╮ 1489.25 $ ┤╰─╮ ┊ 1382.90 $ ┤ ╰─╮ ┊ ╭─────── 1276.56 $ ┤ ╰╮ ┊ ╭────╯ 1170.22 $ ┤ ╰───╮ ┊ ╭╯ 1063.87 $ ┤ ╰╮ ┊ │ 957.53 $ ┤ │ ┊ │ 851.19 $ ┤ │ ┊ ╭─╯ 744.84 $ ┤ │ ┊ │ 638.50 $ ┤ │ ┊ ╭─╯ 532.16 $ ┤ │ ┊ ╭╯ 425.81 $ ┤ ╰─────╮ ┊ │ 319.47 $ ┤ ╰────╮ ┊ ╭╯ 213.12 $ ┤ ╰─╮ ┊ │ 106.78 $ ┤ ╰╮┊ │ 0.44 $ ┤ ╰────╯ and beempy tradehistory returns the last trades as plot Trade history 2020-03-17T20:26:22 - 2020-03-24T20:26:22 HIVE/HBD 0.32 ┤ 0.31 ┤ ╭╮ 0.30 ┤ │╰╮ 0.29 ┤ ╭╯ │ 0.28 ┤ │ ╰╮ 0.27 ┤ │ │ ╭╮ ╭─ 0.26 ┤ ╭╮╭╯ │╭──╮ ╭╯│ │ 0.26 ┤ │││ ││ ╰╮ │ ╰─╯ 0.25 ┤ ╭╯╰╯ ╰╯ ╰─╯ 0.24 ┤ ╭╮ ╭╯ 0.23 ┤ ││╭╯ 0.22 ┤ │╰╯ 0.21 ┤ │ 0.20 ┤ │ 0.19 ┤ │ 0.18 ┤ ╭╯ 0.17 ┼───────╯ a short info can be obtained by beempy ticker +----------------+-------------------+ | Key | Value | +----------------+-------------------+ | highest_bid | 0.253913 HIVE/HBD | | latest | 0.300000 HIVE/HBD | | lowest_ask | 0.253994 HIVE/HBD | | percent_change | 0.00 % | | sbd_volume | 199.189 HBD | | steem_volume | 765.713 HIVE | +----------------+-------------------+ Let’s trade some HBD for HIVE First we should check our balance: beempy balance holger80 and then start to sell 1 HBD beempy sell -a holger80 1 HBD I’m now asked if the price is ok: Is the following Price ok: 0.253913 HBD/HIVE [y/n]: and should then enter my active wif: Password to unlock wallet or posting/active wif: I see then the broadcasted op: Wif accepted! { &quot;expiration&quot;: &quot;2020-03-24T20:34:03&quot;, &quot;ref_block_num&quot;: 63124, &quot;ref_block_prefix&quot;: 2805668693, &quot;operations&quot;: [ [ &quot;limit_order_create&quot;, { &quot;owner&quot;: &quot;holger80&quot;, &quot;orderid&quot;: 3815817900, &quot;amount_to_sell&quot;: &quot;1.000 HBD&quot;, &quot;min_to_receive&quot;: &quot;3.938 HIVE&quot;, &quot;fill_or_kill&quot;: false, &quot;expiration&quot;: &quot;2020-03-31T20:33:33&quot; } ] ], &quot;extensions&quot;: [], &quot;signatures&quot;: [ &quot;206b30dd79130814b9f14468c573fd9154020148e43481f810343964b93bcf8c1865927d49d1e3b521ff9a2af12bd5461c2edee220b64f59108c04413c3b88cbb0&quot; ] } and can check my open orders: beempy openorders holger80 +------------+---------------------+------------------------------------------+----------+ | Orderid | Created | Order | Account | +------------+---------------------+------------------------------------------+----------+ | 3815817900 | 2020-03-24T20:33:33 | 3.938 HIVE 1.000 HBD @ 0.253936 HBD/HIVE | holger80 | +------------+---------------------+------------------------------------------+----------+ Cancel open orders I can cancel my order by beempy cancel -a 3815817900 Instead of selling 1 HBD, I can also buy 1 HIVE by beempy buy -a holger80 1 HIVE after checking the price and entering my wif, the order is placed. Using the orderbook to fulfill orders Let’s check the first 5 orders: beempy orderbook -l 5 +--------------+----------------------------------------------+--------------+-------------------------------------------+ | Asks Sum HBD | Sell Orders | Bids Sum HBD | Buy Orders | +--------------+----------------------------------------------+--------------+-------------------------------------------+ | 66.15 | 260.432 HIVE 66.148 HBD @ 0.253993 HBD/HIVE | 0.44 | 1.725 HIVE 0.438 HBD @ 0.253913 HBD/HIVE | | 240.43 | 637.769 HIVE 174.284 HBD @ 0.273271 HBD/HIVE | 0.70 | 1.032 HIVE 0.262 HBD @ 0.253876 HBD/HIVE | | 267.93 | 100.000 HIVE 27.500 HBD @ 0.275000 HBD/HIVE | 0.91 | 0.842 HIVE 0.211 HBD @ 0.250594 HBD/HIVE | | 283.93 | 53.344 HIVE 16.002 HBD @ 0.299978 HBD/HIVE | 0.91 | 0.004 HIVE 0.001 HBD @ 0.250000 HBD/HIVE | | 296.29 | 41.191 HIVE 12.357 HBD @ 0.299993 HBD/HIVE | 6.64 | 23.778 HIVE 5.731 HBD @ 0.241021 HBD/HIVE | +--------------+----------------------------------------------+--------------+-------------------------------------------+ I can now sell 1 HBD @ 0.253993 HBD/HIVE as shown in the Asks column and the order should be fulfilled without waiting. Let’s try: beempy sell -a holger80 1 HBD 0.253993 This time, I can enter the wif without asking for the price. The orderbook is empty this time: beempy openorders holger80 +---------+---------+-------+---------+ | Orderid | Created | Order | Account | +---------+---------+-------+---------+ +---------+---------+-------+---------+ The blockexplorer shows that my order was fulfilled: I hope this help as long as the internal market has no interface. See: Use beempy to access the internal HIVE/HBD market by @holger80" />
+<meta property="og:description" content="source Although not visible, the internal market is already working and HBD can be exchanged for HIVE. Prepare beempy You need to have an up to date beem version 0.22.8 beempy updatenodes --hive beempy currentnode should return now +----------+-----------------------+ | Key | Value | +----------+-----------------------+ | Node-Url | https://api.hive.blog | | Version | 0.23.0 | | HIVE | True | +----------+-----------------------+ Check the orderbook beempy orderbook --chart Orderbook 1701.93 $ ┼ 1595.59 $ ┼╮ 1489.25 $ ┤╰─╮ ┊ 1382.90 $ ┤ ╰─╮ ┊ ╭─────── 1276.56 $ ┤ ╰╮ ┊ ╭────╯ 1170.22 $ ┤ ╰───╮ ┊ ╭╯ 1063.87 $ ┤ ╰╮ ┊ │ 957.53 $ ┤ │ ┊ │ 851.19 $ ┤ │ ┊ ╭─╯ 744.84 $ ┤ │ ┊ │ 638.50 $ ┤ │ ┊ ╭─╯ 532.16 $ ┤ │ ┊ ╭╯ 425.81 $ ┤ ╰─────╮ ┊ │ 319.47 $ ┤ ╰────╮ ┊ ╭╯ 213.12 $ ┤ ╰─╮ ┊ │ 106.78 $ ┤ ╰╮┊ │ 0.44 $ ┤ ╰────╯ and beempy tradehistory returns the last trades as plot Trade history 2020-03-17T20:26:22 - 2020-03-24T20:26:22 HIVE/HBD 0.32 ┤ 0.31 ┤ ╭╮ 0.30 ┤ │╰╮ 0.29 ┤ ╭╯ │ 0.28 ┤ │ ╰╮ 0.27 ┤ │ │ ╭╮ ╭─ 0.26 ┤ ╭╮╭╯ │╭──╮ ╭╯│ │ 0.26 ┤ │││ ││ ╰╮ │ ╰─╯ 0.25 ┤ ╭╯╰╯ ╰╯ ╰─╯ 0.24 ┤ ╭╮ ╭╯ 0.23 ┤ ││╭╯ 0.22 ┤ │╰╯ 0.21 ┤ │ 0.20 ┤ │ 0.19 ┤ │ 0.18 ┤ ╭╯ 0.17 ┼───────╯ a short info can be obtained by beempy ticker +----------------+-------------------+ | Key | Value | +----------------+-------------------+ | highest_bid | 0.253913 HIVE/HBD | | latest | 0.300000 HIVE/HBD | | lowest_ask | 0.253994 HIVE/HBD | | percent_change | 0.00 % | | sbd_volume | 199.189 HBD | | steem_volume | 765.713 HIVE | +----------------+-------------------+ Let’s trade some HBD for HIVE First we should check our balance: beempy balance holger80 and then start to sell 1 HBD beempy sell -a holger80 1 HBD I’m now asked if the price is ok: Is the following Price ok: 0.253913 HBD/HIVE [y/n]: and should then enter my active wif: Password to unlock wallet or posting/active wif: I see then the broadcasted op: Wif accepted! { &quot;expiration&quot;: &quot;2020-03-24T20:34:03&quot;, &quot;ref_block_num&quot;: 63124, &quot;ref_block_prefix&quot;: 2805668693, &quot;operations&quot;: [ [ &quot;limit_order_create&quot;, { &quot;owner&quot;: &quot;holger80&quot;, &quot;orderid&quot;: 3815817900, &quot;amount_to_sell&quot;: &quot;1.000 HBD&quot;, &quot;min_to_receive&quot;: &quot;3.938 HIVE&quot;, &quot;fill_or_kill&quot;: false, &quot;expiration&quot;: &quot;2020-03-31T20:33:33&quot; } ] ], &quot;extensions&quot;: [], &quot;signatures&quot;: [ &quot;206b30dd79130814b9f14468c573fd9154020148e43481f810343964b93bcf8c1865927d49d1e3b521ff9a2af12bd5461c2edee220b64f59108c04413c3b88cbb0&quot; ] } and can check my open orders: beempy openorders holger80 +------------+---------------------+------------------------------------------+----------+ | Orderid | Created | Order | Account | +------------+---------------------+------------------------------------------+----------+ | 3815817900 | 2020-03-24T20:33:33 | 3.938 HIVE 1.000 HBD @ 0.253936 HBD/HIVE | holger80 | +------------+---------------------+------------------------------------------+----------+ Cancel open orders I can cancel my order by beempy cancel -a 3815817900 Instead of selling 1 HBD, I can also buy 1 HIVE by beempy buy -a holger80 1 HIVE after checking the price and entering my wif, the order is placed. Using the orderbook to fulfill orders Let’s check the first 5 orders: beempy orderbook -l 5 +--------------+----------------------------------------------+--------------+-------------------------------------------+ | Asks Sum HBD | Sell Orders | Bids Sum HBD | Buy Orders | +--------------+----------------------------------------------+--------------+-------------------------------------------+ | 66.15 | 260.432 HIVE 66.148 HBD @ 0.253993 HBD/HIVE | 0.44 | 1.725 HIVE 0.438 HBD @ 0.253913 HBD/HIVE | | 240.43 | 637.769 HIVE 174.284 HBD @ 0.273271 HBD/HIVE | 0.70 | 1.032 HIVE 0.262 HBD @ 0.253876 HBD/HIVE | | 267.93 | 100.000 HIVE 27.500 HBD @ 0.275000 HBD/HIVE | 0.91 | 0.842 HIVE 0.211 HBD @ 0.250594 HBD/HIVE | | 283.93 | 53.344 HIVE 16.002 HBD @ 0.299978 HBD/HIVE | 0.91 | 0.004 HIVE 0.001 HBD @ 0.250000 HBD/HIVE | | 296.29 | 41.191 HIVE 12.357 HBD @ 0.299993 HBD/HIVE | 6.64 | 23.778 HIVE 5.731 HBD @ 0.241021 HBD/HIVE | +--------------+----------------------------------------------+--------------+-------------------------------------------+ I can now sell 1 HBD @ 0.253993 HBD/HIVE as shown in the Asks column and the order should be fulfilled without waiting. Let’s try: beempy sell -a holger80 1 HBD 0.253993 This time, I can enter the wif without asking for the price. The orderbook is empty this time: beempy openorders holger80 +---------+---------+-------+---------+ | Orderid | Created | Order | Account | +---------+---------+-------+---------+ +---------+---------+-------+---------+ The blockexplorer shows that my order was fulfilled: I hope this help as long as the internal market has no interface. See: Use beempy to access the internal HIVE/HBD market by @holger80" />
+<link rel="canonical" href="https://hive.blog/hive/@holger80/use-beempy-to-access-the-internal-hive-hbd-market" />
+<meta property="og:url" content="https://hive.blog/hive/@holger80/use-beempy-to-access-the-internal-hive-hbd-market" />
+<meta property="og:site_name" content="Hive Chain Documentation" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2020-03-24T13:57:21-07:00" />
+<script type="application/ld+json">
+{"dateModified":"2020-03-24T13:57:21-07:00","datePublished":"2020-03-24T13:57:21-07:00","headline":"Use beempy to access the internal HIVE/HBD market","mainEntityOfPage":{"@type":"WebPage","@id":"https://hive.blog/hive/@holger80/use-beempy-to-access-the-internal-hive-hbd-market"},"url":"https://hive.blog/hive/@holger80/use-beempy-to-access-the-internal-hive-hbd-market","author":{"@type":"Person","name":"site curated by: @inertia"},"description":"source Although not visible, the internal market is already working and HBD can be exchanged for HIVE. Prepare beempy You need to have an up to date beem version 0.22.8 beempy updatenodes --hive beempy currentnode should return now +----------+-----------------------+ | Key | Value | +----------+-----------------------+ | Node-Url | https://api.hive.blog | | Version | 0.23.0 | | HIVE | True | +----------+-----------------------+ Check the orderbook beempy orderbook --chart Orderbook 1701.93 $ ┼ 1595.59 $ ┼╮ 1489.25 $ ┤╰─╮ ┊ 1382.90 $ ┤ ╰─╮ ┊ ╭─────── 1276.56 $ ┤ ╰╮ ┊ ╭────╯ 1170.22 $ ┤ ╰───╮ ┊ ╭╯ 1063.87 $ ┤ ╰╮ ┊ │ 957.53 $ ┤ │ ┊ │ 851.19 $ ┤ │ ┊ ╭─╯ 744.84 $ ┤ │ ┊ │ 638.50 $ ┤ │ ┊ ╭─╯ 532.16 $ ┤ │ ┊ ╭╯ 425.81 $ ┤ ╰─────╮ ┊ │ 319.47 $ ┤ ╰────╮ ┊ ╭╯ 213.12 $ ┤ ╰─╮ ┊ │ 106.78 $ ┤ ╰╮┊ │ 0.44 $ ┤ ╰────╯ and beempy tradehistory returns the last trades as plot Trade history 2020-03-17T20:26:22 - 2020-03-24T20:26:22 HIVE/HBD 0.32 ┤ 0.31 ┤ ╭╮ 0.30 ┤ │╰╮ 0.29 ┤ ╭╯ │ 0.28 ┤ │ ╰╮ 0.27 ┤ │ │ ╭╮ ╭─ 0.26 ┤ ╭╮╭╯ │╭──╮ ╭╯│ │ 0.26 ┤ │││ ││ ╰╮ │ ╰─╯ 0.25 ┤ ╭╯╰╯ ╰╯ ╰─╯ 0.24 ┤ ╭╮ ╭╯ 0.23 ┤ ││╭╯ 0.22 ┤ │╰╯ 0.21 ┤ │ 0.20 ┤ │ 0.19 ┤ │ 0.18 ┤ ╭╯ 0.17 ┼───────╯ a short info can be obtained by beempy ticker +----------------+-------------------+ | Key | Value | +----------------+-------------------+ | highest_bid | 0.253913 HIVE/HBD | | latest | 0.300000 HIVE/HBD | | lowest_ask | 0.253994 HIVE/HBD | | percent_change | 0.00 % | | sbd_volume | 199.189 HBD | | steem_volume | 765.713 HIVE | +----------------+-------------------+ Let’s trade some HBD for HIVE First we should check our balance: beempy balance holger80 and then start to sell 1 HBD beempy sell -a holger80 1 HBD I’m now asked if the price is ok: Is the following Price ok: 0.253913 HBD/HIVE [y/n]: and should then enter my active wif: Password to unlock wallet or posting/active wif: I see then the broadcasted op: Wif accepted! { &quot;expiration&quot;: &quot;2020-03-24T20:34:03&quot;, &quot;ref_block_num&quot;: 63124, &quot;ref_block_prefix&quot;: 2805668693, &quot;operations&quot;: [ [ &quot;limit_order_create&quot;, { &quot;owner&quot;: &quot;holger80&quot;, &quot;orderid&quot;: 3815817900, &quot;amount_to_sell&quot;: &quot;1.000 HBD&quot;, &quot;min_to_receive&quot;: &quot;3.938 HIVE&quot;, &quot;fill_or_kill&quot;: false, &quot;expiration&quot;: &quot;2020-03-31T20:33:33&quot; } ] ], &quot;extensions&quot;: [], &quot;signatures&quot;: [ &quot;206b30dd79130814b9f14468c573fd9154020148e43481f810343964b93bcf8c1865927d49d1e3b521ff9a2af12bd5461c2edee220b64f59108c04413c3b88cbb0&quot; ] } and can check my open orders: beempy openorders holger80 +------------+---------------------+------------------------------------------+----------+ | Orderid | Created | Order | Account | +------------+---------------------+------------------------------------------+----------+ | 3815817900 | 2020-03-24T20:33:33 | 3.938 HIVE 1.000 HBD @ 0.253936 HBD/HIVE | holger80 | +------------+---------------------+------------------------------------------+----------+ Cancel open orders I can cancel my order by beempy cancel -a 3815817900 Instead of selling 1 HBD, I can also buy 1 HIVE by beempy buy -a holger80 1 HIVE after checking the price and entering my wif, the order is placed. Using the orderbook to fulfill orders Let’s check the first 5 orders: beempy orderbook -l 5 +--------------+----------------------------------------------+--------------+-------------------------------------------+ | Asks Sum HBD | Sell Orders | Bids Sum HBD | Buy Orders | +--------------+----------------------------------------------+--------------+-------------------------------------------+ | 66.15 | 260.432 HIVE 66.148 HBD @ 0.253993 HBD/HIVE | 0.44 | 1.725 HIVE 0.438 HBD @ 0.253913 HBD/HIVE | | 240.43 | 637.769 HIVE 174.284 HBD @ 0.273271 HBD/HIVE | 0.70 | 1.032 HIVE 0.262 HBD @ 0.253876 HBD/HIVE | | 267.93 | 100.000 HIVE 27.500 HBD @ 0.275000 HBD/HIVE | 0.91 | 0.842 HIVE 0.211 HBD @ 0.250594 HBD/HIVE | | 283.93 | 53.344 HIVE 16.002 HBD @ 0.299978 HBD/HIVE | 0.91 | 0.004 HIVE 0.001 HBD @ 0.250000 HBD/HIVE | | 296.29 | 41.191 HIVE 12.357 HBD @ 0.299993 HBD/HIVE | 6.64 | 23.778 HIVE 5.731 HBD @ 0.241021 HBD/HIVE | +--------------+----------------------------------------------+--------------+-------------------------------------------+ I can now sell 1 HBD @ 0.253993 HBD/HIVE as shown in the Asks column and the order should be fulfilled without waiting. Let’s try: beempy sell -a holger80 1 HBD 0.253993 This time, I can enter the wif without asking for the price. The orderbook is empty this time: beempy openorders holger80 +---------+---------+-------+---------+ | Orderid | Created | Order | Account | +---------+---------+-------+---------+ +---------+---------+-------+---------+ The blockexplorer shows that my order was fulfilled: I hope this help as long as the internal market has no interface. See: Use beempy to access the internal HIVE/HBD market by @holger80","@type":"BlogPosting","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://hivedocs.info/feed.xml" title="Hive Chain Documentation" /><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/turbolinks/5.2.0/turbolinks.js" integrity="sha256-iM4Yzi/zLj/IshPWMC1IluRxTtRjMqjPGd97TZ9yYpU=" crossorigin="anonymous"></script>
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Cousine|Inconsolata" rel="stylesheet">
+  <link rel="shortcut icon" type="image/png" href="/assets/images/favicon.png">
+</head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Hive Chain Documentation</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Use beempy to access the internal HIVE/HBD market</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2020-03-24T13:57:21-07:00" itemprop="datePublished">Mar 24, 2020
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <p><img src="https://files.peakd.com/file/peakd-hive/holger80/Vun5k1Ut-image.png" alt="image.png" />
+<a href="https://pixabay.com/de/photos/%C3%A4pfel-bauernmarkt-gesch%C3%A4ft-kaufen-1841132/">source</a>
+Although not visible, the internal market is already working and HBD can be exchanged for HIVE.</p>
+
+<h2 id="prepare-beempy">Prepare beempy</h2>
+<p>You need to have an up to date <a href="https://github.com/holgern/beem">beem</a> version 0.22.8</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>beempy updatenodes --hive
+beempy currentnode
+</code></pre></div></div>
+<p>should return now</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>+----------+-----------------------+
+| Key      | Value                 |
++----------+-----------------------+
+| Node-Url | https://api.hive.blog |
+| Version  | 0.23.0                |
+| HIVE     | True                  |
++----------+-----------------------+
+</code></pre></div></div>
+
+<h2 id="check-the-orderbook">Check the orderbook</h2>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>beempy orderbook --chart
+</code></pre></div></div>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>            Orderbook
+
+    1701.93 $  ┼
+    1595.59 $  ┼╮
+    1489.25 $  ┤╰─╮                      ┊
+    1382.90 $  ┤  ╰─╮                    ┊               ╭───────
+    1276.56 $  ┤    ╰╮                   ┊          ╭────╯
+    1170.22 $  ┤     ╰───╮               ┊         ╭╯
+    1063.87 $  ┤         ╰╮              ┊         │
+     957.53 $  ┤          │              ┊         │
+     851.19 $  ┤          │              ┊       ╭─╯
+     744.84 $  ┤          │              ┊       │
+     638.50 $  ┤          │              ┊     ╭─╯
+     532.16 $  ┤          │              ┊    ╭╯
+     425.81 $  ┤          ╰─────╮        ┊    │
+     319.47 $  ┤                ╰────╮   ┊   ╭╯
+     213.12 $  ┤                     ╰─╮ ┊   │
+     106.78 $  ┤                       ╰╮┊   │
+       0.44 $  ┤                        ╰────╯
+</code></pre></div></div>
+
+<p>and</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> beempy tradehistory
+</code></pre></div></div>
+<p>returns the last trades as plot</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>     Trade history 2020-03-17T20:26:22 - 2020-03-24T20:26:22
+
+HIVE/HBD
+  0.32  ┤
+  0.31  ┤                 ╭╮
+  0.30  ┤                 │╰╮
+  0.29  ┤                ╭╯ │
+  0.28  ┤                │  ╰╮
+  0.27  ┤                │   │       ╭╮ ╭─
+  0.26  ┤             ╭╮╭╯   │╭──╮  ╭╯│ │
+  0.26  ┤             │││    ││  ╰╮ │ ╰─╯
+  0.25  ┤            ╭╯╰╯    ╰╯   ╰─╯
+  0.24  ┤        ╭╮ ╭╯
+  0.23  ┤        ││╭╯
+  0.22  ┤        │╰╯
+  0.21  ┤        │
+  0.20  ┤        │
+  0.19  ┤        │
+  0.18  ┤       ╭╯
+  0.17  ┼───────╯
+</code></pre></div></div>
+<p>a short info can be obtained by</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>beempy ticker
+</code></pre></div></div>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>+----------------+-------------------+
+| Key            | Value             |
++----------------+-------------------+
+| highest_bid    | 0.253913 HIVE/HBD |
+| latest         | 0.300000 HIVE/HBD |
+| lowest_ask     | 0.253994 HIVE/HBD |
+| percent_change | 0.00 %            |
+| sbd_volume     | 199.189 HBD       |
+| steem_volume   | 765.713 HIVE      |
++----------------+-------------------+
+</code></pre></div></div>
+
+<h2 id="lets-trade-some-hbd-for-hive">Let’s trade some HBD for HIVE</h2>
+<p>First we should check our balance:</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>beempy balance holger80
+</code></pre></div></div>
+<p>and then start to sell 1 HBD</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>beempy sell -a holger80 1 HBD
+</code></pre></div></div>
+<p>I’m now asked if the price is ok:</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Is the following Price ok: 0.253913 HBD/HIVE [y/n]:
+</code></pre></div></div>
+<p>and should then enter my active wif:</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Password to unlock wallet or posting/active wif:
+</code></pre></div></div>
+<p>I see then the broadcasted op:</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Wif accepted!
+{
+    "expiration": "2020-03-24T20:34:03",
+    "ref_block_num": 63124,
+    "ref_block_prefix": 2805668693,
+    "operations": [
+        [
+            "limit_order_create",
+            {
+                "owner": "holger80",
+                "orderid": 3815817900,
+                "amount_to_sell": "1.000 HBD",
+                "min_to_receive": "3.938 HIVE",
+                "fill_or_kill": false,
+                "expiration": "2020-03-31T20:33:33"
+            }
+        ]
+    ],
+    "extensions": [],
+    "signatures": [
+        "206b30dd79130814b9f14468c573fd9154020148e43481f810343964b93bcf8c1865927d49d1e3b521ff9a2af12bd5461c2edee220b64f59108c04413c3b88cbb0"
+    ]
+}
+</code></pre></div></div>
+<p>and can check my open orders:</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>beempy openorders holger80 
+</code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>+------------+---------------------+------------------------------------------+----------+
+|    Orderid |             Created |                                    Order |  Account |
++------------+---------------------+------------------------------------------+----------+
+| 3815817900 | 2020-03-24T20:33:33 | 3.938 HIVE 1.000 HBD @ 0.253936 HBD/HIVE | holger80 |
++------------+---------------------+------------------------------------------+----------+
+</code></pre></div></div>
+<h2 id="cancel-open-orders">Cancel open orders</h2>
+<p>I can cancel my order by</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>beempy cancel -a 3815817900 
+</code></pre></div></div>
+
+<p>Instead of selling 1 HBD, I can also buy 1 HIVE by</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>beempy buy -a holger80 1 HIVE
+</code></pre></div></div>
+<p>after checking the price and entering my wif, the order is placed.</p>
+
+<h2 id="using-the-orderbook-to-fulfill-orders">Using the orderbook to fulfill orders</h2>
+<p>Let’s check the first 5 orders:</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>beempy orderbook -l 5
+</code></pre></div></div>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>+--------------+----------------------------------------------+--------------+-------------------------------------------+
+| Asks Sum HBD |                                  Sell Orders | Bids Sum HBD |                                Buy Orders |
++--------------+----------------------------------------------+--------------+-------------------------------------------+
+|        66.15 |  260.432 HIVE 66.148 HBD @ 0.253993 HBD/HIVE |         0.44 |  1.725 HIVE 0.438 HBD @ 0.253913 HBD/HIVE |
+|       240.43 | 637.769 HIVE 174.284 HBD @ 0.273271 HBD/HIVE |         0.70 |  1.032 HIVE 0.262 HBD @ 0.253876 HBD/HIVE |
+|       267.93 |  100.000 HIVE 27.500 HBD @ 0.275000 HBD/HIVE |         0.91 |  0.842 HIVE 0.211 HBD @ 0.250594 HBD/HIVE |
+|       283.93 |   53.344 HIVE 16.002 HBD @ 0.299978 HBD/HIVE |         0.91 |  0.004 HIVE 0.001 HBD @ 0.250000 HBD/HIVE |
+|       296.29 |   41.191 HIVE 12.357 HBD @ 0.299993 HBD/HIVE |         6.64 | 23.778 HIVE 5.731 HBD @ 0.241021 HBD/HIVE |
++--------------+----------------------------------------------+--------------+-------------------------------------------+
+</code></pre></div></div>
+<p>I can now sell 1 HBD @ 0.253993 HBD/HIVE as shown in the Asks column and the order should be fulfilled without waiting. Let’s try:</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> beempy sell -a holger80 1 HBD 0.253993
+</code></pre></div></div>
+<p>This time, I can enter the wif without asking for the price. The orderbook is empty this time:</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>beempy openorders  holger80 
+</code></pre></div></div>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>+---------+---------+-------+---------+
+| Orderid | Created | Order | Account |
++---------+---------+-------+---------+
++---------+---------+-------+---------+
+</code></pre></div></div>
+<p>The blockexplorer shows that my order was fulfilled:
+<img src="https://files.peakd.com/file/peakd-hive/holger80/FpiIlfLa-image.png" alt="image.png" /></p>
+
+<p>I hope this help as long as the internal market has no interface.</p>
+<hr />
+
+<p>
+  See: <a href="https://hive.blog/@holger80/use-beempy-to-access-the-internal-hive-hbd-market">Use beempy to access the internal HIVE/HBD market</a>
+  by
+  <a href="https://hive.blog/@holger80">@holger80</a>
+</p>
+
+
+  </div><a class="u-url" href="/howto/market/2020/03/24/use-beempy-to-access-the-internal-hive-hbd-market.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Hive Chain Documentation</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">site curated by: @inertia</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2">
+        <form method="get" action="http://www.google.com/search">
+          <input type="hidden" name="sitesearch" value="hivedocs.info" />
+          <input type="text" name="q" maxlength="255" placeholder="Search" />
+        </form><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>Your resource for various levels of Hive Documentation.</p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+</body>
+
+</html>

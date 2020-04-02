@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.0.0">Jekyll</generator><link href="https://hivedocs.info/feed.xml" rel="self" type="application/atom+xml" /><link href="https://hivedocs.info/" rel="alternate" type="text/html" /><updated>2020-04-02T00:10:35-07:00</updated><id>https://hivedocs.info/feed.xml</id><title type="html">Hive Chain Documentation</title><subtitle>Your resource for various levels of Hive Documentation.</subtitle><author><name>site curated by: @inertia</name></author><entry><title type="html">How to set up your Witness server with MIRA?</title><link href="https://hivedocs.info/howto/witness/2020/04/01/how-to-set-up-your-witness-server-with-mira.html" rel="alternate" type="text/html" title="How to set up your Witness server with MIRA?" /><published>2020-04-01T17:30:33-07:00</published><updated>2020-04-01T17:30:33-07:00</updated><id>https://hivedocs.info/howto/witness/2020/04/01/how-to-set-up-your-witness-server-with-mira</id><content type="html" xml:base="https://hivedocs.info/howto/witness/2020/04/01/how-to-set-up-your-witness-server-with-mira.html">&lt;hr /&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.0.0">Jekyll</generator><link href="https://hivedocs.info/feed.xml" rel="self" type="application/atom+xml" /><link href="https://hivedocs.info/" rel="alternate" type="text/html" /><updated>2020-04-02T12:44:49-07:00</updated><id>https://hivedocs.info/feed.xml</id><title type="html">Hive Chain Documentation</title><subtitle>Your resource for various levels of Hive Documentation.</subtitle><author><name>site curated by: @inertia</name></author><entry><title type="html">How to set up your Witness server with MIRA?</title><link href="https://hivedocs.info/howto/witness/2020/04/01/how-to-set-up-your-witness-server-with-mira.html" rel="alternate" type="text/html" title="How to set up your Witness server with MIRA?" /><published>2020-04-01T17:30:33-07:00</published><updated>2020-04-01T17:30:33-07:00</updated><id>https://hivedocs.info/howto/witness/2020/04/01/how-to-set-up-your-witness-server-with-mira</id><content type="html" xml:base="https://hivedocs.info/howto/witness/2020/04/01/how-to-set-up-your-witness-server-with-mira.html">&lt;hr /&gt;
 
 &lt;p&gt;Hello there, as you may or may not know the server requirements for hosting a witness server is growing very fast. To combat this, with the recent hardforks to the blockchain MIRA was introduced.&lt;/p&gt;
 
@@ -194,7 +194,183 @@ suggest_brain_key
   See: &lt;a href=&quot;https://hive.blog/@deathwing/how-to-set-up-your-witness-server-with-mira&quot;&gt;How to set up your Witness server with MIRA?&lt;/a&gt;
   by
   &lt;a href=&quot;https://hive.blog/@deathwing&quot;&gt;@deathwing&lt;/a&gt;
-&lt;/p&gt;</content><author><name>site curated by: @inertia</name></author><summary type="html">Hello there, as you may or may not know the server requirements for hosting a witness server is growing very fast. To combat this, with the recent hardforks to the blockchain MIRA was introduced. MIRA caches the data on RocksDB files rather than the random acces memory, RAM. Which means you will require a higher storage with fast R/W speeds like SSDs for example. Instead of 64 GB of RAM. Right now, as of today (02.04.2020) the absolute minimum requirements for a MIRA node is 8 Gigabytes of RAM, 400GB SSD Storage, 4 cores, 100 Mbps DL/UL speed. The recommended specifications for a MIRA witness/seed node is 32 Gigabytes of RAM, 500GB SSD Storage, 4 cores, 1 Gbps DL/UL speed. Block logs currently take about 258 GB of space while RocksDB takes about 37 GB. Witnesses are of course, crucial to the longevity, stability and decentralization of the chain. If you wan to create a witness server and become a witness, good for you and thank you for volunteering! Managing servers and keeping tabs on them is no easy feat. Lets not forget to mention, cheap. Start Setting Up Your Witness On A Fresh Install [DIY] So you have decided on setting up a witness server using MIRA. You have your server ready, freshly installed. Preferably Ubuntu or Debian, but that’s just my taste. For the setup, we will be using steem-docker made by someguy123 and RocksDB files provided by Privex.io Let’s get started. Throughout this tutorial, I will be assuming you are root. First, we have to install git so we can use git clone to get the necessary files from GitHub. apt install git -y Now, we clone the repository from GitHub. git clone https://github.com/someguy123/steem-docker.git Now that git has downloaded the repository to your server, we have to cd into the folder. cd steem-docker Next, we are going to use the custom-made script to install docker for us. ./run.sh install_docker This will probably take a minute. Next, we will be installing the necessary docker package. ./run.sh install someguy123/hive:latest-mira Next, we will be setting up the .env for docker. nano .env DOCKER_NAME=witness PORTS= Paste these in the .env file and save it by pressing CTRL+X and then Y. Next step is to download the block_log. mkdir root/data/witness_node_data_dir/blockchain cd root/data/witness_node_data_dir/blockchain curl -fsSL http://files.privex.io/hive/block_log.lz4 -o - | lz4 -d - block_log As the block_log is quite big, this is going to take anywhere from 20 minutes to several hours depending on the internet connection of your server. After the block_log has been installed, we have to download the RocksDB files from Privex.io For HIVE, rsync -av --progress --delete rsync://files.privex.io/hive/rocksdb/ /root/steem-docker/data/rocksdb/ Now that our RocksDB is downloaded, we must generate a brain key for security. cd root/steem-docker ./run.sh remote_wallet suggest_brain_key This will generate a key pair for your witness. Copy the output and save it. After generating your witness keys we must edit config.ini which is the main configuration for the witness server. nano root/steem-docker/data/witness_node_data_dir/config.ini On the first line, you will see p2p-endpoint we should comment this out as our goal is to make a witness server, if you are looking to host a seed node rather than a witness server, you can keep this on. You can comment this out by putting a pound (#) in front of the line. So it should look like this, #p2p-endpoint = 0.0.0.0:2001 Next, a few lines below that you will see, shared-file-size = 64G Please change this to your server memory, if your server has 16 gigabytes of RAM, change this to 16G and so on. Next, scroll down until you see witness and private-key lines. For the witness part, put in your username with “” it should look like this, witness = &quot;deathwing&quot; Next, for the private key put in your previously saved private key without any quotation marks. private-key = 5thisisyourpreviosulygeneratedprivatekey Again, press CTRL+X and then Y to save the file and exit. You are almost done! Our next step is to replay the chain, this is going to take quite a long time as this process is single-threaded and can’t take advantage of multi-core CPUs, so depending on your processors’ single-thread performance, the amount of time it takes will vary. Very likely for it to take an hour if not more. ./run.sh replay After the replay is complete, we can start our server and let it sync with the network. ./run.sh start You can then use ./run.sh logs to view the log output. It is very normal to see errors appearing here from time to time. You should check it every 20-30 minutes until you see something like this: When you start seeing these messages, you can press CTRL+C to leave the logs. Now that our witness server is synced up and ready to go, we can update our witness account and broadcast it to the network. To do that, we need to run wallet. ./run.sh wallet The wallet will prompt you to set a password. set_password hunter2 (set your own password) unlock hunter2 import_key 5yourwitnessaccountsactiveprivatekey You can find your private key on PeakD - https://peakd.com/@yourusername/permissions Remember that for import_key you need to put in the private key of the account that will be witnessing on the chain not the one previously generated in this tutorial. Now, we can update our witness and start our journey on supporting the stability, longevity and decentralization of the blockchain. update_witness &quot;WITNESSNAME&quot; &quot;WITNESSURL&quot; &quot;STMxxxxxxx&quot; {&quot;account_creation_fee&quot;:&quot;3.000 HIVE&quot;,&quot;maximum_block_size&quot;:65536,&quot;sbd_interest_rate&quot;:0} true WITNESSNAME = Your Witness account. WITNESSURL = Preferably, your witness announcement post. STMxxxxxxx= Paste the key that we previously generated. You can check hiveblocks.com/@yourusername now, if everything worked you should see a transaction like this; Congratulations! You are now a witness. Thank you! I want to become a witness but I don’t know a thing about servers! Best way to become a witness in a situation like this is probably purchasing a pre-replayed witness node from privex.io who provided both the scripts and files used in this tutorial. This option is the best for users who do not have a good server knowledge and want excellent customer support and during their journey on becoming a witness. After you order your VPS-HIVE server from, you should receive a mail containing the information you need to connect and login to the server. After you log in, what you have to do is first, switch from the user ubuntu to root, to do this type, su Then, we will be generating a key pair using ./run.sh remote_wallet suggest_brain_key then, edit the config.ini file with nano data/witness_node_data_dir/config.ini then start the witness server with ./run.sh start wait for it to sync, then run wallet with ./run.sh wallet and update your witness as shown previously. Let me know if you have any questions! &amp;lt;p&amp;gt;post scriptum&amp;lt;/p&amp;gt; Remember voting for witnesses is important. I would appreciate if you could vote for me.Use Peakd’s voting page by clicking here.Use Hivesigner by clicking here.Thank you! See: How to set up your Witness server with MIRA? by @deathwing</summary></entry><entry><title type="html">The Hive Blockchain Has Launched Successfully! Recap and Helpful Information</title><link href="https://hivedocs.info/news/2020/03/21/the-hive-blockchain-has-launched-successfully-recap-and-helpful-information.html" rel="alternate" type="text/html" title="The Hive Blockchain Has Launched Successfully! Recap and Helpful Information" /><published>2020-03-21T10:05:33-07:00</published><updated>2020-03-21T10:05:33-07:00</updated><id>https://hivedocs.info/news/2020/03/21/the-hive-blockchain-has-launched-successfully-recap-and-helpful-information</id><content type="html" xml:base="https://hivedocs.info/news/2020/03/21/the-hive-blockchain-has-launched-successfully-recap-and-helpful-information.html">&lt;h1 id=&quot;hello-there-hive-what-a-day-weve-had&quot;&gt;Hello there, Hive. What a day we’ve had!&lt;/h1&gt;
+&lt;/p&gt;</content><author><name>site curated by: @inertia</name></author><summary type="html">Hello there, as you may or may not know the server requirements for hosting a witness server is growing very fast. To combat this, with the recent hardforks to the blockchain MIRA was introduced. MIRA caches the data on RocksDB files rather than the random acces memory, RAM. Which means you will require a higher storage with fast R/W speeds like SSDs for example. Instead of 64 GB of RAM. Right now, as of today (02.04.2020) the absolute minimum requirements for a MIRA node is 8 Gigabytes of RAM, 400GB SSD Storage, 4 cores, 100 Mbps DL/UL speed. The recommended specifications for a MIRA witness/seed node is 32 Gigabytes of RAM, 500GB SSD Storage, 4 cores, 1 Gbps DL/UL speed. Block logs currently take about 258 GB of space while RocksDB takes about 37 GB. Witnesses are of course, crucial to the longevity, stability and decentralization of the chain. If you wan to create a witness server and become a witness, good for you and thank you for volunteering! Managing servers and keeping tabs on them is no easy feat. Lets not forget to mention, cheap. Start Setting Up Your Witness On A Fresh Install [DIY] So you have decided on setting up a witness server using MIRA. You have your server ready, freshly installed. Preferably Ubuntu or Debian, but that’s just my taste. For the setup, we will be using steem-docker made by someguy123 and RocksDB files provided by Privex.io Let’s get started. Throughout this tutorial, I will be assuming you are root. First, we have to install git so we can use git clone to get the necessary files from GitHub. apt install git -y Now, we clone the repository from GitHub. git clone https://github.com/someguy123/steem-docker.git Now that git has downloaded the repository to your server, we have to cd into the folder. cd steem-docker Next, we are going to use the custom-made script to install docker for us. ./run.sh install_docker This will probably take a minute. Next, we will be installing the necessary docker package. ./run.sh install someguy123/hive:latest-mira Next, we will be setting up the .env for docker. nano .env DOCKER_NAME=witness PORTS= Paste these in the .env file and save it by pressing CTRL+X and then Y. Next step is to download the block_log. mkdir root/data/witness_node_data_dir/blockchain cd root/data/witness_node_data_dir/blockchain curl -fsSL http://files.privex.io/hive/block_log.lz4 -o - | lz4 -d - block_log As the block_log is quite big, this is going to take anywhere from 20 minutes to several hours depending on the internet connection of your server. After the block_log has been installed, we have to download the RocksDB files from Privex.io For HIVE, rsync -av --progress --delete rsync://files.privex.io/hive/rocksdb/ /root/steem-docker/data/rocksdb/ Now that our RocksDB is downloaded, we must generate a brain key for security. cd root/steem-docker ./run.sh remote_wallet suggest_brain_key This will generate a key pair for your witness. Copy the output and save it. After generating your witness keys we must edit config.ini which is the main configuration for the witness server. nano root/steem-docker/data/witness_node_data_dir/config.ini On the first line, you will see p2p-endpoint we should comment this out as our goal is to make a witness server, if you are looking to host a seed node rather than a witness server, you can keep this on. You can comment this out by putting a pound (#) in front of the line. So it should look like this, #p2p-endpoint = 0.0.0.0:2001 Next, a few lines below that you will see, shared-file-size = 64G Please change this to your server memory, if your server has 16 gigabytes of RAM, change this to 16G and so on. Next, scroll down until you see witness and private-key lines. For the witness part, put in your username with “” it should look like this, witness = &quot;deathwing&quot; Next, for the private key put in your previously saved private key without any quotation marks. private-key = 5thisisyourpreviosulygeneratedprivatekey Again, press CTRL+X and then Y to save the file and exit. You are almost done! Our next step is to replay the chain, this is going to take quite a long time as this process is single-threaded and can’t take advantage of multi-core CPUs, so depending on your processors’ single-thread performance, the amount of time it takes will vary. Very likely for it to take an hour if not more. ./run.sh replay After the replay is complete, we can start our server and let it sync with the network. ./run.sh start You can then use ./run.sh logs to view the log output. It is very normal to see errors appearing here from time to time. You should check it every 20-30 minutes until you see something like this: When you start seeing these messages, you can press CTRL+C to leave the logs. Now that our witness server is synced up and ready to go, we can update our witness account and broadcast it to the network. To do that, we need to run wallet. ./run.sh wallet The wallet will prompt you to set a password. set_password hunter2 (set your own password) unlock hunter2 import_key 5yourwitnessaccountsactiveprivatekey You can find your private key on PeakD - https://peakd.com/@yourusername/permissions Remember that for import_key you need to put in the private key of the account that will be witnessing on the chain not the one previously generated in this tutorial. Now, we can update our witness and start our journey on supporting the stability, longevity and decentralization of the blockchain. update_witness &quot;WITNESSNAME&quot; &quot;WITNESSURL&quot; &quot;STMxxxxxxx&quot; {&quot;account_creation_fee&quot;:&quot;3.000 HIVE&quot;,&quot;maximum_block_size&quot;:65536,&quot;sbd_interest_rate&quot;:0} true WITNESSNAME = Your Witness account. WITNESSURL = Preferably, your witness announcement post. STMxxxxxxx= Paste the key that we previously generated. You can check hiveblocks.com/@yourusername now, if everything worked you should see a transaction like this; Congratulations! You are now a witness. Thank you! I want to become a witness but I don’t know a thing about servers! Best way to become a witness in a situation like this is probably purchasing a pre-replayed witness node from privex.io who provided both the scripts and files used in this tutorial. This option is the best for users who do not have a good server knowledge and want excellent customer support and during their journey on becoming a witness. After you order your VPS-HIVE server from, you should receive a mail containing the information you need to connect and login to the server. After you log in, what you have to do is first, switch from the user ubuntu to root, to do this type, su Then, we will be generating a key pair using ./run.sh remote_wallet suggest_brain_key then, edit the config.ini file with nano data/witness_node_data_dir/config.ini then start the witness server with ./run.sh start wait for it to sync, then run wallet with ./run.sh wallet and update your witness as shown previously. Let me know if you have any questions! &amp;lt;p&amp;gt;post scriptum&amp;lt;/p&amp;gt; Remember voting for witnesses is important. I would appreciate if you could vote for me.Use Peakd’s voting page by clicking here.Use Hivesigner by clicking here.Thank you! See: How to set up your Witness server with MIRA? by @deathwing</summary></entry><entry><title type="html">Use beempy to access the internal HIVE/HBD market</title><link href="https://hivedocs.info/howto/market/2020/03/24/use-beempy-to-access-the-internal-hive-hbd-market.html" rel="alternate" type="text/html" title="Use beempy to access the internal HIVE/HBD market" /><published>2020-03-24T13:57:21-07:00</published><updated>2020-03-24T13:57:21-07:00</updated><id>https://hivedocs.info/howto/market/2020/03/24/use-beempy-to-access-the-internal-hive-hbd-market</id><content type="html" xml:base="https://hivedocs.info/howto/market/2020/03/24/use-beempy-to-access-the-internal-hive-hbd-market.html">&lt;p&gt;&lt;img src=&quot;https://files.peakd.com/file/peakd-hive/holger80/Vun5k1Ut-image.png&quot; alt=&quot;image.png&quot; /&gt;
+&lt;a href=&quot;https://pixabay.com/de/photos/%C3%A4pfel-bauernmarkt-gesch%C3%A4ft-kaufen-1841132/&quot;&gt;source&lt;/a&gt;
+Although not visible, the internal market is already working and HBD can be exchanged for HIVE.&lt;/p&gt;
+
+&lt;h2 id=&quot;prepare-beempy&quot;&gt;Prepare beempy&lt;/h2&gt;
+&lt;p&gt;You need to have an up to date &lt;a href=&quot;https://github.com/holgern/beem&quot;&gt;beem&lt;/a&gt; version 0.22.8&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;beempy updatenodes --hive
+beempy currentnode
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;should return now&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;+----------+-----------------------+
+| Key      | Value                 |
++----------+-----------------------+
+| Node-Url | https://api.hive.blog |
+| Version  | 0.23.0                |
+| HIVE     | True                  |
++----------+-----------------------+
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;check-the-orderbook&quot;&gt;Check the orderbook&lt;/h2&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;beempy orderbook --chart
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;            Orderbook
+
+    1701.93 $  ┼
+    1595.59 $  ┼╮
+    1489.25 $  ┤╰─╮                      ┊
+    1382.90 $  ┤  ╰─╮                    ┊               ╭───────
+    1276.56 $  ┤    ╰╮                   ┊          ╭────╯
+    1170.22 $  ┤     ╰───╮               ┊         ╭╯
+    1063.87 $  ┤         ╰╮              ┊         │
+     957.53 $  ┤          │              ┊         │
+     851.19 $  ┤          │              ┊       ╭─╯
+     744.84 $  ┤          │              ┊       │
+     638.50 $  ┤          │              ┊     ╭─╯
+     532.16 $  ┤          │              ┊    ╭╯
+     425.81 $  ┤          ╰─────╮        ┊    │
+     319.47 $  ┤                ╰────╮   ┊   ╭╯
+     213.12 $  ┤                     ╰─╮ ┊   │
+     106.78 $  ┤                       ╰╮┊   │
+       0.44 $  ┤                        ╰────╯
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;and&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; beempy tradehistory
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;returns the last trades as plot&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;     Trade history 2020-03-17T20:26:22 - 2020-03-24T20:26:22
+
+HIVE/HBD
+  0.32  ┤
+  0.31  ┤                 ╭╮
+  0.30  ┤                 │╰╮
+  0.29  ┤                ╭╯ │
+  0.28  ┤                │  ╰╮
+  0.27  ┤                │   │       ╭╮ ╭─
+  0.26  ┤             ╭╮╭╯   │╭──╮  ╭╯│ │
+  0.26  ┤             │││    ││  ╰╮ │ ╰─╯
+  0.25  ┤            ╭╯╰╯    ╰╯   ╰─╯
+  0.24  ┤        ╭╮ ╭╯
+  0.23  ┤        ││╭╯
+  0.22  ┤        │╰╯
+  0.21  ┤        │
+  0.20  ┤        │
+  0.19  ┤        │
+  0.18  ┤       ╭╯
+  0.17  ┼───────╯
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;a short info can be obtained by&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;beempy ticker
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;+----------------+-------------------+
+| Key            | Value             |
++----------------+-------------------+
+| highest_bid    | 0.253913 HIVE/HBD |
+| latest         | 0.300000 HIVE/HBD |
+| lowest_ask     | 0.253994 HIVE/HBD |
+| percent_change | 0.00 %            |
+| sbd_volume     | 199.189 HBD       |
+| steem_volume   | 765.713 HIVE      |
++----------------+-------------------+
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;lets-trade-some-hbd-for-hive&quot;&gt;Let’s trade some HBD for HIVE&lt;/h2&gt;
+&lt;p&gt;First we should check our balance:&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;beempy balance holger80
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;and then start to sell 1 HBD&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;beempy sell -a holger80 1 HBD
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;I’m now asked if the price is ok:&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Is the following Price ok: 0.253913 HBD/HIVE [y/n]:
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;and should then enter my active wif:&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Password to unlock wallet or posting/active wif:
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;I see then the broadcasted op:&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Wif accepted!
+{
+    &quot;expiration&quot;: &quot;2020-03-24T20:34:03&quot;,
+    &quot;ref_block_num&quot;: 63124,
+    &quot;ref_block_prefix&quot;: 2805668693,
+    &quot;operations&quot;: [
+        [
+            &quot;limit_order_create&quot;,
+            {
+                &quot;owner&quot;: &quot;holger80&quot;,
+                &quot;orderid&quot;: 3815817900,
+                &quot;amount_to_sell&quot;: &quot;1.000 HBD&quot;,
+                &quot;min_to_receive&quot;: &quot;3.938 HIVE&quot;,
+                &quot;fill_or_kill&quot;: false,
+                &quot;expiration&quot;: &quot;2020-03-31T20:33:33&quot;
+            }
+        ]
+    ],
+    &quot;extensions&quot;: [],
+    &quot;signatures&quot;: [
+        &quot;206b30dd79130814b9f14468c573fd9154020148e43481f810343964b93bcf8c1865927d49d1e3b521ff9a2af12bd5461c2edee220b64f59108c04413c3b88cbb0&quot;
+    ]
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;and can check my open orders:&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;beempy openorders holger80 
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;+------------+---------------------+------------------------------------------+----------+
+|    Orderid |             Created |                                    Order |  Account |
++------------+---------------------+------------------------------------------+----------+
+| 3815817900 | 2020-03-24T20:33:33 | 3.938 HIVE 1.000 HBD @ 0.253936 HBD/HIVE | holger80 |
++------------+---------------------+------------------------------------------+----------+
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;h2 id=&quot;cancel-open-orders&quot;&gt;Cancel open orders&lt;/h2&gt;
+&lt;p&gt;I can cancel my order by&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;beempy cancel -a 3815817900 
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Instead of selling 1 HBD, I can also buy 1 HIVE by&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;beempy buy -a holger80 1 HIVE
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;after checking the price and entering my wif, the order is placed.&lt;/p&gt;
+
+&lt;h2 id=&quot;using-the-orderbook-to-fulfill-orders&quot;&gt;Using the orderbook to fulfill orders&lt;/h2&gt;
+&lt;p&gt;Let’s check the first 5 orders:&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;beempy orderbook -l 5
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;+--------------+----------------------------------------------+--------------+-------------------------------------------+
+| Asks Sum HBD |                                  Sell Orders | Bids Sum HBD |                                Buy Orders |
++--------------+----------------------------------------------+--------------+-------------------------------------------+
+|        66.15 |  260.432 HIVE 66.148 HBD @ 0.253993 HBD/HIVE |         0.44 |  1.725 HIVE 0.438 HBD @ 0.253913 HBD/HIVE |
+|       240.43 | 637.769 HIVE 174.284 HBD @ 0.273271 HBD/HIVE |         0.70 |  1.032 HIVE 0.262 HBD @ 0.253876 HBD/HIVE |
+|       267.93 |  100.000 HIVE 27.500 HBD @ 0.275000 HBD/HIVE |         0.91 |  0.842 HIVE 0.211 HBD @ 0.250594 HBD/HIVE |
+|       283.93 |   53.344 HIVE 16.002 HBD @ 0.299978 HBD/HIVE |         0.91 |  0.004 HIVE 0.001 HBD @ 0.250000 HBD/HIVE |
+|       296.29 |   41.191 HIVE 12.357 HBD @ 0.299993 HBD/HIVE |         6.64 | 23.778 HIVE 5.731 HBD @ 0.241021 HBD/HIVE |
++--------------+----------------------------------------------+--------------+-------------------------------------------+
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;I can now sell 1 HBD @ 0.253993 HBD/HIVE as shown in the Asks column and the order should be fulfilled without waiting. Let’s try:&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; beempy sell -a holger80 1 HBD 0.253993
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;This time, I can enter the wif without asking for the price. The orderbook is empty this time:&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;beempy openorders  holger80 
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;+---------+---------+-------+---------+
+| Orderid | Created | Order | Account |
++---------+---------+-------+---------+
++---------+---------+-------+---------+
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;The blockexplorer shows that my order was fulfilled:
+&lt;img src=&quot;https://files.peakd.com/file/peakd-hive/holger80/FpiIlfLa-image.png&quot; alt=&quot;image.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;I hope this help as long as the internal market has no interface.&lt;/p&gt;
+&lt;hr /&gt;
+
+&lt;p&gt;
+  See: &lt;a href=&quot;https://hive.blog/@holger80/use-beempy-to-access-the-internal-hive-hbd-market&quot;&gt;Use beempy to access the internal HIVE/HBD market&lt;/a&gt;
+  by
+  &lt;a href=&quot;https://hive.blog/@holger80&quot;&gt;@holger80&lt;/a&gt;
+&lt;/p&gt;</content><author><name>site curated by: @inertia</name></author><summary type="html">source Although not visible, the internal market is already working and HBD can be exchanged for HIVE. Prepare beempy You need to have an up to date beem version 0.22.8 beempy updatenodes --hive beempy currentnode should return now +----------+-----------------------+ | Key | Value | +----------+-----------------------+ | Node-Url | https://api.hive.blog | | Version | 0.23.0 | | HIVE | True | +----------+-----------------------+ Check the orderbook beempy orderbook --chart Orderbook 1701.93 $ ┼ 1595.59 $ ┼╮ 1489.25 $ ┤╰─╮ ┊ 1382.90 $ ┤ ╰─╮ ┊ ╭─────── 1276.56 $ ┤ ╰╮ ┊ ╭────╯ 1170.22 $ ┤ ╰───╮ ┊ ╭╯ 1063.87 $ ┤ ╰╮ ┊ │ 957.53 $ ┤ │ ┊ │ 851.19 $ ┤ │ ┊ ╭─╯ 744.84 $ ┤ │ ┊ │ 638.50 $ ┤ │ ┊ ╭─╯ 532.16 $ ┤ │ ┊ ╭╯ 425.81 $ ┤ ╰─────╮ ┊ │ 319.47 $ ┤ ╰────╮ ┊ ╭╯ 213.12 $ ┤ ╰─╮ ┊ │ 106.78 $ ┤ ╰╮┊ │ 0.44 $ ┤ ╰────╯ and beempy tradehistory returns the last trades as plot Trade history 2020-03-17T20:26:22 - 2020-03-24T20:26:22 HIVE/HBD 0.32 ┤ 0.31 ┤ ╭╮ 0.30 ┤ │╰╮ 0.29 ┤ ╭╯ │ 0.28 ┤ │ ╰╮ 0.27 ┤ │ │ ╭╮ ╭─ 0.26 ┤ ╭╮╭╯ │╭──╮ ╭╯│ │ 0.26 ┤ │││ ││ ╰╮ │ ╰─╯ 0.25 ┤ ╭╯╰╯ ╰╯ ╰─╯ 0.24 ┤ ╭╮ ╭╯ 0.23 ┤ ││╭╯ 0.22 ┤ │╰╯ 0.21 ┤ │ 0.20 ┤ │ 0.19 ┤ │ 0.18 ┤ ╭╯ 0.17 ┼───────╯ a short info can be obtained by beempy ticker +----------------+-------------------+ | Key | Value | +----------------+-------------------+ | highest_bid | 0.253913 HIVE/HBD | | latest | 0.300000 HIVE/HBD | | lowest_ask | 0.253994 HIVE/HBD | | percent_change | 0.00 % | | sbd_volume | 199.189 HBD | | steem_volume | 765.713 HIVE | +----------------+-------------------+ Let’s trade some HBD for HIVE First we should check our balance: beempy balance holger80 and then start to sell 1 HBD beempy sell -a holger80 1 HBD I’m now asked if the price is ok: Is the following Price ok: 0.253913 HBD/HIVE [y/n]: and should then enter my active wif: Password to unlock wallet or posting/active wif: I see then the broadcasted op: Wif accepted! { &quot;expiration&quot;: &quot;2020-03-24T20:34:03&quot;, &quot;ref_block_num&quot;: 63124, &quot;ref_block_prefix&quot;: 2805668693, &quot;operations&quot;: [ [ &quot;limit_order_create&quot;, { &quot;owner&quot;: &quot;holger80&quot;, &quot;orderid&quot;: 3815817900, &quot;amount_to_sell&quot;: &quot;1.000 HBD&quot;, &quot;min_to_receive&quot;: &quot;3.938 HIVE&quot;, &quot;fill_or_kill&quot;: false, &quot;expiration&quot;: &quot;2020-03-31T20:33:33&quot; } ] ], &quot;extensions&quot;: [], &quot;signatures&quot;: [ &quot;206b30dd79130814b9f14468c573fd9154020148e43481f810343964b93bcf8c1865927d49d1e3b521ff9a2af12bd5461c2edee220b64f59108c04413c3b88cbb0&quot; ] } and can check my open orders: beempy openorders holger80 +------------+---------------------+------------------------------------------+----------+ | Orderid | Created | Order | Account | +------------+---------------------+------------------------------------------+----------+ | 3815817900 | 2020-03-24T20:33:33 | 3.938 HIVE 1.000 HBD @ 0.253936 HBD/HIVE | holger80 | +------------+---------------------+------------------------------------------+----------+ Cancel open orders I can cancel my order by beempy cancel -a 3815817900 Instead of selling 1 HBD, I can also buy 1 HIVE by beempy buy -a holger80 1 HIVE after checking the price and entering my wif, the order is placed. Using the orderbook to fulfill orders Let’s check the first 5 orders: beempy orderbook -l 5 +--------------+----------------------------------------------+--------------+-------------------------------------------+ | Asks Sum HBD | Sell Orders | Bids Sum HBD | Buy Orders | +--------------+----------------------------------------------+--------------+-------------------------------------------+ | 66.15 | 260.432 HIVE 66.148 HBD @ 0.253993 HBD/HIVE | 0.44 | 1.725 HIVE 0.438 HBD @ 0.253913 HBD/HIVE | | 240.43 | 637.769 HIVE 174.284 HBD @ 0.273271 HBD/HIVE | 0.70 | 1.032 HIVE 0.262 HBD @ 0.253876 HBD/HIVE | | 267.93 | 100.000 HIVE 27.500 HBD @ 0.275000 HBD/HIVE | 0.91 | 0.842 HIVE 0.211 HBD @ 0.250594 HBD/HIVE | | 283.93 | 53.344 HIVE 16.002 HBD @ 0.299978 HBD/HIVE | 0.91 | 0.004 HIVE 0.001 HBD @ 0.250000 HBD/HIVE | | 296.29 | 41.191 HIVE 12.357 HBD @ 0.299993 HBD/HIVE | 6.64 | 23.778 HIVE 5.731 HBD @ 0.241021 HBD/HIVE | +--------------+----------------------------------------------+--------------+-------------------------------------------+ I can now sell 1 HBD @ 0.253993 HBD/HIVE as shown in the Asks column and the order should be fulfilled without waiting. Let’s try: beempy sell -a holger80 1 HBD 0.253993 This time, I can enter the wif without asking for the price. The orderbook is empty this time: beempy openorders holger80 +---------+---------+-------+---------+ | Orderid | Created | Order | Account | +---------+---------+-------+---------+ +---------+---------+-------+---------+ The blockexplorer shows that my order was fulfilled: I hope this help as long as the internal market has no interface. See: Use beempy to access the internal HIVE/HBD market by @holger80</summary></entry><entry><title type="html">The Hive Blockchain Has Launched Successfully! Recap and Helpful Information</title><link href="https://hivedocs.info/news/2020/03/21/the-hive-blockchain-has-launched-successfully-recap-and-helpful-information.html" rel="alternate" type="text/html" title="The Hive Blockchain Has Launched Successfully! Recap and Helpful Information" /><published>2020-03-21T10:05:33-07:00</published><updated>2020-03-21T10:05:33-07:00</updated><id>https://hivedocs.info/news/2020/03/21/the-hive-blockchain-has-launched-successfully-recap-and-helpful-information</id><content type="html" xml:base="https://hivedocs.info/news/2020/03/21/the-hive-blockchain-has-launched-successfully-recap-and-helpful-information.html">&lt;h1 id=&quot;hello-there-hive-what-a-day-weve-had&quot;&gt;Hello there, Hive. What a day we’ve had!&lt;/h1&gt;
 &lt;p&gt;&lt;strong&gt;&lt;em&gt;Welcome to the new Hive blockchain.&lt;/em&gt;&lt;/strong&gt; We’ve been up and running for more than 24 hours now, so this is a good time to take a quick look at the launch and what’s coming up for the immediate future.&lt;/p&gt;
 
 &lt;center&gt;&lt;p&gt;&lt;img src=&quot;https://files.peakd.com/file/peakd-hive/hiveio/E9GxfkAx-hivehasarrived.gif&quot; alt=&quot;#hivehasarrived ... a cool asset provided by community member @derangedvisions&quot; /&gt;&lt;/p&gt;&lt;br /&gt;&lt;/center&gt;
