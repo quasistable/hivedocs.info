@@ -5,7 +5,7 @@
 layout: home
 ---
 
-The official Hive Developer Portal can be found here:
-[developers.hive.io](https://developers.hive.io/)
-
-*Check back later for more documentation on other technical levels.*
+<div class="well">
+  The official Hive Developer Portal can be found here:
+  <a href="https://developers.hive.io/">developers.hive.io</a>
+</div>
