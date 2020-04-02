@@ -26,6 +26,7 @@ task :grab, :url do |t, args|
     end
     
     metadata = JSON[content.json_metadata] rescue {}
+    tags = metadata.fetch('tags', [])
     canonical_url = metadata.fetch('canonical_url', canonical_url)
     created_at = Time.parse(content.created + 'Z')
     
@@ -34,7 +35,7 @@ task :grab, :url do |t, args|
       layout: post
       title:  "#{content.title}"
       date: #{created_at.strftime('%Y-%m-%d %H:%M:%S')} UTC
-      categories: news
+      categories: #{tags.join(' ')}
       canonical_url: #{canonical_url}
       ---
       {% hive #{author}/#{permlink} %}
