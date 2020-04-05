@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>Hive workflow proposal | Hive Chain Documentation</title>
+<meta name="generator" content="Jekyll v4.0.0" />
+<meta property="og:title" content="Hive workflow proposal" />
+<meta name="author" content="blocktrades" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Note: this post is primarily intended for Hive developers, but it may be of interest to other readers who are interested in the details of the software development process. I’ll make another post later with ideas about how general community members can become involved in the development process and how to go about submitting bug reports. I propose we adopt a common workflow for most if not all Hive-related projects. This will make it easier for developers to collaborate on multiple projects with a minimum amount of friction. I believe the primary goals (in no particular order) of our workflow should be: create an easily findable list of hive-related tasks prevent duplication of work effort allow easy collaboration between multiple developers establish a process for determining task priority setup testing standards for tasks in each project setup review standards for tasks in each project ensure existence of easily findable development code in a functional/compilable state where developers can test their new code against potential interactions with other new code ensure existence of easily findable production code which is safe to be deployed to the public Below are some of my initial proposals for how to achieve some of the above goals. Creating issues for new Hive tasks When a new task comes up, create an issue in the appropriate project inside the Hive group. Selecting a project for a task (issue) If it is not clear what project a task belongs to, or if the task belongs to no existing project, create an issue for it in the project called Issues without projects yet. If this issue is later assigned to a specific project, create a corresponding new issue in the correct project and close the issue in Issues without projects yet. Describing an issue with labels Choose existing labels to describe the nature of the issue, such as “bug”, “enhancement”, “documentation”. Currently we only have group-level labels. Generally group-level labels are preferred, unless you need labels that really only make sense for a specific project in the group. Optional assignment of a person to a task The issue can be assigned at creation time to a specific developer, if you are self-assigning or you are assigning to someone you are confident will want to take on the task (in the latter case, you should probably also contact them directly about the new issue). Using boards to monitor project issues Using gitlab, each individual project in the Hive group has a “board” that shows the states of the project’s issues: open: an issue exists, but no decision has yet been made to work on it To Do: decision has been made to do the task and it is awaiting someone to work on it, or is blocked by some other precursor task Doing: one or more developers are currently working on issue Review: work is done, and is awaiting review by an independent developer, after review is completed, the state will be changed to either To Do, Doing, or closed closed: work has been completed and passed review When an issue is first created it will show up on the “open” list. Setting the appropriate label on the issue moves it from To Do, Doing, and Review. Closing the issues moves it to the closed list. Using Group-level board to monitor all workflow In addition to the project-level boards, there is a group-level board that aggregates the status of issues from all projects in the group: https://gitlab.syncad.com/hive/hive/-/boards Process for setting To Do, Doing, and Review status The process for setting the status of an issue will likely vary across projects. For example, if the project is a web site hosted by a specific entity, that entity may want to determine which issues should be worked on, who works on them, and how they are reviewed. Some core projects such as the blockchain code should also have more rigorous criterion for selection of which issues to work on and how those issues are reviewed, because of the potential ripple effects on other projects. The blockchain code is particular sensitive, as new features can easily have impacts on memory, disk, and CPU utilization that could increase the cost of operating a node. Similarly, changes to the commonly used libraries such as hive-js and financial-related projects such as wallet apps need close review to ensure no malicious code is injected. Reference issues when committing associated source code to a repository It’s very useful to link all code changes to an issue when possible. When you make a code commit related to an issue, you can place a tag in your code commit comment that will link the commit to the issue it is related to. If you forget to do this when you commit the code, you can also manually update the issue afterward by adding a comment with a URL link to the commit. Testing requirements Unit tests and image “tests” One or more tests should generally be included with each code change, to verify that the code works properly, and to be able to detect future regressions (future changes that break functionality). For backend code, such tests are usually not too difficult to create and should be required for the review process. For user interface (UI) changes, it’s often difficult to create such tests, but in such cases, it’s useful to attach a “before” and “after” set of images to the issue, to make it easier for the reviewer to understand the work that was done. Continuous integration (CI) should be setup for projects Another important component of proper testing is to ensure that the code that compiles for one developer still compiles for others. Due to environment differences, it’s easy to commit code that compiles and works properly on one developer’s machine, but then fails on others. To detect such problems, a project should setup a CI task in Gitlab that will automatically recompile the project and run regression tests each time new code is pushed to a code repository. This will enable rapid detection of commit problems and avoid wasting the time of other developers. Branch management in repositories The master branch serves as the branch for testing interactions between new code, and for deployment to production. Tags are used to indicate the most recent version of the code approved for use in a production environment. Only tagged versions should be deployed to production environments! The head of the master branch should represent the most recent version of development code that is believed to be compilable and functional. Note that the above flow will require some cleanup to the existing steemd (now renamed hive) repo. Public testnet for blockchain code Preferably, we should always have one or more public testnets available for testing by apps, without requiring them to test on the main blockchain network. Witnesses are encouraged to operate consensus and API nodes to support the testnet(s). A new public testnet may be deployed at any time when it’s deemed that changes have been made that potentially impact third party apps. We should tag whatever version of the master branch that is being used for a public testnet. See: Hive workflow proposal by @blocktrades" />
+<meta property="og:description" content="Note: this post is primarily intended for Hive developers, but it may be of interest to other readers who are interested in the details of the software development process. I’ll make another post later with ideas about how general community members can become involved in the development process and how to go about submitting bug reports. I propose we adopt a common workflow for most if not all Hive-related projects. This will make it easier for developers to collaborate on multiple projects with a minimum amount of friction. I believe the primary goals (in no particular order) of our workflow should be: create an easily findable list of hive-related tasks prevent duplication of work effort allow easy collaboration between multiple developers establish a process for determining task priority setup testing standards for tasks in each project setup review standards for tasks in each project ensure existence of easily findable development code in a functional/compilable state where developers can test their new code against potential interactions with other new code ensure existence of easily findable production code which is safe to be deployed to the public Below are some of my initial proposals for how to achieve some of the above goals. Creating issues for new Hive tasks When a new task comes up, create an issue in the appropriate project inside the Hive group. Selecting a project for a task (issue) If it is not clear what project a task belongs to, or if the task belongs to no existing project, create an issue for it in the project called Issues without projects yet. If this issue is later assigned to a specific project, create a corresponding new issue in the correct project and close the issue in Issues without projects yet. Describing an issue with labels Choose existing labels to describe the nature of the issue, such as “bug”, “enhancement”, “documentation”. Currently we only have group-level labels. Generally group-level labels are preferred, unless you need labels that really only make sense for a specific project in the group. Optional assignment of a person to a task The issue can be assigned at creation time to a specific developer, if you are self-assigning or you are assigning to someone you are confident will want to take on the task (in the latter case, you should probably also contact them directly about the new issue). Using boards to monitor project issues Using gitlab, each individual project in the Hive group has a “board” that shows the states of the project’s issues: open: an issue exists, but no decision has yet been made to work on it To Do: decision has been made to do the task and it is awaiting someone to work on it, or is blocked by some other precursor task Doing: one or more developers are currently working on issue Review: work is done, and is awaiting review by an independent developer, after review is completed, the state will be changed to either To Do, Doing, or closed closed: work has been completed and passed review When an issue is first created it will show up on the “open” list. Setting the appropriate label on the issue moves it from To Do, Doing, and Review. Closing the issues moves it to the closed list. Using Group-level board to monitor all workflow In addition to the project-level boards, there is a group-level board that aggregates the status of issues from all projects in the group: https://gitlab.syncad.com/hive/hive/-/boards Process for setting To Do, Doing, and Review status The process for setting the status of an issue will likely vary across projects. For example, if the project is a web site hosted by a specific entity, that entity may want to determine which issues should be worked on, who works on them, and how they are reviewed. Some core projects such as the blockchain code should also have more rigorous criterion for selection of which issues to work on and how those issues are reviewed, because of the potential ripple effects on other projects. The blockchain code is particular sensitive, as new features can easily have impacts on memory, disk, and CPU utilization that could increase the cost of operating a node. Similarly, changes to the commonly used libraries such as hive-js and financial-related projects such as wallet apps need close review to ensure no malicious code is injected. Reference issues when committing associated source code to a repository It’s very useful to link all code changes to an issue when possible. When you make a code commit related to an issue, you can place a tag in your code commit comment that will link the commit to the issue it is related to. If you forget to do this when you commit the code, you can also manually update the issue afterward by adding a comment with a URL link to the commit. Testing requirements Unit tests and image “tests” One or more tests should generally be included with each code change, to verify that the code works properly, and to be able to detect future regressions (future changes that break functionality). For backend code, such tests are usually not too difficult to create and should be required for the review process. For user interface (UI) changes, it’s often difficult to create such tests, but in such cases, it’s useful to attach a “before” and “after” set of images to the issue, to make it easier for the reviewer to understand the work that was done. Continuous integration (CI) should be setup for projects Another important component of proper testing is to ensure that the code that compiles for one developer still compiles for others. Due to environment differences, it’s easy to commit code that compiles and works properly on one developer’s machine, but then fails on others. To detect such problems, a project should setup a CI task in Gitlab that will automatically recompile the project and run regression tests each time new code is pushed to a code repository. This will enable rapid detection of commit problems and avoid wasting the time of other developers. Branch management in repositories The master branch serves as the branch for testing interactions between new code, and for deployment to production. Tags are used to indicate the most recent version of the code approved for use in a production environment. Only tagged versions should be deployed to production environments! The head of the master branch should represent the most recent version of development code that is believed to be compilable and functional. Note that the above flow will require some cleanup to the existing steemd (now renamed hive) repo. Public testnet for blockchain code Preferably, we should always have one or more public testnets available for testing by apps, without requiring them to test on the main blockchain network. Witnesses are encouraged to operate consensus and API nodes to support the testnet(s). A new public testnet may be deployed at any time when it’s deemed that changes have been made that potentially impact third party apps. We should tag whatever version of the master branch that is being used for a public testnet. See: Hive workflow proposal by @blocktrades" />
+<link rel="canonical" href="https://hive.blog/hive/@blocktrades/hive-workflow-proposal" />
+<meta property="og:url" content="https://hive.blog/hive/@blocktrades/hive-workflow-proposal" />
+<meta property="og:site_name" content="Hive Chain Documentation" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2020-04-03T14:20:39-07:00" />
+<script type="application/ld+json">
+{"dateModified":"2020-04-03T14:20:39-07:00","datePublished":"2020-04-03T14:20:39-07:00","headline":"Hive workflow proposal","mainEntityOfPage":{"@type":"WebPage","@id":"https://hive.blog/hive/@blocktrades/hive-workflow-proposal"},"url":"https://hive.blog/hive/@blocktrades/hive-workflow-proposal","author":{"@type":"Person","name":"blocktrades"},"description":"Note: this post is primarily intended for Hive developers, but it may be of interest to other readers who are interested in the details of the software development process. I’ll make another post later with ideas about how general community members can become involved in the development process and how to go about submitting bug reports. I propose we adopt a common workflow for most if not all Hive-related projects. This will make it easier for developers to collaborate on multiple projects with a minimum amount of friction. I believe the primary goals (in no particular order) of our workflow should be: create an easily findable list of hive-related tasks prevent duplication of work effort allow easy collaboration between multiple developers establish a process for determining task priority setup testing standards for tasks in each project setup review standards for tasks in each project ensure existence of easily findable development code in a functional/compilable state where developers can test their new code against potential interactions with other new code ensure existence of easily findable production code which is safe to be deployed to the public Below are some of my initial proposals for how to achieve some of the above goals. Creating issues for new Hive tasks When a new task comes up, create an issue in the appropriate project inside the Hive group. Selecting a project for a task (issue) If it is not clear what project a task belongs to, or if the task belongs to no existing project, create an issue for it in the project called Issues without projects yet. If this issue is later assigned to a specific project, create a corresponding new issue in the correct project and close the issue in Issues without projects yet. Describing an issue with labels Choose existing labels to describe the nature of the issue, such as “bug”, “enhancement”, “documentation”. Currently we only have group-level labels. Generally group-level labels are preferred, unless you need labels that really only make sense for a specific project in the group. Optional assignment of a person to a task The issue can be assigned at creation time to a specific developer, if you are self-assigning or you are assigning to someone you are confident will want to take on the task (in the latter case, you should probably also contact them directly about the new issue). Using boards to monitor project issues Using gitlab, each individual project in the Hive group has a “board” that shows the states of the project’s issues: open: an issue exists, but no decision has yet been made to work on it To Do: decision has been made to do the task and it is awaiting someone to work on it, or is blocked by some other precursor task Doing: one or more developers are currently working on issue Review: work is done, and is awaiting review by an independent developer, after review is completed, the state will be changed to either To Do, Doing, or closed closed: work has been completed and passed review When an issue is first created it will show up on the “open” list. Setting the appropriate label on the issue moves it from To Do, Doing, and Review. Closing the issues moves it to the closed list. Using Group-level board to monitor all workflow In addition to the project-level boards, there is a group-level board that aggregates the status of issues from all projects in the group: https://gitlab.syncad.com/hive/hive/-/boards Process for setting To Do, Doing, and Review status The process for setting the status of an issue will likely vary across projects. For example, if the project is a web site hosted by a specific entity, that entity may want to determine which issues should be worked on, who works on them, and how they are reviewed. Some core projects such as the blockchain code should also have more rigorous criterion for selection of which issues to work on and how those issues are reviewed, because of the potential ripple effects on other projects. The blockchain code is particular sensitive, as new features can easily have impacts on memory, disk, and CPU utilization that could increase the cost of operating a node. Similarly, changes to the commonly used libraries such as hive-js and financial-related projects such as wallet apps need close review to ensure no malicious code is injected. Reference issues when committing associated source code to a repository It’s very useful to link all code changes to an issue when possible. When you make a code commit related to an issue, you can place a tag in your code commit comment that will link the commit to the issue it is related to. If you forget to do this when you commit the code, you can also manually update the issue afterward by adding a comment with a URL link to the commit. Testing requirements Unit tests and image “tests” One or more tests should generally be included with each code change, to verify that the code works properly, and to be able to detect future regressions (future changes that break functionality). For backend code, such tests are usually not too difficult to create and should be required for the review process. For user interface (UI) changes, it’s often difficult to create such tests, but in such cases, it’s useful to attach a “before” and “after” set of images to the issue, to make it easier for the reviewer to understand the work that was done. Continuous integration (CI) should be setup for projects Another important component of proper testing is to ensure that the code that compiles for one developer still compiles for others. Due to environment differences, it’s easy to commit code that compiles and works properly on one developer’s machine, but then fails on others. To detect such problems, a project should setup a CI task in Gitlab that will automatically recompile the project and run regression tests each time new code is pushed to a code repository. This will enable rapid detection of commit problems and avoid wasting the time of other developers. Branch management in repositories The master branch serves as the branch for testing interactions between new code, and for deployment to production. Tags are used to indicate the most recent version of the code approved for use in a production environment. Only tagged versions should be deployed to production environments! The head of the master branch should represent the most recent version of development code that is believed to be compilable and functional. Note that the above flow will require some cleanup to the existing steemd (now renamed hive) repo. Public testnet for blockchain code Preferably, we should always have one or more public testnets available for testing by apps, without requiring them to test on the main blockchain network. Witnesses are encouraged to operate consensus and API nodes to support the testnet(s). A new public testnet may be deployed at any time when it’s deemed that changes have been made that potentially impact third party apps. We should tag whatever version of the master branch that is being used for a public testnet. See: Hive workflow proposal by @blocktrades","@type":"BlogPosting","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://hivedocs.info/feed.xml" title="Hive Chain Documentation" /><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/turbolinks/5.2.0/turbolinks.js" integrity="sha256-iM4Yzi/zLj/IshPWMC1IluRxTtRjMqjPGd97TZ9yYpU=" crossorigin="anonymous"></script>
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Cousine|Inconsolata" rel="stylesheet">
+  <link rel="shortcut icon" type="image/png" href="/assets/images/favicon.png">
+</head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Hive Chain Documentation</a>
+
+      <nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/news/">News</a><a class="page-link" href="/howto/">How To</a><a class="page-link" href="/links/">Useful Links</a><form style="float: right;" class="form-inline" method="get" action="http://www.google.com/search">
+            <input type="hidden" name="sitesearch" value="hivedocs.info" />
+            <input type="text" name="q" maxlength="255" placeholder="Search" />
+          </form>
+        </div>
+      </nav>
+  </div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Hive workflow proposal</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2020-04-03T14:20:39-07:00" itemprop="datePublished">Apr 3, 2020
+      </time>• <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">
+          <a href="https://hive.blog/@blocktrades">blocktrades</a>
+        </span></span></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <p><em>Note: this post is primarily intended for Hive developers, but it may be of interest to other readers who are interested in the details of the software development process. I’ll make another post later with ideas about how general community members can become involved in the development process and how to go about submitting bug reports.</em></p>
+
+<p>I propose we adopt a common workflow for most if not all Hive-related projects. This will make it easier for developers to collaborate on multiple projects with a minimum amount of friction.</p>
+
+<p>I believe the primary goals (in no particular order) of our workflow should be:</p>
+
+<ul>
+  <li>create an easily findable list of hive-related tasks</li>
+  <li>prevent duplication of work effort</li>
+  <li>allow easy collaboration between multiple developers</li>
+  <li>establish a process for determining task priority</li>
+  <li>setup testing standards for tasks in each project</li>
+  <li>setup review standards for tasks in each project</li>
+  <li>ensure existence of easily findable development code in a functional/compilable state where developers can test their new code against potential interactions with other new code</li>
+  <li>ensure existence of easily findable production code which is safe to be deployed to the public</li>
+</ul>
+
+<p>Below are some of my initial proposals for how to achieve some of the above goals.</p>
+
+<h1 id="creating-issues-for-new-hive-tasks">Creating issues for new Hive tasks</h1>
+
+<p>When a new task comes up, create an issue in the appropriate project inside the Hive group.</p>
+
+<h3 id="selecting-a-project-for-a-task-issue">Selecting a project for a task (issue)</h3>
+<p>If it is not clear what project a task belongs to, or if the task belongs to no existing project, create an issue for it in the project called <em>Issues without projects yet</em>. If this issue is later assigned to a specific project, create a corresponding new issue in the correct project and close the issue in <em>Issues without projects yet</em>.</p>
+
+<h3 id="describing-an-issue-with-labels">Describing an issue with labels</h3>
+
+<p>Choose existing labels to describe the nature of the issue, such as “bug”, “enhancement”, “documentation”.  Currently we only have group-level labels. Generally group-level labels are preferred, unless you need labels that really only make sense for a specific project in the group.</p>
+
+<h3 id="optional-assignment-of-a-person-to-a-task">Optional assignment of a person to a task</h3>
+
+<p>The issue can be assigned at creation time to a specific developer, if you are self-assigning or you are assigning to someone you are confident will want to take on the task (in the latter case, you should probably also contact them directly about the new issue).</p>
+
+<h1 id="using-boards-to-monitor-project-issues">Using boards to monitor project issues</h1>
+
+<p>Using gitlab, each individual project in the Hive group has a “board” that shows the states of the project’s issues:</p>
+<ul>
+  <li><strong>open:</strong> an issue exists, but no decision has yet been made to work on it</li>
+  <li><strong>To Do:</strong> decision has been made to do the task and it is awaiting someone to work on it, or is blocked by some other precursor task</li>
+  <li><strong>Doing:</strong> one or more developers are currently working on issue</li>
+  <li><strong>Review:</strong> work is done, and is awaiting review by an independent developer, after review is completed, the state will be changed to either To Do,  Doing, or closed</li>
+  <li><strong>closed:</strong> work has been completed and passed review</li>
+</ul>
+
+<p>When an issue is first created it will show up on the “open” list. Setting the appropriate label on the issue moves it from To Do, Doing, and Review. Closing the issues moves it to the closed list.</p>
+
+<h1 id="using-group-level-board-to-monitor-all-workflow">Using Group-level board to monitor all workflow</h1>
+
+<p>In addition to the project-level boards, there is a group-level board that aggregates the status of issues from all projects in the group: https://gitlab.syncad.com/hive/hive/-/boards</p>
+
+<h1 id="process-for-setting-to-do-doing-and-review-status">Process for setting To Do, Doing, and Review status</h1>
+
+<p>The process for setting the status of an issue will likely vary across projects. For example, if the project is a web site hosted by a specific entity, that entity may want to determine which issues should be worked on, who works on them, and how they are reviewed.</p>
+
+<p>Some core projects such as the blockchain code should also have more rigorous criterion for selection of which issues to work on and how those issues are reviewed, because of the potential ripple effects on other projects.</p>
+
+<p>The blockchain code is particular sensitive, as new features can easily have impacts on memory, disk, and CPU utilization that could increase the cost of operating a node.</p>
+
+<p>Similarly, changes to the commonly used libraries such as hive-js and financial-related projects such as wallet apps need close review to ensure no malicious code is injected.</p>
+
+<h1 id="reference-issues-when-committing-associated-source-code-to-a-repository">Reference issues when committing associated source code to a repository</h1>
+
+<p>It’s very useful to link all code changes to an issue when possible. When you make a code commit related to an issue, you can place a tag in your code commit comment that will link the commit to the issue it is related to. If you forget to do this when you commit the code, you can also manually update the issue afterward by adding a comment with a URL link to the commit.</p>
+
+<h1 id="testing-requirements">Testing requirements</h1>
+
+<h3 id="unit-tests-and-image-tests">Unit tests and image “tests”</h3>
+
+<p>One or more tests should generally be included with each code change, to verify that the code works properly, and to be able to detect future regressions (future changes that break functionality).  For backend code, such tests are usually not too difficult to create and should be required for the review process.</p>
+
+<p>For user interface (UI) changes, it’s often difficult to create such tests, but in such cases, it’s useful to attach a “before” and “after” set of images to the issue, to make it easier for the reviewer to understand the work that was done.</p>
+
+<h3 id="continuous-integration-ci-should-be-setup-for-projects">Continuous integration (CI) should be setup for projects</h3>
+
+<p>Another important component of proper testing is to ensure that the code that compiles for one developer still compiles for others. Due to environment differences, it’s easy to commit code that compiles and works properly on one developer’s machine, but then fails on others.</p>
+
+<p>To detect such problems, a project should setup a CI task in Gitlab that will automatically recompile the project and run regression tests each time new code is pushed to a code repository. This will enable rapid detection of commit problems and avoid wasting the time of other developers.</p>
+
+<h1 id="branch-management-in-repositories">Branch management in repositories</h1>
+<p>The master branch serves as the branch for testing interactions between new code, and for deployment to production.</p>
+
+<p>Tags are used to indicate the most recent version of the code approved for use in a production environment. Only tagged versions should be deployed to production environments!</p>
+
+<p>The head of the master branch should represent the most recent version of development code that is believed to be compilable and functional.</p>
+
+<p>Note that the above flow will require some cleanup to the existing <em>steemd</em> (now renamed <em>hive</em>) repo.</p>
+
+<h2 id="public-testnet-for-blockchain-code">Public testnet for blockchain code</h2>
+
+<p>Preferably, we should always have one or more public testnets available for testing by apps, without requiring them to test on the main blockchain network. Witnesses are encouraged to operate consensus and API nodes to support the testnet(s).</p>
+
+<p>A new public testnet may be deployed at any time when it’s deemed that changes have been made that potentially impact third party apps.</p>
+
+<p>We should tag whatever version of the master branch that is being used for a public testnet.</p>
+<hr />
+
+<p>
+  See: <a href="https://hive.blog/@blocktrades/hive-workflow-proposal">Hive workflow proposal</a>
+  by
+  <a href="https://hive.blog/@blocktrades">@blocktrades</a>
+</p>
+
+
+  </div><a class="u-url" href="/howto/contribute/development/2020/04/03/hive-workflow-proposal.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading"><a rel="author" href="/">Hive Chain Documentation</a></h2>
+    
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">site curated by: @inertia</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>Your resource for various levels of Hive Documentation.</p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+</body>
+
+</html>

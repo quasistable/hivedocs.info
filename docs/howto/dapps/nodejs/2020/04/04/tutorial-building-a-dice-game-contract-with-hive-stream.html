@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>Tutorial: Building A Dice Game Contract With Hive Stream | Hive Chain Documentation</title>
+<meta name="generator" content="Jekyll v4.0.0" />
+<meta property="og:title" content="Tutorial: Building A Dice Game Contract With Hive Stream" />
+<meta name="author" content="beggars" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Hot off the heels of announcing some huge updates to Hive Stream which features the ability to write “smart” contracts, I promised a tutorial would be coming showing you how to write one and what could be more fitting than writing a contract for a dice game? Basing this off of the dice contract that Hive Engine ships with as an example, I’ve created a contract that accepts a roll value which needs to be above the server roll. By the end of this tutorial, you’ll have an understanding of how contracts are written (they’re just classes) and how you can create your own smart dApps using them. If you’re the kind of person who just wants to see the code, I have you covered. The code for the dice smart contract can be found here. It is written in TypeScript but resembles Javascript basically if you’re not familiar. This contract is based off of the dice contract in Hive Engine, except they’re both fundamentally different in how they’re pieced together. Install the Hive Stream package In your application, install the hive-stream package by running npm install hive-stream it’s a published package on Npm. We also want to install seedrandom and bignumber.js as well since those are used in our contract code. npm install seedrandom bignumber.js Writing the contract Save the following as dice.contract.js in your application. import { Streamer, Utils } from &#39;hive-stream&#39;; import seedrandom from &#39;seedrandom&#39;; import BigNumber from &#39;bignumber.js&#39;; const CONTRACT_NAME = &#39;hivedice&#39;; const ACCOUNT = &#39;&#39;; // Replace with the account const TOKEN_SYMBOL = &#39;HIVE&#39;; const HOUSE_EDGE = 0.05; const MIN_BET = 1; const MAX_BET = 10; // Random Number Generator const rng = (previousBlockId, blockId, transactionId) =&gt; { const random = seedrandom(`${previousBlockId}${blockId}${transactionId}`).double(); const randomRoll = Math.floor(random * 100) + 1; return randomRoll; }; // Valid betting currencies const VALID_CURRENCIES = [&#39;HIVE&#39;]; class DiceContract { client; config; blockNumber; blockId; previousBlockId; transactionId; create() { // Runs every time register is called on this contract // Do setup logic and code in here (creating a database, etc) } destroy() { // Runs every time unregister is run for this contract // Close database connections, write to a database with state, etc } // Updates the contract with information about the current block // This is a method automatically called if it exists updateBlockInfo(blockNumber, blockId, previousBlockId, transactionId) { // Lifecycle method which sets block info this.blockNumber = blockNumber; this.blockId = blockId; this.previousBlockId = previousBlockId; this.transactionId = transactionId; } /** * Get Balance * * Helper method for getting the contract account balance. In the case of our dice contract * we want to make sure the account has enough money to pay out any bets * * @returns number */ async getBalance() { const account = await this._client.database.getAccounts([ACCOUNT]); if (account?.[0]) { const balance = (account[0].balance as string).split(&#39; &#39;); const amount = balance[0]; return parseFloat(amount); } } /** * Roll * * Automatically called when a custom JSON action matches the following method * * @param payload * @param param1 - sender and amount */ async roll(payload, { sender, amount }) { // Destructure the values from the payload const { roll } = payload; // The amount is formatted like 100 HIVE // The value is the first part, the currency symbol is the second const amountTrim = amount.split(&#39; &#39;); // Parse the numeric value as a real value const amountParsed = parseFloat(amountTrim[0]); // Format the amount to 3 decimal places const amountFormatted = parseFloat(amountTrim[0]).toFixed(3); // Trim any space from the currency symbol const amountCurrency = amountTrim[1].trim(); console.log(`Roll: ${roll} Amount parsed: ${amountParsed} Amount formatted: ${amountFormatted} Currency: ${amountCurrency}`); // Get the transaction from the blockchain const transaction = await Utils.getTransaction(this._client, this.blockNumber, this.transactionId); // Call the verifyTransfer method to confirm the transfer happened const verify = await Utils.verifyTransfer(transaction, sender, &#39;beggars&#39;, amount); // Get the balance of our contract account const balance = await this.getBalance(); // Transfer is valid if (verify) { // Server balance is less than the max bet, cancel and refund if (balance &lt; MAX_BET) { // Send back what was sent, the server is broke await Utils.transferHiveTokens(this._client, this._config, ACCOUNT, sender, amountTrim[0], amountTrim[1], `[Refund] The server could not fufill your bet.`); return; } // Bet amount is valid if (amountParsed &gt;= MIN_BET &amp;&amp; amountParsed &lt;= MAX_BET) { // Validate roll is valid if ((roll &gt;= 2 &amp;&amp; roll &lt;= 96) &amp;&amp; (direction === &#39;lesserThan&#39; || direction === &#39;greaterThan&#39;) &amp;&amp; VALID_CURRENCIES.includes(amountCurrency)) { // Roll a random value const random = rng(this.previousBlockId, this.blockId, this.transactionId); // Calculate the multiplier percentage const multiplier = new BigNumber(1).minus(HOUSE_EDGE).multipliedBy(100).dividedBy(roll); // Calculate the number of tokens won const tokensWon = new BigNumber(amountParsed).multipliedBy(multiplier).toFixed(3, BigNumber.ROUND_DOWN); // Memo that shows in users memo when they win const winningMemo = `You won ${tokensWon} ${TOKEN_SYMBOL}. Roll: ${random}, Your guess: ${roll}`; // Memo that shows in users memo when they lose const losingMemo = `You lost ${amountParsed} ${TOKEN_SYMBOL}. Roll: ${random}, Your guess: ${roll}`; // User won more than the server can afford, refund the bet amount if (parseFloat(tokensWon) &gt; balance) { await Utils.transferHiveTokens(this._client, this._config, ACCOUNT, sender, amountTrim[0], amountTrim[1], `[Refund] The server could not fufill your bet.`); return; } // If random value is less than roll if (random &lt; roll) { await Utils.transferHiveTokens(this._client, this._config, ACCOUNT, sender, tokensWon, TOKEN_SYMBOL, winningMemo); } else { await Utils.transferHiveTokens(this._client, this._config, ACCOUNT, sender, &#39;0.001&#39;, TOKEN_SYMBOL, losingMemo); } } else { // Invalid bet parameters, refund the user their bet await Utils.transferHiveTokens(this._client, this._config, ACCOUNT, sender, amountTrim[0], amountTrim[1], `[Refund] Invalid bet params.`); } } else { try { // We need to refund the user const transfer = await Utils.transferHiveTokens(this._client, this._config, ACCOUNT, sender, amountTrim[0], amountTrim[1], `[Refund] You sent an invalid bet amount.`); console.log(transfer); } catch (e) { console.log(e); } } } } } export default new DiceContract(); Adding it to your application Create a file called app.js and add in the following. import { Streamer } from &#39;hive-stream&#39;; import DiceContract from &#39;./dice.contract&#39;; const streamer = new Streamer({ ACTIVE_KEY: &#39;&#39;, // Needed for transfers JSON_ID: &#39;testdice&#39; // Identifier in the custom JSON payloads }); // Register the contract streamer.registerContract(&#39;hivedice&#39;, DiceContract); // Starts the streamer watching the blockchain streamer.start(); Test it out In the contract code, put in your Hive username as the account and then transfer some Hive tokens to your own account (to you from you). Make sure you also supply your active key in the streamer constructor call in the above code (between the single quotes). In the memo field, enter stringified JSON like this: {&quot;hiveContract&quot;:{&quot;id&quot;:&quot;testdice&quot;, &quot;name&quot;:&quot;hivedice&quot;,&quot;action&quot;:&quot;roll&quot;,&quot;payload&quot;:{&quot;roll&quot;:10 }}} The ID in the memo must match what is provided to the config property JSON_ID this is what it uses to match transactions. In this case, it is testdice as the ID. The value name must match the value of the registerContract method’s first argument value which is hivedice in our example. The action property matches the function name in the contract and finally the payload object is the data provided to the function call. I took the liberty of testing it out using my own account, to show you how the transfer for testing process works. As you can see from my two transactions showing the winning and losing, it works (which can be verified by checking my transactions on my wallet or blockchain explorer): Conclusion This is just a rudimentary example of a basic dice contract. Some improvements might include support for direction as well as different odds, supporting different tokens and more. But, hopefully you can see what you can build with Hive Stream now. See: Tutorial: Building A Dice Game Contract With Hive Stream by @beggars" />
+<meta property="og:description" content="Hot off the heels of announcing some huge updates to Hive Stream which features the ability to write “smart” contracts, I promised a tutorial would be coming showing you how to write one and what could be more fitting than writing a contract for a dice game? Basing this off of the dice contract that Hive Engine ships with as an example, I’ve created a contract that accepts a roll value which needs to be above the server roll. By the end of this tutorial, you’ll have an understanding of how contracts are written (they’re just classes) and how you can create your own smart dApps using them. If you’re the kind of person who just wants to see the code, I have you covered. The code for the dice smart contract can be found here. It is written in TypeScript but resembles Javascript basically if you’re not familiar. This contract is based off of the dice contract in Hive Engine, except they’re both fundamentally different in how they’re pieced together. Install the Hive Stream package In your application, install the hive-stream package by running npm install hive-stream it’s a published package on Npm. We also want to install seedrandom and bignumber.js as well since those are used in our contract code. npm install seedrandom bignumber.js Writing the contract Save the following as dice.contract.js in your application. import { Streamer, Utils } from &#39;hive-stream&#39;; import seedrandom from &#39;seedrandom&#39;; import BigNumber from &#39;bignumber.js&#39;; const CONTRACT_NAME = &#39;hivedice&#39;; const ACCOUNT = &#39;&#39;; // Replace with the account const TOKEN_SYMBOL = &#39;HIVE&#39;; const HOUSE_EDGE = 0.05; const MIN_BET = 1; const MAX_BET = 10; // Random Number Generator const rng = (previousBlockId, blockId, transactionId) =&gt; { const random = seedrandom(`${previousBlockId}${blockId}${transactionId}`).double(); const randomRoll = Math.floor(random * 100) + 1; return randomRoll; }; // Valid betting currencies const VALID_CURRENCIES = [&#39;HIVE&#39;]; class DiceContract { client; config; blockNumber; blockId; previousBlockId; transactionId; create() { // Runs every time register is called on this contract // Do setup logic and code in here (creating a database, etc) } destroy() { // Runs every time unregister is run for this contract // Close database connections, write to a database with state, etc } // Updates the contract with information about the current block // This is a method automatically called if it exists updateBlockInfo(blockNumber, blockId, previousBlockId, transactionId) { // Lifecycle method which sets block info this.blockNumber = blockNumber; this.blockId = blockId; this.previousBlockId = previousBlockId; this.transactionId = transactionId; } /** * Get Balance * * Helper method for getting the contract account balance. In the case of our dice contract * we want to make sure the account has enough money to pay out any bets * * @returns number */ async getBalance() { const account = await this._client.database.getAccounts([ACCOUNT]); if (account?.[0]) { const balance = (account[0].balance as string).split(&#39; &#39;); const amount = balance[0]; return parseFloat(amount); } } /** * Roll * * Automatically called when a custom JSON action matches the following method * * @param payload * @param param1 - sender and amount */ async roll(payload, { sender, amount }) { // Destructure the values from the payload const { roll } = payload; // The amount is formatted like 100 HIVE // The value is the first part, the currency symbol is the second const amountTrim = amount.split(&#39; &#39;); // Parse the numeric value as a real value const amountParsed = parseFloat(amountTrim[0]); // Format the amount to 3 decimal places const amountFormatted = parseFloat(amountTrim[0]).toFixed(3); // Trim any space from the currency symbol const amountCurrency = amountTrim[1].trim(); console.log(`Roll: ${roll} Amount parsed: ${amountParsed} Amount formatted: ${amountFormatted} Currency: ${amountCurrency}`); // Get the transaction from the blockchain const transaction = await Utils.getTransaction(this._client, this.blockNumber, this.transactionId); // Call the verifyTransfer method to confirm the transfer happened const verify = await Utils.verifyTransfer(transaction, sender, &#39;beggars&#39;, amount); // Get the balance of our contract account const balance = await this.getBalance(); // Transfer is valid if (verify) { // Server balance is less than the max bet, cancel and refund if (balance &lt; MAX_BET) { // Send back what was sent, the server is broke await Utils.transferHiveTokens(this._client, this._config, ACCOUNT, sender, amountTrim[0], amountTrim[1], `[Refund] The server could not fufill your bet.`); return; } // Bet amount is valid if (amountParsed &gt;= MIN_BET &amp;&amp; amountParsed &lt;= MAX_BET) { // Validate roll is valid if ((roll &gt;= 2 &amp;&amp; roll &lt;= 96) &amp;&amp; (direction === &#39;lesserThan&#39; || direction === &#39;greaterThan&#39;) &amp;&amp; VALID_CURRENCIES.includes(amountCurrency)) { // Roll a random value const random = rng(this.previousBlockId, this.blockId, this.transactionId); // Calculate the multiplier percentage const multiplier = new BigNumber(1).minus(HOUSE_EDGE).multipliedBy(100).dividedBy(roll); // Calculate the number of tokens won const tokensWon = new BigNumber(amountParsed).multipliedBy(multiplier).toFixed(3, BigNumber.ROUND_DOWN); // Memo that shows in users memo when they win const winningMemo = `You won ${tokensWon} ${TOKEN_SYMBOL}. Roll: ${random}, Your guess: ${roll}`; // Memo that shows in users memo when they lose const losingMemo = `You lost ${amountParsed} ${TOKEN_SYMBOL}. Roll: ${random}, Your guess: ${roll}`; // User won more than the server can afford, refund the bet amount if (parseFloat(tokensWon) &gt; balance) { await Utils.transferHiveTokens(this._client, this._config, ACCOUNT, sender, amountTrim[0], amountTrim[1], `[Refund] The server could not fufill your bet.`); return; } // If random value is less than roll if (random &lt; roll) { await Utils.transferHiveTokens(this._client, this._config, ACCOUNT, sender, tokensWon, TOKEN_SYMBOL, winningMemo); } else { await Utils.transferHiveTokens(this._client, this._config, ACCOUNT, sender, &#39;0.001&#39;, TOKEN_SYMBOL, losingMemo); } } else { // Invalid bet parameters, refund the user their bet await Utils.transferHiveTokens(this._client, this._config, ACCOUNT, sender, amountTrim[0], amountTrim[1], `[Refund] Invalid bet params.`); } } else { try { // We need to refund the user const transfer = await Utils.transferHiveTokens(this._client, this._config, ACCOUNT, sender, amountTrim[0], amountTrim[1], `[Refund] You sent an invalid bet amount.`); console.log(transfer); } catch (e) { console.log(e); } } } } } export default new DiceContract(); Adding it to your application Create a file called app.js and add in the following. import { Streamer } from &#39;hive-stream&#39;; import DiceContract from &#39;./dice.contract&#39;; const streamer = new Streamer({ ACTIVE_KEY: &#39;&#39;, // Needed for transfers JSON_ID: &#39;testdice&#39; // Identifier in the custom JSON payloads }); // Register the contract streamer.registerContract(&#39;hivedice&#39;, DiceContract); // Starts the streamer watching the blockchain streamer.start(); Test it out In the contract code, put in your Hive username as the account and then transfer some Hive tokens to your own account (to you from you). Make sure you also supply your active key in the streamer constructor call in the above code (between the single quotes). In the memo field, enter stringified JSON like this: {&quot;hiveContract&quot;:{&quot;id&quot;:&quot;testdice&quot;, &quot;name&quot;:&quot;hivedice&quot;,&quot;action&quot;:&quot;roll&quot;,&quot;payload&quot;:{&quot;roll&quot;:10 }}} The ID in the memo must match what is provided to the config property JSON_ID this is what it uses to match transactions. In this case, it is testdice as the ID. The value name must match the value of the registerContract method’s first argument value which is hivedice in our example. The action property matches the function name in the contract and finally the payload object is the data provided to the function call. I took the liberty of testing it out using my own account, to show you how the transfer for testing process works. As you can see from my two transactions showing the winning and losing, it works (which can be verified by checking my transactions on my wallet or blockchain explorer): Conclusion This is just a rudimentary example of a basic dice contract. Some improvements might include support for direction as well as different odds, supporting different tokens and more. But, hopefully you can see what you can build with Hive Stream now. See: Tutorial: Building A Dice Game Contract With Hive Stream by @beggars" />
+<link rel="canonical" href="https://hive.blog/hive-139531/@beggars/tutorial-building-a-dice-game-contract-with-hive-stream" />
+<meta property="og:url" content="https://hive.blog/hive-139531/@beggars/tutorial-building-a-dice-game-contract-with-hive-stream" />
+<meta property="og:site_name" content="Hive Chain Documentation" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2020-04-04T03:59:09-07:00" />
+<script type="application/ld+json">
+{"dateModified":"2020-04-04T03:59:09-07:00","datePublished":"2020-04-04T03:59:09-07:00","headline":"Tutorial: Building A Dice Game Contract With Hive Stream","mainEntityOfPage":{"@type":"WebPage","@id":"https://hive.blog/hive-139531/@beggars/tutorial-building-a-dice-game-contract-with-hive-stream"},"url":"https://hive.blog/hive-139531/@beggars/tutorial-building-a-dice-game-contract-with-hive-stream","author":{"@type":"Person","name":"beggars"},"description":"Hot off the heels of announcing some huge updates to Hive Stream which features the ability to write “smart” contracts, I promised a tutorial would be coming showing you how to write one and what could be more fitting than writing a contract for a dice game? Basing this off of the dice contract that Hive Engine ships with as an example, I’ve created a contract that accepts a roll value which needs to be above the server roll. By the end of this tutorial, you’ll have an understanding of how contracts are written (they’re just classes) and how you can create your own smart dApps using them. If you’re the kind of person who just wants to see the code, I have you covered. The code for the dice smart contract can be found here. It is written in TypeScript but resembles Javascript basically if you’re not familiar. This contract is based off of the dice contract in Hive Engine, except they’re both fundamentally different in how they’re pieced together. Install the Hive Stream package In your application, install the hive-stream package by running npm install hive-stream it’s a published package on Npm. We also want to install seedrandom and bignumber.js as well since those are used in our contract code. npm install seedrandom bignumber.js Writing the contract Save the following as dice.contract.js in your application. import { Streamer, Utils } from &#39;hive-stream&#39;; import seedrandom from &#39;seedrandom&#39;; import BigNumber from &#39;bignumber.js&#39;; const CONTRACT_NAME = &#39;hivedice&#39;; const ACCOUNT = &#39;&#39;; // Replace with the account const TOKEN_SYMBOL = &#39;HIVE&#39;; const HOUSE_EDGE = 0.05; const MIN_BET = 1; const MAX_BET = 10; // Random Number Generator const rng = (previousBlockId, blockId, transactionId) =&gt; { const random = seedrandom(`${previousBlockId}${blockId}${transactionId}`).double(); const randomRoll = Math.floor(random * 100) + 1; return randomRoll; }; // Valid betting currencies const VALID_CURRENCIES = [&#39;HIVE&#39;]; class DiceContract { client; config; blockNumber; blockId; previousBlockId; transactionId; create() { // Runs every time register is called on this contract // Do setup logic and code in here (creating a database, etc) } destroy() { // Runs every time unregister is run for this contract // Close database connections, write to a database with state, etc } // Updates the contract with information about the current block // This is a method automatically called if it exists updateBlockInfo(blockNumber, blockId, previousBlockId, transactionId) { // Lifecycle method which sets block info this.blockNumber = blockNumber; this.blockId = blockId; this.previousBlockId = previousBlockId; this.transactionId = transactionId; } /** * Get Balance * * Helper method for getting the contract account balance. In the case of our dice contract * we want to make sure the account has enough money to pay out any bets * * @returns number */ async getBalance() { const account = await this._client.database.getAccounts([ACCOUNT]); if (account?.[0]) { const balance = (account[0].balance as string).split(&#39; &#39;); const amount = balance[0]; return parseFloat(amount); } } /** * Roll * * Automatically called when a custom JSON action matches the following method * * @param payload * @param param1 - sender and amount */ async roll(payload, { sender, amount }) { // Destructure the values from the payload const { roll } = payload; // The amount is formatted like 100 HIVE // The value is the first part, the currency symbol is the second const amountTrim = amount.split(&#39; &#39;); // Parse the numeric value as a real value const amountParsed = parseFloat(amountTrim[0]); // Format the amount to 3 decimal places const amountFormatted = parseFloat(amountTrim[0]).toFixed(3); // Trim any space from the currency symbol const amountCurrency = amountTrim[1].trim(); console.log(`Roll: ${roll} Amount parsed: ${amountParsed} Amount formatted: ${amountFormatted} Currency: ${amountCurrency}`); // Get the transaction from the blockchain const transaction = await Utils.getTransaction(this._client, this.blockNumber, this.transactionId); // Call the verifyTransfer method to confirm the transfer happened const verify = await Utils.verifyTransfer(transaction, sender, &#39;beggars&#39;, amount); // Get the balance of our contract account const balance = await this.getBalance(); // Transfer is valid if (verify) { // Server balance is less than the max bet, cancel and refund if (balance &lt; MAX_BET) { // Send back what was sent, the server is broke await Utils.transferHiveTokens(this._client, this._config, ACCOUNT, sender, amountTrim[0], amountTrim[1], `[Refund] The server could not fufill your bet.`); return; } // Bet amount is valid if (amountParsed &gt;= MIN_BET &amp;&amp; amountParsed &lt;= MAX_BET) { // Validate roll is valid if ((roll &gt;= 2 &amp;&amp; roll &lt;= 96) &amp;&amp; (direction === &#39;lesserThan&#39; || direction === &#39;greaterThan&#39;) &amp;&amp; VALID_CURRENCIES.includes(amountCurrency)) { // Roll a random value const random = rng(this.previousBlockId, this.blockId, this.transactionId); // Calculate the multiplier percentage const multiplier = new BigNumber(1).minus(HOUSE_EDGE).multipliedBy(100).dividedBy(roll); // Calculate the number of tokens won const tokensWon = new BigNumber(amountParsed).multipliedBy(multiplier).toFixed(3, BigNumber.ROUND_DOWN); // Memo that shows in users memo when they win const winningMemo = `You won ${tokensWon} ${TOKEN_SYMBOL}. Roll: ${random}, Your guess: ${roll}`; // Memo that shows in users memo when they lose const losingMemo = `You lost ${amountParsed} ${TOKEN_SYMBOL}. Roll: ${random}, Your guess: ${roll}`; // User won more than the server can afford, refund the bet amount if (parseFloat(tokensWon) &gt; balance) { await Utils.transferHiveTokens(this._client, this._config, ACCOUNT, sender, amountTrim[0], amountTrim[1], `[Refund] The server could not fufill your bet.`); return; } // If random value is less than roll if (random &lt; roll) { await Utils.transferHiveTokens(this._client, this._config, ACCOUNT, sender, tokensWon, TOKEN_SYMBOL, winningMemo); } else { await Utils.transferHiveTokens(this._client, this._config, ACCOUNT, sender, &#39;0.001&#39;, TOKEN_SYMBOL, losingMemo); } } else { // Invalid bet parameters, refund the user their bet await Utils.transferHiveTokens(this._client, this._config, ACCOUNT, sender, amountTrim[0], amountTrim[1], `[Refund] Invalid bet params.`); } } else { try { // We need to refund the user const transfer = await Utils.transferHiveTokens(this._client, this._config, ACCOUNT, sender, amountTrim[0], amountTrim[1], `[Refund] You sent an invalid bet amount.`); console.log(transfer); } catch (e) { console.log(e); } } } } } export default new DiceContract(); Adding it to your application Create a file called app.js and add in the following. import { Streamer } from &#39;hive-stream&#39;; import DiceContract from &#39;./dice.contract&#39;; const streamer = new Streamer({ ACTIVE_KEY: &#39;&#39;, // Needed for transfers JSON_ID: &#39;testdice&#39; // Identifier in the custom JSON payloads }); // Register the contract streamer.registerContract(&#39;hivedice&#39;, DiceContract); // Starts the streamer watching the blockchain streamer.start(); Test it out In the contract code, put in your Hive username as the account and then transfer some Hive tokens to your own account (to you from you). Make sure you also supply your active key in the streamer constructor call in the above code (between the single quotes). In the memo field, enter stringified JSON like this: {&quot;hiveContract&quot;:{&quot;id&quot;:&quot;testdice&quot;, &quot;name&quot;:&quot;hivedice&quot;,&quot;action&quot;:&quot;roll&quot;,&quot;payload&quot;:{&quot;roll&quot;:10 }}} The ID in the memo must match what is provided to the config property JSON_ID this is what it uses to match transactions. In this case, it is testdice as the ID. The value name must match the value of the registerContract method’s first argument value which is hivedice in our example. The action property matches the function name in the contract and finally the payload object is the data provided to the function call. I took the liberty of testing it out using my own account, to show you how the transfer for testing process works. As you can see from my two transactions showing the winning and losing, it works (which can be verified by checking my transactions on my wallet or blockchain explorer): Conclusion This is just a rudimentary example of a basic dice contract. Some improvements might include support for direction as well as different odds, supporting different tokens and more. But, hopefully you can see what you can build with Hive Stream now. See: Tutorial: Building A Dice Game Contract With Hive Stream by @beggars","@type":"BlogPosting","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://hivedocs.info/feed.xml" title="Hive Chain Documentation" /><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/turbolinks/5.2.0/turbolinks.js" integrity="sha256-iM4Yzi/zLj/IshPWMC1IluRxTtRjMqjPGd97TZ9yYpU=" crossorigin="anonymous"></script>
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Cousine|Inconsolata" rel="stylesheet">
+  <link rel="shortcut icon" type="image/png" href="/assets/images/favicon.png">
+</head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Hive Chain Documentation</a>
+
+      <nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/news/">News</a><a class="page-link" href="/howto/">How To</a><a class="page-link" href="/links/">Useful Links</a><form style="float: right;" class="form-inline" method="get" action="http://www.google.com/search">
+            <input type="hidden" name="sitesearch" value="hivedocs.info" />
+            <input type="text" name="q" maxlength="255" placeholder="Search" />
+          </form>
+        </div>
+      </nav>
+  </div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Tutorial: Building A Dice Game Contract With Hive Stream</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2020-04-04T03:59:09-07:00" itemprop="datePublished">Apr 4, 2020
+      </time>• <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">
+          <a href="https://hive.blog/@beggars">beggars</a>
+        </span></span></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <p>Hot off the heels of announcing <a href="https://peakd.com/hive-139531/@beggars/hive-stream-update-support-for-writing-custom-contracts-on-the-hive-blockchain">some huge updates</a> to Hive Stream which features the ability to write “smart” contracts, I promised a tutorial would be coming showing you how to write one and what could be more fitting than writing a contract for a dice game?</p>
+
+<p>Basing this off of the dice contract that Hive Engine ships with as an example, I’ve created a contract that accepts a roll value which needs to be above the server roll. By the end of this tutorial, you’ll have an understanding of how contracts are written (they’re just classes) and how you can create your own smart dApps using them.</p>
+
+<p>If you’re the kind of person who just wants to see the code, I have you covered. The code for the dice smart contract can be found <a href="https://github.com/Vheissu/hive-stream/blob/master/src/contracts/dice.contract.ts">here</a>. It is written in TypeScript but resembles Javascript basically if you’re not familiar. This contract is based off of the dice contract in Hive Engine, except they’re both fundamentally different in how they’re pieced together.</p>
+
+<h2 id="install-the-hive-stream-package">Install the Hive Stream package</h2>
+
+<p>In your application, install the <code class="highlighter-rouge">hive-stream</code> package by running <code class="highlighter-rouge">npm install hive-stream</code> it’s a published package on Npm. We also want to install seedrandom and bignumber.js as well since those are used in our contract code.</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>npm install seedrandom bignumber.js
+</code></pre></div></div>
+
+<h2 id="writing-the-contract">Writing the contract</h2>
+
+<p>Save the following as <code class="highlighter-rouge">dice.contract.js</code> in your application.</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="p">{</span> <span class="nx">Streamer</span><span class="p">,</span> <span class="nx">Utils</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">hive-stream</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">seedrandom</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">seedrandom</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">BigNumber</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">bignumber.js</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">const</span> <span class="nx">CONTRACT_NAME</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">hivedice</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">const</span> <span class="nx">ACCOUNT</span> <span class="o">=</span> <span class="dl">''</span><span class="p">;</span> <span class="c1">// Replace with the account</span>
+<span class="kd">const</span> <span class="nx">TOKEN_SYMBOL</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">HIVE</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">const</span> <span class="nx">HOUSE_EDGE</span> <span class="o">=</span> <span class="mf">0.05</span><span class="p">;</span>
+<span class="kd">const</span> <span class="nx">MIN_BET</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+<span class="kd">const</span> <span class="nx">MAX_BET</span> <span class="o">=</span> <span class="mi">10</span><span class="p">;</span>
+
+<span class="c1">// Random Number Generator</span>
+<span class="kd">const</span> <span class="nx">rng</span> <span class="o">=</span> <span class="p">(</span><span class="nx">previousBlockId</span><span class="p">,</span> <span class="nx">blockId</span><span class="p">,</span> <span class="nx">transactionId</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="nx">random</span> <span class="o">=</span> <span class="nx">seedrandom</span><span class="p">(</span><span class="s2">`</span><span class="p">${</span><span class="nx">previousBlockId</span><span class="p">}${</span><span class="nx">blockId</span><span class="p">}${</span><span class="nx">transactionId</span><span class="p">}</span><span class="s2">`</span><span class="p">).</span><span class="nx">double</span><span class="p">();</span>
+    <span class="kd">const</span> <span class="nx">randomRoll</span> <span class="o">=</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">floor</span><span class="p">(</span><span class="nx">random</span> <span class="o">*</span> <span class="mi">100</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+
+    <span class="k">return</span> <span class="nx">randomRoll</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="c1">// Valid betting currencies</span>
+<span class="kd">const</span> <span class="nx">VALID_CURRENCIES</span> <span class="o">=</span> <span class="p">[</span><span class="dl">'</span><span class="s1">HIVE</span><span class="dl">'</span><span class="p">];</span>
+
+<span class="kd">class</span> <span class="nx">DiceContract</span> <span class="p">{</span>
+    <span class="nx">client</span><span class="p">;</span>
+    <span class="nx">config</span><span class="p">;</span>
+
+    <span class="nx">blockNumber</span><span class="p">;</span>
+    <span class="nx">blockId</span><span class="p">;</span>
+    <span class="nx">previousBlockId</span><span class="p">;</span>
+    <span class="nx">transactionId</span><span class="p">;</span>
+
+    <span class="nx">create</span><span class="p">()</span> <span class="p">{</span>
+        <span class="c1">// Runs every time register is called on this contract</span>
+        <span class="c1">// Do setup logic and code in here (creating a database, etc)</span>
+    <span class="p">}</span>
+
+    <span class="nx">destroy</span><span class="p">()</span> <span class="p">{</span>
+        <span class="c1">// Runs every time unregister is run for this contract</span>
+        <span class="c1">// Close database connections, write to a database with state, etc</span>
+    <span class="p">}</span>
+
+    <span class="c1">// Updates the contract with information about the current block</span>
+    <span class="c1">// This is a method automatically called if it exists</span>
+    <span class="nx">updateBlockInfo</span><span class="p">(</span><span class="nx">blockNumber</span><span class="p">,</span> <span class="nx">blockId</span><span class="p">,</span> <span class="nx">previousBlockId</span><span class="p">,</span> <span class="nx">transactionId</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">// Lifecycle method which sets block info </span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">blockNumber</span> <span class="o">=</span> <span class="nx">blockNumber</span><span class="p">;</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">blockId</span> <span class="o">=</span> <span class="nx">blockId</span><span class="p">;</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">previousBlockId</span> <span class="o">=</span> <span class="nx">previousBlockId</span><span class="p">;</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">transactionId</span> <span class="o">=</span> <span class="nx">transactionId</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="cm">/**
+     * Get Balance
+     * 
+     * Helper method for getting the contract account balance. In the case of our dice contract
+     * we want to make sure the account has enough money to pay out any bets
+     * 
+     * @returns number
+     */</span>
+    <span class="k">async</span> <span class="nx">getBalance</span><span class="p">()</span> <span class="p">{</span>
+        <span class="kd">const</span> <span class="nx">account</span> <span class="o">=</span> <span class="k">await</span> <span class="k">this</span><span class="p">.</span><span class="nx">_client</span><span class="p">.</span><span class="nx">database</span><span class="p">.</span><span class="nx">getAccounts</span><span class="p">([</span><span class="nx">ACCOUNT</span><span class="p">]);</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="nx">account</span><span class="p">?.[</span><span class="mi">0</span><span class="p">])</span> <span class="p">{</span>
+            <span class="kd">const</span> <span class="nx">balance</span> <span class="o">=</span> <span class="p">(</span><span class="nx">account</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">balance</span> <span class="k">as</span> <span class="nx">string</span><span class="p">).</span><span class="nx">split</span><span class="p">(</span><span class="dl">'</span><span class="s1"> </span><span class="dl">'</span><span class="p">);</span>
+            <span class="kd">const</span> <span class="nx">amount</span> <span class="o">=</span> <span class="nx">balance</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+
+            <span class="k">return</span> <span class="nb">parseFloat</span><span class="p">(</span><span class="nx">amount</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="cm">/**
+     * Roll
+     * 
+     * Automatically called when a custom JSON action matches the following method
+     * 
+     * @param payload 
+     * @param param1 - sender and amount
+     */</span>
+    <span class="k">async</span> <span class="nx">roll</span><span class="p">(</span><span class="nx">payload</span><span class="p">,</span> <span class="p">{</span> <span class="nx">sender</span><span class="p">,</span> <span class="nx">amount</span> <span class="p">})</span> <span class="p">{</span>
+        <span class="c1">// Destructure the values from the payload</span>
+        <span class="kd">const</span> <span class="p">{</span> <span class="nx">roll</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">payload</span><span class="p">;</span>
+
+        <span class="c1">// The amount is formatted like 100 HIVE</span>
+        <span class="c1">// The value is the first part, the currency symbol is the second</span>
+        <span class="kd">const</span> <span class="nx">amountTrim</span> <span class="o">=</span> <span class="nx">amount</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="dl">'</span><span class="s1"> </span><span class="dl">'</span><span class="p">);</span>
+
+        <span class="c1">// Parse the numeric value as a real value</span>
+        <span class="kd">const</span> <span class="nx">amountParsed</span> <span class="o">=</span> <span class="nb">parseFloat</span><span class="p">(</span><span class="nx">amountTrim</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
+
+        <span class="c1">// Format the amount to 3 decimal places</span>
+        <span class="kd">const</span> <span class="nx">amountFormatted</span> <span class="o">=</span> <span class="nb">parseFloat</span><span class="p">(</span><span class="nx">amountTrim</span><span class="p">[</span><span class="mi">0</span><span class="p">]).</span><span class="nx">toFixed</span><span class="p">(</span><span class="mi">3</span><span class="p">);</span>
+
+        <span class="c1">// Trim any space from the currency symbol</span>
+        <span class="kd">const</span> <span class="nx">amountCurrency</span> <span class="o">=</span> <span class="nx">amountTrim</span><span class="p">[</span><span class="mi">1</span><span class="p">].</span><span class="nx">trim</span><span class="p">();</span>
+
+        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">`Roll: </span><span class="p">${</span><span class="nx">roll</span><span class="p">}</span><span class="s2"> 
+                     Amount parsed: </span><span class="p">${</span><span class="nx">amountParsed</span><span class="p">}</span><span class="s2"> 
+                     Amount formatted: </span><span class="p">${</span><span class="nx">amountFormatted</span><span class="p">}</span><span class="s2"> 
+                     Currency: </span><span class="p">${</span><span class="nx">amountCurrency</span><span class="p">}</span><span class="s2">`</span><span class="p">);</span>
+
+        <span class="c1">// Get the transaction from the blockchain</span>
+        <span class="kd">const</span> <span class="nx">transaction</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">Utils</span><span class="p">.</span><span class="nx">getTransaction</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">_client</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">blockNumber</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">transactionId</span><span class="p">);</span>
+
+        <span class="c1">// Call the verifyTransfer method to confirm the transfer happened</span>
+        <span class="kd">const</span> <span class="nx">verify</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">Utils</span><span class="p">.</span><span class="nx">verifyTransfer</span><span class="p">(</span><span class="nx">transaction</span><span class="p">,</span> <span class="nx">sender</span><span class="p">,</span> <span class="dl">'</span><span class="s1">beggars</span><span class="dl">'</span><span class="p">,</span> <span class="nx">amount</span><span class="p">);</span>
+
+        <span class="c1">// Get the balance of our contract account</span>
+        <span class="kd">const</span> <span class="nx">balance</span> <span class="o">=</span> <span class="k">await</span> <span class="k">this</span><span class="p">.</span><span class="nx">getBalance</span><span class="p">();</span>
+
+        <span class="c1">// Transfer is valid</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">verify</span><span class="p">)</span> <span class="p">{</span>
+            <span class="c1">// Server balance is less than the max bet, cancel and refund</span>
+            <span class="k">if</span> <span class="p">(</span><span class="nx">balance</span> <span class="o">&lt;</span> <span class="nx">MAX_BET</span><span class="p">)</span> <span class="p">{</span>
+                <span class="c1">// Send back what was sent, the server is broke</span>
+                <span class="k">await</span> <span class="nx">Utils</span><span class="p">.</span><span class="nx">transferHiveTokens</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">_client</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">_config</span><span class="p">,</span> <span class="nx">ACCOUNT</span><span class="p">,</span> <span class="nx">sender</span><span class="p">,</span> <span class="nx">amountTrim</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nx">amountTrim</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s2">`[Refund] The server could not fufill your bet.`</span><span class="p">);</span>
+
+                <span class="k">return</span><span class="p">;</span>
+            <span class="p">}</span>
+
+            <span class="c1">// Bet amount is valid</span>
+            <span class="k">if</span> <span class="p">(</span><span class="nx">amountParsed</span> <span class="o">&gt;=</span> <span class="nx">MIN_BET</span> <span class="o">&amp;&amp;</span> <span class="nx">amountParsed</span> <span class="o">&lt;=</span> <span class="nx">MAX_BET</span><span class="p">)</span> <span class="p">{</span>
+                <span class="c1">// Validate roll is valid</span>
+                <span class="k">if</span> <span class="p">((</span><span class="nx">roll</span> <span class="o">&gt;=</span> <span class="mi">2</span> <span class="o">&amp;&amp;</span> <span class="nx">roll</span> <span class="o">&lt;=</span> <span class="mi">96</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="nx">direction</span> <span class="o">===</span> <span class="dl">'</span><span class="s1">lesserThan</span><span class="dl">'</span> <span class="o">||</span> <span class="nx">direction</span> <span class="o">===</span> <span class="dl">'</span><span class="s1">greaterThan</span><span class="dl">'</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="nx">VALID_CURRENCIES</span><span class="p">.</span><span class="nx">includes</span><span class="p">(</span><span class="nx">amountCurrency</span><span class="p">))</span> <span class="p">{</span>
+                    <span class="c1">// Roll a random value</span>
+                    <span class="kd">const</span> <span class="nx">random</span> <span class="o">=</span> <span class="nx">rng</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">previousBlockId</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">blockId</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">transactionId</span><span class="p">);</span>
+
+                    <span class="c1">// Calculate the multiplier percentage</span>
+                    <span class="kd">const</span> <span class="nx">multiplier</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">BigNumber</span><span class="p">(</span><span class="mi">1</span><span class="p">).</span><span class="nx">minus</span><span class="p">(</span><span class="nx">HOUSE_EDGE</span><span class="p">).</span><span class="nx">multipliedBy</span><span class="p">(</span><span class="mi">100</span><span class="p">).</span><span class="nx">dividedBy</span><span class="p">(</span><span class="nx">roll</span><span class="p">);</span>
+
+                    <span class="c1">// Calculate the number of tokens won</span>
+                    <span class="kd">const</span> <span class="nx">tokensWon</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">BigNumber</span><span class="p">(</span><span class="nx">amountParsed</span><span class="p">).</span><span class="nx">multipliedBy</span><span class="p">(</span><span class="nx">multiplier</span><span class="p">).</span><span class="nx">toFixed</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="nx">BigNumber</span><span class="p">.</span><span class="nx">ROUND_DOWN</span><span class="p">);</span>
+
+                    <span class="c1">// Memo that shows in users memo when they win</span>
+                    <span class="kd">const</span> <span class="nx">winningMemo</span> <span class="o">=</span> <span class="s2">`You won </span><span class="p">${</span><span class="nx">tokensWon</span><span class="p">}</span><span class="s2"> </span><span class="p">${</span><span class="nx">TOKEN_SYMBOL</span><span class="p">}</span><span class="s2">. Roll: </span><span class="p">${</span><span class="nx">random</span><span class="p">}</span><span class="s2">, Your guess: </span><span class="p">${</span><span class="nx">roll</span><span class="p">}</span><span class="s2">`</span><span class="p">;</span>
+
+                    <span class="c1">// Memo that shows in users memo when they lose</span>
+                    <span class="kd">const</span> <span class="nx">losingMemo</span> <span class="o">=</span> <span class="s2">`You lost </span><span class="p">${</span><span class="nx">amountParsed</span><span class="p">}</span><span class="s2"> </span><span class="p">${</span><span class="nx">TOKEN_SYMBOL</span><span class="p">}</span><span class="s2">. Roll: </span><span class="p">${</span><span class="nx">random</span><span class="p">}</span><span class="s2">, Your guess: </span><span class="p">${</span><span class="nx">roll</span><span class="p">}</span><span class="s2">`</span><span class="p">;</span>
+
+                    <span class="c1">// User won more than the server can afford, refund the bet amount</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="nb">parseFloat</span><span class="p">(</span><span class="nx">tokensWon</span><span class="p">)</span> <span class="o">&gt;</span> <span class="nx">balance</span><span class="p">)</span> <span class="p">{</span>
+                        <span class="k">await</span> <span class="nx">Utils</span><span class="p">.</span><span class="nx">transferHiveTokens</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">_client</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">_config</span><span class="p">,</span> <span class="nx">ACCOUNT</span><span class="p">,</span> <span class="nx">sender</span><span class="p">,</span> <span class="nx">amountTrim</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nx">amountTrim</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s2">`[Refund] The server could not fufill your bet.`</span><span class="p">);</span>
+
+                        <span class="k">return</span><span class="p">;</span>
+                    <span class="p">}</span>
+
+                    <span class="c1">// If random value is less than roll</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="nx">random</span> <span class="o">&lt;</span> <span class="nx">roll</span><span class="p">)</span> <span class="p">{</span>                            
+                        <span class="k">await</span> <span class="nx">Utils</span><span class="p">.</span><span class="nx">transferHiveTokens</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">_client</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">_config</span><span class="p">,</span> <span class="nx">ACCOUNT</span><span class="p">,</span> <span class="nx">sender</span><span class="p">,</span> <span class="nx">tokensWon</span><span class="p">,</span> <span class="nx">TOKEN_SYMBOL</span><span class="p">,</span> <span class="nx">winningMemo</span><span class="p">);</span>
+                    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+                        <span class="k">await</span> <span class="nx">Utils</span><span class="p">.</span><span class="nx">transferHiveTokens</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">_client</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">_config</span><span class="p">,</span> <span class="nx">ACCOUNT</span><span class="p">,</span> <span class="nx">sender</span><span class="p">,</span> <span class="dl">'</span><span class="s1">0.001</span><span class="dl">'</span><span class="p">,</span> <span class="nx">TOKEN_SYMBOL</span><span class="p">,</span> <span class="nx">losingMemo</span><span class="p">);</span>
+                    <span class="p">}</span>
+                <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+                    <span class="c1">// Invalid bet parameters, refund the user their bet</span>
+                    <span class="k">await</span> <span class="nx">Utils</span><span class="p">.</span><span class="nx">transferHiveTokens</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">_client</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">_config</span><span class="p">,</span> <span class="nx">ACCOUNT</span><span class="p">,</span> <span class="nx">sender</span><span class="p">,</span> <span class="nx">amountTrim</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nx">amountTrim</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s2">`[Refund] Invalid bet params.`</span><span class="p">);</span>
+                <span class="p">}</span>
+            <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+                <span class="k">try</span> <span class="p">{</span>
+                    <span class="c1">// We need to refund the user</span>
+                    <span class="kd">const</span> <span class="nx">transfer</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">Utils</span><span class="p">.</span><span class="nx">transferHiveTokens</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">_client</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">_config</span><span class="p">,</span> <span class="nx">ACCOUNT</span><span class="p">,</span> <span class="nx">sender</span><span class="p">,</span> <span class="nx">amountTrim</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nx">amountTrim</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s2">`[Refund] You sent an invalid bet amount.`</span><span class="p">);</span>
+
+                    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">transfer</span><span class="p">);</span>
+                <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">e</span><span class="p">);</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="k">new</span> <span class="nx">DiceContract</span><span class="p">();</span>
+</code></pre></div></div>
+
+<h2 id="adding-it-to-your-application">Adding it to your application</h2>
+
+<p>Create a file called <code class="highlighter-rouge">app.js</code> and add in the following.</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="p">{</span> <span class="nx">Streamer</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">hive-stream</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">DiceContract</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">./dice.contract</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">const</span> <span class="nx">streamer</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Streamer</span><span class="p">({</span>
+    <span class="na">ACTIVE_KEY</span><span class="p">:</span> <span class="dl">''</span><span class="p">,</span> <span class="c1">// Needed for transfers</span>
+    <span class="na">JSON_ID</span><span class="p">:</span> <span class="dl">'</span><span class="s1">testdice</span><span class="dl">'</span> <span class="c1">// Identifier in the custom JSON payloads</span>
+<span class="p">});</span>
+
+<span class="c1">// Register the contract</span>
+<span class="nx">streamer</span><span class="p">.</span><span class="nx">registerContract</span><span class="p">(</span><span class="dl">'</span><span class="s1">hivedice</span><span class="dl">'</span><span class="p">,</span> <span class="nx">DiceContract</span><span class="p">);</span>
+
+<span class="c1">// Starts the streamer watching the blockchain</span>
+<span class="nx">streamer</span><span class="p">.</span><span class="nx">start</span><span class="p">();</span>
+</code></pre></div></div>
+
+<h2 id="test-it-out">Test it out</h2>
+
+<p>In the contract code, put in your Hive username as the account and then transfer some Hive tokens to your own account (to you from you). Make sure you also supply your active key in the streamer constructor call in the above code (between the single quotes).</p>
+
+<p>In the memo field, enter stringified JSON like this:</p>
+
+<p><code class="highlighter-rouge">{"hiveContract":{"id":"testdice", "name":"hivedice","action":"roll","payload":{"roll":10 }}}</code></p>
+
+<p>The ID in the memo must match what is provided to the config property <code class="highlighter-rouge">JSON_ID</code> this is what it uses to match transactions. In this case, it is <code class="highlighter-rouge">testdice</code> as the ID. The value <code class="highlighter-rouge">name</code> must match the value of the <code class="highlighter-rouge">registerContract</code> method’s first argument value which is <code class="highlighter-rouge">hivedice</code> in our example. The <code class="highlighter-rouge">action</code> property matches the function name in the contract and finally the <code class="highlighter-rouge">payload</code> object is the data provided to the function call.</p>
+
+<p>I took the liberty of testing it out using my own account, to show you how the transfer for testing process works.</p>
+
+<p><img src="https://files.peakd.com/file/peakd-hive/beggars/am5ZNZEA-transfer.PNG" alt="transfer.PNG" /></p>
+
+<p>As you can see from my two transactions showing the winning and losing, it works (which can be verified by checking my transactions on my wallet or blockchain explorer):</p>
+
+<p><img src="https://files.peakd.com/file/peakd-hive/beggars/HnyJ7w4d-transactions.PNG" alt="transactions.PNG" /></p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>This is just a rudimentary example of a basic dice contract. Some improvements might include support for direction as well as different odds, supporting different tokens and more. But, hopefully you can see what you can build with Hive Stream now.</p>
+<hr />
+
+<p>
+  See: <a href="https://hive.blog/@beggars/tutorial-building-a-dice-game-contract-with-hive-stream">Tutorial: Building A Dice Game Contract With Hive Stream</a>
+  by
+  <a href="https://hive.blog/@beggars">@beggars</a>
+</p>
+
+<p><a href="/nodejs">More About Node.js</a></p>
+
+  </div><a class="u-url" href="/howto/dapps/nodejs/2020/04/04/tutorial-building-a-dice-game-contract-with-hive-stream.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading"><a rel="author" href="/">Hive Chain Documentation</a></h2>
+    
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">site curated by: @inertia</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>Your resource for various levels of Hive Documentation.</p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+</body>
+
+</html>
