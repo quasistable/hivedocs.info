@@ -27,6 +27,7 @@ task :grab, :url do |t, args|
     
     metadata = JSON[content.json_metadata] rescue {}
     tags = metadata.fetch('tags', [])
+    description = metadata.fetch('description', nil)
     canonical_url = metadata.fetch('canonical_url', canonical_url)
     created_at = Time.parse(content.created + 'Z')
     
@@ -35,6 +36,7 @@ task :grab, :url do |t, args|
       layout: post
       author: #{content.author}
       title: "#{content.title}"
+      description: "#{description}"
       date: #{created_at.strftime('%Y-%m-%d %H:%M:%S')} UTC
       categories: #{tags.join(' ')}
       canonical_url: #{canonical_url}
