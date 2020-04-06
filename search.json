@@ -1,0 +1,23 @@
+---
+layout: null
+---
+[
+  {% for post in site.posts %}
+    {% assign keywords = post.content | downcase | strip_html | strip_newlines | replace: '"', '' | split: ' ' | uniq %}
+    {% assign description = post.description %}
+    
+    {% if description == null %}
+      {% assign description = post.content | strip_html | strip_newlines | truncate: 30 %}
+    {% endif %}
+    
+    {
+      "title"    : "{{ post.author }}",
+      "title"    : "{{ post.title | escape }}",
+      "category" : "{{ post.categories | join: ', ' }}",
+      "url"      : "{{ post.url | relative_url }}",
+      "date"     : "{{ post.date }}",
+      "desc"     : "{{ description }}",
+      "content"  : "{{ keywords | join: ' ' }}"
+    } {% unless forloop.last %},{% endunless %}
+  {% endfor %}
+]
