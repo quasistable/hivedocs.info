@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>Tutorial: Building A Dice Game Contract With Hive Stream (Part 2) | Hive Chain Documentation</title>
+<meta name="generator" content="Jekyll v4.0.0" />
+<meta property="og:title" content="Tutorial: Building A Dice Game Contract With Hive Stream (Part 2)" />
+<meta name="author" content="beggars" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Elaborating on part one of our dice contract tutorial and beefing it up" />
+<meta property="og:description" content="Elaborating on part one of our dice contract tutorial and beefing it up" />
+<link rel="canonical" href="https://peakd.com/hive-139531/@beggars/tutorial-building-a-dice-game-contract-with-hive-stream-part-2" />
+<meta property="og:url" content="https://peakd.com/hive-139531/@beggars/tutorial-building-a-dice-game-contract-with-hive-stream-part-2" />
+<meta property="og:site_name" content="Hive Chain Documentation" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2020-04-06T04:00:21-07:00" />
+<script type="application/ld+json">
+{"dateModified":"2020-04-06T04:00:21-07:00","datePublished":"2020-04-06T04:00:21-07:00","headline":"Tutorial: Building A Dice Game Contract With Hive Stream (Part 2)","mainEntityOfPage":{"@type":"WebPage","@id":"https://peakd.com/hive-139531/@beggars/tutorial-building-a-dice-game-contract-with-hive-stream-part-2"},"url":"https://peakd.com/hive-139531/@beggars/tutorial-building-a-dice-game-contract-with-hive-stream-part-2","author":{"@type":"Person","name":"beggars"},"description":"Elaborating on part one of our dice contract tutorial and beefing it up","@type":"BlogPosting","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://hivedocs.info/feed.xml" title="Hive Chain Documentation" /><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/turbolinks/5.2.0/turbolinks.js" integrity="sha256-iM4Yzi/zLj/IshPWMC1IluRxTtRjMqjPGd97TZ9yYpU=" crossorigin="anonymous"></script>
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Cousine|Inconsolata" rel="stylesheet">
+  <link rel="shortcut icon" type="image/png" href="/assets/images/favicon.png">
+</head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Hive Chain Documentation</a>
+
+      <nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/news/">News</a><a class="page-link" href="/howto/">How To</a><a class="page-link" href="/links/">Useful Links</a><!-- HTML elements for search -->
+          <input type="text" id="search-input" placeholder="Search" />
+          
+          <ul id="results-container"></ul>
+
+          <script src="/assets/javascript/search.js"></script>
+          <script>
+            var sjs = SimpleJekyllSearch({
+              searchInput: document.getElementById('search-input'),
+              resultsContainer: document.getElementById('results-container'),
+              json: '/search.json'
+            })
+          </script>
+          <!-- <form style="float: right;" class="form-inline" method="get" action="http://www.google.com/search">
+            <input type="hidden" name="sitesearch" value="hivedocs.info" />
+            <input type="text" name="q" maxlength="255" placeholder="Search" />
+          </form> -->
+        </div>
+      </nav>
+  </div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Tutorial: Building A Dice Game Contract With Hive Stream (Part 2)</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2020-04-06T04:00:21-07:00" itemprop="datePublished">Apr 6, 2020
+      </time>• <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">
+          <a href="https://hive.blog/@beggars">beggars</a>
+        </span></span></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <p>If you missed <a href="https://peakd.com/hive-139531/@beggars/tutorial-building-a-dice-game-contract-with-hive-stream">part one here</a>, we built a basic dice game contract which allows people to bet on an outcome and either win or lose. The tutorial left out some things that you might want to do in a real deployment.</p>
+
+<h2 id="install-mongodb">Install MongoDB</h2>
+
+<p>For this tutorial, we are going to use MongoDB as the database behind it. We’ll be storing transactions and outcomes in the database, so we can ensure that transfers are not processed multiple times.</p>
+
+<p>While the streamer keeps track of the last processed block number in a JSON file or SQLite database, what happens if your node goes down and the file gets edited or deleted? It would result in missed transactions which would be a pain to manually process.</p>
+
+<p>Download the community version installer from the official <a href="https://www.mongodb.com/download-center/community">MongoDB</a> website. Choose the appropriate installer for your operating system and follow the instructions. It should require very little input, just keep clicking next basically and keep everything as default.</p>
+
+<h2 id="build-a-mongodb-adapter">Build a MongoDB adapter</h2>
+
+<p>Now, we need to write an adapter that will allow Hive Stream to work with MongoDB instead of the file databases that it is configured out-of-the-box to use. Provided you have Hive Stream installed (version 2+) you should have the new adapter’s functionality.</p>
+
+<p>An adapter for standard use cases consists of just two mandatory methods <code class="highlighter-rouge">loadState</code> and <code class="highlighter-rouge">saveState</code> the <code class="highlighter-rouge">loadState</code> method gets called when the streamer starts to start at the last block it finished. The <code class="highlighter-rouge">saveState</code> method updates with the latest processed block.</p>
+
+<p>There are however other lifecycle methods which we can use in our more functional adapters. <code class="highlighter-rouge">create</code> is called on initialisation, you can setup instances and connections in here. <code class="highlighter-rouge">destroy</code> is called when everything is stopped, so naturally you close database connections in here.</p>
+
+<p>The <code class="highlighter-rouge">processOperation</code> is a method that gets the latest block number, transaction ID and so forth. It’s metadata used to identify specific transactions and their block data. The <code class="highlighter-rouge">processTransfer</code> and <code class="highlighter-rouge">processCustomJson</code> methods are called when a matching transfer or custom JSON operation is matched to a contract. It also gets contract information as well as the payload and other helpful info.</p>
+
+<p><strong>Save the following as <code class="highlighter-rouge">mongo.adapter.js</code></strong></p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>import { AdapterBase } from 'hive-stream';
+
+import { MongoClient, Db } from 'mongodb';
+
+export class MongodbAdapter extends AdapterBase {
+    client;
+    db;
+
+    mongo = {
+        uri: '',
+        database: '',
+        options: {}
+    };
+
+    blockNumber;
+    lastBlockNumber;
+    blockId;
+    prevBlockId;
+    transactionId;
+
+    constructor(uri, databasw, options = { useNewUrlParser: true,  useUnifiedTopology: true }) {
+        super();
+
+        this.mongo.uri = uri;
+        this.mongo.database = database;
+        this.mongo.options = options;
+    }
+
+    async create() {
+        try {
+            this.client = await MongoClient.connect(this.mongo.uri, this.mongo.options);
+            this.db = this.client.db(this.mongo.database);
+
+            return true;
+        } catch (e) {
+            throw e;
+        }
+    }
+
+    async loadState() {
+        try {
+            const collection = this.db.collection('params');
+            const params = await collection.findOne({});
+
+            if (params) {
+                return params;
+            }
+        } catch (e) {
+            throw e;
+        }
+    }
+
+    async saveState(data) {
+        try {
+            const collection = this.db.collection('params');
+
+            await collection.replaceOne({}, data, {  upsert: true});
+
+            return true;
+        } catch (e) {
+            throw e;
+        }
+    }
+
+    async processOperation(op, blockNumber, blockId, prevBlockId, trxId, blockTime) {
+        this.blockNumber = blockNumber;
+        this.blockId = blockId;
+        this.prevBlockId = prevBlockId;
+        this.transactionId = trxId;
+    }
+
+    async processTransfer(operation, payload, metadata) {
+        const collection = this.db.collection('transfers');
+
+        const data = {
+            id: this.transactionId,
+            blockId: this.blockId,
+            blockNumber: this.blockNumber,
+            sender: metadata.sender,
+            amount: metadata.amount,
+            contractName: payload.name,
+            contractAction: payload.action,
+            contractPayload: payload.payload
+        };
+
+        await collection.insertOne(data);
+
+        return true;
+    }
+
+    async processCustomJson(operation, payload, metadata) {
+        const collection = this.db.collection('transactions');
+
+        const data = {
+            id: this.transactionId,
+            blockId: this.blockId,
+            blockNumber: this.blockNumber,
+            sender: metadata.sender,
+            isSignedWithActiveKey: metadata.isSignedWithActiveKey,
+            contractName: payload.name,
+            contractAction: payload.action,
+            contractPayload: payload.payload
+        };
+
+        await collection.insertOne(data);
+
+        return true;
+    }
+
+    async destroy() {
+        await this.client.close();
+
+        return true;
+    }
+}
+</code></pre></div></div>
+
+<h2 id="expanding-the-dice-contract">Expanding the dice contract</h2>
+
+<p>Now we have MongoDB support added via our adapter, let’s modify the contract code to flag whether or not a transfer was processed (winnings sent or loss memo sent). This will allow us to replay our dice game and not worry about paying out users who already received their winnings multiple times.</p>
+
+<p>Above the <code class="highlighter-rouge">if (verify)</code> line of code, let’s access the Mongo database client and connection.</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>const db = this._instance['adapter']['db'];
+const collection = db.collection('transfers');
+</code></pre></div></div>
+
+<p>Because contracts get access to the streamer instance, it means we can access the adapter and <code class="highlighter-rouge">db</code> property. The downside here is for any adapter that doesn’t have a <code class="highlighter-rouge">db</code> property, this will fail. In our case, we know we want to use the database adapter, so the slightly tighter coupling is fine.</p>
+
+<p>Inside of the balance check that refunds if the account doesn’t have more than the maximum bet, we’ll add some code that sets the status to <code class="highlighter-rouge">refund</code></p>
+
+<p>Put the following inside of this if statement: <code class="highlighter-rouge">if (balance &lt; MAX_BET) {</code> underneath the <code class="highlighter-rouge">transferHiveTokens</code> call.</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>await collection.findOneAndUpdate({ id: this.transactionId }, { $set: { status: 'refund' } });
+</code></pre></div></div>
+
+<p>What we are doing here is querying the database for our transaction based on its ID, then using the MongoDB <code class="highlighter-rouge">$set</code> property to only add/update one specific property in the <code class="highlighter-rouge">transfers</code> collection.</p>
+
+<p>Next, inside of the if statement <code class="highlighter-rouge">if (parseFloat(tokensWon) &gt; balance) {</code> add in the same line of code beneath the <code class="highlighter-rouge">transferHiveTokens</code> call:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>await collection.findOneAndUpdate({ id: this.transactionId }, { $set: { status: 'refund' } });
+</code></pre></div></div>
+
+<p>Underneath the transfer code for winnings <code class="highlighter-rouge">await this._instance.transferHiveTokens(ACCOUNT, sender, tokensWon, TOKEN_SYMBOL, winningMemo);</code> add in the following:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>await collection.findOneAndUpdate({ id: this.transactionId }, { $set: { status: 'win' } });
+</code></pre></div></div>
+
+<p>And now for the loss inside of the else statement beneath <code class="highlighter-rouge">await this._instance.transferHiveTokens(ACCOUNT, sender, '0.001', TOKEN_SYMBOL, losingMemo);</code></p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>await collection.findOneAndUpdate({ id: this.transactionId }, { $set: { status: 'loss' } });
+</code></pre></div></div>
+
+<p>Finally, another underneath <code class="highlighter-rouge">await this._instance.transferHiveTokens(ACCOUNT, sender, amountTrim[0], amountTrim[1], `[Refund] Invalid bet params.`);</code> which refunds the user if their bet amount is higher than the max, their dice roll is too high or low.</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>await collection.findOneAndUpdate({ id: this.transactionId }, { $set: { status: 'refund' } });
+</code></pre></div></div>
+
+<p><strong>The final dice contract code ends up looking like this:</strong></p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>import { Utils } from 'hive-stream';
+import seedrandom from 'seedrandom';
+import BigNumber from 'bignumber.js';
+
+const CONTRACT_NAME = 'hivedice';
+
+const ACCOUNT = 'beggars';
+const TOKEN_SYMBOL = 'HIVE';
+
+const HOUSE_EDGE = 0.05;
+const MIN_BET = 1;
+const MAX_BET = 10;
+
+// Random Number Generator
+const rng = (previousBlockId, blockId, transactionId) =&gt; {
+    const random = seedrandom(`${previousBlockId}${blockId}${transactionId}`).double();
+    const randomRoll = Math.floor(random * 100) + 1;
+
+    return randomRoll;
+};
+
+// Valid betting currencies
+const VALID_CURRENCIES = ['HIVE'];
+
+class DiceContract {
+    _instancs;
+
+    blockNumber;
+    blockId;
+    previousBlockId;
+    transactionId;
+
+    create() {
+        // Runs every time register is called on this contract
+        // Do setup logic and code in here (creating a database, etc)
+    }
+
+    destroy() {
+        // Runs every time unregister is run for this contract
+        // Close database connections, write to a database with state, etc
+    }
+
+    // Updates the contract with information about the current block
+    // This is a method automatically called if it exists
+    updateBlockInfo(blockNumber, blockId, previousBlockId, transactionId) {
+        // Lifecycle method which sets block info 
+        this.blockNumber = blockNumber;
+        this.blockId = blockId;
+        this.previousBlockId = previousBlockId;
+        this.transactionId = transactionId;
+    }
+
+    /**
+     * Get Balance
+     *
+     * Helper method for getting the contract account balance. In the case of our dice contract
+     * we want to make sure the account has enough money to pay out any bets
+     *
+     * @returns number
+     */
+    async getBalance() {
+        const account = await this._instance['client'].database.getAccounts([ACCOUNT]);
+
+        if (account?.[0]) {
+            const balance = (account[0].balance as string).split(' ');
+            const amount = balance[0];
+
+            return parseFloat(amount);
+        }
+
+        return null;
+    }
+
+    /**
+     * Roll
+     *
+     * Automatically called when a custom JSON action matches the following method
+     *
+     * @param payload
+     * @param param1 - sender and amount
+     */
+    async roll(payload, { sender, amount }) {
+        // Destructure the values from the payload
+        const { roll } = payload;
+
+        // The amount is formatted like 100 HIVE
+        // The value is the first part, the currency symbol is the second
+        const amountTrim = amount.split(' ');
+
+        // Parse the numeric value as a real value
+        const amountParsed = parseFloat(amountTrim[0]);
+
+        // Format the amount to 3 decimal places
+        const amountFormatted = parseFloat(amountTrim[0]).toFixed(3);
+
+        // Trim any space from the currency symbol
+        const amountCurrency = amountTrim[1].trim();
+
+        console.log(`Roll: ${roll}
+                     Amount parsed: ${amountParsed}
+                     Amount formatted: ${amountFormatted}
+                     Currency: ${amountCurrency}`);
+
+        // Get the transaction from the blockchain
+        const transaction = await this._instance.getTransaction(this.blockNumber, this.transactionId);
+
+        // Call the verifyTransfer method to confirm the transfer happened
+        const verify = await this._instance.verifyTransfer(transaction, sender, 'beggars', amount);
+
+        // Get the balance of our contract account
+        const balance = await this.getBalance();
+
+        const db = this._instance['adapter']['db'];
+        const collection = db.collection('transfers');
+
+        // Transfer is valid
+        if (verify) {
+            // Server balance is less than the max bet, cancel and refund
+            if (balance &lt; MAX_BET) {
+                // Send back what was sent, the server is broke
+                await this._instance.transferHiveTokens(ACCOUNT, sender, amountTrim[0], amountTrim[1], `[Refund] The server could not fufill your bet.`);
+
+                await collection.findOneAndUpdate({ id: this.transactionId }, { $set: { status: 'refund' } });
+
+                return;
+            }
+
+            // Bet amount is valid
+            if (amountParsed &gt;= MIN_BET &amp;&amp; amountParsed &lt;= MAX_BET) {
+                // Validate roll is valid
+                if ((roll &gt;= 2 &amp;&amp; roll &lt;= 96) &amp;&amp; VALID_CURRENCIES.includes(amountCurrency)) {
+                    // Roll a random value
+                    const random = rng(this.previousBlockId, this.blockId, this.transactionId);
+
+                    // Calculate the multiplier percentage
+                    const multiplier = new BigNumber(1).minus(HOUSE_EDGE).multipliedBy(100).dividedBy(roll);
+
+                    // Calculate the number of tokens won
+                    const tokensWon = new BigNumber(amountParsed).multipliedBy(multiplier).toFixed(3, BigNumber.ROUND_DOWN);
+
+                    // Memo that shows in users memo when they win
+                    const winningMemo = `You won ${tokensWon} ${TOKEN_SYMBOL}. Roll: ${random}, Your guess: ${roll}`;
+
+                    // Memo that shows in users memo when they lose
+                    const losingMemo = `You lost ${amountParsed} ${TOKEN_SYMBOL}. Roll: ${random}, Your guess: ${roll}`;
+
+                    // User won more than the server can afford, refund the bet amount
+                    if (parseFloat(tokensWon) &gt; balance) {
+                        await this._instance.transferHiveTokens(ACCOUNT, sender, amountTrim[0], amountTrim[1], `[Refund] The server could not fufill your bet.`);
+
+                        await collection.findOneAndUpdate({ id: this.transactionId }, { $set: { status: 'refund' } });
+
+                        return;
+                    }
+
+                    // If random value is less than roll
+                    if (random &lt; roll) {
+                        await this._instance.transferHiveTokens(ACCOUNT, sender, tokensWon, TOKEN_SYMBOL, winningMemo);
+                        await collection.findOneAndUpdate({ id: this.transactionId }, { $set: { status: 'win' } });
+
+                    } else {
+                        await this._instance.transferHiveTokens(ACCOUNT, sender, '0.001', TOKEN_SYMBOL, losingMemo);
+                        await collection.findOneAndUpdate({ id: this.transactionId }, { $set: { status: 'loss' } });
+                    }
+                } else {
+                    // Invalid bet parameters, refund the user their bet
+                    await this._instance.transferHiveTokens(ACCOUNT, sender, amountTrim[0], amountTrim[1], `[Refund] Invalid bet params.`);
+                    await collection.findOneAndUpdate({ id: this.transactionId }, { $set: { status: 'refund' } });
+                }
+            } else {
+                try {
+                    // We need to refund the user
+                    const transfer = await this._instance.transferHiveTokens(ACCOUNT, sender, amountTrim[0], amountTrim[1], `[Refund] You sent an invalid bet amount.`);
+
+                    await collection.findOneAndUpdate({ id: this.transactionId }, { $set: { status: 'refund' } });
+                } catch (e) {
+                    console.log(e);
+                }
+            }
+        }
+    }
+}
+
+export default new DiceContract();
+</code></pre></div></div>
+
+<h2 id="register-your-adapter-run-it">Register your adapter, run it</h2>
+
+<p>We take the code we bootstrapped our app with from part one and it remains largely untouched, except we register our MongoDB adapter and pass in some configuration information to the constructor.</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>import { Streamer } from 'hive-stream';
+import DiceContract from './dice.contract';
+import { MongodbAdapter } from './mongo.adapter';
+
+const streamer = new Streamer({
+    ACTIVE_KEY: '', // Needed for transfers
+    JSON_ID: 'testdice' // Identifier in the custom JSON payloads
+});
+
+streamer.registerAdapter(new MongodbAdapter('mongodb://127.0.0.1:27017', 'hivestream'));
+
+// Register the contract
+streamer.registerContract('hivedice', DiceContract);
+
+// Starts the streamer watching the blockchain
+streamer.start();
+</code></pre></div></div>
+
+<p><img src="https://files.peakd.com/file/peakd-hive/beggars/UpZgH9Fl-Screen20Shot202020-04-0620at208.14.4220pm.png" alt="Screen Shot 20200406 at 8.14.42 pm.png" /></p>
+
+<p>Here is a screenshot of a modified transaction that was refunded updated in our Mongo database to show that it all works as intended.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>What did we learn? We learned how to write a custom adapter for interfacing with a database, we learned how to access to the database instance inside of our contract and interact with it. We also learned we can then look up transactions by their ID from within contract actions and modify them (in our case, setting a status property).</p>
+
+<p>PS. The Mongo adapter ships with the Hive Stream package, so you don’t have to custom code it yourself, I built it as part of the process of this tutorial. Enjoy.</p>
+<hr />
+
+<p>
+  See: <a href="https://hive.blog/@beggars/tutorial-building-a-dice-game-contract-with-hive-stream-part-2">Tutorial: Building A Dice Game Contract With Hive Stream (Part 2)</a>
+  by
+  <a href="https://hive.blog/@beggars">@beggars</a>
+</p>
+
+
+  </div><a class="u-url" href="/howto/dapps/nodejs/2020/04/06/tutorial-building-a-dice-game-contract-with-hive-stream-part-2.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading"><a rel="author" href="/">Hive Chain Documentation</a></h2>
+    
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">site curated by: @inertia</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>Your resource for various levels of Hive Documentation.</p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+</body>
+
+</html>
