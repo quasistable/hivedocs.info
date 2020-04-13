@@ -1,4 +1,68 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.0.0">Jekyll</generator><link href="https://hivedocs.info/feed.xml" rel="self" type="application/atom+xml" /><link href="https://hivedocs.info/" rel="alternate" type="text/html" /><updated>2020-04-11T13:29:06-07:00</updated><id>https://hivedocs.info/feed.xml</id><title type="html">Hive Chain Documentation</title><subtitle>Your resource for various levels of Hive Documentation.</subtitle><author><name>site curated by: @inertia</name></author><entry><title type="html">Quick Tip: Hive Scripting - In 3 easy steps</title><link href="https://hivedocs.info/howto/nodejs/2020/04/10/quick-tip-hive-scripting-in-3-easy-steps.html" rel="alternate" type="text/html" title="Quick Tip: Hive Scripting - In 3 easy steps" /><published>2020-04-10T16:38:45-07:00</published><updated>2020-04-10T16:38:45-07:00</updated><id>https://hivedocs.info/howto/nodejs/2020/04/10/quick-tip-hive-scripting-in-3-easy-steps</id><content type="html" xml:base="https://hivedocs.info/howto/nodejs/2020/04/10/quick-tip-hive-scripting-in-3-easy-steps.html">&lt;p&gt;&lt;img src=&quot;https://images.hive.blog/DQmTr8ePbYQa6TKsoQAjmMMYzcj1Fz7Cd5stNW5CxL86LgF/Untitled-1.png&quot; alt=&quot;Untitled-1.png&quot; /&gt;&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.0.0">Jekyll</generator><link href="https://hivedocs.info/feed.xml" rel="self" type="application/atom+xml" /><link href="https://hivedocs.info/" rel="alternate" type="text/html" /><updated>2020-04-13T16:04:56-07:00</updated><id>https://hivedocs.info/feed.xml</id><title type="html">Hive Chain Documentation</title><subtitle>Your resource for various levels of Hive Documentation.</subtitle><author><name>site curated by: @inertia</name></author><entry><title type="html">Simple Transaction Monitor</title><link href="https://hivedocs.info/howto/stream/python/2020/04/11/simple-transaction-monitor.html" rel="alternate" type="text/html" title="Simple Transaction Monitor" /><published>2020-04-11T16:58:21-07:00</published><updated>2020-04-11T16:58:21-07:00</updated><id>https://hivedocs.info/howto/stream/python/2020/04/11/simple-transaction-monitor</id><content type="html" xml:base="https://hivedocs.info/howto/stream/python/2020/04/11/simple-transaction-monitor.html">&lt;h1 id=&quot;pretty-straight-forward-monitor&quot;&gt;Pretty straight forward monitor&lt;/h1&gt;
+&lt;p&gt;I’m back again with another simple python snippet of code to use in future projects. A lot of projects begin as needing something to monitor the chain and react accordingly. I thought about this and decided the best example to show how simple it is and a teaching tool to myself was to monitor the transaction ops and insert them into a database if they were to or from me.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://files.peakd.com/file/peakd-hive/thecrazygm/tr5VEsVA-monitor_output.png&quot; alt=&quot;monitor_output.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;This is the basis of listening for memos to react with a response of sorts. (In this case, put them into a simple sqlite3 DB) another popular option is to listen for the &lt;code class=&quot;highlighter-rouge&quot;&gt;comments&lt;/code&gt; op and check if something is mentioned (that may be another project/lesson in the future)&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://files.peakd.com/file/peakd-hive/thecrazygm/fG2RgesY-monitor_db_output.png&quot; alt=&quot;monitor_db_output.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;This example requires both &lt;a href=&quot;https://beem.readthedocs.io/en/latest/index.html&quot;&gt;beem&lt;/a&gt; and &lt;a href=&quot;https://dataset.readthedocs.io/en/latest/index.html&quot;&gt;dataset&lt;/a&gt; and will watch for whatever account you set as the &lt;code class=&quot;highlighter-rouge&quot;&gt;watch&lt;/code&gt; variable.&lt;/p&gt;
+
+&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c1&quot;&gt;#!/usr/bin/env python3
+&lt;/span&gt;
+&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;dataset&lt;/span&gt;
+&lt;span class=&quot;kn&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;beem&lt;/span&gt; &lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Steem&lt;/span&gt;
+&lt;span class=&quot;kn&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;beem.blockchain&lt;/span&gt; &lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Blockchain&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;watch&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;thecrazygm&quot;&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;hive&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Steem&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;node&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'https://anyx.io'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;db&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dataset&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;connect&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'sqlite:///mydatabase.db'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;# System Variables
+&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;blockchain&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Blockchain&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;steem_instance&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;hive&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;stream&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;blockchain&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;stream&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;opNames&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'transfer'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;raw_ops&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;False&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;threading&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;True&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;thread_num&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;table&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;db&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;watch&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+
+
+&lt;span class=&quot;c1&quot;&gt;# parse json data to SQL insert
+&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;update_db&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;post&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;try&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;table&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;insert&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;dict&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;post&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;db&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;commit&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;except&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;Exception&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;as&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;e&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;print&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;f&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'[Error: {e} moving on]'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;db&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;rollback&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+
+
+&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;monitor&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;():&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;print&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;[Starting up...]&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;db&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;begin&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;# Read the live stream and filter out only transfers
+&lt;/span&gt;    &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;post&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;stream&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;post&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;to&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;watch&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;or&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;post&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;from&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;watch&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;print&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;f&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;[Transaction Found from {post['from']} to {post['to']}]&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;update_db&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;post&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+
+&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;__name__&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;__main__&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;monitor&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;The code can be found always up to date at my &lt;a href=&quot;https://gist.github.com/TheCrazyGM&quot;&gt;GitHub gist area&lt;/a&gt; at this file: &lt;a href=&quot;https://gist.github.com/TheCrazyGM/9b2882a4adcea826815489b5a00ed089&quot;&gt;monitor.py&lt;/a&gt;
+If you like what I’m doing consider following me, either here or on &lt;a href=&quot;https://github.com/thecrazygm&quot;&gt;GitHub&lt;/a&gt; or buy me a coffee.&lt;/p&gt;
+
+&lt;p&gt;Again, stay safe out there people,
+Michael Garcia a.k.a. @TheCrazyGM
+&lt;img src=&quot;https://files.peakd.com/file/peakd-hive/thecrazygm/LjWZDEWC-signature_fancy.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+&lt;hr /&gt;
+
+&lt;p&gt;
+  See: &lt;a href=&quot;https://hive.blog/@thecrazygm/simple-transaction-monitor&quot;&gt;Simple Transaction Monitor&lt;/a&gt;
+  by
+  &lt;a href=&quot;https://hive.blog/@thecrazygm&quot;&gt;@thecrazygm&lt;/a&gt;
+&lt;/p&gt;</content><author><name>thecrazygm</name></author><summary type="html">Pretty straight forward monitor I’m back again with another simple python snippet of code to use in future projects. A lot of projects begin as needing something to monitor the chain and react accordingly. I thought about this and decided the best example to show how simple it is and a teaching tool to myself was to monitor the transaction ops and insert them into a database if they were to or from me. This is the basis of listening for memos to react with a response of sorts. (In this case, put them into a simple sqlite3 DB) another popular option is to listen for the comments op and check if something is mentioned (that may be another project/lesson in the future) This example requires both beem and dataset and will watch for whatever account you set as the watch variable. #!/usr/bin/env python3 import dataset from beem import Steem from beem.blockchain import Blockchain watch = &quot;thecrazygm&quot; hive = Steem(node='https://anyx.io') db = dataset.connect('sqlite:///mydatabase.db') # System Variables blockchain = Blockchain(steem_instance=hive) stream = blockchain.stream(opNames=['transfer'], raw_ops=False, threading=True, thread_num=4) table = db[watch] # parse json data to SQL insert def update_db(post): try: table.insert(dict(post)) db.commit() except Exception as e: print(f'[Error: {e} moving on]') db.rollback() def monitor(): print(&quot;[Starting up...]&quot;) db.begin() # Read the live stream and filter out only transfers for post in stream: if post[&quot;to&quot;] == watch or post[&quot;from&quot;] == watch: print(f&quot;[Transaction Found from {post['from']} to {post['to']}]&quot;) update_db(post) if __name__ == &quot;__main__&quot;: monitor() The code can be found always up to date at my GitHub gist area at this file: monitor.py If you like what I’m doing consider following me, either here or on GitHub or buy me a coffee. Again, stay safe out there people, Michael Garcia a.k.a. @TheCrazyGM See: Simple Transaction Monitor by @thecrazygm</summary></entry><entry><title type="html">Quick Tip: Hive Scripting - In 3 easy steps</title><link href="https://hivedocs.info/howto/nodejs/2020/04/10/quick-tip-hive-scripting-in-3-easy-steps.html" rel="alternate" type="text/html" title="Quick Tip: Hive Scripting - In 3 easy steps" /><published>2020-04-10T16:38:45-07:00</published><updated>2020-04-10T16:38:45-07:00</updated><id>https://hivedocs.info/howto/nodejs/2020/04/10/quick-tip-hive-scripting-in-3-easy-steps</id><content type="html" xml:base="https://hivedocs.info/howto/nodejs/2020/04/10/quick-tip-hive-scripting-in-3-easy-steps.html">&lt;p&gt;&lt;img src=&quot;https://images.hive.blog/DQmTr8ePbYQa6TKsoQAjmMMYzcj1Fz7Cd5stNW5CxL86LgF/Untitled-1.png&quot; alt=&quot;Untitled-1.png&quot; /&gt;&lt;/p&gt;
 
 &lt;hr /&gt;
 
@@ -1307,123 +1371,4 @@ const simpleClient = new Client('https://api.hive.blog')
   &lt;a href=&quot;https://hive.blog/@therealwolf&quot;&gt;@therealwolf&lt;/a&gt;
 &lt;/p&gt;
 
-&lt;p&gt;&lt;a href=&quot;/nodejs&quot;&gt;More About Node.js&lt;/a&gt;&lt;/p&gt;</content><author><name>therealwolf</name></author><summary type="html">Greetings #Hivers &amp;amp; fellow developers, I’ve just pushed a new version, 0.13.3, to dhive (JS library) that enables native RPC node failover-support. This feature is optional and is only active if an array of RPC nodes is given as the first argument in a Client. import {Client} from '@hivechain/dhive' // Failover const client = new Client(['https://api.hive.blog', 'https://api.hivekings.com', 'https://anyx.io'], { failoverThreshold: 3 /* default */}) // No failover const simpleClient = new Client('https://api.hive.blog') Relevant Options Parameters new Client(url, options) - failoverThreshold (default: 3): Specifies the number of times the URLs (RPC nodes) should be iterated and retried in case of timeout errors. Requires the first URL parameter to be an array! It can be set to 0 to iterate and retry forever. - timeout (default: 60 * 1000ms): Send timeout, how long to wait in milliseconds before giving up on an RPC call. It can be set to 0 to retry forever. GitLab Pull Request (Code) https://gitlab.syncad.com/hive/dhive/-/merge_requests/3 Why is this relevant? Normally, you have to take care of potential failovers in your application yourself. This can produce redundant code. Having a native solution is far cleaner. Another solution is a wrapper around dhive that enables failover. There is dsteem-pool, but it didn’t work for me. Info Code has been tested and everything should be working fine: https://gitlab.syncad.com/hive/dhive/-/blob/master/test/client.ts#L15-20 However, for very sensitive operations, please still be careful and rather double-check. With this said: If there are any problems/questions, please create an issue https://gitlab.syncad.com/hive/dhive/issues #HiveOn Wolf therealwolf.me See: dhive: RPC Failover Support by @therealwolf</summary></entry><entry><title type="html">How to review account permissions and change your recovery account</title><link href="https://hivedocs.info/howto/beem/python/account/2020/04/02/how-to-review-account-permissions-and-change-your-recovery-account.html" rel="alternate" type="text/html" title="How to review account permissions and change your recovery account" /><published>2020-04-02T15:04:27-07:00</published><updated>2020-04-02T15:04:27-07:00</updated><id>https://hivedocs.info/howto/beem/python/account/2020/04/02/how-to-review-account-permissions-and-change-your-recovery-account</id><content type="html" xml:base="https://hivedocs.info/howto/beem/python/account/2020/04/02/how-to-review-account-permissions-and-change-your-recovery-account.html">&lt;p&gt;&lt;img src=&quot;https://files.peakd.com/file/peakd-hive/holger80/UScDOcPB-image.png&quot; alt=&quot;image.png&quot; /&gt;
-&lt;a href=&quot;https://pixabay.com/de/illustrations/schl%C3%BCssel-schlo%C3%9F-sicherheit-metall-3348307/&quot;&gt;source&lt;/a&gt;
-All accounts on the HIVE blockchain that existed also before the fork may have posting permissions granted to apps that do not exists on the HIVE blockchain. It is a good idea to remove them for now.&lt;/p&gt;
-
-&lt;p&gt;You can use beempy to remove posting permissions to your account. At first,
-all account that have posting/active permissions should be printed with&lt;/p&gt;
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;beempy permissions holger80
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;+------------+-----------+-----------------------------------------------------------+
-| Permission | Threshold |                                               Key/Account |
-+------------+-----------+-----------------------------------------------------------+
-|      owner |         1 | STM5XDYn3NeTqiMd1wczZjF9sPiJqY2uQw9HRwT6LR6rQytAxWNfz (1) |
-|     active |         1 | STM7tA7Mh81wJV1J8eW8NyGLc3XCSyXNdFnhAh8F8bYYd8yAcy6Ew (1) |
-|    posting |         1 |                                           actifit.app (1) |
-|            |           |                                             dpoll.xyz (1) |
-|            |           |                                             esteemapp (1) |
-|            |           |                                             nc-client (1) |
-|            |           |                                            nextcolony (1) |
-|            |           |                                             peakd.app (1) |
-|            |           |                                             rewarding (1) |
-|            |           | STM6t5ExkHZtQL1pdkrRZjCgzbAdnB3YUYCZgrYWDXvdnU5bp57jL (1) |
-+------------+-----------+-----------------------------------------------------------+
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-&lt;h2 id=&quot;remove-posting-permission&quot;&gt;Remove posting permission&lt;/h2&gt;
-&lt;p&gt;Now, not needed permissions can be removed by&lt;/p&gt;
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;beempy disallow -a holger80 busy.app
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-&lt;p&gt;where the account name is set with &lt;code class=&quot;highlighter-rouge&quot;&gt;-a&lt;/code&gt;.
-This command broadcasts a &lt;code class=&quot;highlighter-rouge&quot;&gt;account_update&lt;/code&gt; operation and removes the given account name from the &lt;code class=&quot;highlighter-rouge&quot;&gt;account_auths&lt;/code&gt; field.
-&lt;img src=&quot;https://files.peakd.com/file/peakd-hive/holger80/nNzpFYoS-image.png&quot; alt=&quot;image.png&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;This can also be done with https://hivesigner.com/revoke/ followed by the account name, e.g. https://hivesigner.com/revoke/busy.app&lt;/p&gt;
-
-&lt;p&gt;Changing and reviewing permissions is also possible with peakd:
-https://peakd.com/@holger80/permissions&lt;/p&gt;
-
-&lt;h2 id=&quot;recovery-account&quot;&gt;Recovery account&lt;/h2&gt;
-&lt;p&gt;The recovery account can be check with https://hiveblocks.com/@holger80
-&lt;img src=&quot;https://files.peakd.com/file/peakd-hive/holger80/n5L0jCIN-image.png&quot; alt=&quot;image.png&quot; /&gt;
-It is set to @steem for my account and as it is most unlikely that @steem will ever sign a &lt;code class=&quot;highlighter-rouge&quot;&gt;Request_account_recovery&lt;/code&gt; operation on HIVE, I’m unable to recovery my account, when I would accidentally leak my owner key and someone would change it using my leaked owner key.&lt;/p&gt;
-
-&lt;p&gt;This is most unlikely, as I’m not using my owner key but it could happen.&lt;/p&gt;
-
-&lt;h3 id=&quot;how-does-account-recovery-work&quot;&gt;How does account recovery work?&lt;/h3&gt;
-&lt;p&gt;Assuming, my owner key was changed within 30 days, I have the previous owner key and the recover account is signing, I can recover my account:&lt;/p&gt;
-&lt;ol&gt;
-  &lt;li&gt;I need to create a new owner key&lt;/li&gt;
-  &lt;li&gt;the recover account broadcasts a &lt;code class=&quot;highlighter-rouge&quot;&gt;Request_account_recovery&lt;/code&gt; operation with the new owner public key  signed with its active key&lt;/li&gt;
-  &lt;li&gt;I need then to broadcast a &lt;code class=&quot;highlighter-rouge&quot;&gt;Recover_account&lt;/code&gt; operation with the old and the new owner public key and sign it with the old and the new owner private key.&lt;/li&gt;
-  &lt;li&gt;I can change now all keys with an &lt;code class=&quot;highlighter-rouge&quot;&gt;Account_update&lt;/code&gt; operation signed with the new owner key.&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;p&gt;Currently this will not work for me, as @steem will not broadcast a &lt;code class=&quot;highlighter-rouge&quot;&gt;Request_account_recovery&lt;/code&gt; operation on HIVE.&lt;/p&gt;
-
-&lt;h2 id=&quot;changing-the-recover-account&quot;&gt;Changing the recover account&lt;/h2&gt;
-&lt;p&gt;I created a new account @recovery.account on HIVE as my new recovery account.
-It would be possible to use hivesigner for this:
-https://hivesigner.com/sign/change_recovery_account?account_to_recover=holger80&amp;amp;new_recovery_account=recovery.account&amp;amp;extensions=%5B%5D
-or peakd: https://peakd.com/@holger80/permissions&lt;/p&gt;
-
-&lt;p&gt;But I do like to use my own script:&lt;/p&gt;
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;from beem.account import Account
-from beem.nodelist import NodeList
-from beem import Steem
-from beem.transactionbuilder import TransactionBuilder
-from beemgraphenebase.account import PrivateKey
-import beembase
-import getpass
-
-
-if __name__ == &quot;__main__&quot;:
-    nodes = NodeList()
-    nodes.update_nodes()
-    key = getpass.getpass(prompt='Owner key: ')
-    owner_key = PrivateKey(wif=key)
-    print(&quot;pub: %s&quot; % str(owner_key.pubkey))
-    account_name = input(&quot;account name: &quot;)
-    new_recovery_account = input(&quot;new recovery_account: &quot;)
-    hive = Steem(node=nodes.get_nodes(hive=True))
-    assert hive.is_hive
-    
-    account = Account(account_name, steem_instance=hive)
-    new_rec_acc = Account(new_recovery_account, steem_instance=hive)
-    
-    op = beembase.operations.Change_recovery_account(**{
-        'account_to_recover': account['name'],
-        'new_recovery_account': new_rec_acc['name'],
-        'extensions': []
-    })
-    print(op)
-    prompt = input(&quot;Broadcast the operation? [y/n]&quot;)
-    if prompt[0] == &quot;y&quot;:
-        tb = TransactionBuilder(steem_instance=hive)
-        tb.appendOps([op])
-        tb.appendWif(str(owner_key))
-        #tb.appendSigner(account['name'], 'owner')
-        tb.sign()
-        trx = tb.broadcast()
-        print(trx)
-    
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-&lt;p&gt;Results in&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://files.peakd.com/file/peakd-hive/holger80/N8fWV7bM-image.png&quot; alt=&quot;image.png&quot; /&gt;
-This means that in 30 days my recovery account will be changed.&lt;/p&gt;
-
-&lt;p&gt;I will keep the keys of @recovery.account in a safe place and will not use them.&lt;/p&gt;
-
-&lt;h2 id=&quot;is-there-a-need-for-a-recovery-account-provider&quot;&gt;Is there a need for a recovery account provider?&lt;/h2&gt;
-&lt;p&gt;Do you want also to change your recovery account? How could this work? Let me know.&lt;/p&gt;
-&lt;hr /&gt;
-
-&lt;p&gt;
-  See: &lt;a href=&quot;https://hive.blog/@holger80/how-to-review-account-permissions-and-change-your-recovery-account&quot;&gt;How to review account permissions and change your recovery account&lt;/a&gt;
-  by
-  &lt;a href=&quot;https://hive.blog/@holger80&quot;&gt;@holger80&lt;/a&gt;
-&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;/python&quot;&gt;More About Python&lt;/a&gt;&lt;/p&gt;</content><author><name>holger80</name></author><summary type="html">source All accounts on the HIVE blockchain that existed also before the fork may have posting permissions granted to apps that do not exists on the HIVE blockchain. It is a good idea to remove them for now. You can use beempy to remove posting permissions to your account. At first, all account that have posting/active permissions should be printed with beempy permissions holger80 +------------+-----------+-----------------------------------------------------------+ | Permission | Threshold | Key/Account | +------------+-----------+-----------------------------------------------------------+ | owner | 1 | STM5XDYn3NeTqiMd1wczZjF9sPiJqY2uQw9HRwT6LR6rQytAxWNfz (1) | | active | 1 | STM7tA7Mh81wJV1J8eW8NyGLc3XCSyXNdFnhAh8F8bYYd8yAcy6Ew (1) | | posting | 1 | actifit.app (1) | | | | dpoll.xyz (1) | | | | esteemapp (1) | | | | nc-client (1) | | | | nextcolony (1) | | | | peakd.app (1) | | | | rewarding (1) | | | | STM6t5ExkHZtQL1pdkrRZjCgzbAdnB3YUYCZgrYWDXvdnU5bp57jL (1) | +------------+-----------+-----------------------------------------------------------+ Remove posting permission Now, not needed permissions can be removed by beempy disallow -a holger80 busy.app where the account name is set with -a. This command broadcasts a account_update operation and removes the given account name from the account_auths field. This can also be done with https://hivesigner.com/revoke/ followed by the account name, e.g. https://hivesigner.com/revoke/busy.app Changing and reviewing permissions is also possible with peakd: https://peakd.com/@holger80/permissions Recovery account The recovery account can be check with https://hiveblocks.com/@holger80 It is set to @steem for my account and as it is most unlikely that @steem will ever sign a Request_account_recovery operation on HIVE, I’m unable to recovery my account, when I would accidentally leak my owner key and someone would change it using my leaked owner key. This is most unlikely, as I’m not using my owner key but it could happen. How does account recovery work? Assuming, my owner key was changed within 30 days, I have the previous owner key and the recover account is signing, I can recover my account: I need to create a new owner key the recover account broadcasts a Request_account_recovery operation with the new owner public key signed with its active key I need then to broadcast a Recover_account operation with the old and the new owner public key and sign it with the old and the new owner private key. I can change now all keys with an Account_update operation signed with the new owner key. Currently this will not work for me, as @steem will not broadcast a Request_account_recovery operation on HIVE. Changing the recover account I created a new account @recovery.account on HIVE as my new recovery account. It would be possible to use hivesigner for this: https://hivesigner.com/sign/change_recovery_account?account_to_recover=holger80&amp;amp;new_recovery_account=recovery.account&amp;amp;extensions=%5B%5D or peakd: https://peakd.com/@holger80/permissions But I do like to use my own script: from beem.account import Account from beem.nodelist import NodeList from beem import Steem from beem.transactionbuilder import TransactionBuilder from beemgraphenebase.account import PrivateKey import beembase import getpass if __name__ == &quot;__main__&quot;: nodes = NodeList() nodes.update_nodes() key = getpass.getpass(prompt='Owner key: ') owner_key = PrivateKey(wif=key) print(&quot;pub: %s&quot; % str(owner_key.pubkey)) account_name = input(&quot;account name: &quot;) new_recovery_account = input(&quot;new recovery_account: &quot;) hive = Steem(node=nodes.get_nodes(hive=True)) assert hive.is_hive account = Account(account_name, steem_instance=hive) new_rec_acc = Account(new_recovery_account, steem_instance=hive) op = beembase.operations.Change_recovery_account(**{ 'account_to_recover': account['name'], 'new_recovery_account': new_rec_acc['name'], 'extensions': [] }) print(op) prompt = input(&quot;Broadcast the operation? [y/n]&quot;) if prompt[0] == &quot;y&quot;: tb = TransactionBuilder(steem_instance=hive) tb.appendOps([op]) tb.appendWif(str(owner_key)) #tb.appendSigner(account['name'], 'owner') tb.sign() trx = tb.broadcast() print(trx) Results in This means that in 30 days my recovery account will be changed. I will keep the keys of @recovery.account in a safe place and will not use them. Is there a need for a recovery account provider? Do you want also to change your recovery account? How could this work? Let me know. See: How to review account permissions and change your recovery account by @holger80</summary></entry></feed>
+&lt;p&gt;&lt;a href=&quot;/nodejs&quot;&gt;More About Node.js&lt;/a&gt;&lt;/p&gt;</content><author><name>therealwolf</name></author><summary type="html">Greetings #Hivers &amp;amp; fellow developers, I’ve just pushed a new version, 0.13.3, to dhive (JS library) that enables native RPC node failover-support. This feature is optional and is only active if an array of RPC nodes is given as the first argument in a Client. import {Client} from '@hivechain/dhive' // Failover const client = new Client(['https://api.hive.blog', 'https://api.hivekings.com', 'https://anyx.io'], { failoverThreshold: 3 /* default */}) // No failover const simpleClient = new Client('https://api.hive.blog') Relevant Options Parameters new Client(url, options) - failoverThreshold (default: 3): Specifies the number of times the URLs (RPC nodes) should be iterated and retried in case of timeout errors. Requires the first URL parameter to be an array! It can be set to 0 to iterate and retry forever. - timeout (default: 60 * 1000ms): Send timeout, how long to wait in milliseconds before giving up on an RPC call. It can be set to 0 to retry forever. GitLab Pull Request (Code) https://gitlab.syncad.com/hive/dhive/-/merge_requests/3 Why is this relevant? Normally, you have to take care of potential failovers in your application yourself. This can produce redundant code. Having a native solution is far cleaner. Another solution is a wrapper around dhive that enables failover. There is dsteem-pool, but it didn’t work for me. Info Code has been tested and everything should be working fine: https://gitlab.syncad.com/hive/dhive/-/blob/master/test/client.ts#L15-20 However, for very sensitive operations, please still be careful and rather double-check. With this said: If there are any problems/questions, please create an issue https://gitlab.syncad.com/hive/dhive/issues #HiveOn Wolf therealwolf.me See: dhive: RPC Failover Support by @therealwolf</summary></entry></feed>
