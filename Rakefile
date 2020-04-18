@@ -57,11 +57,18 @@ end
 desc 'Build site to docs for release.'
 task :build do
   baseurl = ENV.fetch('BASEURL', '/')
-  cmd = 'bundle exec jekyll build --destination docs'
+  cmd = 'JEKYLL_ENV=production bundle exec jekyll build --destination docs'
   
   if !!baseurl && baseurl != '/'
     cmd += " --baseurl #{baseurl}"
   end
   
+  sh cmd
+end
+
+desc 'Commit docs.'
+task commit: [:build] do
+  cmd = 'git add docs && git commit docs -m "jekyll base sources"'
+    
   sh cmd
 end
