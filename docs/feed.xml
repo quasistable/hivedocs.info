@@ -1,4 +1,500 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.0.0">Jekyll</generator><link href="https://hivedocs.info/feed.xml" rel="self" type="application/atom+xml" /><link href="https://hivedocs.info/" rel="alternate" type="text/html" /><updated>2020-04-17T22:28:19-07:00</updated><id>https://hivedocs.info/feed.xml</id><title type="html">Hive Chain Documentation</title><subtitle>Your resource for various levels of Hive Documentation.</subtitle><author><name>site curated by: @inertia</name></author><entry><title type="html">Hive Keychain Now Available on Chrome &amp;amp; Brave!</title><link href="https://hivedocs.info/news/nodejs/keychain/2020/04/17/hive-keychain-now-available-on-chrome-and-brave.html" rel="alternate" type="text/html" title="Hive Keychain Now Available on Chrome &amp; Brave!" /><published>2020-04-17T08:50:54-07:00</published><updated>2020-04-17T08:50:54-07:00</updated><id>https://hivedocs.info/news/nodejs/keychain/2020/04/17/hive-keychain-now-available-on-chrome-and-brave</id><content type="html" xml:base="https://hivedocs.info/news/nodejs/keychain/2020/04/17/hive-keychain-now-available-on-chrome-and-brave.html">&lt;p&gt;&lt;img src=&quot;https://files.peakd.com/file/peakd-hive/stoodkev/AmSWoznK-keychain_title.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.0.0">Jekyll</generator><link href="https://hivedocs.info/feed.xml" rel="self" type="application/atom+xml" /><link href="https://hivedocs.info/" rel="alternate" type="text/html" /><updated>2020-04-20T01:25:08-07:00</updated><id>https://hivedocs.info/feed.xml</id><title type="html">Hive Chain Documentation</title><subtitle>Your resource for various levels of Hive Documentation.</subtitle><author><name>site curated by: @inertia</name></author><entry><title type="html">Improvements for Condenser repository, Continuous Integration and Deployments</title><link href="https://hivedocs.info/howto/devops/docker/2020/04/19/improvements-for-condenser-repository-continuous-integration-and-deployments.html" rel="alternate" type="text/html" title="Improvements for Condenser repository, Continuous Integration and Deployments" /><published>2020-04-19T13:38:27-07:00</published><updated>2020-04-19T13:38:27-07:00</updated><id>https://hivedocs.info/howto/devops/docker/2020/04/19/improvements-for-condenser-repository-continuous-integration-and-deployments</id><content type="html" xml:base="https://hivedocs.info/howto/devops/docker/2020/04/19/improvements-for-condenser-repository-continuous-integration-and-deployments.html">&lt;p&gt;&lt;img src=&quot;https://i.imgur.com/yCIuIaF.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;I want to elaborate not only on introduced features but also on my thought and reasoning so everyone can benefit and introduce changes in their projects. This post will be long but I believe it might be useful for the entire HiveDevs community.&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;The workflow is built on top of Gitlab CI/CD but can be easily modified for any other CI/CD tool (i.e. CircleCI or Jenkins).&lt;/p&gt;
+
+&lt;h1 id=&quot;docker&quot;&gt;Docker&lt;/h1&gt;
+
+&lt;p&gt;I’ve started my work by reviewing &lt;code class=&quot;highlighter-rouge&quot;&gt;Dockerfile&lt;/code&gt;. I’ve built the &lt;code class=&quot;highlighter-rouge&quot;&gt;condenser&lt;/code&gt; image and was a bit shocked:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;$ docker image ls
+condenser   latest   6d57c0c8a904   19 seconds ago   1.54GB
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;1.54 GB for a simple frontend application? Boy, it’s just too much. Let’s do something with it.&lt;/p&gt;
+
+&lt;h2 id=&quot;leaner-docker-image&quot;&gt;Leaner docker image&lt;/h2&gt;
+
+&lt;p&gt;Let’s start by recognizing the reason why is this so big. You can also look into your &lt;code class=&quot;highlighter-rouge&quot;&gt;Dockerfile&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;package.json&lt;/code&gt; and search for some common mistakes:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;using full-sized images rather than &lt;code class=&quot;highlighter-rouge&quot;&gt;alpine&lt;/code&gt; versions&lt;/li&gt;
+  &lt;li&gt;installing dev dependencies for production images&lt;/li&gt;
+  &lt;li&gt;putting dev dependencies into production dependencies list&lt;/li&gt;
+  &lt;li&gt;copying useless files into the final image&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Yep, you can check every point here. Let’s make some work on a new Dockerfile:&lt;/p&gt;
+
+&lt;div class=&quot;language-dockerfile highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;FROM&lt;/span&gt;&lt;span class=&quot;s&quot;&gt; node:12.16.2 as development&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;WORKDIR&lt;/span&gt;&lt;span class=&quot;s&quot;&gt; /var/app&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;COPY&lt;/span&gt;&lt;span class=&quot;s&quot;&gt; package.json yarn.lock ./&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;RUN &lt;/span&gt;yarn &lt;span class=&quot;nb&quot;&gt;install&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;--non-interactive&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;--frozen-lockfile&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;--ignore-optional&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;COPY&lt;/span&gt;&lt;span class=&quot;s&quot;&gt; . .&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;RUN &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;mkdir &lt;/span&gt;tmp &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; yarn build
+
+&lt;span class=&quot;k&quot;&gt;CMD&lt;/span&gt;&lt;span class=&quot;s&quot;&gt; [ &quot;yarn&quot;, &quot;run&quot;, &quot;start&quot; ]&lt;/span&gt;
+
+&lt;span class=&quot;c&quot;&gt;### REMOVE DEV DEPENDENCIES ##&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;FROM&lt;/span&gt;&lt;span class=&quot;s&quot;&gt; development as dependencies&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;RUN &lt;/span&gt;yarn &lt;span class=&quot;nb&quot;&gt;install&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;--non-interactive&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;--frozen-lockfile&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;--ignore-optional&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;--production&lt;/span&gt;
+
+&lt;span class=&quot;c&quot;&gt;### BUILD MINIFIED PRODUCTION ##&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;FROM&lt;/span&gt;&lt;span class=&quot;s&quot;&gt; node:12.16.2-alpine as production&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;WORKDIR&lt;/span&gt;&lt;span class=&quot;s&quot;&gt; /var/app&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;ARG&lt;/span&gt;&lt;span class=&quot;s&quot;&gt; SOURCE_COMMIT&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;ENV&lt;/span&gt;&lt;span class=&quot;s&quot;&gt; SOURCE_COMMIT ${SOURCE_COMMIT}&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;ARG&lt;/span&gt;&lt;span class=&quot;s&quot;&gt; DOCKER_TAG&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;ENV&lt;/span&gt;&lt;span class=&quot;s&quot;&gt; DOCKER_TAG ${DOCKER_TAG}&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;COPY&lt;/span&gt;&lt;span class=&quot;s&quot;&gt; --from=dependencies /var/app/package.json /var/app/package.json&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;COPY&lt;/span&gt;&lt;span class=&quot;s&quot;&gt; --from=dependencies /var/app/config /var/app/config&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;COPY&lt;/span&gt;&lt;span class=&quot;s&quot;&gt; --from=dependencies /var/app/dist /var/app/dist&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;COPY&lt;/span&gt;&lt;span class=&quot;s&quot;&gt; --from=dependencies /var/app/lib /var/app/lib&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;COPY&lt;/span&gt;&lt;span class=&quot;s&quot;&gt; --from=dependencies /var/app/src /var/app/src&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;COPY&lt;/span&gt;&lt;span class=&quot;s&quot;&gt; --from=dependencies /var/app/tmp /var/app/tmp&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;COPY&lt;/span&gt;&lt;span class=&quot;s&quot;&gt; --from=dependencies /var/app/webpack /var/app/webpack&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;COPY&lt;/span&gt;&lt;span class=&quot;s&quot;&gt; --from=dependencies /var/app/node_modules /var/app/node_modules&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;COPY&lt;/span&gt;&lt;span class=&quot;s&quot;&gt; --from=dependencies /var/app/healthcheck.js /var/app/healthcheck.js&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;HEALTHCHECK&lt;/span&gt;&lt;span class=&quot;s&quot;&gt; --interval=30s --timeout=5s --start-period=30s --retries=5 CMD node /var/app/healthcheck.js&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;CMD&lt;/span&gt;&lt;span class=&quot;s&quot;&gt; [ &quot;yarn&quot;, &quot;run&quot;, &quot;production&quot; ]&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;What has been improved:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;Node.js version was upgraded from &lt;code class=&quot;highlighter-rouge&quot;&gt;8.7&lt;/code&gt; to &lt;code class=&quot;highlighter-rouge&quot;&gt;12.16.2&lt;/code&gt; which is the latest LTS at the moment. Always try using the latest framework versions, which may include security fixes and performance upgrades. It’s also a good habit to use a specific version up to the &lt;code class=&quot;highlighter-rouge&quot;&gt;patch&lt;/code&gt; number.&lt;/li&gt;
+  &lt;li&gt;Multistage build was used to build an optimal image for production deployment. First, we build a &lt;code class=&quot;highlighter-rouge&quot;&gt;development&lt;/code&gt; stage with every dependency to be able to compile React application. Next, we’re removing development dependencies with &lt;code class=&quot;highlighter-rouge&quot;&gt;--production&lt;/code&gt; switch during the &lt;code class=&quot;highlighter-rouge&quot;&gt;dependencies&lt;/code&gt; stage. After all, we’re creating a minimal image from the &lt;code class=&quot;highlighter-rouge&quot;&gt;alpine&lt;/code&gt; node version which is the smallest base available, by copying only necessary files and directories.&lt;/li&gt;
+  &lt;li&gt;Healthcheck has been introduced, so the docker daemon can easily manage containers with automatic restarts if necessary and zero-downtime deployments which will be explained later in this post. It will be also useful for dynamic scaling capabilities with &lt;code class=&quot;highlighter-rouge&quot;&gt;docker swarm&lt;/code&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Also, &lt;code class=&quot;highlighter-rouge&quot;&gt;package.json&lt;/code&gt; file was modified, but it’s not worth to post its content here:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;Dev dependencies like &lt;code class=&quot;highlighter-rouge&quot;&gt;webpack&lt;/code&gt;, &lt;code class=&quot;highlighter-rouge&quot;&gt;babel&lt;/code&gt; or &lt;code class=&quot;highlighter-rouge&quot;&gt;eslint&lt;/code&gt; was moved into a proper list called &lt;code class=&quot;highlighter-rouge&quot;&gt;devDependencies&lt;/code&gt; so &lt;code class=&quot;highlighter-rouge&quot;&gt;yarn&lt;/code&gt; could install only production deps for the final image.&lt;/li&gt;
+  &lt;li&gt;Strict versions were introduced for every dependency to make sure every build produces exactly the same image. Semantic versioning is popular, but there is no way to check if the package author does not introduce breaking changes with only &lt;code class=&quot;highlighter-rouge&quot;&gt;patch&lt;/code&gt; version increased. If you need to update a package, do it manually. If you have enough test coverage, you can update the package and run CI/CD to check if everything works fine.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;After all that work done, the condenser image size was massively reduced:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;$ docker image ls
+condenser   latest   58406d338e67   8 seconds ago   226MB
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://i.imgur.com/xGtpXCQ.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://i.imgur.com/aCCoCud.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;The compressed image in the docker registry is even smaller. Much better, right? Shame on you, Steemit!&lt;/p&gt;
+
+&lt;h2 id=&quot;healthcheck&quot;&gt;Healthcheck&lt;/h2&gt;
+
+&lt;p&gt;Simply speaking, docker is running containers and trying to keep it alive as long as possible. But the system needs to have a tool to determine if the container is &lt;code class=&quot;highlighter-rouge&quot;&gt;actually alive&lt;/code&gt;. It may seem alive, but is your app responding to requests for example? Fortunately, docker has also integrated health check mechanism which can be integrated into &lt;code class=&quot;highlighter-rouge&quot;&gt;Dockerfile&lt;/code&gt; or &lt;code class=&quot;highlighter-rouge&quot;&gt;docker-compose.yml&lt;/code&gt;. Usually, you need to create an endpoint for liveness checks. Fortunately, condenser already has one so we can utilize it easily.&lt;/p&gt;
+
+&lt;p&gt;There is a lot of examples with &lt;code class=&quot;highlighter-rouge&quot;&gt;curl&lt;/code&gt; used as a docker health check, but it’s not a good way to go. Healthcheck should work cross-platform and &lt;code class=&quot;highlighter-rouge&quot;&gt;curl&lt;/code&gt; implementation differs on Windows and Unix. You should write health check in the same technology or framework as your projects are written, for condenser it’s Node.js.&lt;/p&gt;
+
+&lt;div class=&quot;language-javascript highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kd&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;http&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;require&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;http&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+&lt;span class=&quot;kd&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;options&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;na&quot;&gt;host&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;dl&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;localhost&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;na&quot;&gt;port&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;dl&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;8080&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;na&quot;&gt;path&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;/.well-known/healthcheck.json&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;na&quot;&gt;timeout&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;5000&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
+
+&lt;span class=&quot;kd&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;request&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;http&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;request&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;options&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;res&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;console&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;`STATUS: &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;res&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;statusCode&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;`&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;res&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;statusCode&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;200&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;nx&quot;&gt;process&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;exit&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;nx&quot;&gt;console&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;error&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;`ERROR: &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;res&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;statusCode&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;`&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+        &lt;span class=&quot;nx&quot;&gt;process&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;exit&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;});&lt;/span&gt;
+
+&lt;span class=&quot;nx&quot;&gt;request&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;on&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;error&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;err&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;console&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;error&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;ERROR&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;err&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;process&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;exit&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;});&lt;/span&gt;
+
+&lt;span class=&quot;nx&quot;&gt;request&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;end&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;When ready, instruct Docker to use your health check mechanism. Add following line into your &lt;code class=&quot;highlighter-rouge&quot;&gt;Dockefile&lt;/code&gt;:&lt;/p&gt;
+
+&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=5 CMD node /var/app/healthcheck.js&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;Make sure this file &lt;code class=&quot;highlighter-rouge&quot;&gt;/var/app/healthcheck.js&lt;/code&gt; exists inside your image. If you want to be sure your health check is working, inspect your container after running it:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;$ docker container ls
+CONTAINER ID        IMAGE                          COMMAND                  CREATED             STATUS                   PORTS                    NAMES
+060166cf52ee        hiveio/condenser:development   &quot;docker-entrypoint.s…&quot;   5 minutes ago       Up 5 minutes (healthy)   0.0.0.0:8080-&amp;gt;8080/tcp   mystifying_dhawan
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;There should be a &lt;code class=&quot;highlighter-rouge&quot;&gt;(healthy)&lt;/code&gt; indicator in &lt;code class=&quot;highlighter-rouge&quot;&gt;STATUS&lt;/code&gt; column. And there is. Please also note that during the container startup process, it will indicate slightly different status (&lt;code class=&quot;highlighter-rouge&quot;&gt;starting&lt;/code&gt;), as the docker daemon will wait before making the first check. It’s because we’re giving some time for our app to startup. It’s the &lt;code class=&quot;highlighter-rouge&quot;&gt;start-period&lt;/code&gt; parameter.&lt;/p&gt;
+
+&lt;p&gt;Depending on your app and traffic/load, those parameters should vary.&lt;/p&gt;
+
+&lt;h2 id=&quot;pushing-images-to-docker-hub&quot;&gt;Pushing images to Docker Hub&lt;/h2&gt;
+
+&lt;p&gt;We already have an improved (smaller) docker image, so it’s time to push it to the repository. Doing it manually is a waste of time and may cause human mistakes. The best way is to utilize Gitlab Runner to do it for us in an automatic and bullet-proof manner.&lt;/p&gt;
+
+&lt;p&gt;Here is a &lt;code class=&quot;highlighter-rouge&quot;&gt;job&lt;/code&gt; definition from &lt;code class=&quot;highlighter-rouge&quot;&gt;.gitlab-ci.yml&lt;/code&gt; file with some additional code which we will breakdown:&lt;/p&gt;
+
+&lt;div class=&quot;language-yaml highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;na&quot;&gt;variables&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
+    &lt;span class=&quot;na&quot;&gt;DOCKER_IMAGE&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;hiveio/condenser&lt;/span&gt;
+
+&lt;span class=&quot;s&quot;&gt;.docker-job&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;nl&quot;&gt;&amp;amp;docker-job&lt;/span&gt;
+    &lt;span class=&quot;na&quot;&gt;image&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;docker:stable&lt;/span&gt;
+    &lt;span class=&quot;na&quot;&gt;services&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
+        &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;docker:dind&lt;/span&gt;
+    &lt;span class=&quot;na&quot;&gt;before_script&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
+        &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;echo $HUB_TOKEN | docker login -u $HUB_USERNAME --password-stdin&lt;/span&gt;
+
+&lt;span class=&quot;na&quot;&gt;build-development&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
+    &lt;span class=&quot;s&quot;&gt;&amp;lt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;*docker-job&lt;/span&gt;
+    &lt;span class=&quot;na&quot;&gt;stage&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;build&lt;/span&gt;
+    &lt;span class=&quot;na&quot;&gt;variables&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
+        &lt;span class=&quot;na&quot;&gt;DOCKER_TAG&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;$DOCKER_IMAGE:$CI_COMMIT_SHORT_SHA&lt;/span&gt;
+        &lt;span class=&quot;na&quot;&gt;DOCKER_TAG_MAIN&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;$DOCKER_IMAGE:development&lt;/span&gt;
+        &lt;span class=&quot;na&quot;&gt;SOURCE_COMMIT&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;$CI_COMMIT_SHA&lt;/span&gt;
+    &lt;span class=&quot;na&quot;&gt;only&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
+        &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;develop&lt;/span&gt;
+    &lt;span class=&quot;na&quot;&gt;script&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
+        &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;docker build -t $DOCKER_TAG -t $DOCKER_TAG_MAIN --build-arg SOURCE_COMMIT --build-arg DOCKER_TAG .&lt;/span&gt;
+        &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;docker push $DOCKER_TAG&lt;/span&gt;
+        &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;docker push $DOCKER_TAG_MAIN&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;First, we’re creating global variable &lt;code class=&quot;highlighter-rouge&quot;&gt;DOCKER_IMAGE&lt;/code&gt; so we can reuse it later in many places. And in case we would like to change the image name, we do it only in a single place.&lt;/p&gt;
+
+&lt;p&gt;Hence we have multiple &lt;code class=&quot;highlighter-rouge&quot;&gt;jobs&lt;/code&gt; defined in &lt;code class=&quot;highlighter-rouge&quot;&gt;.gitlab-ci.yml&lt;/code&gt; file, it’s good to utilize advanced YAML syntax, which includes &lt;strong&gt;hidden keys&lt;/strong&gt; and &lt;strong&gt;anchors&lt;/strong&gt;. It will decrease the duplicated code and make the file easier to read and maintain. Every job name starting with the dot will be considered as a hidden key and &lt;strong&gt;won’t be directly executed&lt;/strong&gt;. Btw, this is a quick way to temporarily disable any job in your GitLab CI/CD without commenting or removing it.&lt;/p&gt;
+
+&lt;p&gt;By using &lt;code class=&quot;highlighter-rouge&quot;&gt;.docker-job: &amp;amp;docker-job&lt;/code&gt; we created an anchor which can be later used to extend any job. If you add &lt;code class=&quot;highlighter-rouge&quot;&gt;&amp;lt;&amp;lt;: *docker-job&lt;/code&gt;, it will populate &lt;code class=&quot;highlighter-rouge&quot;&gt;image&lt;/code&gt;, &lt;code class=&quot;highlighter-rouge&quot;&gt;services&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;before_script&lt;/code&gt; properties automatically. It’s a good move if you have multiple jobs that do similar things.&lt;/p&gt;
+
+&lt;p&gt;Later on, we’re creating some additional local (job scoped) variables:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;DOCKER_TAG_MAIN&lt;/code&gt;  which will be evaluated to &lt;code class=&quot;highlighter-rouge&quot;&gt;hiveio/condenser:development&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;DOCKER_TAG&lt;/code&gt; which will be evaluated to &lt;code class=&quot;highlighter-rouge&quot;&gt;hiveio/condenser:344e55ef&lt;/code&gt; or similar&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;SOURCE_COMMIT&lt;/code&gt; which will be evaluated to &lt;code class=&quot;highlighter-rouge&quot;&gt;344e55efefd56e00b15eea6ccf8560a1107b9ff6&lt;/code&gt; (or similar commit SHA)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;It’s a good idea to double tag an image. &lt;code class=&quot;highlighter-rouge&quot;&gt;Latest&lt;/code&gt; tag is useless if you want to track your development process. Later on, I will describe the way how we’re using this specific, &lt;code class=&quot;highlighter-rouge&quot;&gt;sha&lt;/code&gt;-tagged image to track deployments and rollback them anytime with a single click.&lt;/p&gt;
+
+&lt;p&gt;Finally, we’re building an image with additional build arguments by using &lt;code class=&quot;highlighter-rouge&quot;&gt;--build-arg&lt;/code&gt;:&lt;/p&gt;
+
+&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;docker build -t $DOCKER_TAG -t $DOCKER_TAG_MAIN --build-arg SOURCE_COMMIT --build-arg DOCKER_TAG .&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;If you scroll up to the Dockerfile section, you will notice &lt;code class=&quot;highlighter-rouge&quot;&gt;ARG SOURCE_COMMIT&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;ENV SOURCE_COMMIT ${SOURCE_COMMIT}&lt;/code&gt; which means these build arguments will be injected as an environment variables into your containers. It’s a quick and easy way to pass additional, build-level variables into your images. Those specific variables are later returned by the condenser health endpoint. It may be useful to check a specific instance source.&lt;/p&gt;
+
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;curl 
+&amp;lt;a &lt;span class=&quot;nv&quot;&gt;href&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;https://staging.condenser.engrave.dev/.well-known/healthcheck.json&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt;https://staging.condenser.engrave.dev/.well-known/healthcheck.json&amp;lt;/a&amp;gt;
+
+&lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;status&quot;&lt;/span&gt;:&lt;span class=&quot;s2&quot;&gt;&quot;ok&quot;&lt;/span&gt;,&lt;span class=&quot;s2&quot;&gt;&quot;docker_tag&quot;&lt;/span&gt;:&lt;span class=&quot;s2&quot;&gt;&quot;hiveio/condenser:344e55ef&quot;&lt;/span&gt;,&lt;span class=&quot;s2&quot;&gt;&quot;source_commit&quot;&lt;/span&gt;:&lt;span class=&quot;s2&quot;&gt;&quot;344e55efefd56e00b15eea6ccf8560a1107b9ff6&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;An important thing to mention is that &lt;code class=&quot;highlighter-rouge&quot;&gt;HUB_TOKEN&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;HUB_USERNAME&lt;/code&gt; are environment variables injected into the GitLab runner job and configured in Projects Settings. To prevent unauthorized users from pushing malicious images into the official registry, those variables are configured as &lt;code class=&quot;highlighter-rouge&quot;&gt;protected&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;masked&lt;/code&gt;, which means they can be only used on specific branches and are moderated from job logs, so there is no way it can leak without internal bad actor with elevated permissions.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://i.imgur.com/o3FAaQb.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;h1 id=&quot;merge-requests&quot;&gt;Merge requests&lt;/h1&gt;
+
+&lt;p&gt;To improve the process of adding new features and fixes to the codebase, Merge Requests have got a brand new CI/CD workflow which includes the following jobs:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://i.imgur.com/3kV2zPi.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;The entire pipeline is fired on every Merge Request and it’s required to pass before changes could be merged. If the pipeline fails for some reason (i.e. failing unit tests), there is no way to merge changes into the main branch. This will enforce code quality and prevent regression.&lt;/p&gt;
+
+&lt;h2 id=&quot;eslint&quot;&gt;Eslint&lt;/h2&gt;
+
+&lt;p&gt;Code quality and standardization are important, especially if it’s an open-source project that could be maintained by totally different developers from all around the world. &lt;code class=&quot;highlighter-rouge&quot;&gt;Eslint&lt;/code&gt; is a tool that statically analyzes the code to quickly find potential problems and keep code organized with specified rules. Code analysis is especially useful when developing Javascript applications. It’s really easy to make some stupid mistakes.&lt;/p&gt;
+
+&lt;p&gt;Eslint job will be fired on every Merge Request and on every branch pushed to the repository:&lt;/p&gt;
+
+&lt;div class=&quot;language-yaml highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;na&quot;&gt;run-eslint&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
+    &lt;span class=&quot;na&quot;&gt;stage&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;test&lt;/span&gt;
+    &lt;span class=&quot;na&quot;&gt;image&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;node:12.16.2&lt;/span&gt;
+    &lt;span class=&quot;na&quot;&gt;only&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
+        &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;branches&lt;/span&gt;
+        &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;merge_requests&lt;/span&gt;
+    &lt;span class=&quot;na&quot;&gt;before_script&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
+        &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;yarn install --frozen-lockfile --ignore-optional&lt;/span&gt;
+    &lt;span class=&quot;na&quot;&gt;script&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
+        &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;yarn ci:eslint&lt;/span&gt;
+    &lt;span class=&quot;na&quot;&gt;allow_failure&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;true&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;# will be changed to false when all linter errors removed&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Because the codebase is a bit neglected, &lt;code class=&quot;highlighter-rouge&quot;&gt;run-eslint&lt;/code&gt; job is allowed to fail for the moment (&lt;code class=&quot;highlighter-rouge&quot;&gt;allow_failure: true&lt;/code&gt;), which is indicated by an orange exclamation mark on a MR view or pipelines list. There are “some” errors and warnings right now but it should be cleaned up soon, so we can require eslint job to pass before merging proposed changes:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; ✖ 1208 problems (1187 errors, 21 warnings)
+   831 errors and 0 warnings potentially fixable with the `--fix` option.
+ error Command failed with exit code 1.
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;unit-tests&quot;&gt;Unit tests&lt;/h2&gt;
+
+&lt;p&gt;Extensive testing is the only way to produce bullet-proof code and stable applications. Similar to &lt;code class=&quot;highlighter-rouge&quot;&gt;run-eslint&lt;/code&gt;, &lt;code class=&quot;highlighter-rouge&quot;&gt;run-unit-tests&lt;/code&gt; job is fired on every branch and every merge request.&lt;/p&gt;
+
+&lt;div class=&quot;language-yaml highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;na&quot;&gt;run-unit-tests&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
+    &lt;span class=&quot;na&quot;&gt;stage&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;test&lt;/span&gt;
+    &lt;span class=&quot;na&quot;&gt;image&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;node:12.16.2&lt;/span&gt;
+    &lt;span class=&quot;na&quot;&gt;only&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
+        &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;branches&lt;/span&gt;
+        &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;merge_requests&lt;/span&gt;
+    &lt;span class=&quot;na&quot;&gt;before_script&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
+        &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;yarn install --frozen-lockfile --ignore-optional&lt;/span&gt;
+    &lt;span class=&quot;na&quot;&gt;script&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
+        &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;yarn run ci:test&lt;/span&gt;
+    &lt;span class=&quot;na&quot;&gt;coverage&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;/All files[^|]*\|[^|]*\s+([\d\.]+)/&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Testing suit (&lt;code class=&quot;highlighter-rouge&quot;&gt;jest&lt;/code&gt;) was configured to produce coverage report:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://i.imgur.com/43JrdbE.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;This report is later parsed by a Gitlab, using &lt;code class=&quot;highlighter-rouge&quot;&gt;coverage: /All files[^|]*\|[^|]*\s+([\d\.]+)/&lt;/code&gt; configuration. It will display coverage status and percentage change on the Merge Request view, allowing reviewers to quickly inspect if the code quality is increasing or not.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://i.imgur.com/Yn6lbe8.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;I would advise declining merging new features not covered with tests. This may be omitted for important fixes, but we all should try to make the code better, not worse.&lt;/p&gt;
+
+&lt;p&gt;Also, repository settings were changed and &lt;code class=&quot;highlighter-rouge&quot;&gt;Pipelines must succeed&lt;/code&gt; setting is checked by default. It means no more broken code on develop/production branches.&lt;/p&gt;
+
+&lt;h2 id=&quot;review-apps&quot;&gt;Review apps&lt;/h2&gt;
+
+&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;Review Apps&lt;/code&gt; are a huge and very important feature. From now on, every feature can be inspected visually by the reviewer with a single click. Gitlab Runner will create a special instance built from proposed code and expose it for the reviewers:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://i.imgur.com/FOEhZ6d.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Review app requires three jobs to run on a merge request:&lt;/p&gt;
+
+&lt;div class=&quot;language-yaml highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;na&quot;&gt;build-review-app&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
+    &lt;span class=&quot;s&quot;&gt;&amp;lt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;*docker-job&lt;/span&gt;
+    &lt;span class=&quot;na&quot;&gt;stage&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;build&lt;/span&gt;
+    &lt;span class=&quot;na&quot;&gt;variables&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
+        &lt;span class=&quot;na&quot;&gt;DOCKER_TAG&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;$CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA&lt;/span&gt;
+        &lt;span class=&quot;na&quot;&gt;SOURCE_COMMIT&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;$CI_COMMIT_SHA&lt;/span&gt;
+    &lt;span class=&quot;na&quot;&gt;only&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
+        &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;merge_requests&lt;/span&gt;
+    &lt;span class=&quot;na&quot;&gt;before_script&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
+        &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;echo $CI_JOB_TOKEN | docker login -u $CI_REGISTRY_USER $CI_REGISTRY --password-stdin&lt;/span&gt;
+    &lt;span class=&quot;na&quot;&gt;script&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
+        &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;docker build -t $DOCKER_TAG --build-arg SOURCE_COMMIT --build-arg DOCKER_TAG .&lt;/span&gt;
+        &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;docker push $DOCKER_TAG&lt;/span&gt;
+
+&lt;span class=&quot;na&quot;&gt;deploy-review-app&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
+    &lt;span class=&quot;s&quot;&gt;&amp;lt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;*docker-job&lt;/span&gt;
+    &lt;span class=&quot;s&quot;&gt;&amp;lt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;*docker-remote-host-review&lt;/span&gt;
+    &lt;span class=&quot;na&quot;&gt;stage&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;deploy&lt;/span&gt;
+    &lt;span class=&quot;na&quot;&gt;variables&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
+        &lt;span class=&quot;na&quot;&gt;DOCKER_TAG&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;$CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA&lt;/span&gt;
+        &lt;span class=&quot;na&quot;&gt;SERVICE_NAME&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;review_$CI_ENVIRONMENT_SLUG&lt;/span&gt;
+    &lt;span class=&quot;na&quot;&gt;only&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
+        &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;merge_requests&lt;/span&gt;
+    &lt;span class=&quot;na&quot;&gt;script&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
+        &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;DOCKER_CERT_PATH=$CERTS docker -H $REVIEW_HOST --tlsverify pull $DOCKER_TAG&lt;/span&gt;
+        &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;DOCKER_CERT_PATH=$CERTS docker -H $REVIEW_HOST --tlsverify service rm $SERVICE_NAME || &lt;/span&gt;&lt;span class=&quot;no&quot;&gt;true&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;# try to remove previous service but do not fail if it not exist&lt;/span&gt;
+        &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;DOCKER_CERT_PATH=$CERTS docker -H $REVIEW_HOST --tlsverify service create --with-registry-auth --network infrastructure --name $SERVICE_NAME $DOCKER_TAG&lt;/span&gt;
+        &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;echo &quot;Review app deployed&quot;&lt;/span&gt;
+    &lt;span class=&quot;na&quot;&gt;environment&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
+        &lt;span class=&quot;na&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;review/$CI_COMMIT_REF_NAME&lt;/span&gt;
+        &lt;span class=&quot;na&quot;&gt;url&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; 
+&lt;span class=&quot;s&quot;&gt;&amp;lt;a href=&quot;https://&quot;&amp;gt;https://&amp;lt;/a&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;s&quot;&gt;$CI_ENVIRONMENT_SLUG$APP_REVIEW_SUBDOMAIN&lt;/span&gt;
+        &lt;span class=&quot;s&quot;&gt;on_stop&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;stop-review-app&lt;/span&gt;
+        &lt;span class=&quot;s&quot;&gt;auto_stop_in&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;1 week&lt;/span&gt;
+        
+&lt;span class=&quot;na&quot;&gt;stop-review-app&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
+    &lt;span class=&quot;s&quot;&gt;&amp;lt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;*docker-job&lt;/span&gt;
+    &lt;span class=&quot;s&quot;&gt;&amp;lt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;*docker-remote-host-review&lt;/span&gt;
+    &lt;span class=&quot;na&quot;&gt;stage&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;deploy&lt;/span&gt;
+    &lt;span class=&quot;na&quot;&gt;variables&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
+        &lt;span class=&quot;na&quot;&gt;SERVICE_NAME&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;review_$CI_ENVIRONMENT_SLUG&lt;/span&gt;
+    &lt;span class=&quot;na&quot;&gt;only&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
+        &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;merge_requests&lt;/span&gt;
+    &lt;span class=&quot;na&quot;&gt;when&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;manual&lt;/span&gt;
+    &lt;span class=&quot;na&quot;&gt;script&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
+        &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;DOCKER_CERT_PATH=$CERTS docker -H $REVIEW_HOST --tlsverify service rm $SERVICE_NAME || &lt;/span&gt;&lt;span class=&quot;no&quot;&gt;true&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;# try to remove previous service but do not fail if it not exist&lt;/span&gt;
+        &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;echo &quot;Review app stopped&quot;&lt;/span&gt;
+    &lt;span class=&quot;na&quot;&gt;environment&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
+        &lt;span class=&quot;na&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;review/$CI_COMMIT_REF_NAME&lt;/span&gt;
+        &lt;span class=&quot;na&quot;&gt;action&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;stop&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;The first job should look familiar if you read previous parts of the post. The only difference is that we’re overwriting &lt;code class=&quot;highlighter-rouge&quot;&gt;before_script&lt;/code&gt;. Note that if you’re using &lt;strong&gt;anchors&lt;/strong&gt;, you can always overwrite the template freely which is what we did here.&lt;/p&gt;
+
+&lt;p&gt;Because merge requests could be opened by developers which may not be well known in the community (vel. bad actors), it could be a security issue if the CI/CD on Merge Requests could push images to the official repository. To prevent this, we’re using an internal registry provided by the Gitlab itself. It’s private, will work well for Review Apps but won’t be accessible by anyone else.&lt;/p&gt;
+
+&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;echo $CI_JOB_TOKEN | docker login -u $CI_REGISTRY_USER $CI_REGISTRY --password-stdin&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;We are using &lt;code class=&quot;highlighter-rouge&quot;&gt;CI_JOB_TOKEN&lt;/code&gt;, &lt;code class=&quot;highlighter-rouge&quot;&gt;CI_REGISTRY_USER&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;CI_REGISTRY&lt;/code&gt; which are &lt;a href=&quot;https://docs.gitlab.com/ee/ci/variables/predefined_variables.html&quot;&gt;environment variables injected automatically by Gitlab&lt;/a&gt;, no need to configure them. Also, please note using &lt;code class=&quot;highlighter-rouge&quot;&gt;--password-stdin&lt;/code&gt; which is a more secure way to log in as it will prevent the password from being exposed in job logs.&lt;/p&gt;
+
+&lt;p&gt;By default, docker will connect to the local daemon on unsecured, but not exposed port. It is yet possible to configure Docker daemon to validate TLS certificates so it could be exposed to the external world in a secure way, which is how we deploy services from our runners to our machine. You need to pass additional parameters:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;-H&lt;/code&gt; which is remote docker address&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;--tlsverify&lt;/code&gt; makes sure your daemon is trying to identify itself with certificates&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;--with-registry-auth&lt;/code&gt; will send registry authentication to swarm agents&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;--network&lt;/code&gt; will connect service to the specified network so the reverse proxy could expose the instance&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;DOCKER_CERT_PATH&lt;/code&gt; will instruct demon where to search for TLS certificates&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;DOCKER_CERT_PATH=$CERTS docker -H $REVIEW_HOST --tlsverify service create --with-registry-auth --network infrastructure --name $SERVICE_NAME $DOCKER_TAG&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;This will create a new &lt;code class=&quot;highlighter-rouge&quot;&gt;docker service&lt;/code&gt; and expose it automatically under the URL created with &lt;code class=&quot;highlighter-rouge&quot;&gt;CI_ENVIRONMENT_SLUG&lt;/code&gt;, which is a variable provided by Gitlab. It’s guaranteed to be a valid URL or docker/kubernetes service name.&lt;/p&gt;
+
+&lt;p&gt;Review App instances are automatically removed when MR is closed or 1 week after it’s opened. This is achieved by running &lt;code class=&quot;highlighter-rouge&quot;&gt;stop-review-app&lt;/code&gt; job which is configured to be manually triggered (&lt;code class=&quot;highlighter-rouge&quot;&gt;when: manual&lt;/code&gt;).&lt;/p&gt;
+
+&lt;h1 id=&quot;tracking-environment-deployments&quot;&gt;Tracking environment deployments&lt;/h1&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://i.imgur.com/8ncGrE9.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;By using &lt;code class=&quot;highlighter-rouge&quot;&gt;sha&lt;/code&gt;-tagged images, it’s possible to quickly redeploy the environment at any moment, with a single click. In case of emergency, project maintainers can rollback the environment to the specified point in time (docker image to be specific)&lt;/p&gt;
+
+&lt;h1 id=&quot;staging&quot;&gt;Staging&lt;/h1&gt;
+
+&lt;p&gt;Deploying a staging environment is quite similar to deploying a Review App. It also uses remote docker daemon but the service is not created on-demand, it’s updated with a new image.&lt;/p&gt;
+
+&lt;p&gt;With &lt;code class=&quot;highlighter-rouge&quot;&gt;docker swarm&lt;/code&gt; mode, you can ensure your application to be highly available. The swarm agent will take care of your containers. It will restart them or spin a new one if necessary (this is why health check is so important). It is a built-in, native docker mode everyone should start using.&lt;/p&gt;
+
+&lt;div class=&quot;language-yaml highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;
+&lt;span class=&quot;na&quot;&gt;deploy-staging&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
+    &lt;span class=&quot;s&quot;&gt;&amp;lt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;*docker-job&lt;/span&gt;
+    &lt;span class=&quot;s&quot;&gt;&amp;lt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;*docker-remote-host-staging&lt;/span&gt;
+    &lt;span class=&quot;na&quot;&gt;stage&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;deploy&lt;/span&gt;
+    &lt;span class=&quot;na&quot;&gt;variables&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
+        &lt;span class=&quot;na&quot;&gt;DOCKER_TAG&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;$DOCKER_IMAGE:$CI_COMMIT_SHORT_SHA&lt;/span&gt;
+        &lt;span class=&quot;na&quot;&gt;SERVICE_NAME&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;staging_condenser&lt;/span&gt;
+    &lt;span class=&quot;na&quot;&gt;only&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
+        &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;develop&lt;/span&gt;
+    &lt;span class=&quot;na&quot;&gt;script&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
+        &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;DOCKER_CERT_PATH=$CERTS docker -H $STAGING_HOST --tlsverify pull $DOCKER_TAG&lt;/span&gt;
+        &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;DOCKER_CERT_PATH=$CERTS docker -H $STAGING_HOST --tlsverify service update --image $DOCKER_TAG --update-failure-action rollback --update-order start-first $SERVICE_NAME&lt;/span&gt;
+    &lt;span class=&quot;na&quot;&gt;environment&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
+        &lt;span class=&quot;na&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;staging&lt;/span&gt;
+        &lt;span class=&quot;na&quot;&gt;url&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; 
+&lt;span class=&quot;s&quot;&gt;&amp;lt;a href=&quot;https://&quot;&amp;gt;https://&amp;lt;/a&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;s&quot;&gt;$STAGING_DOMAIN&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Job uses protected variables to prevent  “bad” developers from pushing/deploying malicious code. It is only possible to push staging from the protected &lt;code class=&quot;highlighter-rouge&quot;&gt;develop&lt;/code&gt; branch. Pushing directly to &lt;code class=&quot;highlighter-rouge&quot;&gt;develop&lt;/code&gt; is disabled.&lt;/p&gt;
+
+&lt;h2 id=&quot;zero-downtime-deployments&quot;&gt;Zero downtime deployments&lt;/h2&gt;
+
+&lt;p&gt;Updating single service is easy with &lt;code class=&quot;highlighter-rouge&quot;&gt;docker swarm&lt;/code&gt;:&lt;/p&gt;
+
+&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;DOCKER_CERT_PATH=$CERTS docker -H $STAGING_HOST --tlsverify service update --image $DOCKER_TAG --update-failure-action rollback --update-order start-first $SERVICE_NAME&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;There are additional but important parameters provided:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;--image $DOCKER_TAG&lt;/code&gt; - update existing service by running new containers with the specified image. For this case, it’s sha-tagged image build from develop branch&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;--update-failure-action rollback&lt;/code&gt; - by default, docker daemon will try to update the service and do nothing if it fails. By passing this parameter, we’re instructing docker to roll back the service to a previous state, which means containers using the previous image.&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;--update-order start-first&lt;/code&gt; - by default, docker is will kill current containers and spin new ones after it. It may cause some downtime which we don’t want. By setting &lt;code class=&quot;highlighter-rouge&quot;&gt;start-first&lt;/code&gt;, we instruct docker to spin new containers first. Swarm agent will switch containers without downtime if the healtcheck result becomes positive. And in case something gone wrong (healtcheck failed for any reason), we end up with a working staging environment because old containers are not touched at all.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;resources-under-control&quot;&gt;Resources under control&lt;/h2&gt;
+
+&lt;p&gt;With &lt;code class=&quot;highlighter-rouge&quot;&gt;docker swarm&lt;/code&gt; you have full control over your services and containers. This is an example configuration which is used for staging environment. With some tweaks, it could be used for production also:&lt;/p&gt;
+
+&lt;div class=&quot;language-yaml highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;na&quot;&gt;version&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;3.7&quot;&lt;/span&gt;
+&lt;span class=&quot;na&quot;&gt;services&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
+    &lt;span class=&quot;na&quot;&gt;condenser&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
+        &lt;span class=&quot;na&quot;&gt;image&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;hiveio/condenser:latest&lt;/span&gt;
+        &lt;span class=&quot;na&quot;&gt;deploy&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
+            &lt;span class=&quot;na&quot;&gt;mode&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;replicated&lt;/span&gt;
+            &lt;span class=&quot;na&quot;&gt;replicas&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;2&lt;/span&gt;
+            &lt;span class=&quot;na&quot;&gt;resources&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
+                &lt;span class=&quot;na&quot;&gt;limits&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
+                    &lt;span class=&quot;na&quot;&gt;cpus&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;0.85&quot;&lt;/span&gt;
+                    &lt;span class=&quot;na&quot;&gt;memory&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;2024M&lt;/span&gt;
+            &lt;span class=&quot;na&quot;&gt;restart_policy&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
+                &lt;span class=&quot;na&quot;&gt;condition&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;any&lt;/span&gt;
+                &lt;span class=&quot;na&quot;&gt;delay&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;5s&lt;/span&gt;
+            &lt;span class=&quot;na&quot;&gt;update_config&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
+                &lt;span class=&quot;na&quot;&gt;parallelism&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;
+                &lt;span class=&quot;na&quot;&gt;delay&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;10s&lt;/span&gt;
+                &lt;span class=&quot;na&quot;&gt;failure_action&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;rollback&lt;/span&gt;
+                &lt;span class=&quot;na&quot;&gt;order&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;start-first&lt;/span&gt;
+            &lt;span class=&quot;na&quot;&gt;rollback_config&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
+                &lt;span class=&quot;na&quot;&gt;parallelism&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;
+                &lt;span class=&quot;na&quot;&gt;delay&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;5s&lt;/span&gt;
+        &lt;span class=&quot;na&quot;&gt;networks&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
+            &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;reverse-proxy&lt;/span&gt;
+
+&lt;span class=&quot;na&quot;&gt;networks&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
+    &lt;span class=&quot;na&quot;&gt;reverse-proxy&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
+        &lt;span class=&quot;na&quot;&gt;external&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
+            &lt;span class=&quot;na&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;reverse-proxy&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h1 id=&quot;production&quot;&gt;Production&lt;/h1&gt;
+
+&lt;p&gt;It is not finished yet, but my advice is to start using &lt;code class=&quot;highlighter-rouge&quot;&gt;docker swarm&lt;/code&gt; mode for production deployments (CI/CD is ready). It’s designed to serve services like a condenser.&lt;/p&gt;
+
+&lt;p&gt;Some key features of Docker Swarm (based on official documentation):&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;strong&gt;Cluster management integrated with Docker Engine&lt;/strong&gt;: if you know how to build the docker image, start a container, read some logs, you’re ready to use Docker Swarm. You don’t need to install additional software as it is a native Docker feature.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;strong&gt;Decentralized design&lt;/strong&gt;: adding a worker or a manager to your swarm is as easy as running a single command. Those could be machines from all around the world.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;strong&gt;Scaling&lt;/strong&gt;: For each service, you can declare the number of tasks you want to run. When you scale up or down, the swarm manager automatically adapts by adding or removing tasks to maintain the desired state.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;strong&gt;Multi-host networking&lt;/strong&gt;: You can specify an overlay network for your services. The swarm manager automatically assigns addresses to the containers on the overlay network when it initializes or updates the application.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;strong&gt;Load balancing&lt;/strong&gt;: You can expose the ports for services to an external load balancer. Internally, the swarm lets you specify how to distribute service containers between nodes.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;strong&gt;Secure by default&lt;/strong&gt;: Each node in the swarm enforces TLS mutual authentication and encryption to secure communications between itself and all other nodes. You have the option to use self-signed root certificates or certificates from a custom root CA.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;strong&gt;Rolling updates&lt;/strong&gt;: At rollout time you can apply service updates to nodes incrementally. The swarm manager lets you control the delay between service deployment to different sets of nodes. If anything goes wrong, you can roll back to a previous version of the service.&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;And after all, it is called &lt;code class=&quot;highlighter-rouge&quot;&gt;Swarm&lt;/code&gt;, can’t be a coincidence! ;)&lt;/p&gt;
+
+&lt;p&gt;I’m using Swarm mode for most of my projects. Within Engrave (dblog.org) swarm is automatically managing a set of 23 microservices with almost 30 containers at the moment.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://i.imgur.com/JMs3d48.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;h1 id=&quot;my-requests-and-tips-for-condenser-developers-and-not-only&quot;&gt;My requests and tips for condenser Developers (and not only)&lt;/h1&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Please do write unit tests covering your code. Improving coverage will only cause fewer problems and bugs. Coverage is now visible on every merge request so it’s damn easy to see a regression. Take care of the code quality.&lt;/li&gt;
+  &lt;li&gt;Use exact package versions in &lt;code class=&quot;highlighter-rouge&quot;&gt;package.json&lt;/code&gt; file. When using &lt;code class=&quot;highlighter-rouge&quot;&gt;^&lt;/code&gt;, it’s not guaranteed to install the same version on two different builds. And some developers like to introduce breaking changes without changing the &lt;code class=&quot;highlighter-rouge&quot;&gt;major&lt;/code&gt; version number.&lt;/li&gt;
+  &lt;li&gt;Use &lt;code class=&quot;highlighter-rouge&quot;&gt;alpine&lt;/code&gt; images to create minified production images.&lt;/li&gt;
+  &lt;li&gt;Use the latest images from official Docker HUB when possible.&lt;/li&gt;
+  &lt;li&gt;Use &lt;a href=&quot;https://docs.docker.com/develop/develop-images/multistage-build/&quot;&gt;multi-stage builds&lt;/a&gt; to create leaner docker image&lt;/li&gt;
+  &lt;li&gt;Write and configure health checks for your applications&lt;/li&gt;
+  &lt;li&gt;Run &lt;code class=&quot;highlighter-rouge&quot;&gt;eslint&lt;/code&gt; to clean up your code before you push it to the repository. You can use &lt;code class=&quot;highlighter-rouge&quot;&gt;husky&lt;/code&gt; to ensure it happens automatically.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://hivesigner.com/sign/account-witness-vote?witness=engrave&amp;amp;approve=1&quot;&gt;&lt;img src=&quot;https://i.imgur.com/lawFvZF.png&quot; alt=&quot;Vote for @engrave witness&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;hr /&gt;
+
+&lt;p&gt;
+  See: &lt;a href=&quot;https://hive.blog/@engrave/improvements-for-condenser-repository-continuous-integration-and-deployments&quot;&gt;Improvements for Condenser repository, Continuous Integration and Deployments&lt;/a&gt;
+  by
+  &lt;a href=&quot;https://hive.blog/@engrave&quot;&gt;@engrave&lt;/a&gt;
+&lt;/p&gt;</content><author><name>engrave</name></author><summary type="html">I want to elaborate not only on introduced features but also on my thought and reasoning so everyone can benefit and introduce changes in their projects. This post will be long but I believe it might be useful for the entire HiveDevs community. The workflow is built on top of Gitlab CI/CD but can be easily modified for any other CI/CD tool (i.e. CircleCI or Jenkins). Docker I’ve started my work by reviewing Dockerfile. I’ve built the condenser image and was a bit shocked: $ docker image ls condenser latest 6d57c0c8a904 19 seconds ago 1.54GB 1.54 GB for a simple frontend application? Boy, it’s just too much. Let’s do something with it. Leaner docker image Let’s start by recognizing the reason why is this so big. You can also look into your Dockerfile and package.json and search for some common mistakes: using full-sized images rather than alpine versions installing dev dependencies for production images putting dev dependencies into production dependencies list copying useless files into the final image Yep, you can check every point here. Let’s make some work on a new Dockerfile: FROM node:12.16.2 as development WORKDIR /var/app COPY package.json yarn.lock ./ RUN yarn install --non-interactive --frozen-lockfile --ignore-optional COPY . . RUN mkdir tmp &amp;amp;&amp;amp; yarn build CMD [ &quot;yarn&quot;, &quot;run&quot;, &quot;start&quot; ] ### REMOVE DEV DEPENDENCIES ## FROM development as dependencies RUN yarn install --non-interactive --frozen-lockfile --ignore-optional --production ### BUILD MINIFIED PRODUCTION ## FROM node:12.16.2-alpine as production WORKDIR /var/app ARG SOURCE_COMMIT ENV SOURCE_COMMIT ${SOURCE_COMMIT} ARG DOCKER_TAG ENV DOCKER_TAG ${DOCKER_TAG} COPY --from=dependencies /var/app/package.json /var/app/package.json COPY --from=dependencies /var/app/config /var/app/config COPY --from=dependencies /var/app/dist /var/app/dist COPY --from=dependencies /var/app/lib /var/app/lib COPY --from=dependencies /var/app/src /var/app/src COPY --from=dependencies /var/app/tmp /var/app/tmp COPY --from=dependencies /var/app/webpack /var/app/webpack COPY --from=dependencies /var/app/node_modules /var/app/node_modules COPY --from=dependencies /var/app/healthcheck.js /var/app/healthcheck.js HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=5 CMD node /var/app/healthcheck.js CMD [ &quot;yarn&quot;, &quot;run&quot;, &quot;production&quot; ] What has been improved: Node.js version was upgraded from 8.7 to 12.16.2 which is the latest LTS at the moment. Always try using the latest framework versions, which may include security fixes and performance upgrades. It’s also a good habit to use a specific version up to the patch number. Multistage build was used to build an optimal image for production deployment. First, we build a development stage with every dependency to be able to compile React application. Next, we’re removing development dependencies with --production switch during the dependencies stage. After all, we’re creating a minimal image from the alpine node version which is the smallest base available, by copying only necessary files and directories. Healthcheck has been introduced, so the docker daemon can easily manage containers with automatic restarts if necessary and zero-downtime deployments which will be explained later in this post. It will be also useful for dynamic scaling capabilities with docker swarm. Also, package.json file was modified, but it’s not worth to post its content here: Dev dependencies like webpack, babel or eslint was moved into a proper list called devDependencies so yarn could install only production deps for the final image. Strict versions were introduced for every dependency to make sure every build produces exactly the same image. Semantic versioning is popular, but there is no way to check if the package author does not introduce breaking changes with only patch version increased. If you need to update a package, do it manually. If you have enough test coverage, you can update the package and run CI/CD to check if everything works fine. After all that work done, the condenser image size was massively reduced: $ docker image ls condenser latest 58406d338e67 8 seconds ago 226MB The compressed image in the docker registry is even smaller. Much better, right? Shame on you, Steemit! Healthcheck Simply speaking, docker is running containers and trying to keep it alive as long as possible. But the system needs to have a tool to determine if the container is actually alive. It may seem alive, but is your app responding to requests for example? Fortunately, docker has also integrated health check mechanism which can be integrated into Dockerfile or docker-compose.yml. Usually, you need to create an endpoint for liveness checks. Fortunately, condenser already has one so we can utilize it easily. There is a lot of examples with curl used as a docker health check, but it’s not a good way to go. Healthcheck should work cross-platform and curl implementation differs on Windows and Unix. You should write health check in the same technology or framework as your projects are written, for condenser it’s Node.js. const http = require(&quot;http&quot;); const options = { host: &quot;localhost&quot;, port: &quot;8080&quot;, path: '/.well-known/healthcheck.json', timeout: 5000 }; const request = http.request(options, (res) =&amp;gt; { console.log(`STATUS: ${res.statusCode}`); if (res.statusCode == 200) { process.exit(0); } else { console.error(`ERROR: ${res.statusCode}`); process.exit(1); } }); request.on('error', (err) =&amp;gt; { console.error('ERROR', err); process.exit(1); }); request.end(); When ready, instruct Docker to use your health check mechanism. Add following line into your Dockefile: HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=5 CMD node /var/app/healthcheck.js Make sure this file /var/app/healthcheck.js exists inside your image. If you want to be sure your health check is working, inspect your container after running it: $ docker container ls CONTAINER ID IMAGE COMMAND CREATED STATUS PORTS NAMES 060166cf52ee hiveio/condenser:development &quot;docker-entrypoint.s…&quot; 5 minutes ago Up 5 minutes (healthy) 0.0.0.0:8080-&amp;gt;8080/tcp mystifying_dhawan There should be a (healthy) indicator in STATUS column. And there is. Please also note that during the container startup process, it will indicate slightly different status (starting), as the docker daemon will wait before making the first check. It’s because we’re giving some time for our app to startup. It’s the start-period parameter. Depending on your app and traffic/load, those parameters should vary. Pushing images to Docker Hub We already have an improved (smaller) docker image, so it’s time to push it to the repository. Doing it manually is a waste of time and may cause human mistakes. The best way is to utilize Gitlab Runner to do it for us in an automatic and bullet-proof manner. Here is a job definition from .gitlab-ci.yml file with some additional code which we will breakdown: variables: DOCKER_IMAGE: hiveio/condenser .docker-job: &amp;amp;docker-job image: docker:stable services: - docker:dind before_script: - echo $HUB_TOKEN | docker login -u $HUB_USERNAME --password-stdin build-development: &amp;lt;&amp;lt;: *docker-job stage: build variables: DOCKER_TAG: $DOCKER_IMAGE:$CI_COMMIT_SHORT_SHA DOCKER_TAG_MAIN: $DOCKER_IMAGE:development SOURCE_COMMIT: $CI_COMMIT_SHA only: - develop script: - docker build -t $DOCKER_TAG -t $DOCKER_TAG_MAIN --build-arg SOURCE_COMMIT --build-arg DOCKER_TAG . - docker push $DOCKER_TAG - docker push $DOCKER_TAG_MAIN First, we’re creating global variable DOCKER_IMAGE so we can reuse it later in many places. And in case we would like to change the image name, we do it only in a single place. Hence we have multiple jobs defined in .gitlab-ci.yml file, it’s good to utilize advanced YAML syntax, which includes hidden keys and anchors. It will decrease the duplicated code and make the file easier to read and maintain. Every job name starting with the dot will be considered as a hidden key and won’t be directly executed. Btw, this is a quick way to temporarily disable any job in your GitLab CI/CD without commenting or removing it. By using .docker-job: &amp;amp;docker-job we created an anchor which can be later used to extend any job. If you add &amp;lt;&amp;lt;: *docker-job, it will populate image, services and before_script properties automatically. It’s a good move if you have multiple jobs that do similar things. Later on, we’re creating some additional local (job scoped) variables: DOCKER_TAG_MAIN which will be evaluated to hiveio/condenser:development DOCKER_TAG which will be evaluated to hiveio/condenser:344e55ef or similar SOURCE_COMMIT which will be evaluated to 344e55efefd56e00b15eea6ccf8560a1107b9ff6 (or similar commit SHA) It’s a good idea to double tag an image. Latest tag is useless if you want to track your development process. Later on, I will describe the way how we’re using this specific, sha-tagged image to track deployments and rollback them anytime with a single click. Finally, we’re building an image with additional build arguments by using --build-arg: docker build -t $DOCKER_TAG -t $DOCKER_TAG_MAIN --build-arg SOURCE_COMMIT --build-arg DOCKER_TAG . If you scroll up to the Dockerfile section, you will notice ARG SOURCE_COMMIT and ENV SOURCE_COMMIT ${SOURCE_COMMIT} which means these build arguments will be injected as an environment variables into your containers. It’s a quick and easy way to pass additional, build-level variables into your images. Those specific variables are later returned by the condenser health endpoint. It may be useful to check a specific instance source. $ curl &amp;lt;a href=&quot;https://staging.condenser.engrave.dev/.well-known/healthcheck.json&quot;&amp;gt;https://staging.condenser.engrave.dev/.well-known/healthcheck.json&amp;lt;/a&amp;gt; {&quot;status&quot;:&quot;ok&quot;,&quot;docker_tag&quot;:&quot;hiveio/condenser:344e55ef&quot;,&quot;source_commit&quot;:&quot;344e55efefd56e00b15eea6ccf8560a1107b9ff6&quot;} An important thing to mention is that HUB_TOKEN and HUB_USERNAME are environment variables injected into the GitLab runner job and configured in Projects Settings. To prevent unauthorized users from pushing malicious images into the official registry, those variables are configured as protected and masked, which means they can be only used on specific branches and are moderated from job logs, so there is no way it can leak without internal bad actor with elevated permissions. Merge requests To improve the process of adding new features and fixes to the codebase, Merge Requests have got a brand new CI/CD workflow which includes the following jobs: The entire pipeline is fired on every Merge Request and it’s required to pass before changes could be merged. If the pipeline fails for some reason (i.e. failing unit tests), there is no way to merge changes into the main branch. This will enforce code quality and prevent regression. Eslint Code quality and standardization are important, especially if it’s an open-source project that could be maintained by totally different developers from all around the world. Eslint is a tool that statically analyzes the code to quickly find potential problems and keep code organized with specified rules. Code analysis is especially useful when developing Javascript applications. It’s really easy to make some stupid mistakes. Eslint job will be fired on every Merge Request and on every branch pushed to the repository: run-eslint: stage: test image: node:12.16.2 only: - branches - merge_requests before_script: - yarn install --frozen-lockfile --ignore-optional script: - yarn ci:eslint allow_failure: true # will be changed to false when all linter errors removed Because the codebase is a bit neglected, run-eslint job is allowed to fail for the moment (allow_failure: true), which is indicated by an orange exclamation mark on a MR view or pipelines list. There are “some” errors and warnings right now but it should be cleaned up soon, so we can require eslint job to pass before merging proposed changes: ✖ 1208 problems (1187 errors, 21 warnings) 831 errors and 0 warnings potentially fixable with the `--fix` option. error Command failed with exit code 1. Unit tests Extensive testing is the only way to produce bullet-proof code and stable applications. Similar to run-eslint, run-unit-tests job is fired on every branch and every merge request. run-unit-tests: stage: test image: node:12.16.2 only: - branches - merge_requests before_script: - yarn install --frozen-lockfile --ignore-optional script: - yarn run ci:test coverage: /All files[^|]*\|[^|]*\s+([\d\.]+)/ Testing suit (jest) was configured to produce coverage report: This report is later parsed by a Gitlab, using coverage: /All files[^|]*\|[^|]*\s+([\d\.]+)/ configuration. It will display coverage status and percentage change on the Merge Request view, allowing reviewers to quickly inspect if the code quality is increasing or not. I would advise declining merging new features not covered with tests. This may be omitted for important fixes, but we all should try to make the code better, not worse. Also, repository settings were changed and Pipelines must succeed setting is checked by default. It means no more broken code on develop/production branches. Review apps Review Apps are a huge and very important feature. From now on, every feature can be inspected visually by the reviewer with a single click. Gitlab Runner will create a special instance built from proposed code and expose it for the reviewers: Review app requires three jobs to run on a merge request: build-review-app: &amp;lt;&amp;lt;: *docker-job stage: build variables: DOCKER_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA SOURCE_COMMIT: $CI_COMMIT_SHA only: - merge_requests before_script: - echo $CI_JOB_TOKEN | docker login -u $CI_REGISTRY_USER $CI_REGISTRY --password-stdin script: - docker build -t $DOCKER_TAG --build-arg SOURCE_COMMIT --build-arg DOCKER_TAG . - docker push $DOCKER_TAG deploy-review-app: &amp;lt;&amp;lt;: *docker-job &amp;lt;&amp;lt;: *docker-remote-host-review stage: deploy variables: DOCKER_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA SERVICE_NAME: review_$CI_ENVIRONMENT_SLUG only: - merge_requests script: - DOCKER_CERT_PATH=$CERTS docker -H $REVIEW_HOST --tlsverify pull $DOCKER_TAG - DOCKER_CERT_PATH=$CERTS docker -H $REVIEW_HOST --tlsverify service rm $SERVICE_NAME || true # try to remove previous service but do not fail if it not exist - DOCKER_CERT_PATH=$CERTS docker -H $REVIEW_HOST --tlsverify service create --with-registry-auth --network infrastructure --name $SERVICE_NAME $DOCKER_TAG - echo &quot;Review app deployed&quot; environment: name: review/$CI_COMMIT_REF_NAME url: &amp;lt;a href=&quot;https://&quot;&amp;gt;https://&amp;lt;/a&amp;gt; $CI_ENVIRONMENT_SLUG$APP_REVIEW_SUBDOMAIN on_stop: stop-review-app auto_stop_in: 1 week stop-review-app: &amp;lt;&amp;lt;: *docker-job &amp;lt;&amp;lt;: *docker-remote-host-review stage: deploy variables: SERVICE_NAME: review_$CI_ENVIRONMENT_SLUG only: - merge_requests when: manual script: - DOCKER_CERT_PATH=$CERTS docker -H $REVIEW_HOST --tlsverify service rm $SERVICE_NAME || true # try to remove previous service but do not fail if it not exist - echo &quot;Review app stopped&quot; environment: name: review/$CI_COMMIT_REF_NAME action: stop The first job should look familiar if you read previous parts of the post. The only difference is that we’re overwriting before_script. Note that if you’re using anchors, you can always overwrite the template freely which is what we did here. Because merge requests could be opened by developers which may not be well known in the community (vel. bad actors), it could be a security issue if the CI/CD on Merge Requests could push images to the official repository. To prevent this, we’re using an internal registry provided by the Gitlab itself. It’s private, will work well for Review Apps but won’t be accessible by anyone else. echo $CI_JOB_TOKEN | docker login -u $CI_REGISTRY_USER $CI_REGISTRY --password-stdin We are using CI_JOB_TOKEN, CI_REGISTRY_USER and CI_REGISTRY which are environment variables injected automatically by Gitlab, no need to configure them. Also, please note using --password-stdin which is a more secure way to log in as it will prevent the password from being exposed in job logs. By default, docker will connect to the local daemon on unsecured, but not exposed port. It is yet possible to configure Docker daemon to validate TLS certificates so it could be exposed to the external world in a secure way, which is how we deploy services from our runners to our machine. You need to pass additional parameters: -H which is remote docker address --tlsverify makes sure your daemon is trying to identify itself with certificates --with-registry-auth will send registry authentication to swarm agents --network will connect service to the specified network so the reverse proxy could expose the instance DOCKER_CERT_PATH will instruct demon where to search for TLS certificates DOCKER_CERT_PATH=$CERTS docker -H $REVIEW_HOST --tlsverify service create --with-registry-auth --network infrastructure --name $SERVICE_NAME $DOCKER_TAG This will create a new docker service and expose it automatically under the URL created with CI_ENVIRONMENT_SLUG, which is a variable provided by Gitlab. It’s guaranteed to be a valid URL or docker/kubernetes service name. Review App instances are automatically removed when MR is closed or 1 week after it’s opened. This is achieved by running stop-review-app job which is configured to be manually triggered (when: manual). Tracking environment deployments By using sha-tagged images, it’s possible to quickly redeploy the environment at any moment, with a single click. In case of emergency, project maintainers can rollback the environment to the specified point in time (docker image to be specific) Staging Deploying a staging environment is quite similar to deploying a Review App. It also uses remote docker daemon but the service is not created on-demand, it’s updated with a new image. With docker swarm mode, you can ensure your application to be highly available. The swarm agent will take care of your containers. It will restart them or spin a new one if necessary (this is why health check is so important). It is a built-in, native docker mode everyone should start using. deploy-staging: &amp;lt;&amp;lt;: *docker-job &amp;lt;&amp;lt;: *docker-remote-host-staging stage: deploy variables: DOCKER_TAG: $DOCKER_IMAGE:$CI_COMMIT_SHORT_SHA SERVICE_NAME: staging_condenser only: - develop script: - DOCKER_CERT_PATH=$CERTS docker -H $STAGING_HOST --tlsverify pull $DOCKER_TAG - DOCKER_CERT_PATH=$CERTS docker -H $STAGING_HOST --tlsverify service update --image $DOCKER_TAG --update-failure-action rollback --update-order start-first $SERVICE_NAME environment: name: staging url: &amp;lt;a href=&quot;https://&quot;&amp;gt;https://&amp;lt;/a&amp;gt; $STAGING_DOMAIN Job uses protected variables to prevent “bad” developers from pushing/deploying malicious code. It is only possible to push staging from the protected develop branch. Pushing directly to develop is disabled. Zero downtime deployments Updating single service is easy with docker swarm: DOCKER_CERT_PATH=$CERTS docker -H $STAGING_HOST --tlsverify service update --image $DOCKER_TAG --update-failure-action rollback --update-order start-first $SERVICE_NAME There are additional but important parameters provided: --image $DOCKER_TAG - update existing service by running new containers with the specified image. For this case, it’s sha-tagged image build from develop branch --update-failure-action rollback - by default, docker daemon will try to update the service and do nothing if it fails. By passing this parameter, we’re instructing docker to roll back the service to a previous state, which means containers using the previous image. --update-order start-first - by default, docker is will kill current containers and spin new ones after it. It may cause some downtime which we don’t want. By setting start-first, we instruct docker to spin new containers first. Swarm agent will switch containers without downtime if the healtcheck result becomes positive. And in case something gone wrong (healtcheck failed for any reason), we end up with a working staging environment because old containers are not touched at all. Resources under control With docker swarm you have full control over your services and containers. This is an example configuration which is used for staging environment. With some tweaks, it could be used for production also: version: &quot;3.7&quot; services: condenser: image: hiveio/condenser:latest deploy: mode: replicated replicas: 2 resources: limits: cpus: &quot;0.85&quot; memory: 2024M restart_policy: condition: any delay: 5s update_config: parallelism: 1 delay: 10s failure_action: rollback order: start-first rollback_config: parallelism: 1 delay: 5s networks: - reverse-proxy networks: reverse-proxy: external: name: reverse-proxy Production It is not finished yet, but my advice is to start using docker swarm mode for production deployments (CI/CD is ready). It’s designed to serve services like a condenser. Some key features of Docker Swarm (based on official documentation): Cluster management integrated with Docker Engine: if you know how to build the docker image, start a container, read some logs, you’re ready to use Docker Swarm. You don’t need to install additional software as it is a native Docker feature. Decentralized design: adding a worker or a manager to your swarm is as easy as running a single command. Those could be machines from all around the world. Scaling: For each service, you can declare the number of tasks you want to run. When you scale up or down, the swarm manager automatically adapts by adding or removing tasks to maintain the desired state. Multi-host networking: You can specify an overlay network for your services. The swarm manager automatically assigns addresses to the containers on the overlay network when it initializes or updates the application. Load balancing: You can expose the ports for services to an external load balancer. Internally, the swarm lets you specify how to distribute service containers between nodes. Secure by default: Each node in the swarm enforces TLS mutual authentication and encryption to secure communications between itself and all other nodes. You have the option to use self-signed root certificates or certificates from a custom root CA. Rolling updates: At rollout time you can apply service updates to nodes incrementally. The swarm manager lets you control the delay between service deployment to different sets of nodes. If anything goes wrong, you can roll back to a previous version of the service. And after all, it is called Swarm, can’t be a coincidence! ;) I’m using Swarm mode for most of my projects. Within Engrave (dblog.org) swarm is automatically managing a set of 23 microservices with almost 30 containers at the moment. My requests and tips for condenser Developers (and not only) Please do write unit tests covering your code. Improving coverage will only cause fewer problems and bugs. Coverage is now visible on every merge request so it’s damn easy to see a regression. Take care of the code quality. Use exact package versions in package.json file. When using ^, it’s not guaranteed to install the same version on two different builds. And some developers like to introduce breaking changes without changing the major version number. Use alpine images to create minified production images. Use the latest images from official Docker HUB when possible. Use multi-stage builds to create leaner docker image Write and configure health checks for your applications Run eslint to clean up your code before you push it to the repository. You can use husky to ensure it happens automatically. See: Improvements for Condenser repository, Continuous Integration and Deployments by @engrave</summary></entry><entry><title type="html">Hive Keychain Now Available on Chrome &amp;amp; Brave!</title><link href="https://hivedocs.info/news/nodejs/keychain/2020/04/17/hive-keychain-now-available-on-chrome-and-brave.html" rel="alternate" type="text/html" title="Hive Keychain Now Available on Chrome &amp; Brave!" /><published>2020-04-17T08:50:54-07:00</published><updated>2020-04-17T08:50:54-07:00</updated><id>https://hivedocs.info/news/nodejs/keychain/2020/04/17/hive-keychain-now-available-on-chrome-and-brave</id><content type="html" xml:base="https://hivedocs.info/news/nodejs/keychain/2020/04/17/hive-keychain-now-available-on-chrome-and-brave.html">&lt;p&gt;&lt;img src=&quot;https://files.peakd.com/file/peakd-hive/stoodkev/AmSWoznK-keychain_title.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;I am extremely happy to report that the Hive Keychain browser extension has FINALLY been approved by Google and is now available for everyone to install on the Google Chrome and Brave browsers!&lt;/p&gt;
 
@@ -651,7 +1147,7 @@ and&lt;/p&gt;
 &lt;p&gt;will switch to the hive blockchain.&lt;/p&gt;
 
 &lt;hr /&gt;
-&lt;p&gt;&lt;em&gt;If you like what I do, consider casting a vote for me as witness on &lt;a href=&quot;https://hivesigner.com.com/sign/account-witness-vote?witness=holger80&amp;amp;approve=1&quot;&gt;Hivesigner&lt;/a&gt; or on &lt;a href=&quot;https://peakd.com/witnesses&quot;&gt;PeakD&lt;/a&gt;&lt;/em&gt;.&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;If you like what I do, consider casting a vote for me as witness on &lt;a href=&quot;https://hivesigner.com/sign/account-witness-vote?witness=holger80&amp;amp;approve=1&quot;&gt;Hivesigner&lt;/a&gt; or on &lt;a href=&quot;https://peakd.com/witnesses&quot;&gt;PeakD&lt;/a&gt;&lt;/em&gt;.&lt;/p&gt;
 &lt;hr /&gt;
 
 &lt;p&gt;
@@ -859,414 +1355,11 @@ except:
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 &lt;hr /&gt;
+&lt;p&gt;&lt;em&gt;If you like what I do, consider casting a vote for me as witness on &lt;a href=&quot;https://hivesigner.com/sign/account-witness-vote?witness=holger80&amp;amp;approve=1&quot;&gt;Hivesigner&lt;/a&gt; or on &lt;a href=&quot;https://peakd.com/witnesses&quot;&gt;PeakD&lt;/a&gt;&lt;/em&gt;.&lt;/p&gt;
+&lt;hr /&gt;
 
 &lt;p&gt;
   See: &lt;a href=&quot;https://hive.blog/@holger80/update-for-beem-huge-performance-improvements-and-bridge-api-support&quot;&gt;Update for beem: huge performance improvements and bridge API support&lt;/a&gt;
   by
   &lt;a href=&quot;https://hive.blog/@holger80&quot;&gt;@holger80&lt;/a&gt;
-&lt;/p&gt;</content><author><name>holger80</name></author><summary type="html">Repository https://github.com/holgern/beem beem is a python library for STEEM and HIVE. The current version is 0.22.13. There is also a discord channel for beem: https://discord.gg/4HM592V The newest beem version can be installed by: pip install -U beem Check that you are using hive nodes. The following command beempy updatenodes --hive updates the nodelist and uses only hive nodes. The list of nodes can be checked with beempy config and beempy currentnode shows the currently connected node. Changelog for versions 0.22.13 HiveSigner support added api link to steemconnect has been fixed change recovery account added to beempy hive node has been added add account get_notifications and mark_notifications_as_read beempy notifications has been added bridge api support added config storage improved and add get_default_config_storage, get_default_key_storage and get_default_token_storage list_all_subscriptions and get_account_posts added reduce number of performed api calls on Steem object creation Performance boost for beem All integration tests are finishing now in ========== 469 passed, 27 skipped, 11 warnings in 1040.19s (0:17:20) =========== which is an improvement of 49% (version 0.22.12 needed 1551 seconds). This huge boost could be accomplished by reducing the number of API calls when creating the Steem object. When importing objects from beem, a configStorage object is no longer created during import. The config storage is now read during object creation with get_default_config_storage. This speeds up importing beem modules and read stored parameter only when needed. These changes improves also the speed of all beempy commands. Bridge API beem supports now parts of the bridge API. More functions to support the missing API calls will follow. notifications beempy notifications holger80 prints a table with unread notifications. +---------------------+------+-------------------------------------------+ | Date | Type | Message | +---------------------+------+-------------------------------------------+ | 2020-04-06 10:15:57 | vote | @uwelang voted on your post ($0.23) | | 2020-04-06 12:52:00 | vote | @steemcleaners voted on your post ($2.45) | +---------------------+------+-------------------------------------------+ They can also marked as read with -m beempy notifications -m holger80 which broadcasts notify custom_json. list all subscribtions The account object has now a list_all_subscriptions functions which returns a list with all cummunities which the account has subscript. get_account_posts The account object has now the get_account_posts function, which can be used to fetch all posts shown in the feed of the account. get_ranked_posts A new class RankedPosts was added to beem.comment which can be used to receive ranked posts. Change recovery account with beempy It is now possible to change the recovery account using beempy beempy changerecovery -a holge80 recovery.account HiveSigner support was added The following python example shows how to create a login link: from beem.hivesigner import HiveSigner hivesigner = HiveSigner(client_id=&quot;rewarding.app&quot;, scope=&quot;login&quot;, get_refresh_token=False) hivesigner.get_login_url('https://rewarding.app/welcome') returns ' &amp;lt;a href=&quot;https://hivesigner.com/oauth2/authorize&quot;&amp;gt;https://hivesigner.com/oauth2/authorize&amp;lt;/a&amp;gt; ?client_id=rewarding.app&amp;amp;redirect_uri=https%3A%2F%2Frewarding.app%2Fwelcome&amp;amp;scope=login' The received token can then be used to check if a user was successfully entering its posting key in a python script: try: hivesigner.set_access_token(access_token) name = hivesigner.me()[&quot;name&quot;] except: print(&quot;Wrong token&quot;) See: Update for beem: huge performance improvements and bridge API support by @holger80</summary></entry><entry><title type="html">Tutorial: Building A Dice Game Contract With Hive Stream (Part 2)</title><link href="https://hivedocs.info/howto/dapps/nodejs/2020/04/06/tutorial-building-a-dice-game-contract-with-hive-stream-part-2.html" rel="alternate" type="text/html" title="Tutorial: Building A Dice Game Contract With Hive Stream (Part 2)" /><published>2020-04-06T04:00:21-07:00</published><updated>2020-04-06T04:00:21-07:00</updated><id>https://hivedocs.info/howto/dapps/nodejs/2020/04/06/tutorial-building-a-dice-game-contract-with-hive-stream-part-2</id><content type="html" xml:base="https://hivedocs.info/howto/dapps/nodejs/2020/04/06/tutorial-building-a-dice-game-contract-with-hive-stream-part-2.html">&lt;p&gt;If you missed &lt;a href=&quot;https://peakd.com/hive-139531/@beggars/tutorial-building-a-dice-game-contract-with-hive-stream&quot;&gt;part one here&lt;/a&gt;, we built a basic dice game contract which allows people to bet on an outcome and either win or lose. The tutorial left out some things that you might want to do in a real deployment.&lt;/p&gt;
-
-&lt;h2 id=&quot;install-mongodb&quot;&gt;Install MongoDB&lt;/h2&gt;
-
-&lt;p&gt;For this tutorial, we are going to use MongoDB as the database behind it. We’ll be storing transactions and outcomes in the database, so we can ensure that transfers are not processed multiple times.&lt;/p&gt;
-
-&lt;p&gt;While the streamer keeps track of the last processed block number in a JSON file or SQLite database, what happens if your node goes down and the file gets edited or deleted? It would result in missed transactions which would be a pain to manually process.&lt;/p&gt;
-
-&lt;p&gt;Download the community version installer from the official &lt;a href=&quot;https://www.mongodb.com/download-center/community&quot;&gt;MongoDB&lt;/a&gt; website. Choose the appropriate installer for your operating system and follow the instructions. It should require very little input, just keep clicking next basically and keep everything as default.&lt;/p&gt;
-
-&lt;h2 id=&quot;build-a-mongodb-adapter&quot;&gt;Build a MongoDB adapter&lt;/h2&gt;
-
-&lt;p&gt;Now, we need to write an adapter that will allow Hive Stream to work with MongoDB instead of the file databases that it is configured out-of-the-box to use. Provided you have Hive Stream installed (version 2+) you should have the new adapter’s functionality.&lt;/p&gt;
-
-&lt;p&gt;An adapter for standard use cases consists of just two mandatory methods &lt;code class=&quot;highlighter-rouge&quot;&gt;loadState&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;saveState&lt;/code&gt; the &lt;code class=&quot;highlighter-rouge&quot;&gt;loadState&lt;/code&gt; method gets called when the streamer starts to start at the last block it finished. The &lt;code class=&quot;highlighter-rouge&quot;&gt;saveState&lt;/code&gt; method updates with the latest processed block.&lt;/p&gt;
-
-&lt;p&gt;There are however other lifecycle methods which we can use in our more functional adapters. &lt;code class=&quot;highlighter-rouge&quot;&gt;create&lt;/code&gt; is called on initialisation, you can setup instances and connections in here. &lt;code class=&quot;highlighter-rouge&quot;&gt;destroy&lt;/code&gt; is called when everything is stopped, so naturally you close database connections in here.&lt;/p&gt;
-
-&lt;p&gt;The &lt;code class=&quot;highlighter-rouge&quot;&gt;processOperation&lt;/code&gt; is a method that gets the latest block number, transaction ID and so forth. It’s metadata used to identify specific transactions and their block data. The &lt;code class=&quot;highlighter-rouge&quot;&gt;processTransfer&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;processCustomJson&lt;/code&gt; methods are called when a matching transfer or custom JSON operation is matched to a contract. It also gets contract information as well as the payload and other helpful info.&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;Save the following as &lt;code class=&quot;highlighter-rouge&quot;&gt;mongo.adapter.js&lt;/code&gt;&lt;/strong&gt;&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;import { AdapterBase } from 'hive-stream';
-
-import { MongoClient, Db } from 'mongodb';
-
-export class MongodbAdapter extends AdapterBase {
-    client;
-    db;
-
-    mongo = {
-        uri: '',
-        database: '',
-        options: {}
-    };
-
-    blockNumber;
-    lastBlockNumber;
-    blockId;
-    prevBlockId;
-    transactionId;
-
-    constructor(uri, databasw, options = { useNewUrlParser: true,  useUnifiedTopology: true }) {
-        super();
-
-        this.mongo.uri = uri;
-        this.mongo.database = database;
-        this.mongo.options = options;
-    }
-
-    async create() {
-        try {
-            this.client = await MongoClient.connect(this.mongo.uri, this.mongo.options);
-            this.db = this.client.db(this.mongo.database);
-
-            return true;
-        } catch (e) {
-            throw e;
-        }
-    }
-
-    async loadState() {
-        try {
-            const collection = this.db.collection('params');
-            const params = await collection.findOne({});
-
-            if (params) {
-                return params;
-            }
-        } catch (e) {
-            throw e;
-        }
-    }
-
-    async saveState(data) {
-        try {
-            const collection = this.db.collection('params');
-
-            await collection.replaceOne({}, data, {  upsert: true});
-
-            return true;
-        } catch (e) {
-            throw e;
-        }
-    }
-
-    async processOperation(op, blockNumber, blockId, prevBlockId, trxId, blockTime) {
-        this.blockNumber = blockNumber;
-        this.blockId = blockId;
-        this.prevBlockId = prevBlockId;
-        this.transactionId = trxId;
-    }
-
-    async processTransfer(operation, payload, metadata) {
-        const collection = this.db.collection('transfers');
-
-        const data = {
-            id: this.transactionId,
-            blockId: this.blockId,
-            blockNumber: this.blockNumber,
-            sender: metadata.sender,
-            amount: metadata.amount,
-            contractName: payload.name,
-            contractAction: payload.action,
-            contractPayload: payload.payload
-        };
-
-        await collection.insertOne(data);
-
-        return true;
-    }
-
-    async processCustomJson(operation, payload, metadata) {
-        const collection = this.db.collection('transactions');
-
-        const data = {
-            id: this.transactionId,
-            blockId: this.blockId,
-            blockNumber: this.blockNumber,
-            sender: metadata.sender,
-            isSignedWithActiveKey: metadata.isSignedWithActiveKey,
-            contractName: payload.name,
-            contractAction: payload.action,
-            contractPayload: payload.payload
-        };
-
-        await collection.insertOne(data);
-
-        return true;
-    }
-
-    async destroy() {
-        await this.client.close();
-
-        return true;
-    }
-}
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h2 id=&quot;expanding-the-dice-contract&quot;&gt;Expanding the dice contract&lt;/h2&gt;
-
-&lt;p&gt;Now we have MongoDB support added via our adapter, let’s modify the contract code to flag whether or not a transfer was processed (winnings sent or loss memo sent). This will allow us to replay our dice game and not worry about paying out users who already received their winnings multiple times.&lt;/p&gt;
-
-&lt;p&gt;Above the &lt;code class=&quot;highlighter-rouge&quot;&gt;if (verify)&lt;/code&gt; line of code, let’s access the Mongo database client and connection.&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;const db = this._instance['adapter']['db'];
-const collection = db.collection('transfers');
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;Because contracts get access to the streamer instance, it means we can access the adapter and &lt;code class=&quot;highlighter-rouge&quot;&gt;db&lt;/code&gt; property. The downside here is for any adapter that doesn’t have a &lt;code class=&quot;highlighter-rouge&quot;&gt;db&lt;/code&gt; property, this will fail. In our case, we know we want to use the database adapter, so the slightly tighter coupling is fine.&lt;/p&gt;
-
-&lt;p&gt;Inside of the balance check that refunds if the account doesn’t have more than the maximum bet, we’ll add some code that sets the status to &lt;code class=&quot;highlighter-rouge&quot;&gt;refund&lt;/code&gt;&lt;/p&gt;
-
-&lt;p&gt;Put the following inside of this if statement: &lt;code class=&quot;highlighter-rouge&quot;&gt;if (balance &amp;lt; MAX_BET) {&lt;/code&gt; underneath the &lt;code class=&quot;highlighter-rouge&quot;&gt;transferHiveTokens&lt;/code&gt; call.&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;await collection.findOneAndUpdate({ id: this.transactionId }, { $set: { status: 'refund' } });
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;What we are doing here is querying the database for our transaction based on its ID, then using the MongoDB &lt;code class=&quot;highlighter-rouge&quot;&gt;$set&lt;/code&gt; property to only add/update one specific property in the &lt;code class=&quot;highlighter-rouge&quot;&gt;transfers&lt;/code&gt; collection.&lt;/p&gt;
-
-&lt;p&gt;Next, inside of the if statement &lt;code class=&quot;highlighter-rouge&quot;&gt;if (parseFloat(tokensWon) &amp;gt; balance) {&lt;/code&gt; add in the same line of code beneath the &lt;code class=&quot;highlighter-rouge&quot;&gt;transferHiveTokens&lt;/code&gt; call:&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;await collection.findOneAndUpdate({ id: this.transactionId }, { $set: { status: 'refund' } });
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;Underneath the transfer code for winnings &lt;code class=&quot;highlighter-rouge&quot;&gt;await this._instance.transferHiveTokens(ACCOUNT, sender, tokensWon, TOKEN_SYMBOL, winningMemo);&lt;/code&gt; add in the following:&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;await collection.findOneAndUpdate({ id: this.transactionId }, { $set: { status: 'win' } });
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;And now for the loss inside of the else statement beneath &lt;code class=&quot;highlighter-rouge&quot;&gt;await this._instance.transferHiveTokens(ACCOUNT, sender, '0.001', TOKEN_SYMBOL, losingMemo);&lt;/code&gt;&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;await collection.findOneAndUpdate({ id: this.transactionId }, { $set: { status: 'loss' } });
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;Finally, another underneath &lt;code class=&quot;highlighter-rouge&quot;&gt;await this._instance.transferHiveTokens(ACCOUNT, sender, amountTrim[0], amountTrim[1], `[Refund] Invalid bet params.`);&lt;/code&gt; which refunds the user if their bet amount is higher than the max, their dice roll is too high or low.&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;await collection.findOneAndUpdate({ id: this.transactionId }, { $set: { status: 'refund' } });
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;&lt;strong&gt;The final dice contract code ends up looking like this:&lt;/strong&gt;&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;import { Utils } from 'hive-stream';
-import seedrandom from 'seedrandom';
-import BigNumber from 'bignumber.js';
-
-const CONTRACT_NAME = 'hivedice';
-
-const ACCOUNT = 'beggars';
-const TOKEN_SYMBOL = 'HIVE';
-
-const HOUSE_EDGE = 0.05;
-const MIN_BET = 1;
-const MAX_BET = 10;
-
-// Random Number Generator
-const rng = (previousBlockId, blockId, transactionId) =&amp;gt; {
-    const random = seedrandom(`${previousBlockId}${blockId}${transactionId}`).double();
-    const randomRoll = Math.floor(random * 100) + 1;
-
-    return randomRoll;
-};
-
-// Valid betting currencies
-const VALID_CURRENCIES = ['HIVE'];
-
-class DiceContract {
-    _instancs;
-
-    blockNumber;
-    blockId;
-    previousBlockId;
-    transactionId;
-
-    create() {
-        // Runs every time register is called on this contract
-        // Do setup logic and code in here (creating a database, etc)
-    }
-
-    destroy() {
-        // Runs every time unregister is run for this contract
-        // Close database connections, write to a database with state, etc
-    }
-
-    // Updates the contract with information about the current block
-    // This is a method automatically called if it exists
-    updateBlockInfo(blockNumber, blockId, previousBlockId, transactionId) {
-        // Lifecycle method which sets block info 
-        this.blockNumber = blockNumber;
-        this.blockId = blockId;
-        this.previousBlockId = previousBlockId;
-        this.transactionId = transactionId;
-    }
-
-    /**
-     * Get Balance
-     *
-     * Helper method for getting the contract account balance. In the case of our dice contract
-     * we want to make sure the account has enough money to pay out any bets
-     *
-     * @returns number
-     */
-    async getBalance() {
-        const account = await this._instance['client'].database.getAccounts([ACCOUNT]);
-
-        if (account?.[0]) {
-            const balance = (account[0].balance as string).split(' ');
-            const amount = balance[0];
-
-            return parseFloat(amount);
-        }
-
-        return null;
-    }
-
-    /**
-     * Roll
-     *
-     * Automatically called when a custom JSON action matches the following method
-     *
-     * @param payload
-     * @param param1 - sender and amount
-     */
-    async roll(payload, { sender, amount }) {
-        // Destructure the values from the payload
-        const { roll } = payload;
-
-        // The amount is formatted like 100 HIVE
-        // The value is the first part, the currency symbol is the second
-        const amountTrim = amount.split(' ');
-
-        // Parse the numeric value as a real value
-        const amountParsed = parseFloat(amountTrim[0]);
-
-        // Format the amount to 3 decimal places
-        const amountFormatted = parseFloat(amountTrim[0]).toFixed(3);
-
-        // Trim any space from the currency symbol
-        const amountCurrency = amountTrim[1].trim();
-
-        console.log(`Roll: ${roll}
-                     Amount parsed: ${amountParsed}
-                     Amount formatted: ${amountFormatted}
-                     Currency: ${amountCurrency}`);
-
-        // Get the transaction from the blockchain
-        const transaction = await this._instance.getTransaction(this.blockNumber, this.transactionId);
-
-        // Call the verifyTransfer method to confirm the transfer happened
-        const verify = await this._instance.verifyTransfer(transaction, sender, 'beggars', amount);
-
-        // Get the balance of our contract account
-        const balance = await this.getBalance();
-
-        const db = this._instance['adapter']['db'];
-        const collection = db.collection('transfers');
-
-        // Transfer is valid
-        if (verify) {
-            // Server balance is less than the max bet, cancel and refund
-            if (balance &amp;lt; MAX_BET) {
-                // Send back what was sent, the server is broke
-                await this._instance.transferHiveTokens(ACCOUNT, sender, amountTrim[0], amountTrim[1], `[Refund] The server could not fufill your bet.`);
-
-                await collection.findOneAndUpdate({ id: this.transactionId }, { $set: { status: 'refund' } });
-
-                return;
-            }
-
-            // Bet amount is valid
-            if (amountParsed &amp;gt;= MIN_BET &amp;amp;&amp;amp; amountParsed &amp;lt;= MAX_BET) {
-                // Validate roll is valid
-                if ((roll &amp;gt;= 2 &amp;amp;&amp;amp; roll &amp;lt;= 96) &amp;amp;&amp;amp; VALID_CURRENCIES.includes(amountCurrency)) {
-                    // Roll a random value
-                    const random = rng(this.previousBlockId, this.blockId, this.transactionId);
-
-                    // Calculate the multiplier percentage
-                    const multiplier = new BigNumber(1).minus(HOUSE_EDGE).multipliedBy(100).dividedBy(roll);
-
-                    // Calculate the number of tokens won
-                    const tokensWon = new BigNumber(amountParsed).multipliedBy(multiplier).toFixed(3, BigNumber.ROUND_DOWN);
-
-                    // Memo that shows in users memo when they win
-                    const winningMemo = `You won ${tokensWon} ${TOKEN_SYMBOL}. Roll: ${random}, Your guess: ${roll}`;
-
-                    // Memo that shows in users memo when they lose
-                    const losingMemo = `You lost ${amountParsed} ${TOKEN_SYMBOL}. Roll: ${random}, Your guess: ${roll}`;
-
-                    // User won more than the server can afford, refund the bet amount
-                    if (parseFloat(tokensWon) &amp;gt; balance) {
-                        await this._instance.transferHiveTokens(ACCOUNT, sender, amountTrim[0], amountTrim[1], `[Refund] The server could not fufill your bet.`);
-
-                        await collection.findOneAndUpdate({ id: this.transactionId }, { $set: { status: 'refund' } });
-
-                        return;
-                    }
-
-                    // If random value is less than roll
-                    if (random &amp;lt; roll) {
-                        await this._instance.transferHiveTokens(ACCOUNT, sender, tokensWon, TOKEN_SYMBOL, winningMemo);
-                        await collection.findOneAndUpdate({ id: this.transactionId }, { $set: { status: 'win' } });
-
-                    } else {
-                        await this._instance.transferHiveTokens(ACCOUNT, sender, '0.001', TOKEN_SYMBOL, losingMemo);
-                        await collection.findOneAndUpdate({ id: this.transactionId }, { $set: { status: 'loss' } });
-                    }
-                } else {
-                    // Invalid bet parameters, refund the user their bet
-                    await this._instance.transferHiveTokens(ACCOUNT, sender, amountTrim[0], amountTrim[1], `[Refund] Invalid bet params.`);
-                    await collection.findOneAndUpdate({ id: this.transactionId }, { $set: { status: 'refund' } });
-                }
-            } else {
-                try {
-                    // We need to refund the user
-                    const transfer = await this._instance.transferHiveTokens(ACCOUNT, sender, amountTrim[0], amountTrim[1], `[Refund] You sent an invalid bet amount.`);
-
-                    await collection.findOneAndUpdate({ id: this.transactionId }, { $set: { status: 'refund' } });
-                } catch (e) {
-                    console.log(e);
-                }
-            }
-        }
-    }
-}
-
-export default new DiceContract();
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h2 id=&quot;register-your-adapter-run-it&quot;&gt;Register your adapter, run it&lt;/h2&gt;
-
-&lt;p&gt;We take the code we bootstrapped our app with from part one and it remains largely untouched, except we register our MongoDB adapter and pass in some configuration information to the constructor.&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;import { Streamer } from 'hive-stream';
-import DiceContract from './dice.contract';
-import { MongodbAdapter } from './mongo.adapter';
-
-const streamer = new Streamer({
-    ACTIVE_KEY: '', // Needed for transfers
-    JSON_ID: 'testdice' // Identifier in the custom JSON payloads
-});
-
-streamer.registerAdapter(new MongodbAdapter('mongodb://127.0.0.1:27017', 'hivestream'));
-
-// Register the contract
-streamer.registerContract('hivedice', DiceContract);
-
-// Starts the streamer watching the blockchain
-streamer.start();
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://files.peakd.com/file/peakd-hive/beggars/UpZgH9Fl-Screen20Shot202020-04-0620at208.14.4220pm.png&quot; alt=&quot;Screen Shot 20200406 at 8.14.42 pm.png&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Here is a screenshot of a modified transaction that was refunded updated in our Mongo database to show that it all works as intended.&lt;/p&gt;
-
-&lt;h2 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h2&gt;
-
-&lt;p&gt;What did we learn? We learned how to write a custom adapter for interfacing with a database, we learned how to access to the database instance inside of our contract and interact with it. We also learned we can then look up transactions by their ID from within contract actions and modify them (in our case, setting a status property).&lt;/p&gt;
-
-&lt;p&gt;PS. The Mongo adapter ships with the Hive Stream package, so you don’t have to custom code it yourself, I built it as part of the process of this tutorial. Enjoy.&lt;/p&gt;
-&lt;hr /&gt;
-
-&lt;p&gt;
-  See: &lt;a href=&quot;https://hive.blog/@beggars/tutorial-building-a-dice-game-contract-with-hive-stream-part-2&quot;&gt;Tutorial: Building A Dice Game Contract With Hive Stream (Part 2)&lt;/a&gt;
-  by
-  &lt;a href=&quot;https://hive.blog/@beggars&quot;&gt;@beggars&lt;/a&gt;
-&lt;/p&gt;</content><author><name>beggars</name></author><summary type="html">If you missed part one here, we built a basic dice game contract which allows people to bet on an outcome and either win or lose. The tutorial left out some things that you might want to do in a real deployment. Install MongoDB For this tutorial, we are going to use MongoDB as the database behind it. We’ll be storing transactions and outcomes in the database, so we can ensure that transfers are not processed multiple times. While the streamer keeps track of the last processed block number in a JSON file or SQLite database, what happens if your node goes down and the file gets edited or deleted? It would result in missed transactions which would be a pain to manually process. Download the community version installer from the official MongoDB website. Choose the appropriate installer for your operating system and follow the instructions. It should require very little input, just keep clicking next basically and keep everything as default. Build a MongoDB adapter Now, we need to write an adapter that will allow Hive Stream to work with MongoDB instead of the file databases that it is configured out-of-the-box to use. Provided you have Hive Stream installed (version 2+) you should have the new adapter’s functionality. An adapter for standard use cases consists of just two mandatory methods loadState and saveState the loadState method gets called when the streamer starts to start at the last block it finished. The saveState method updates with the latest processed block. There are however other lifecycle methods which we can use in our more functional adapters. create is called on initialisation, you can setup instances and connections in here. destroy is called when everything is stopped, so naturally you close database connections in here. The processOperation is a method that gets the latest block number, transaction ID and so forth. It’s metadata used to identify specific transactions and their block data. The processTransfer and processCustomJson methods are called when a matching transfer or custom JSON operation is matched to a contract. It also gets contract information as well as the payload and other helpful info. Save the following as mongo.adapter.js import { AdapterBase } from 'hive-stream'; import { MongoClient, Db } from 'mongodb'; export class MongodbAdapter extends AdapterBase { client; db; mongo = { uri: '', database: '', options: {} }; blockNumber; lastBlockNumber; blockId; prevBlockId; transactionId; constructor(uri, databasw, options = { useNewUrlParser: true, useUnifiedTopology: true }) { super(); this.mongo.uri = uri; this.mongo.database = database; this.mongo.options = options; } async create() { try { this.client = await MongoClient.connect(this.mongo.uri, this.mongo.options); this.db = this.client.db(this.mongo.database); return true; } catch (e) { throw e; } } async loadState() { try { const collection = this.db.collection('params'); const params = await collection.findOne({}); if (params) { return params; } } catch (e) { throw e; } } async saveState(data) { try { const collection = this.db.collection('params'); await collection.replaceOne({}, data, { upsert: true}); return true; } catch (e) { throw e; } } async processOperation(op, blockNumber, blockId, prevBlockId, trxId, blockTime) { this.blockNumber = blockNumber; this.blockId = blockId; this.prevBlockId = prevBlockId; this.transactionId = trxId; } async processTransfer(operation, payload, metadata) { const collection = this.db.collection('transfers'); const data = { id: this.transactionId, blockId: this.blockId, blockNumber: this.blockNumber, sender: metadata.sender, amount: metadata.amount, contractName: payload.name, contractAction: payload.action, contractPayload: payload.payload }; await collection.insertOne(data); return true; } async processCustomJson(operation, payload, metadata) { const collection = this.db.collection('transactions'); const data = { id: this.transactionId, blockId: this.blockId, blockNumber: this.blockNumber, sender: metadata.sender, isSignedWithActiveKey: metadata.isSignedWithActiveKey, contractName: payload.name, contractAction: payload.action, contractPayload: payload.payload }; await collection.insertOne(data); return true; } async destroy() { await this.client.close(); return true; } } Expanding the dice contract Now we have MongoDB support added via our adapter, let’s modify the contract code to flag whether or not a transfer was processed (winnings sent or loss memo sent). This will allow us to replay our dice game and not worry about paying out users who already received their winnings multiple times. Above the if (verify) line of code, let’s access the Mongo database client and connection. const db = this._instance['adapter']['db']; const collection = db.collection('transfers'); Because contracts get access to the streamer instance, it means we can access the adapter and db property. The downside here is for any adapter that doesn’t have a db property, this will fail. In our case, we know we want to use the database adapter, so the slightly tighter coupling is fine. Inside of the balance check that refunds if the account doesn’t have more than the maximum bet, we’ll add some code that sets the status to refund Put the following inside of this if statement: if (balance &amp;lt; MAX_BET) { underneath the transferHiveTokens call. await collection.findOneAndUpdate({ id: this.transactionId }, { $set: { status: 'refund' } }); What we are doing here is querying the database for our transaction based on its ID, then using the MongoDB $set property to only add/update one specific property in the transfers collection. Next, inside of the if statement if (parseFloat(tokensWon) &amp;gt; balance) { add in the same line of code beneath the transferHiveTokens call: await collection.findOneAndUpdate({ id: this.transactionId }, { $set: { status: 'refund' } }); Underneath the transfer code for winnings await this._instance.transferHiveTokens(ACCOUNT, sender, tokensWon, TOKEN_SYMBOL, winningMemo); add in the following: await collection.findOneAndUpdate({ id: this.transactionId }, { $set: { status: 'win' } }); And now for the loss inside of the else statement beneath await this._instance.transferHiveTokens(ACCOUNT, sender, '0.001', TOKEN_SYMBOL, losingMemo); await collection.findOneAndUpdate({ id: this.transactionId }, { $set: { status: 'loss' } }); Finally, another underneath await this._instance.transferHiveTokens(ACCOUNT, sender, amountTrim[0], amountTrim[1], `[Refund] Invalid bet params.`); which refunds the user if their bet amount is higher than the max, their dice roll is too high or low. await collection.findOneAndUpdate({ id: this.transactionId }, { $set: { status: 'refund' } }); The final dice contract code ends up looking like this: import { Utils } from 'hive-stream'; import seedrandom from 'seedrandom'; import BigNumber from 'bignumber.js'; const CONTRACT_NAME = 'hivedice'; const ACCOUNT = 'beggars'; const TOKEN_SYMBOL = 'HIVE'; const HOUSE_EDGE = 0.05; const MIN_BET = 1; const MAX_BET = 10; // Random Number Generator const rng = (previousBlockId, blockId, transactionId) =&amp;gt; { const random = seedrandom(`${previousBlockId}${blockId}${transactionId}`).double(); const randomRoll = Math.floor(random * 100) + 1; return randomRoll; }; // Valid betting currencies const VALID_CURRENCIES = ['HIVE']; class DiceContract { _instancs; blockNumber; blockId; previousBlockId; transactionId; create() { // Runs every time register is called on this contract // Do setup logic and code in here (creating a database, etc) } destroy() { // Runs every time unregister is run for this contract // Close database connections, write to a database with state, etc } // Updates the contract with information about the current block // This is a method automatically called if it exists updateBlockInfo(blockNumber, blockId, previousBlockId, transactionId) { // Lifecycle method which sets block info this.blockNumber = blockNumber; this.blockId = blockId; this.previousBlockId = previousBlockId; this.transactionId = transactionId; } /** * Get Balance * * Helper method for getting the contract account balance. In the case of our dice contract * we want to make sure the account has enough money to pay out any bets * * @returns number */ async getBalance() { const account = await this._instance['client'].database.getAccounts([ACCOUNT]); if (account?.[0]) { const balance = (account[0].balance as string).split(' '); const amount = balance[0]; return parseFloat(amount); } return null; } /** * Roll * * Automatically called when a custom JSON action matches the following method * * @param payload * @param param1 - sender and amount */ async roll(payload, { sender, amount }) { // Destructure the values from the payload const { roll } = payload; // The amount is formatted like 100 HIVE // The value is the first part, the currency symbol is the second const amountTrim = amount.split(' '); // Parse the numeric value as a real value const amountParsed = parseFloat(amountTrim[0]); // Format the amount to 3 decimal places const amountFormatted = parseFloat(amountTrim[0]).toFixed(3); // Trim any space from the currency symbol const amountCurrency = amountTrim[1].trim(); console.log(`Roll: ${roll} Amount parsed: ${amountParsed} Amount formatted: ${amountFormatted} Currency: ${amountCurrency}`); // Get the transaction from the blockchain const transaction = await this._instance.getTransaction(this.blockNumber, this.transactionId); // Call the verifyTransfer method to confirm the transfer happened const verify = await this._instance.verifyTransfer(transaction, sender, 'beggars', amount); // Get the balance of our contract account const balance = await this.getBalance(); const db = this._instance['adapter']['db']; const collection = db.collection('transfers'); // Transfer is valid if (verify) { // Server balance is less than the max bet, cancel and refund if (balance &amp;lt; MAX_BET) { // Send back what was sent, the server is broke await this._instance.transferHiveTokens(ACCOUNT, sender, amountTrim[0], amountTrim[1], `[Refund] The server could not fufill your bet.`); await collection.findOneAndUpdate({ id: this.transactionId }, { $set: { status: 'refund' } }); return; } // Bet amount is valid if (amountParsed &amp;gt;= MIN_BET &amp;amp;&amp;amp; amountParsed &amp;lt;= MAX_BET) { // Validate roll is valid if ((roll &amp;gt;= 2 &amp;amp;&amp;amp; roll &amp;lt;= 96) &amp;amp;&amp;amp; VALID_CURRENCIES.includes(amountCurrency)) { // Roll a random value const random = rng(this.previousBlockId, this.blockId, this.transactionId); // Calculate the multiplier percentage const multiplier = new BigNumber(1).minus(HOUSE_EDGE).multipliedBy(100).dividedBy(roll); // Calculate the number of tokens won const tokensWon = new BigNumber(amountParsed).multipliedBy(multiplier).toFixed(3, BigNumber.ROUND_DOWN); // Memo that shows in users memo when they win const winningMemo = `You won ${tokensWon} ${TOKEN_SYMBOL}. Roll: ${random}, Your guess: ${roll}`; // Memo that shows in users memo when they lose const losingMemo = `You lost ${amountParsed} ${TOKEN_SYMBOL}. Roll: ${random}, Your guess: ${roll}`; // User won more than the server can afford, refund the bet amount if (parseFloat(tokensWon) &amp;gt; balance) { await this._instance.transferHiveTokens(ACCOUNT, sender, amountTrim[0], amountTrim[1], `[Refund] The server could not fufill your bet.`); await collection.findOneAndUpdate({ id: this.transactionId }, { $set: { status: 'refund' } }); return; } // If random value is less than roll if (random &amp;lt; roll) { await this._instance.transferHiveTokens(ACCOUNT, sender, tokensWon, TOKEN_SYMBOL, winningMemo); await collection.findOneAndUpdate({ id: this.transactionId }, { $set: { status: 'win' } }); } else { await this._instance.transferHiveTokens(ACCOUNT, sender, '0.001', TOKEN_SYMBOL, losingMemo); await collection.findOneAndUpdate({ id: this.transactionId }, { $set: { status: 'loss' } }); } } else { // Invalid bet parameters, refund the user their bet await this._instance.transferHiveTokens(ACCOUNT, sender, amountTrim[0], amountTrim[1], `[Refund] Invalid bet params.`); await collection.findOneAndUpdate({ id: this.transactionId }, { $set: { status: 'refund' } }); } } else { try { // We need to refund the user const transfer = await this._instance.transferHiveTokens(ACCOUNT, sender, amountTrim[0], amountTrim[1], `[Refund] You sent an invalid bet amount.`); await collection.findOneAndUpdate({ id: this.transactionId }, { $set: { status: 'refund' } }); } catch (e) { console.log(e); } } } } } export default new DiceContract(); Register your adapter, run it We take the code we bootstrapped our app with from part one and it remains largely untouched, except we register our MongoDB adapter and pass in some configuration information to the constructor. import { Streamer } from 'hive-stream'; import DiceContract from './dice.contract'; import { MongodbAdapter } from './mongo.adapter'; const streamer = new Streamer({ ACTIVE_KEY: '', // Needed for transfers JSON_ID: 'testdice' // Identifier in the custom JSON payloads }); streamer.registerAdapter(new MongodbAdapter('mongodb://127.0.0.1:27017', 'hivestream')); // Register the contract streamer.registerContract('hivedice', DiceContract); // Starts the streamer watching the blockchain streamer.start(); Here is a screenshot of a modified transaction that was refunded updated in our Mongo database to show that it all works as intended. Conclusion What did we learn? We learned how to write a custom adapter for interfacing with a database, we learned how to access to the database instance inside of our contract and interact with it. We also learned we can then look up transactions by their ID from within contract actions and modify them (in our case, setting a status property). PS. The Mongo adapter ships with the Hive Stream package, so you don’t have to custom code it yourself, I built it as part of the process of this tutorial. Enjoy. See: Tutorial: Building A Dice Game Contract With Hive Stream (Part 2) by @beggars</summary></entry></feed>
+&lt;/p&gt;</content><author><name>holger80</name></author><summary type="html">Repository https://github.com/holgern/beem beem is a python library for STEEM and HIVE. The current version is 0.22.13. There is also a discord channel for beem: https://discord.gg/4HM592V The newest beem version can be installed by: pip install -U beem Check that you are using hive nodes. The following command beempy updatenodes --hive updates the nodelist and uses only hive nodes. The list of nodes can be checked with beempy config and beempy currentnode shows the currently connected node. Changelog for versions 0.22.13 HiveSigner support added api link to steemconnect has been fixed change recovery account added to beempy hive node has been added add account get_notifications and mark_notifications_as_read beempy notifications has been added bridge api support added config storage improved and add get_default_config_storage, get_default_key_storage and get_default_token_storage list_all_subscriptions and get_account_posts added reduce number of performed api calls on Steem object creation Performance boost for beem All integration tests are finishing now in ========== 469 passed, 27 skipped, 11 warnings in 1040.19s (0:17:20) =========== which is an improvement of 49% (version 0.22.12 needed 1551 seconds). This huge boost could be accomplished by reducing the number of API calls when creating the Steem object. When importing objects from beem, a configStorage object is no longer created during import. The config storage is now read during object creation with get_default_config_storage. This speeds up importing beem modules and read stored parameter only when needed. These changes improves also the speed of all beempy commands. Bridge API beem supports now parts of the bridge API. More functions to support the missing API calls will follow. notifications beempy notifications holger80 prints a table with unread notifications. +---------------------+------+-------------------------------------------+ | Date | Type | Message | +---------------------+------+-------------------------------------------+ | 2020-04-06 10:15:57 | vote | @uwelang voted on your post ($0.23) | | 2020-04-06 12:52:00 | vote | @steemcleaners voted on your post ($2.45) | +---------------------+------+-------------------------------------------+ They can also marked as read with -m beempy notifications -m holger80 which broadcasts notify custom_json. list all subscribtions The account object has now a list_all_subscriptions functions which returns a list with all cummunities which the account has subscript. get_account_posts The account object has now the get_account_posts function, which can be used to fetch all posts shown in the feed of the account. get_ranked_posts A new class RankedPosts was added to beem.comment which can be used to receive ranked posts. Change recovery account with beempy It is now possible to change the recovery account using beempy beempy changerecovery -a holge80 recovery.account HiveSigner support was added The following python example shows how to create a login link: from beem.hivesigner import HiveSigner hivesigner = HiveSigner(client_id=&quot;rewarding.app&quot;, scope=&quot;login&quot;, get_refresh_token=False) hivesigner.get_login_url('https://rewarding.app/welcome') returns ' &amp;lt;a href=&quot;https://hivesigner.com/oauth2/authorize&quot;&amp;gt;https://hivesigner.com/oauth2/authorize&amp;lt;/a&amp;gt; ?client_id=rewarding.app&amp;amp;redirect_uri=https%3A%2F%2Frewarding.app%2Fwelcome&amp;amp;scope=login' The received token can then be used to check if a user was successfully entering its posting key in a python script: try: hivesigner.set_access_token(access_token) name = hivesigner.me()[&quot;name&quot;] except: print(&quot;Wrong token&quot;) If you like what I do, consider casting a vote for me as witness on Hivesigner or on PeakD. See: Update for beem: huge performance improvements and bridge API support by @holger80</summary></entry></feed>

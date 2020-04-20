@@ -6,7 +6,22 @@
     
     
     {
-      "title"    : "yabapmatt",
+      "author"    : "engrave",
+      "title"    : "Improvements for Condenser repository, Continuous Integration and Deployments",
+      "category" : "howto, devops, docker",
+      "url"      : "/howto/devops/docker/2020/04/19/improvements-for-condenser-repository-continuous-integration-and-deployments.html",
+      "date"     : "2020-04-19 13:38:27 -0700",
+      "desc"     : "I want to elaborate not onl...",
+      "content"  : "i want to elaborate not only on introduced features but also my thought and reasoning so everyone can benefit introduce changes in their projects. this post will be long believe it might useful for the entire hivedevs community.the workflow is built top of gitlab ci/cd easily modified any other tool (i.e. circleci or jenkins).dockeri’ve started work by reviewing dockerfile. i’ve condenser image was a bit shocked:$ docker lscondenser latest 6d57c0c8a904 19 seconds ago 1.54gb1.54 gb simple frontend application? boy, it’s just too much. let’s do something with it.leaner imagelet’s start recognizing reason why big. you look into your dockerfile package.json search some common mistakes: using full-sized images rather than alpine versions installing dev dependencies production putting list copying useless files final imageyep, check every point here. make new dockerfile:from node:12.16.2 as developmentworkdir /var/appcopy yarn.lock ./run yarn install --non-interactive --frozen-lockfile --ignore-optionalcopy . .run mkdir tmp &amp;&amp; buildcmd [ yarn, run, ]### remove ##from development dependenciesrun --ignore-optional --production### build minified node:12.16.2-alpine productionworkdir /var/apparg source_commitenv source_commit ${source_commit}arg docker_tagenv docker_tag ${docker_tag}copy --from=dependencies /var/app/package.json /var/app/package.jsoncopy /var/app/config /var/app/configcopy /var/app/dist /var/app/distcopy /var/app/lib /var/app/libcopy /var/app/src /var/app/srccopy /var/app/tmp /var/app/tmpcopy /var/app/webpack /var/app/webpackcopy /var/app/node_modules /var/app/node_modulescopy /var/app/healthcheck.js /var/app/healthcheck.jshealthcheck --interval=30s --timeout=5s --start-period=30s --retries=5 cmd node /var/app/healthcheck.jscmd ]what has been improved: node.js version upgraded from 8.7 12.16.2 which lts at moment. always try framework versions, may include security fixes performance upgrades. good habit use specific up patch number. multistage used an optimal deployment. first, we stage dependency able compile react application. next, we’re removing --production switch during stage. after all, creating minimal smallest base available, necessary directories. healthcheck introduced, daemon manage containers automatic restarts if zero-downtime deployments explained later post. dynamic scaling capabilities swarm.also, file modified, worth its content here: like webpack, babel eslint moved proper called devdependencies could deps image. strict were sure produces exactly same semantic versioning popular, there no way package author does breaking increased. need update package, manually. have enough test coverage, run everything works fine.after all that done, size massively reduced:$ 58406d338e67 8 226mbthe compressed registry even smaller. much better, right? shame you, steemit!healthchecksimply speaking, running trying keep alive possible. system needs determine container actually alive. seem alive, app responding requests example? fortunately, integrated health mechanism docker-compose.yml. usually, create endpoint liveness checks. already one utilize easily.there lot examples curl check, go. should cross-platform implementation differs windows unix. write technology projects are written, node.js.const http = require(http);const options { host: localhost, port: 8080, path: '/.well-known/healthcheck.json', timeout: 5000};const request http.request(options, (res) =&gt; console.log(`status: ${res.statuscode}`); (res.statuscode == 200) process.exit(0); } else console.error(`error: process.exit(1); }});request.on('error', (err) console.error('error', err); process.exit(1);});request.end();when ready, instruct mechanism. add following line dockefile:healthcheck /var/app/healthcheck.jsmake exists inside working, inspect it:$ lscontainer id command created status ports names060166cf52ee hiveio/condenser:development docker-entrypoint.s… 5 minutes (healthy) 0.0.0.0:8080-&gt;8080/tcp mystifying_dhawanthere indicator column. is. please note startup process, indicate slightly different (starting), wait before making first check. because giving time our startup. start-period parameter.depending traffic/load, those parameters vary.pushing hubwe improved (smaller) image, push repository. doing manually waste cause human mistakes. best runner us bullet-proof manner.here job definition .gitlab-ci.yml additional code breakdown:variables: docker_image: hiveio/condenser.docker-job: &amp;docker-job image: docker:stable services: - docker:dind before_script: echo $hub_token | login -u $hub_username --password-stdinbuild-development: &lt;&lt;: *docker-job stage: variables: docker_tag: $docker_image:$ci_commit_short_sha docker_tag_main: $docker_image:development source_commit: $ci_commit_sha only: develop script: -t $docker_tag $docker_tag_main --build-arg $docker_tag_mainfirst, global variable docker_image reuse many places. case would change name, single place.hence multiple jobs defined file, advanced yaml syntax, includes hidden keys anchors. decrease duplicated easier read maintain. name starting dot considered key won’t directly executed. btw, quick temporarily disable without commenting it.by .docker-job: anchor extend job. *docker-job, populate services before_script properties automatically. move similar things.later on, local (job scoped) docker_tag_main evaluated hiveio/condenser:344e55ef 344e55efefd56e00b15eea6ccf8560a1107b9ff6 (or commit sha)it’s idea double tag track process. describe how specific, sha-tagged rollback them anytime click.finally, building arguments --build-arg:docker .if scroll section, notice arg env ${source_commit} means these injected environment variables containers. easy pass additional, build-level images. returned endpoint. instance source.$ &lt;a href=https://staging.condenser.engrave.dev/.well-known/healthcheck.json&gt;https://staging.condenser.engrave.dev/.well-known/healthcheck.json&lt;/a&gt;{status:ok,docker_tag:hiveio/condenser:344e55ef,source_commit:344e55efefd56e00b15eea6ccf8560a1107b9ff6}an important thing mention hub_token hub_username configured settings. prevent unauthorized users pushing malicious official registry, protected masked, they branches moderated logs, leak internal bad actor elevated permissions.merge requeststo improve process adding codebase, merge got brand jobs:the pipeline fired required merged. fails failing unit tests), main branch. enforce quality regression.eslintcode standardization important, especially open-source project maintained totally developers around world. statically analyzes quickly find potential problems organized specified rules. analysis when developing javascript applications. really stupid mistakes.eslint branch pushed repository:run-eslint: merge_requests ci:eslint allow_failure: true # changed false linter errors removedbecause codebase neglected, run-eslint allowed fail moment (allow_failure: true), indicated orange exclamation mark mr view pipelines list. “some” warnings right now cleaned soon, require merging proposed changes: ✖ 1208 (1187 errors, 21 warnings) 831 0 potentially fixable `--fix` option. error failed exit 1.unit testsextensive testing produce stable run-eslint, run-unit-tests request.run-unit-tests: ci:test coverage: /all files[^|]*|[^|]*s+([d.]+)/testing suit (jest) coverage report:this report parsed gitlab, files[^|]*|[^|]*s+([d.]+)/ configuration. display percentage view, allowing reviewers increasing not.i advise declining covered tests. omitted fixes, worse.also, repository settings must succeed setting checked default. more broken develop/production branches.review appsreview apps huge very feature. feature inspected visually reviewer click. special expose reviewers:review requires three request:build-review-app: $ci_registry_image:$ci_commit_short_sha $ci_job_token $ci_registry_user $ci_registry --password-stdin $docker_tagdeploy-review-app: *docker-remote-host-review deploy service_name: review_$ci_environment_slug docker_cert_path=$certs -h $review_host --tlsverify pull service rm $service_name || previous exist --with-registry-auth --network infrastructure --name review deployed environment: name: review/$ci_commit_ref_name url: href=https://&gt;https://&lt;/a&gt;$ci_environment_slug$app_review_subdomain on_stop: stop-review-app auto_stop_in: 1 week stop-review-app: when: manual stopped action: stopthe familiar parts difference overwriting before_script. you’re anchors, overwrite template freely what did here.because opened well known community (vel. actors), issue this, provided itself. private, accessible anyone else.echo --password-stdinwe ci_job_token, ci_registry_user ci_registry automatically configure them. also, secure log password being exposed logs.by default, connect unsecured, port. yet possible validate tls certificates external world way, runners machine. parameters: remote address makes identify itself send authentication swarm agents network reverse proxy docker_cert_path demon where certificatesdocker_cert_path=$certs $docker_tagthis under url ci_environment_slug, gitlab. guaranteed valid docker/kubernetes name.review instances removed closed opened. achieved triggered (when: manual).tracking deploymentsby images, redeploy moment, emergency, maintainers (docker specific)stagingdeploying staging quite deploying app. uses on-demand, updated image.with mode, ensure application highly available. agent take care restart spin (this important). built-in, native mode using.deploy-staging: *docker-remote-host-staging staging_condenser $staging_host --image --update-failure-action --update-order start-first href=https://&gt;https://&lt;/a&gt;$staging_domainjob “bad” pushing/deploying code. disabled.zero downtime deploymentsupdating swarm:docker_cert_path=$certs $service_namethere provided: existing case, nothing fails. passing parameter, instructing roll back state, kill current ones it. don’t want. start-first, first. healtcheck result becomes positive. gone wrong (healtcheck reason), end working old touched all.resources controlwith full control over example configuration environment. tweaks, also:version: 3.7services: condenser: hiveio/condenser:latest deploy: mode: replicated replicas: 2 resources: limits: cpus: 0.85 memory: 2024m restart_policy: condition: delay: 5s update_config: parallelism: 10s failure_action: order: rollback_config: networks: reverse-proxynetworks: reverse-proxy: external: reverse-proxyproductionit finished yet, advice (ci/cd ready). designed serve condenser.some (based documentation): cluster management engine: know container, ready swarm. software decentralized design: worker manager command. machines scaling: each service, declare number tasks run. scale down, adapts maintain desired state. multi-host networking: specify overlay services. assigns addresses initializes updates load balancing: balancer. internally, lets distribute between nodes. default: enforces mutual encryption communications option self-signed root custom ca. rolling updates: rollout apply nodes incrementally. delay deployment sets anything goes wrong, service. swarm, can’t coincidence! ;)i’m most within engrave (dblog.org) managing set 23 microservices almost 30 moment.my tips (and only) tests covering improving fewer bugs. visible damn see regression. quality. exact file. ^, two builds. changing major hub multi-stage builds leaner checks applications clean husky happens see: improvements repository, continuous integration @engrave"
+    } ,
+  
+    
+    
+    
+    
+    
+    {
+      "author"    : "yabapmatt",
       "title"    : "Hive Keychain Now Available on Chrome &amp; Brave!",
       "category" : "news, nodejs, keychain",
       "url"      : "/news/nodejs/keychain/2020/04/17/hive-keychain-now-available-on-chrome-and-brave.html",
@@ -21,7 +36,7 @@
     
     
     {
-      "title"    : "emrebeyler",
+      "author"    : "emrebeyler",
       "title"    : "Hivesigner Python Client",
       "category" : "howto, python, hivesigner",
       "url"      : "/howto/python/hivesigner/2020/04/14/powering-up-2.html",
@@ -36,13 +51,13 @@
     
     
     {
-      "title"    : "lonelywolf",
+      "author"    : "lonelywolf",
       "title"    : "[Hive Patched] Upvoting By Payment In 4 Easy Steps - Basic Bot",
       "category" : "howdo, nodejs, bot",
       "url"      : "/howdo/nodejs/bot/2020/04/14/hive-patched-upvoting-by-payment-in-4-easy-steps-basic-bot.html",
       "date"     : "2020-04-14 13:14:21 -0700",
       "desc"     : "(Want to use the logo yours...",
-      "content"  : "(want to use the logo yourself? no problem, check out post i made about my art design - hive logo)—repository:https://www.npmjs.com/package/steem-js-patched helpful tutorials: [hive patched] steemjs full tutorial all functions abilities[hive patched tutorial] vote, comment and follow in one of this is for hive, so it works steem hive!all examples results from old but still same hive!hello!today you’re going learn how create an upvoting bot with that calculate simply voting power by payment, note calculation a really simple calculation.load steem/hive package:const = require('steem-js-patched')to install package npm steem-js-patched --save repository abovefirst we will add user guest123 (or your account) code, this(guest123) global account developersconst acc_name 'guest123', // name acc_key '5jraypasxmx1l97zux7yuc5psb5eabf821kkagtbj7xcjfqcblg'; private wif keyyou want api work blockchainsteem.api.setoptions({ url: 'https://api.hive.blog' });so, first things first, get easiest hardest, firstly we’re transactions blockchainsteem.api.streamtransactions('head', function(err, result) { let type result.operations[0][0]; getting transaction data result.operations[0][1]; transaction}this function gets newest go through blockchain, such as new blogs, transfers etc.as already explained (new blogs/new transfer etc.) transaction, blog be author, permlink, content etc. transfer, memo, sender, receiver etc.now need if is, our account.if(type == 'transfer' &amp;&amp; data.to acc_name) checking reciever account}simple enough, type(transaction type) account.if memo url send it’s not normal transfers.var data.memo.split('/');if(memo[0] https:){ console.log(incoming request vote from: + data.from +, value: data.amount \n\n); sending console telling us come. streamvote(data.memo, data.amount);}else{ , requst.); console.log(memo: data.memo);}everything above!now, streamvote &amp; calcvoteweightfirstly, streamvote, called variables url, amountfunction streamvote(url, amount) {}now weight author const url.split('/'); spliting array memo[4].split('@')[1]; calcvoteweight(amount); value amountmemo urlauthor got example: ~~https://steemit.com/utopian-io/@lonelywolf/steem-bots—auto-follower-bot-steemjs–nodejs—-begginer-tutorial~~weight calculated after.now just stream blockchainsteem.broadcast.vote(acc_key, acc_name, memo[5], weight, starting process if(!!err) throw err; close program error details there console.log('voted succesfully, permalink: ' memo[5] ', author: weight: / 1000 '%.', err); //if succesfully sent information console});so have broadcast. function, says sends uses wif(private key), name, permlink(memo[5]) weight.if crash applicationif everything has done successfully info console. functioncreate variable amountpaid//this paid upvote can befunction calcvoteweight(amountpaid){}now token amountpaid.split(' '), tokentype token.pop(), //taking token(coin) [hive/hbd] tokenvalue token.shift(); taking only valueas easy be, splitting string spaces valuenow values set weight; (tokenvalue &gt;= 0.6){ higher than 0.6 (example: &gt;0.6$ hbd/ &gt;0.6 hive) 100; } else 0.25) 40; 0.1) 20; }else{ like it's lower 0.1 10; }first, or equal voteif amount 0.25 40% 20% 0.1(else) 10% votenow ratio between hbd, because doing manually hbdhiveratio 0.5; hbd 0.8 1.2, around 0.5 you 1.5 1 if( 'hive') return (weight * hbdhiveratio) regular }now coin calculating ratio,if we’ll vote.conclusionsimply, done, run script it, 0.01 (the on script) vote.if are any problems down below i’ll help you!if suggestions next tutorials appreciate suggestions, thanks!have great day! see: payment 4 steps basic @lonelywolf"
+      "content"  : "(want to use the logo yourself? no problem, check out post i made about my art design - hive logo)—repository:https://www.npmjs.com/package/steem-js-patched helpful tutorials: [hive patched] steemjs full tutorial all functions abilities[hive patched tutorial] vote, comment and follow in one of this is for hive, so it works steem hive!all examples results from old but still same hive!hello!today you’re going learn how create an upvoting bot with that calculate simply voting power by payment, note calculation a really simple calculation.load steem/hive package:const = require('steem-js-patched')to install package npm steem-js-patched --save repository abovefirst we will add user guest123 (or your account) code, this(guest123) global account developersconst acc_name 'guest123', // name acc_key '5jraypasxmx1l97zux7yuc5psb5eabf821kkagtbj7xcjfqcblg'; private wif keyyou want api work blockchainsteem.api.setoptions({ url: 'https://api.hive.blog' });so, first things first, get easiest hardest, firstly we’re transactions blockchainsteem.api.streamtransactions('head', function(err, result) { let type result.operations[0][0]; getting transaction data result.operations[0][1]; transaction}this function gets newest go through blockchain, such as new blogs, transfers etc.as already explained (new blogs/new transfer etc.) transaction, blog be author, permlink, content etc. transfer, memo, sender, receiver etc.now need if is, our account.if(type == 'transfer' &amp;&amp; data.to acc_name) checking reciever account}simple enough, type(transaction type) account.if memo url send it’s not normal transfers.var data.memo.split('/');if(memo[0] https:){ console.log(incoming request vote from: + data.from +, value: data.amount nn); sending console telling us come. streamvote(data.memo, data.amount);}else{ , requst.); console.log(memo: data.memo);}everything above!now, streamvote &amp; calcvoteweightfirstly, streamvote, called variables url, amountfunction streamvote(url, amount) {}now weight author const url.split('/'); spliting array memo[4].split('@')[1]; calcvoteweight(amount); value amountmemo urlauthor got example: ~~https://steemit.com/utopian-io/@lonelywolf/steem-bots—auto-follower-bot-steemjs–nodejs—-begginer-tutorial~~weight calculated after.now just stream blockchainsteem.broadcast.vote(acc_key, acc_name, memo[5], weight, starting process if(!!err) throw err; close program error details there console.log('voted succesfully, permalink: ' memo[5] ', author: weight: / 1000 '%.', err); //if succesfully sent information console});so have broadcast. function, says sends uses wif(private key), name, permlink(memo[5]) weight.if crash applicationif everything has done successfully info console. functioncreate variable amountpaid//this paid upvote can befunction calcvoteweight(amountpaid){}now token amountpaid.split(' '), tokentype token.pop(), //taking token(coin) [hive/hbd] tokenvalue token.shift(); taking only valueas easy be, splitting string spaces valuenow values set weight; (tokenvalue &gt;= 0.6){ higher than 0.6 (example: &gt;0.6$ hbd/ &gt;0.6 hive) 100; } else 0.25) 40; 0.1) 20; }else{ like it's lower 0.1 10; }first, or equal voteif amount 0.25 40% 20% 0.1(else) 10% votenow ratio between hbd, because doing manually hbdhiveratio 0.5; hbd 0.8 1.2, around 0.5 you 1.5 1 if( 'hive') return (weight * hbdhiveratio) regular }now coin calculating ratio,if we’ll vote.conclusionsimply, done, run script it, 0.01 (the on script) vote.if are any problems down below i’ll help you!if suggestions next tutorials appreciate suggestions, thanks!have great day! see: payment 4 steps basic @lonelywolf"
     } ,
   
     
@@ -51,7 +66,7 @@
     
     
     {
-      "title"    : "good-karma",
+      "author"    : "good-karma",
       "title"    : "Devportal Hivesigner updates",
       "category" : "news, nodejs, hivesigner",
       "url"      : "/news/nodejs/hivesigner/2020/04/14/devportal-hivesigner-updates.html",
@@ -66,7 +81,7 @@
     
     
     {
-      "title"    : "thecrazygm",
+      "author"    : "thecrazygm",
       "title"    : "Simple Transaction Monitor",
       "category" : "howto, stream, python",
       "url"      : "/howto/stream/python/2020/04/11/simple-transaction-monitor.html",
@@ -81,7 +96,7 @@
     
     
     {
-      "title"    : "lonelywolf",
+      "author"    : "lonelywolf",
       "title"    : "Quick Tip: Hive Scripting - In 3 easy steps",
       "category" : "howto, nodejs",
       "url"      : "/howto/nodejs/2020/04/10/quick-tip-hive-scripting-in-3-easy-steps.html",
@@ -96,13 +111,13 @@
     
     
     {
-      "title"    : "holger80",
+      "author"    : "holger80",
       "title"    : "Update for beem: beempy installer for windows and beempy as shell",
       "category" : "howto, beem, python, wallet",
       "url"      : "/howto/beem/python/wallet/2020/04/08/update-for-beem-beempy-installer-for-windows-and-beempy-as-shell.html",
       "date"     : "2020-04-08 07:26:15 -0700",
       "desc"     : "Repositoryhttps://github.co...",
-      "content"  : "repositoryhttps://github.com/holgern/beembeem is a python library for steem and hive. the current version 0.22.14.there also discord channel beem: https://discord.gg/4hm592vthe newest beem can be installed by:pip install -u beemcheck that you are using hive nodes. following commandbeempy updatenodes --hiveupdates nodelist uses only after setting as default_chain, beempy used without switching to steem.the list of nodes checked withbeempy configandbeempy currentnodeshows currently connected node.upcoming changesthe next release will 0.23.0 blockchain then set new default. i rework countless steem_instance parameters replace them with more fitting name. create class which steem() conterpart.changelog versions 0.22.14 add click_shell turn into shell utility autocompletion added requirements installer on windows get_hive_nodes get_steem_nodes functions command resteem renamed reblog when in mode, walletinfo –unlock unlock wallet –lock it again get_blockchain_name steem, returns either or switch_blockchain switch between storage has now config “default_chain”, updatenode –hive switches use –steem nodesupload imagesthe url imageupload been fixed hive:beempy uploadimage -a holger80 .\beempy_screencast.gifresults in:![](https://images.hive.blog/dqmx39y3dpzxurvvxrggmzsnxympekmcdce3xoutbafpodo/image)shell mode beempybeempy activated started any parameter:beempyyou an see here action:windows beempya automatically pushed section:https://github.com/holgern/beem/releases/tag/0.22.14after downloading installing beempysetup, icon shown start menu:when clicking it, terminal started.wallet unlocking modewhen unlocked withwalletinfo --unlockand locked --lockclosing program locks wallet.nodelists steemthe two functions:from beem.nodelist import nodelistnodelist = nodelist()print(nodelist.get_hive_nodes())print(nodelist.get_steem_nodes())this helps, sure always correct node.default_chain parameterthe chain stored default_chain. hive.beempy configreturns now:+-----------------+---------------------------------------------+| key | value |+-----------------+---------------------------------------------+| default_account || default_chain [ https://anyx.io, http://anyx.io, https://api.hivekings.com, https://api.hive.blog, https://api.openhive.network, https://techcoderx.com, https://rpc.esteem.app, https://hived.privex.io ] data_dir ...\beem\beem |+-----------------+---------------------------------------------+beempy updatenodeswill return nodes, steem.switching pythonthe object function booth blockchains.from steemstm steem()stm.switch_blockchain(steem)print(stm)stm.switch_blockchain(hive)print(stm)returns&lt;steem node=&lt;a href=https://steemd.minnowsupportproject.org&gt;https://steemd.minnowsupportproject.org&lt;/a&gt;, nobroadcast=false&gt;&lt;steem href=https://anyx.io&gt;https://anyx.io&lt;/a&gt;, nobroadcast=false&gt;switching --steemswitches blockchainandbeempy --hivewill blockchain.if like what do, consider casting vote me witness hivesigner peakd. see: update by @holger80"
+      "content"  : "repositoryhttps://github.com/holgern/beembeem is a python library for steem and hive. the current version 0.22.14.there also discord channel beem: https://discord.gg/4hm592vthe newest beem can be installed by:pip install -u beemcheck that you are using hive nodes. following commandbeempy updatenodes --hiveupdates nodelist uses only after setting as default_chain, beempy used without switching to steem.the list of nodes checked withbeempy configandbeempy currentnodeshows currently connected node.upcoming changesthe next release will 0.23.0 blockchain then set new default. i rework countless steem_instance parameters replace them with more fitting name. create class which steem() conterpart.changelog versions 0.22.14 add click_shell turn into shell utility autocompletion added requirements installer on windows get_hive_nodes get_steem_nodes functions command resteem renamed reblog when in mode, walletinfo –unlock unlock wallet –lock it again get_blockchain_name steem, returns either or switch_blockchain switch between storage has now config “default_chain”, updatenode –hive switches use –steem nodesupload imagesthe url imageupload been fixed hive:beempy uploadimage -a holger80 .beempy_screencast.gifresults in:![](https://images.hive.blog/dqmx39y3dpzxurvvxrggmzsnxympekmcdce3xoutbafpodo/image)shell mode beempybeempy activated started any parameter:beempyyou an see here action:windows beempya automatically pushed section:https://github.com/holgern/beem/releases/tag/0.22.14after downloading installing beempysetup, icon shown start menu:when clicking it, terminal started.wallet unlocking modewhen unlocked withwalletinfo --unlockand locked --lockclosing program locks wallet.nodelists steemthe two functions:from beem.nodelist import nodelistnodelist = nodelist()print(nodelist.get_hive_nodes())print(nodelist.get_steem_nodes())this helps, sure always correct node.default_chain parameterthe chain stored default_chain. hive.beempy configreturns now:+-----------------+---------------------------------------------+| key | value |+-----------------+---------------------------------------------+| default_account || default_chain [ https://anyx.io, http://anyx.io, https://api.hivekings.com, https://api.hive.blog, https://api.openhive.network, https://techcoderx.com, https://rpc.esteem.app, https://hived.privex.io ] data_dir ...beembeem |+-----------------+---------------------------------------------+beempy updatenodeswill return nodes, steem.switching pythonthe object function booth blockchains.from steemstm steem()stm.switch_blockchain(steem)print(stm)stm.switch_blockchain(hive)print(stm)returns&lt;steem node=&lt;a href=https://steemd.minnowsupportproject.org&gt;https://steemd.minnowsupportproject.org&lt;/a&gt;, nobroadcast=false&gt;&lt;steem href=https://anyx.io&gt;https://anyx.io&lt;/a&gt;, nobroadcast=false&gt;switching --steemswitches blockchainandbeempy --hivewill blockchain.if like what do, consider casting vote me witness hivesigner peakd. see: update by @holger80"
     } ,
   
     
@@ -111,7 +126,7 @@
     
     
     {
-      "title"    : "hiveio",
+      "author"    : "hiveio",
       "title"    : "Community Discussion and Updates: Hive Airdrop Exclusion List and Code Corrections, Core Developer Meetings",
       "category" : "news",
       "url"      : "/news/2020/04/06/community-discussion-updates-hive-airdrop-exclusion-core-developer-meetings.html",
@@ -126,13 +141,13 @@
     
     
     {
-      "title"    : "holger80",
+      "author"    : "holger80",
       "title"    : "Update for beem: huge performance improvements and bridge API support",
       "category" : "howto, beem, python, communities",
       "url"      : "/howto/beem/python/communities/2020/04/06/update-for-beem-huge-performance-improvements-and-bridge-api-support.html",
       "date"     : "2020-04-06 05:04:18 -0700",
       "desc"     : "Repositoryhttps://github.co...",
-      "content"  : "repositoryhttps://github.com/holgern/beembeem is a python library for steem and hive. the current version 0.22.13.there also discord channel beem: https://discord.gg/4hm592vthe newest beem can be installed by:pip install -u beemcheck that you are using hive nodes. following commandbeempy updatenodes --hiveupdates nodelist uses only list of nodes checked withbeempy configandbeempy currentnodeshows currently connected node.changelog versions 0.22.13 hivesigner support added api link to steemconnect has been fixed change recovery account beempy node add get_notifications mark_notifications_as_read notifications bridge config storage improved get_default_config_storage, get_default_key_storage get_default_token_storage list_all_subscriptions get_account_posts reduce number performed calls on object creationperformance boost beemall integration tests finishing now in========== 469 passed, 27 skipped, 11 warnings in 1040.19s (0:17:20) ===========which an improvement 49% (version 0.22.12 needed 1551 seconds).this huge could accomplished by reducing when creating object. importing objects from beem, configstorage no longer created during import. read creation with get_default_config_storage. this speeds up modules stored parameter needed.these changes improves speed all commands.bridge apibeem supports parts api. more functions missing will follow.notificationsbeempy holger80prints table unread notifications.+---------------------+------+-------------------------------------------+| date | type message |+---------------------+------+-------------------------------------------+| 2020-04-06 10:15:57 vote @uwelang voted your post ($0.23) || 12:52:00 @steemcleaners ($2.45) |+---------------------+------+-------------------------------------------+they marked as -mbeempy -m holger80which broadcasts notify custom_json.list subscribtionsthe which returns cummunities subscript.get_account_poststhe function, used fetch posts shown feed account.get_ranked_postsa new class rankedposts was beem.comment receive ranked posts.change beempyit possible beempybeempy changerecovery -a holge80 recovery.accounthivesigner addedthe example shows how create login link:from beem.hivesigner import hivesignerhivesigner = hivesigner(client_id=rewarding.app, scope=login, get_refresh_token=false)hivesigner.get_login_url('https://rewarding.app/welcome')returns'&lt;a href=https://hivesigner.com/oauth2/authorize&gt;https://hivesigner.com/oauth2/authorize&lt;/a&gt;?client_id=rewarding.app&amp;redirect_uri=https%3a%2f%2frewarding.app%2fwelcome&amp;scope=login'the received token then check if user successfully entering its posting key script:try: hivesigner.set_access_token(access_token) name hivesigner.me()[name]except: print(wrong token) see: update performance improvements @holger80"
+      "content"  : "repositoryhttps://github.com/holgern/beembeem is a python library for steem and hive. the current version 0.22.13.there also discord channel beem: https://discord.gg/4hm592vthe newest beem can be installed by:pip install -u beemcheck that you are using hive nodes. following commandbeempy updatenodes --hiveupdates nodelist uses only list of nodes checked withbeempy configandbeempy currentnodeshows currently connected node.changelog versions 0.22.13 hivesigner support added api link to steemconnect has been fixed change recovery account beempy node add get_notifications mark_notifications_as_read notifications bridge config storage improved get_default_config_storage, get_default_key_storage get_default_token_storage list_all_subscriptions get_account_posts reduce number performed calls on object creationperformance boost beemall integration tests finishing now in========== 469 passed, 27 skipped, 11 warnings in 1040.19s (0:17:20) ===========which an improvement 49% (version 0.22.12 needed 1551 seconds).this huge could accomplished by reducing when creating object. importing objects from beem, configstorage no longer created during import. read creation with get_default_config_storage. this speeds up modules stored parameter needed.these changes improves speed all commands.bridge apibeem supports parts api. more functions missing will follow.notificationsbeempy holger80prints table unread notifications.+---------------------+------+-------------------------------------------+| date | type message |+---------------------+------+-------------------------------------------+| 2020-04-06 10:15:57 vote @uwelang voted your post ($0.23) || 12:52:00 @steemcleaners ($2.45) |+---------------------+------+-------------------------------------------+they marked as -mbeempy -m holger80which broadcasts notify custom_json.list subscribtionsthe which returns cummunities subscript.get_account_poststhe function, used fetch posts shown feed account.get_ranked_postsa new class rankedposts was beem.comment receive ranked posts.change beempyit possible beempybeempy changerecovery -a holge80 recovery.accounthivesigner addedthe example shows how create login link:from beem.hivesigner import hivesignerhivesigner = hivesigner(client_id=rewarding.app, scope=login, get_refresh_token=false)hivesigner.get_login_url('https://rewarding.app/welcome')returns'&lt;a href=https://hivesigner.com/oauth2/authorize&gt;https://hivesigner.com/oauth2/authorize&lt;/a&gt;?client_id=rewarding.app&amp;redirect_uri=https%3a%2f%2frewarding.app%2fwelcome&amp;scope=login'the received token then check if user successfully entering its posting key script:try: hivesigner.set_access_token(access_token) name hivesigner.me()[name]except: print(wrong token)if like what i do, consider casting me witness or peakd. see: update performance improvements @holger80"
     } ,
   
     
@@ -141,7 +156,7 @@
     
     
     {
-      "title"    : "beggars",
+      "author"    : "beggars",
       "title"    : "Tutorial: Building A Dice Game Contract With Hive Stream (Part 2)",
       "category" : "howto, dapps, nodejs",
       "url"      : "/howto/dapps/nodejs/2020/04/06/tutorial-building-a-dice-game-contract-with-hive-stream-part-2.html",
@@ -156,7 +171,7 @@
     
     
     {
-      "title"    : "good-karma",
+      "author"    : "good-karma",
       "title"    : "SteemConnect notice",
       "category" : "news, hivesigner",
       "url"      : "/news/hivesigner/2020/04/05/steemconnect-notice.html",
@@ -171,7 +186,7 @@
     
     
     {
-      "title"    : "beggars",
+      "author"    : "beggars",
       "title"    : "Tutorial: Building A Dice Game Contract With Hive Stream",
       "category" : "howto, dapps, nodejs",
       "url"      : "/howto/dapps/nodejs/2020/04/04/tutorial-building-a-dice-game-contract-with-hive-stream.html",
@@ -186,7 +201,7 @@
     
     
     {
-      "title"    : "blocktrades",
+      "author"    : "blocktrades",
       "title"    : "Hive workflow proposal",
       "category" : "howto, contribute, development",
       "url"      : "/howto/contribute/development/2020/04/03/hive-workflow-proposal.html",
@@ -201,7 +216,7 @@
     
     
     {
-      "title"    : "therealwolf",
+      "author"    : "therealwolf",
       "title"    : "dhive: RPC Failover Support",
       "category" : "howto, rpc, nodejs",
       "url"      : "/howto/rpc/nodejs/2020/04/03/dhive-rpc-failover-support.html",
@@ -216,7 +231,7 @@
     
     
     {
-      "title"    : "holger80",
+      "author"    : "holger80",
       "title"    : "How to review account permissions and change your recovery account",
       "category" : "howto, beem, python, account",
       "url"      : "/howto/beem/python/account/2020/04/02/how-to-review-account-permissions-and-change-your-recovery-account.html",
@@ -231,7 +246,7 @@
     
     
     {
-      "title"    : "deathwing",
+      "author"    : "deathwing",
       "title"    : "How to set up your Witness server with MIRA?",
       "category" : "howto, witness",
       "url"      : "/howto/witness/2020/04/01/how-to-set-up-your-witness-server-with-mira.html",
@@ -246,7 +261,7 @@
     
     
     {
-      "title"    : "inertia",
+      "author"    : "inertia",
       "title"    : "Jekyll::Hive",
       "category" : "tools, ruby, jekyll",
       "url"      : "/tools/ruby/jekyll/2020/04/01/jekyll-hive.html",
@@ -261,7 +276,7 @@
     
     
     {
-      "title"    : "holger80",
+      "author"    : "holger80",
       "title"    : "Update for beem: fixing author/curation reward calculation and more",
       "category" : "howto, beem, python, curation",
       "url"      : "/howto/beem/python/curation/2020/04/01/update-for-beem-fixing-author-curation-reward-calculation-and-more.html",
@@ -276,7 +291,7 @@
     
     
     {
-      "title"    : "holger80",
+      "author"    : "holger80",
       "title"    : "Use beempy to access the internal HIVE/HBD market",
       "category" : "howto, beem, python, market, hbd",
       "url"      : "/howto/beem/python/market/hbd/2020/03/24/use-beempy-to-access-the-internal-hive-hbd-market.html",
@@ -291,7 +306,7 @@
     
     
     {
-      "title"    : "hiveio",
+      "author"    : "hiveio",
       "title"    : "The Hive Blockchain Has Launched Successfully! Recap and Helpful Information",
       "category" : "news",
       "url"      : "/news/2020/03/21/the-hive-blockchain-has-launched-successfully-recap-and-helpful-information.html",
@@ -306,7 +321,7 @@
     
     
     {
-      "title"    : "hiveio",
+      "author"    : "hiveio",
       "title"    : "Announcing the Launch of Hive Blockchain",
       "category" : "news",
       "url"      : "/news/2020/03/17/announcing-the-launch-of-hive-blockchain.html",
