@@ -3,7 +3,7 @@ layout: null
 ---
 [
   {% for post in site.posts %}
-    {% assign keywords = post.content | downcase | strip_html | strip_newlines | replace: '"', '' | split: ' ' | uniq %}
+    {% assign keywords = post.content | downcase | strip_html | strip_newlines | replace: '"', '' | replace: '\', '' | split: ' ' | uniq %}
     {% assign description = post.description %}
     
     {% if description == null %}
@@ -11,7 +11,7 @@ layout: null
     {% endif %}
     
     {
-      "title"    : "{{ post.author }}",
+      "author"    : "{{ post.author }}",
       "title"    : "{{ post.title | escape }}",
       "category" : "{{ post.categories | join: ', ' }}",
       "url"      : "{{ post.url | relative_url }}",
