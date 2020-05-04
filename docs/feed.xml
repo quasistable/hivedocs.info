@@ -1,4 +1,166 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.0.0">Jekyll</generator><link href="https://hivedocs.info/feed.xml" rel="self" type="application/atom+xml" /><link href="https://hivedocs.info/" rel="alternate" type="text/html" /><updated>2020-04-29T17:53:27-07:00</updated><id>https://hivedocs.info/feed.xml</id><title type="html">Hive Chain Documentation</title><subtitle>Your resource for various levels of Hive Documentation.</subtitle><author><name>site curated by: @inertia</name></author><entry><title type="html">Interactive Hive API moved to Hivesigner</title><link href="https://hivedocs.info/news/swagger/api/2020/04/29/interactive-hive-api-moved-to-hivesigner.html" rel="alternate" type="text/html" title="Interactive Hive API moved to Hivesigner" /><published>2020-04-29T05:59:54-07:00</published><updated>2020-04-29T05:59:54-07:00</updated><id>https://hivedocs.info/news/swagger/api/2020/04/29/interactive-hive-api-moved-to-hivesigner</id><content type="html" xml:base="https://hivedocs.info/news/swagger/api/2020/04/29/interactive-hive-api-moved-to-hivesigner.html">&lt;p&gt;Thank you everyone for your &lt;a href=&quot;https://esteem.app/hive/@good-karma/hivesigner-ongoing-development-and-improvement&quot;&gt;support on Hivesigner proposal&lt;/a&gt;. We are almost in range of approved proposals. If you haven’t voted, please consider approving proposal to help us make Hivesigner better.&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.0.0">Jekyll</generator><link href="https://hivedocs.info/feed.xml" rel="self" type="application/atom+xml" /><link href="https://hivedocs.info/" rel="alternate" type="text/html" /><updated>2020-05-04T13:02:49-07:00</updated><id>https://hivedocs.info/feed.xml</id><title type="html">Hive Chain Documentation</title><subtitle>Your resource for various levels of Hive Documentation.</subtitle><author><name>site curated by: @inertia</name></author><entry><title type="html">Hive Pressure 2: How to Answer Hive Questions?</title><link href="https://hivedocs.info/news/devops/hivemind/nodes/2020/05/04/hive-pressure-2-how-to-answer-hive-questions.html" rel="alternate" type="text/html" title="Hive Pressure 2: How to Answer Hive Questions?" /><published>2020-05-04T11:32:57-07:00</published><updated>2020-05-04T11:32:57-07:00</updated><id>https://hivedocs.info/news/devops/hivemind/nodes/2020/05/04/hive-pressure-2-how-to-answer-hive-questions</id><content type="html" xml:base="https://hivedocs.info/news/devops/hivemind/nodes/2020/05/04/hive-pressure-2-how-to-answer-hive-questions.html">&lt;p&gt;First, you need to learn how to ask good questions, and here are some of the resources that will help you to do so:&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://developers.hive.io/apidefinitions/&quot;&gt;https://developers.hive.io/apidefinitions/&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://hive.hivesigner.com/&quot;&gt;https://hive.hivesigner.com/&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;(Kudos to @inertia and @good-karma)&lt;/p&gt;
+
+&lt;p&gt;This set of API calls is far from perfect, but for now it has to be enough for general purpose API nodes.&lt;/p&gt;
+
+&lt;center&gt;
+&lt;a href=&quot;https://www.youtube.com/watch&quot;&gt;https://www.youtube.com/watch&lt;/a&gt;
+?v=vlW9lDE3DuI&lt;/center&gt;
+
+&lt;h1 id=&quot;the-big-the-slow-and-the-ugly&quot;&gt;The big, the slow, and the ugly.&lt;/h1&gt;
+&lt;p&gt;Back in the days, we used to run a so-called “full node”, that is a single &lt;del&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;steemd&lt;/code&gt;&lt;/del&gt; (yeah, we haven’t renamed the binary yet) node that was built with &lt;code class=&quot;highlighter-rouge&quot;&gt;LOW_MEMORY_NODE=OFF&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;CLEAR_VOTES=OFF&lt;/code&gt; and configured with all the plugins you can get.
+It required a lot of RAM, it replayed for ages, and it was a huge pain to keep it running.
+Our code is great for running blockchain. It’s not equally efficient when it has to answer complex questions.&lt;/p&gt;
+
+&lt;h1 id=&quot;current-architecture&quot;&gt;Current architecture&lt;/h1&gt;
+&lt;p&gt;The idea is to move the workload requiring complex queries out of our blockchain nodes.&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;                  +----------+                                                                
+                  |          &amp;lt;-----------------+             @     @@@@@@    ,@@@@@%          
+                  | Hivemind |                 |            @@@@    (@@@@@*    @@@@@@         
+        +-------+ |          &amp;lt;-------+         |          %@@@@@@     @@@@@@    %@@@@@,       
+        |       | +-----^----+       |         |         @@@@@@@@@@    @@@@@@     @@@@@@      
+        | redis |       |            |         |       ,@@@@@@@@@@@@     @@@@@@    @@@@@@     
+        |       &amp;lt;--+    |       +----v-----+   |      @@@@@@@@@@@@@@@&amp;amp;    @@@@@@     @@@@@@   
+        +-------+  |  +-v-+     |          |   |     @@@@@@@@@@@@@@@@@@    .@@@@@%    @@@@@@  
+                   |  |   &amp;lt;-----&amp;gt; AH node  |   |   @@@@@@@@@@@@@@@@@@@@@(              .@@@@@%
+        +-------+  +--&amp;gt; j |     |          |   |    @@@@@@@@@@@@@@@@@@@@               @@@@@@ 
+&amp;lt;-------&amp;gt;       |     | u |     +----------+   |     *@@@@@@@@@@@@@@@@     @@@@@@    @@@@@@.  
+&amp;lt;-------&amp;gt; nginx &amp;lt;-----&amp;gt; s |                    |       @@@@@@@@@@@@@@    &amp;amp;@@@@@.    @@@@@@    
+&amp;lt;-------&amp;gt;       |     | s |     +----------+   |        #@@@@@@@@@@     @@@@@@    #@@@@@/     
+        +-------+     | i |     |          |   |          @@@@@@@@    /@@@@@/    @@@@@@       
+                      |   &amp;lt;-----&amp;gt; FAT node &amp;lt;---+           @@@@@(    @@@@@@    .@@@@@&amp;amp;        
+                      +---+     |          |                 @@     @@@@@&amp;amp;    @@@@@@          
+                                +----------+                                                  
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;&lt;sup&gt;
+Sorry, lack of GIMP skills
+&lt;/sup&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;hivemind&quot;&gt;Hivemind&lt;/h2&gt;
+&lt;p&gt;For this purpose I use Hivemind (hats off to @roadscape) backed by PostgreSQL.&lt;/p&gt;
+&lt;blockquote&gt;
+  &lt;p&gt;Hive is a “consensus interpretation” layer for the Hive blockchain, maintaining the state of social features such as post feeds, follows, and communities. Written in Python, it synchronizes an SQL database with chain state, providing developers with a more flexible/extensible alternative to the raw hived API.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h2 id=&quot;fat-node&quot;&gt;FAT node&lt;/h2&gt;
+&lt;p&gt;Also, instead of a single &lt;code class=&quot;highlighter-rouge&quot;&gt;hived&lt;/code&gt; node with all the plugins, I chose to run two nodes, one of them is a “fat node” (&lt;code class=&quot;highlighter-rouge&quot;&gt;LOW_MEMORY_NODE=OFF&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;CLEAR_VOTES=OFF&lt;/code&gt;) on a MIRA-enabled instance to feed the Hivemind.&lt;/p&gt;
+
+&lt;p&gt;Please note that I have NOT included &lt;code class=&quot;highlighter-rouge&quot;&gt;market_history&lt;/code&gt; in my configuration, simply because it doesn’t require a “fat node”, but Hivemind requires it, so make sure that you have it somewhere.&lt;/p&gt;
+
+&lt;h2 id=&quot;ah-node&quot;&gt;AH node&lt;/h2&gt;
+&lt;p&gt;Account history node is the other node I use in my setup. It serves not only account history, but it’s definitely the heaviest plugin here, hence the name.
+I’m not using MIRA here, because I prefer the pre-MIRA implementation of the account history plugin and MIRA had some issues with it. Also, it’s way too slow for replay.&lt;/p&gt;
+
+&lt;h2 id=&quot;jussi&quot;&gt;Jussi&lt;/h2&gt;
+&lt;p&gt;Instead of one service, I now have three specialized ones, I need to route incoming calls to them.
+So the &lt;code class=&quot;highlighter-rouge&quot;&gt;get_account_history&lt;/code&gt; goes to the AH node, while the &lt;code class=&quot;highlighter-rouge&quot;&gt;get_followers&lt;/code&gt; goes to Hivemind.
+That’s what jussi does, but it also caches things.&lt;/p&gt;
+
+&lt;h2 id=&quot;redis&quot;&gt;Redis&lt;/h2&gt;
+&lt;p&gt;Jussi uses Redis as in-memory data cache. This can very effectively take load off the nodes. Even though most of the entries quickly expire, it’s enough to effectively answer common questions such as “what’s in the head block?”&lt;/p&gt;
+
+&lt;div style=&quot;display: block; margin: 0 auto;&quot;&gt;
+  &lt;p&gt;&lt;img src=&quot;https://images.hive.blog/DQmdb8PSfpBkD2dm8cJtLZJNvCYAe2aYLy5Rr9MCLQxHLoN/headblock.jpg&quot; alt=&quot;headblock.jpg&quot; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+
+&lt;p&gt;8 dApps asking for the latest block will result in 1 call to the node and 7 cache hits from Redis.&lt;/p&gt;
+
+&lt;h2 id=&quot;nginx&quot;&gt;Nginx&lt;/h2&gt;
+&lt;p&gt;That’s the world facing component - here you can have your SSL termination, rate limiting, load balancing, and all other fancy stuff related to serving your clients.&lt;/p&gt;
+
+&lt;h1 id=&quot;resources&quot;&gt;Resources&lt;/h1&gt;
+&lt;p&gt;Now when you know all the components, let’s take a look at what is required to run them all and (in the darkness) bind them.&lt;/p&gt;
+
+&lt;h2 id=&quot;small-stuff&quot;&gt;Small stuff&lt;/h2&gt;
+&lt;p&gt;There are no specific needs here. The more traffic you expect, the more resources you will need, but they can run on any reasonable server on instance:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Nginx needs what nginx usually needs - a bunch of cores and some RAM.&lt;/li&gt;
+  &lt;li&gt;Jussi is no different than nginx when it comes to resources.&lt;/li&gt;
+  &lt;li&gt;Redis needs what redis usually needs - a few GB of RAM to hold the data.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;big-stuff&quot;&gt;Big stuff&lt;/h2&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;the AH node, which is non-MIRA in my setup, requires plenty of RAM for the &lt;code class=&quot;highlighter-rouge&quot;&gt;shared_memory.bin&lt;/code&gt; file to either hold it on tmpfs or buffer/cache it, especially during replay. A machine with 32GB RAM will work, but I would rather suggest using a 64GB RAM machine these days. Of course, low latency storage such as SSD or NVMe is a must. You need 600GB of it.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;the FAT node in my setup is running MIRA, so it’s not that memory hungry, but the more RAM you have, the more effective it can be. A machine with 16GB RAM might work, but I would go with 32GB or 64GB for it. Don’t even try without a very fast SSD or NVMe. You need 400GB of it.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Hivemind itself is a simple script, but it needs PostgreSQL as a database backend, and for that you need all the things that PostgreSQL usually needs. It can run on pretty much everything, as long as you have enough space to fit the data, currently 300GB. Of course, faster storage and more RAM will result in much better performance.&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h1 id=&quot;from-zero-to-hero&quot;&gt;From zero to hero&lt;/h1&gt;
+&lt;p&gt;Reference hardware configuration:&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Intel(R) Xeon(R) E-2274G CPU @ 4.00GHz
+64GB RAM, ECC, 2666MT/s
+2x NVMe 960GB (SAMSUNG PM983)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;When you are starting from scratch, it’s best to get a recent &lt;code class=&quot;highlighter-rouge&quot;&gt;block_log&lt;/code&gt;
+I’m providing one at 
+&lt;a href=&quot;https://gtg.openhive.network/get/blockchain/&quot;&gt;https://gtg.openhive.network/get/blockchain/&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;How fast you can get it depends on your network and load on my server. The average downloading speed is around 30MB/s, so you should be able to get it in less than 3 hours.&lt;/p&gt;
+
+&lt;div style=&quot;display: block; margin: 0 auto;&quot;&gt;
+  &lt;p&gt;&lt;img src=&quot;https://images.hive.blog/DQmRTxHALWD8Nszhg7cYkqu4tQHCLotEYMK7USDF2xthbAH/replay-speed.png&quot; alt=&quot;replay-speed.png&quot; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+
+&lt;div style=&quot;display: block; margin: 0 auto;&quot;&gt;
+  &lt;p&gt;&lt;img src=&quot;https://images.hive.blog/DQmeYsSaz9PTyt6wamQU76Z6Mz7gJGce8aHxmj78Q58DLuo/replay-times.png&quot; alt=&quot;replay-times.png&quot; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th&gt;Node type&lt;/th&gt;
+      &lt;th&gt;Replay Time&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td&gt;AH Node&lt;/td&gt;
+      &lt;td&gt;15 hours 42 minutes&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;Fat Node&lt;/td&gt;
+      &lt;td&gt;48 hours 53 minutes&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;Hivemind&lt;/td&gt;
+      &lt;td&gt;85 hours 50 minutes&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;Roughly you need 4 days and 9 hours to have it synced to the latest head block.&lt;/p&gt;
+
+&lt;div style=&quot;display: block; margin: 0 auto;&quot;&gt;
+  &lt;p&gt;&lt;img src=&quot;https://images.hive.blog/DQmTQXoQYYFenMLrvLRZzuHZQdZ6wStc394jKTnGF8bya1s/4days9hours.jpg&quot; alt=&quot;4days9hours.jpg&quot; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+
+&lt;p&gt;A lot can be improved at the backend, and we are working on that. To be developer-friendly, we also need to improve the set of available API calls, finally get rid of the deprecated ones such as &lt;code class=&quot;highlighter-rouge&quot;&gt;get_state&lt;/code&gt;, and move away from the all in one wrapper &lt;code class=&quot;highlighter-rouge&quot;&gt;condenser_api&lt;/code&gt;. But that’s a different story for a different occasion.&lt;/p&gt;
+
+&lt;div style=&quot;display: block; margin: 0 auto;&quot;&gt;
+  &lt;p&gt;&lt;img src=&quot;https://images.hive.blog/DQmSJUo4g9AmoVFoAbs6gzMw6coVURUQKg7URtBSfkEj5oJ/Hive_free-file.png&quot; alt=&quot;Hive_Queen&quot; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;hr /&gt;
+
+&lt;p&gt;
+  See: &lt;a href=&quot;https://hive.blog/hive-160391/@gtg/hive-pressure-2-how-to-answer-hive-questions&quot;&gt;Hive Pressure 2: How to Answer Hive Questions?&lt;/a&gt;
+  by
+  &lt;a href=&quot;https://hive.blog/@gtg&quot;&gt;@gtg&lt;/a&gt;
+&lt;/p&gt;</content><author><name>gtg</name></author><summary type="html">First, you need to learn how to ask good questions, and here are some of the resources that will help you to do so: https://developers.hive.io/apidefinitions/ https://hive.hivesigner.com/ (Kudos to @inertia and @good-karma) This set of API calls is far from perfect, but for now it has to be enough for general purpose API nodes. https://www.youtube.com/watch ?v=vlW9lDE3DuI The big, the slow, and the ugly. Back in the days, we used to run a so-called “full node”, that is a single steemd (yeah, we haven’t renamed the binary yet) node that was built with LOW_MEMORY_NODE=OFF and CLEAR_VOTES=OFF and configured with all the plugins you can get. It required a lot of RAM, it replayed for ages, and it was a huge pain to keep it running. Our code is great for running blockchain. It’s not equally efficient when it has to answer complex questions. Current architecture The idea is to move the workload requiring complex queries out of our blockchain nodes. +----------+ | &amp;lt;-----------------+ @ @@@@@@ ,@@@@@% | Hivemind | | @@@@ (@@@@@* @@@@@@ +-------+ | &amp;lt;-------+ | %@@@@@@ @@@@@@ %@@@@@, | | +-----^----+ | | @@@@@@@@@@ @@@@@@ @@@@@@ | redis | | | | ,@@@@@@@@@@@@ @@@@@@ @@@@@@ | &amp;lt;--+ | +----v-----+ | @@@@@@@@@@@@@@@&amp;amp; @@@@@@ @@@@@@ +-------+ | +-v-+ | | | @@@@@@@@@@@@@@@@@@ .@@@@@% @@@@@@ | | &amp;lt;-----&amp;gt; AH node | | @@@@@@@@@@@@@@@@@@@@@( .@@@@@% +-------+ +--&amp;gt; j | | | | @@@@@@@@@@@@@@@@@@@@ @@@@@@ &amp;lt;-------&amp;gt; | | u | +----------+ | *@@@@@@@@@@@@@@@@ @@@@@@ @@@@@@. &amp;lt;-------&amp;gt; nginx &amp;lt;-----&amp;gt; s | | @@@@@@@@@@@@@@ &amp;amp;@@@@@. @@@@@@ &amp;lt;-------&amp;gt; | | s | +----------+ | #@@@@@@@@@@ @@@@@@ #@@@@@/ +-------+ | i | | | | @@@@@@@@ /@@@@@/ @@@@@@ | &amp;lt;-----&amp;gt; FAT node &amp;lt;---+ @@@@@( @@@@@@ .@@@@@&amp;amp; +---+ | | @@ @@@@@&amp;amp; @@@@@@ +----------+ Sorry, lack of GIMP skills Hivemind For this purpose I use Hivemind (hats off to @roadscape) backed by PostgreSQL. Hive is a “consensus interpretation” layer for the Hive blockchain, maintaining the state of social features such as post feeds, follows, and communities. Written in Python, it synchronizes an SQL database with chain state, providing developers with a more flexible/extensible alternative to the raw hived API. FAT node Also, instead of a single hived node with all the plugins, I chose to run two nodes, one of them is a “fat node” (LOW_MEMORY_NODE=OFF and CLEAR_VOTES=OFF) on a MIRA-enabled instance to feed the Hivemind. Please note that I have NOT included market_history in my configuration, simply because it doesn’t require a “fat node”, but Hivemind requires it, so make sure that you have it somewhere. AH node Account history node is the other node I use in my setup. It serves not only account history, but it’s definitely the heaviest plugin here, hence the name. I’m not using MIRA here, because I prefer the pre-MIRA implementation of the account history plugin and MIRA had some issues with it. Also, it’s way too slow for replay. Jussi Instead of one service, I now have three specialized ones, I need to route incoming calls to them. So the get_account_history goes to the AH node, while the get_followers goes to Hivemind. That’s what jussi does, but it also caches things. Redis Jussi uses Redis as in-memory data cache. This can very effectively take load off the nodes. Even though most of the entries quickly expire, it’s enough to effectively answer common questions such as “what’s in the head block?” 8 dApps asking for the latest block will result in 1 call to the node and 7 cache hits from Redis. Nginx That’s the world facing component - here you can have your SSL termination, rate limiting, load balancing, and all other fancy stuff related to serving your clients. Resources Now when you know all the components, let’s take a look at what is required to run them all and (in the darkness) bind them. Small stuff There are no specific needs here. The more traffic you expect, the more resources you will need, but they can run on any reasonable server on instance: Nginx needs what nginx usually needs - a bunch of cores and some RAM. Jussi is no different than nginx when it comes to resources. Redis needs what redis usually needs - a few GB of RAM to hold the data. Big stuff the AH node, which is non-MIRA in my setup, requires plenty of RAM for the shared_memory.bin file to either hold it on tmpfs or buffer/cache it, especially during replay. A machine with 32GB RAM will work, but I would rather suggest using a 64GB RAM machine these days. Of course, low latency storage such as SSD or NVMe is a must. You need 600GB of it. the FAT node in my setup is running MIRA, so it’s not that memory hungry, but the more RAM you have, the more effective it can be. A machine with 16GB RAM might work, but I would go with 32GB or 64GB for it. Don’t even try without a very fast SSD or NVMe. You need 400GB of it. Hivemind itself is a simple script, but it needs PostgreSQL as a database backend, and for that you need all the things that PostgreSQL usually needs. It can run on pretty much everything, as long as you have enough space to fit the data, currently 300GB. Of course, faster storage and more RAM will result in much better performance. From zero to hero Reference hardware configuration: Intel(R) Xeon(R) E-2274G CPU @ 4.00GHz 64GB RAM, ECC, 2666MT/s 2x NVMe 960GB (SAMSUNG PM983) When you are starting from scratch, it’s best to get a recent block_log I’m providing one at https://gtg.openhive.network/get/blockchain/ How fast you can get it depends on your network and load on my server. The average downloading speed is around 30MB/s, so you should be able to get it in less than 3 hours. Node type Replay Time AH Node 15 hours 42 minutes Fat Node 48 hours 53 minutes Hivemind 85 hours 50 minutes Roughly you need 4 days and 9 hours to have it synced to the latest head block. A lot can be improved at the backend, and we are working on that. To be developer-friendly, we also need to improve the set of available API calls, finally get rid of the deprecated ones such as get_state, and move away from the all in one wrapper condenser_api. But that’s a different story for a different occasion. See: Hive Pressure 2: How to Answer Hive Questions? by @gtg</summary></entry><entry><title type="html">Interactive Hive API moved to Hivesigner</title><link href="https://hivedocs.info/news/swagger/api/2020/04/29/interactive-hive-api-moved-to-hivesigner.html" rel="alternate" type="text/html" title="Interactive Hive API moved to Hivesigner" /><published>2020-04-29T05:59:54-07:00</published><updated>2020-04-29T05:59:54-07:00</updated><id>https://hivedocs.info/news/swagger/api/2020/04/29/interactive-hive-api-moved-to-hivesigner</id><content type="html" xml:base="https://hivedocs.info/news/swagger/api/2020/04/29/interactive-hive-api-moved-to-hivesigner.html">&lt;p&gt;Thank you everyone for your &lt;a href=&quot;https://esteem.app/hive/@good-karma/hivesigner-ongoing-development-and-improvement&quot;&gt;support on Hivesigner proposal&lt;/a&gt;. We are almost in range of approved proposals. If you haven’t voted, please consider approving proposal to help us make Hivesigner better.&lt;/p&gt;
 
 &lt;center&gt; 
 &lt;img src=&quot;https://img.esteem.app/kbgnol.png&quot; /&gt;
@@ -992,7 +1154,230 @@ CONTAINER ID        IMAGE                          COMMAND                  CREA
   See: &lt;a href=&quot;https://peakd.com/hive-139531/@engrave/improvements-for-condenser-repository-continuous-integration-and-deployments&quot;&gt;Improvements for hive.blog, Continuous Integration and Deployments&lt;/a&gt;
   by
   &lt;a href=&quot;https://hive.blog/@engrave&quot;&gt;@engrave&lt;/a&gt;
-&lt;/p&gt;</content><author><name>engrave</name></author><summary type="html">I want to elaborate not only on introduced features but also on my thought and reasoning so everyone can benefit and introduce changes in their projects. This post will be long but I believe it might be useful for the entire HiveDevs community. The workflow is built on top of Gitlab CI/CD but can be easily modified for any other CI/CD tool (i.e. CircleCI or Jenkins). Docker I’ve started my work by reviewing Dockerfile. I’ve built the condenser image and was a bit shocked: $ docker image ls condenser latest 6d57c0c8a904 19 seconds ago 1.54GB 1.54 GB for a simple frontend application? Boy, it’s just too much. Let’s do something with it. Leaner docker image Let’s start by recognizing the reason why is this so big. You can also look into your Dockerfile and package.json and search for some common mistakes: using full-sized images rather than alpine versions installing dev dependencies for production images putting dev dependencies into production dependencies list copying useless files into the final image Yep, you can check every point here. Let’s make some work on a new Dockerfile: FROM node:12.16.2 as development WORKDIR /var/app COPY package.json yarn.lock ./ RUN yarn install --non-interactive --frozen-lockfile --ignore-optional COPY . . RUN mkdir tmp &amp;amp;&amp;amp; yarn build CMD [ &quot;yarn&quot;, &quot;run&quot;, &quot;start&quot; ] ### REMOVE DEV DEPENDENCIES ## FROM development as dependencies RUN yarn install --non-interactive --frozen-lockfile --ignore-optional --production ### BUILD MINIFIED PRODUCTION ## FROM node:12.16.2-alpine as production WORKDIR /var/app ARG SOURCE_COMMIT ENV SOURCE_COMMIT ${SOURCE_COMMIT} ARG DOCKER_TAG ENV DOCKER_TAG ${DOCKER_TAG} COPY --from=dependencies /var/app/package.json /var/app/package.json COPY --from=dependencies /var/app/config /var/app/config COPY --from=dependencies /var/app/dist /var/app/dist COPY --from=dependencies /var/app/lib /var/app/lib COPY --from=dependencies /var/app/src /var/app/src COPY --from=dependencies /var/app/tmp /var/app/tmp COPY --from=dependencies /var/app/webpack /var/app/webpack COPY --from=dependencies /var/app/node_modules /var/app/node_modules COPY --from=dependencies /var/app/healthcheck.js /var/app/healthcheck.js HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=5 CMD node /var/app/healthcheck.js CMD [ &quot;yarn&quot;, &quot;run&quot;, &quot;production&quot; ] What has been improved: Node.js version was upgraded from 8.7 to 12.16.2 which is the latest LTS at the moment. Always try using the latest framework versions, which may include security fixes and performance upgrades. It’s also a good habit to use a specific version up to the patch number. Multistage build was used to build an optimal image for production deployment. First, we build a development stage with every dependency to be able to compile React application. Next, we’re removing development dependencies with --production switch during the dependencies stage. After all, we’re creating a minimal image from the alpine node version which is the smallest base available, by copying only necessary files and directories. Healthcheck has been introduced, so the docker daemon can easily manage containers with automatic restarts if necessary and zero-downtime deployments which will be explained later in this post. It will be also useful for dynamic scaling capabilities with docker swarm. Also, package.json file was modified, but it’s not worth to post its content here: Dev dependencies like webpack, babel or eslint was moved into a proper list called devDependencies so yarn could install only production deps for the final image. Strict versions were introduced for every dependency to make sure every build produces exactly the same image. Semantic versioning is popular, but there is no way to check if the package author does not introduce breaking changes with only patch version increased. If you need to update a package, do it manually. If you have enough test coverage, you can update the package and run CI/CD to check if everything works fine. After all that work done, the condenser image size was massively reduced: $ docker image ls condenser latest 58406d338e67 8 seconds ago 226MB The compressed image in the docker registry is even smaller. Much better, right? Shame on you, Steemit! Healthcheck Simply speaking, docker is running containers and trying to keep it alive as long as possible. But the system needs to have a tool to determine if the container is actually alive. It may seem alive, but is your app responding to requests for example? Fortunately, docker has also integrated health check mechanism which can be integrated into Dockerfile or docker-compose.yml. Usually, you need to create an endpoint for liveness checks. Fortunately, condenser already has one so we can utilize it easily. There is a lot of examples with curl used as a docker health check, but it’s not a good way to go. Healthcheck should work cross-platform and curl implementation differs on Windows and Unix. You should write health check in the same technology or framework as your projects are written, for condenser it’s Node.js. const http = require(&quot;http&quot;); const options = { host: &quot;localhost&quot;, port: &quot;8080&quot;, path: '/.well-known/healthcheck.json', timeout: 5000 }; const request = http.request(options, (res) =&amp;gt; { console.log(`STATUS: ${res.statusCode}`); if (res.statusCode == 200) { process.exit(0); } else { console.error(`ERROR: ${res.statusCode}`); process.exit(1); } }); request.on('error', (err) =&amp;gt; { console.error('ERROR', err); process.exit(1); }); request.end(); When ready, instruct Docker to use your health check mechanism. Add following line into your Dockefile: HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=5 CMD node /var/app/healthcheck.js Make sure this file /var/app/healthcheck.js exists inside your image. If you want to be sure your health check is working, inspect your container after running it: $ docker container ls CONTAINER ID IMAGE COMMAND CREATED STATUS PORTS NAMES 060166cf52ee hiveio/condenser:development &quot;docker-entrypoint.s…&quot; 5 minutes ago Up 5 minutes (healthy) 0.0.0.0:8080-&amp;gt;8080/tcp mystifying_dhawan There should be a (healthy) indicator in STATUS column. And there is. Please also note that during the container startup process, it will indicate slightly different status (starting), as the docker daemon will wait before making the first check. It’s because we’re giving some time for our app to startup. It’s the start-period parameter. Depending on your app and traffic/load, those parameters should vary. Pushing images to Docker Hub We already have an improved (smaller) docker image, so it’s time to push it to the repository. Doing it manually is a waste of time and may cause human mistakes. The best way is to utilize Gitlab Runner to do it for us in an automatic and bullet-proof manner. Here is a job definition from .gitlab-ci.yml file with some additional code which we will breakdown: variables: DOCKER_IMAGE: hiveio/condenser .docker-job: &amp;amp;docker-job image: docker:stable services: - docker:dind before_script: - echo $HUB_TOKEN | docker login -u $HUB_USERNAME --password-stdin build-development: &amp;lt;&amp;lt;: *docker-job stage: build variables: DOCKER_TAG: $DOCKER_IMAGE:$CI_COMMIT_SHORT_SHA DOCKER_TAG_MAIN: $DOCKER_IMAGE:development SOURCE_COMMIT: $CI_COMMIT_SHA only: - develop script: - docker build -t $DOCKER_TAG -t $DOCKER_TAG_MAIN --build-arg SOURCE_COMMIT --build-arg DOCKER_TAG . - docker push $DOCKER_TAG - docker push $DOCKER_TAG_MAIN First, we’re creating global variable DOCKER_IMAGE so we can reuse it later in many places. And in case we would like to change the image name, we do it only in a single place. Hence we have multiple jobs defined in .gitlab-ci.yml file, it’s good to utilize advanced YAML syntax, which includes hidden keys and anchors. It will decrease the duplicated code and make the file easier to read and maintain. Every job name starting with the dot will be considered as a hidden key and won’t be directly executed. Btw, this is a quick way to temporarily disable any job in your GitLab CI/CD without commenting or removing it. By using .docker-job: &amp;amp;docker-job we created an anchor which can be later used to extend any job. If you add &amp;lt;&amp;lt;: *docker-job, it will populate image, services and before_script properties automatically. It’s a good move if you have multiple jobs that do similar things. Later on, we’re creating some additional local (job scoped) variables: DOCKER_TAG_MAIN which will be evaluated to hiveio/condenser:development DOCKER_TAG which will be evaluated to hiveio/condenser:344e55ef or similar SOURCE_COMMIT which will be evaluated to 344e55efefd56e00b15eea6ccf8560a1107b9ff6 (or similar commit SHA) It’s a good idea to double tag an image. Latest tag is useless if you want to track your development process. Later on, I will describe the way how we’re using this specific, sha-tagged image to track deployments and rollback them anytime with a single click. Finally, we’re building an image with additional build arguments by using --build-arg: docker build -t $DOCKER_TAG -t $DOCKER_TAG_MAIN --build-arg SOURCE_COMMIT --build-arg DOCKER_TAG . If you scroll up to the Dockerfile section, you will notice ARG SOURCE_COMMIT and ENV SOURCE_COMMIT ${SOURCE_COMMIT} which means these build arguments will be injected as an environment variables into your containers. It’s a quick and easy way to pass additional, build-level variables into your images. Those specific variables are later returned by the condenser health endpoint. It may be useful to check a specific instance source. $ curl &amp;lt;a href=&quot;https://staging.condenser.engrave.dev/.well-known/healthcheck.json&quot;&amp;gt;https://staging.condenser.engrave.dev/.well-known/healthcheck.json&amp;lt;/a&amp;gt; {&quot;status&quot;:&quot;ok&quot;,&quot;docker_tag&quot;:&quot;hiveio/condenser:344e55ef&quot;,&quot;source_commit&quot;:&quot;344e55efefd56e00b15eea6ccf8560a1107b9ff6&quot;} An important thing to mention is that HUB_TOKEN and HUB_USERNAME are environment variables injected into the GitLab runner job and configured in Projects Settings. To prevent unauthorized users from pushing malicious images into the official registry, those variables are configured as protected and masked, which means they can be only used on specific branches and are moderated from job logs, so there is no way it can leak without internal bad actor with elevated permissions. Merge requests To improve the process of adding new features and fixes to the codebase, Merge Requests have got a brand new CI/CD workflow which includes the following jobs: The entire pipeline is fired on every Merge Request and it’s required to pass before changes could be merged. If the pipeline fails for some reason (i.e. failing unit tests), there is no way to merge changes into the main branch. This will enforce code quality and prevent regression. Eslint Code quality and standardization are important, especially if it’s an open-source project that could be maintained by totally different developers from all around the world. Eslint is a tool that statically analyzes the code to quickly find potential problems and keep code organized with specified rules. Code analysis is especially useful when developing Javascript applications. It’s really easy to make some stupid mistakes. Eslint job will be fired on every Merge Request and on every branch pushed to the repository: run-eslint: stage: test image: node:12.16.2 only: - branches - merge_requests before_script: - yarn install --frozen-lockfile --ignore-optional script: - yarn ci:eslint allow_failure: true # will be changed to false when all linter errors removed Because the codebase is a bit neglected, run-eslint job is allowed to fail for the moment (allow_failure: true), which is indicated by an orange exclamation mark on a MR view or pipelines list. There are “some” errors and warnings right now but it should be cleaned up soon, so we can require eslint job to pass before merging proposed changes: ✖ 1208 problems (1187 errors, 21 warnings) 831 errors and 0 warnings potentially fixable with the `--fix` option. error Command failed with exit code 1. Unit tests Extensive testing is the only way to produce bullet-proof code and stable applications. Similar to run-eslint, run-unit-tests job is fired on every branch and every merge request. run-unit-tests: stage: test image: node:12.16.2 only: - branches - merge_requests before_script: - yarn install --frozen-lockfile --ignore-optional script: - yarn run ci:test coverage: /All files[^|]*\|[^|]*\s+([\d\.]+)/ Testing suit (jest) was configured to produce coverage report: This report is later parsed by a Gitlab, using coverage: /All files[^|]*\|[^|]*\s+([\d\.]+)/ configuration. It will display coverage status and percentage change on the Merge Request view, allowing reviewers to quickly inspect if the code quality is increasing or not. I would advise declining merging new features not covered with tests. This may be omitted for important fixes, but we all should try to make the code better, not worse. Also, repository settings were changed and Pipelines must succeed setting is checked by default. It means no more broken code on develop/production branches. Review apps Review Apps are a huge and very important feature. From now on, every feature can be inspected visually by the reviewer with a single click. Gitlab Runner will create a special instance built from proposed code and expose it for the reviewers: Review app requires three jobs to run on a merge request: build-review-app: &amp;lt;&amp;lt;: *docker-job stage: build variables: DOCKER_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA SOURCE_COMMIT: $CI_COMMIT_SHA only: - merge_requests before_script: - echo $CI_JOB_TOKEN | docker login -u $CI_REGISTRY_USER $CI_REGISTRY --password-stdin script: - docker build -t $DOCKER_TAG --build-arg SOURCE_COMMIT --build-arg DOCKER_TAG . - docker push $DOCKER_TAG deploy-review-app: &amp;lt;&amp;lt;: *docker-job &amp;lt;&amp;lt;: *docker-remote-host-review stage: deploy variables: DOCKER_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA SERVICE_NAME: review_$CI_ENVIRONMENT_SLUG only: - merge_requests script: - DOCKER_CERT_PATH=$CERTS docker -H $REVIEW_HOST --tlsverify pull $DOCKER_TAG - DOCKER_CERT_PATH=$CERTS docker -H $REVIEW_HOST --tlsverify service rm $SERVICE_NAME || true # try to remove previous service but do not fail if it not exist - DOCKER_CERT_PATH=$CERTS docker -H $REVIEW_HOST --tlsverify service create --with-registry-auth --network infrastructure --name $SERVICE_NAME $DOCKER_TAG - echo &quot;Review app deployed&quot; environment: name: review/$CI_COMMIT_REF_NAME url: &amp;lt;a href=&quot;https://&quot;&amp;gt;https://&amp;lt;/a&amp;gt; $CI_ENVIRONMENT_SLUG$APP_REVIEW_SUBDOMAIN on_stop: stop-review-app auto_stop_in: 1 week stop-review-app: &amp;lt;&amp;lt;: *docker-job &amp;lt;&amp;lt;: *docker-remote-host-review stage: deploy variables: SERVICE_NAME: review_$CI_ENVIRONMENT_SLUG only: - merge_requests when: manual script: - DOCKER_CERT_PATH=$CERTS docker -H $REVIEW_HOST --tlsverify service rm $SERVICE_NAME || true # try to remove previous service but do not fail if it not exist - echo &quot;Review app stopped&quot; environment: name: review/$CI_COMMIT_REF_NAME action: stop The first job should look familiar if you read previous parts of the post. The only difference is that we’re overwriting before_script. Note that if you’re using anchors, you can always overwrite the template freely which is what we did here. Because merge requests could be opened by developers which may not be well known in the community (vel. bad actors), it could be a security issue if the CI/CD on Merge Requests could push images to the official repository. To prevent this, we’re using an internal registry provided by the Gitlab itself. It’s private, will work well for Review Apps but won’t be accessible by anyone else. echo $CI_JOB_TOKEN | docker login -u $CI_REGISTRY_USER $CI_REGISTRY --password-stdin We are using CI_JOB_TOKEN, CI_REGISTRY_USER and CI_REGISTRY which are environment variables injected automatically by Gitlab, no need to configure them. Also, please note using --password-stdin which is a more secure way to log in as it will prevent the password from being exposed in job logs. By default, docker will connect to the local daemon on unsecured, but not exposed port. It is yet possible to configure Docker daemon to validate TLS certificates so it could be exposed to the external world in a secure way, which is how we deploy services from our runners to our machine. You need to pass additional parameters: -H which is remote docker address --tlsverify makes sure your daemon is trying to identify itself with certificates --with-registry-auth will send registry authentication to swarm agents --network will connect service to the specified network so the reverse proxy could expose the instance DOCKER_CERT_PATH will instruct demon where to search for TLS certificates DOCKER_CERT_PATH=$CERTS docker -H $REVIEW_HOST --tlsverify service create --with-registry-auth --network infrastructure --name $SERVICE_NAME $DOCKER_TAG This will create a new docker service and expose it automatically under the URL created with CI_ENVIRONMENT_SLUG, which is a variable provided by Gitlab. It’s guaranteed to be a valid URL or docker/kubernetes service name. Review App instances are automatically removed when MR is closed or 1 week after it’s opened. This is achieved by running stop-review-app job which is configured to be manually triggered (when: manual). Tracking environment deployments By using sha-tagged images, it’s possible to quickly redeploy the environment at any moment, with a single click. In case of emergency, project maintainers can rollback the environment to the specified point in time (docker image to be specific) Staging Deploying a staging environment is quite similar to deploying a Review App. It also uses remote docker daemon but the service is not created on-demand, it’s updated with a new image. With docker swarm mode, you can ensure your application to be highly available. The swarm agent will take care of your containers. It will restart them or spin a new one if necessary (this is why health check is so important). It is a built-in, native docker mode everyone should start using. deploy-staging: &amp;lt;&amp;lt;: *docker-job &amp;lt;&amp;lt;: *docker-remote-host-staging stage: deploy variables: DOCKER_TAG: $DOCKER_IMAGE:$CI_COMMIT_SHORT_SHA SERVICE_NAME: staging_condenser only: - develop script: - DOCKER_CERT_PATH=$CERTS docker -H $STAGING_HOST --tlsverify pull $DOCKER_TAG - DOCKER_CERT_PATH=$CERTS docker -H $STAGING_HOST --tlsverify service update --image $DOCKER_TAG --update-failure-action rollback --update-order start-first $SERVICE_NAME environment: name: staging url: &amp;lt;a href=&quot;https://&quot;&amp;gt;https://&amp;lt;/a&amp;gt; $STAGING_DOMAIN Job uses protected variables to prevent “bad” developers from pushing/deploying malicious code. It is only possible to push staging from the protected develop branch. Pushing directly to develop is disabled. Zero downtime deployments Updating single service is easy with docker swarm: DOCKER_CERT_PATH=$CERTS docker -H $STAGING_HOST --tlsverify service update --image $DOCKER_TAG --update-failure-action rollback --update-order start-first $SERVICE_NAME There are additional but important parameters provided: --image $DOCKER_TAG - update existing service by running new containers with the specified image. For this case, it’s sha-tagged image build from develop branch --update-failure-action rollback - by default, docker daemon will try to update the service and do nothing if it fails. By passing this parameter, we’re instructing docker to roll back the service to a previous state, which means containers using the previous image. --update-order start-first - by default, docker will kill current containers and spin new ones after it. It may cause some downtime which we don’t want. By setting start-first, we instruct docker to spin new containers first. Swarm agent will switch containers without downtime if the healtcheck result becomes positive. And in case something gone wrong (healtcheck failed for any reason), we end up with a working staging environment because old containers are not touched at all. Resources under control With docker swarm you have full control over your services and containers. This is an example configuration which is used for staging environment. With some tweaks, it could be used for production also: version: &quot;3.7&quot; services: condenser: image: hiveio/condenser:latest deploy: mode: replicated replicas: 2 resources: limits: cpus: &quot;0.85&quot; memory: 2024M restart_policy: condition: any delay: 5s update_config: parallelism: 1 delay: 10s failure_action: rollback order: start-first rollback_config: parallelism: 1 delay: 5s networks: - reverse-proxy networks: reverse-proxy: external: name: reverse-proxy Production It is not finished yet, but my advice is to start using docker swarm mode for production deployments (CI/CD is ready). It’s designed to serve services like a condenser. Some key features of Docker Swarm (based on official documentation): Cluster management integrated with Docker Engine: if you know how to build the docker image, start a container, read some logs, you’re ready to use Docker Swarm. You don’t need to install additional software as it is a native Docker feature. Decentralized design: adding a worker or a manager to your swarm is as easy as running a single command. Those could be machines from all around the world. Scaling: For each service, you can declare the number of tasks you want to run. When you scale up or down, the swarm manager automatically adapts by adding or removing tasks to maintain the desired state. Multi-host networking: You can specify an overlay network for your services. The swarm manager automatically assigns addresses to the containers on the overlay network when it initializes or updates the application. Load balancing: You can expose the ports for services to an external load balancer. Internally, the swarm lets you specify how to distribute service containers between nodes. Secure by default: Each node in the swarm enforces TLS mutual authentication and encryption to secure communications between itself and all other nodes. You have the option to use self-signed root certificates or certificates from a custom root CA. Rolling updates: At rollout time you can apply service updates to nodes incrementally. The swarm manager lets you control the delay between service deployment to different sets of nodes. If anything goes wrong, you can roll back to a previous version of the service. And after all, it is called Swarm, can’t be a coincidence! ;) I’m using Swarm mode for most of my projects. Within Engrave (dblog.org) swarm is automatically managing a set of 23 microservices with almost 30 containers at the moment. My requests and tips for condenser Developers (and not only) Please do write unit tests covering your code. Improving coverage will only cause fewer problems and bugs. Coverage is now visible on every merge request so it’s damn easy to see a regression. Take care of the code quality. Use exact package versions in package.json file. When using ^, it’s not guaranteed to install the same version on two different builds. And some developers like to introduce breaking changes without changing the major version number. Use alpine images to create minified production images. Use the latest images from official Docker HUB when possible. Use multi-stage builds to create leaner docker image Write and configure health checks for your applications Run eslint to clean up your code before you push it to the repository. You can use husky to ensure it happens automatically. Vote for @engrave witness if you find my work valuable See: Improvements for hive.blog, Continuous Integration and Deployments by @engrave</summary></entry><entry><title type="html">Hive Keychain Now Available on Chrome &amp;amp; Brave!</title><link href="https://hivedocs.info/news/nodejs/keychain/2020/04/17/hive-keychain-now-available-on-chrome-and-brave.html" rel="alternate" type="text/html" title="Hive Keychain Now Available on Chrome &amp; Brave!" /><published>2020-04-17T08:50:54-07:00</published><updated>2020-04-17T08:50:54-07:00</updated><id>https://hivedocs.info/news/nodejs/keychain/2020/04/17/hive-keychain-now-available-on-chrome-and-brave</id><content type="html" xml:base="https://hivedocs.info/news/nodejs/keychain/2020/04/17/hive-keychain-now-available-on-chrome-and-brave.html">&lt;p&gt;&lt;img src=&quot;https://files.peakd.com/file/peakd-hive/stoodkev/AmSWoznK-keychain_title.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+&lt;/p&gt;</content><author><name>engrave</name></author><summary type="html">I want to elaborate not only on introduced features but also on my thought and reasoning so everyone can benefit and introduce changes in their projects. This post will be long but I believe it might be useful for the entire HiveDevs community. The workflow is built on top of Gitlab CI/CD but can be easily modified for any other CI/CD tool (i.e. CircleCI or Jenkins). Docker I’ve started my work by reviewing Dockerfile. I’ve built the condenser image and was a bit shocked: $ docker image ls condenser latest 6d57c0c8a904 19 seconds ago 1.54GB 1.54 GB for a simple frontend application? Boy, it’s just too much. Let’s do something with it. Leaner docker image Let’s start by recognizing the reason why is this so big. You can also look into your Dockerfile and package.json and search for some common mistakes: using full-sized images rather than alpine versions installing dev dependencies for production images putting dev dependencies into production dependencies list copying useless files into the final image Yep, you can check every point here. Let’s make some work on a new Dockerfile: FROM node:12.16.2 as development WORKDIR /var/app COPY package.json yarn.lock ./ RUN yarn install --non-interactive --frozen-lockfile --ignore-optional COPY . . RUN mkdir tmp &amp;amp;&amp;amp; yarn build CMD [ &quot;yarn&quot;, &quot;run&quot;, &quot;start&quot; ] ### REMOVE DEV DEPENDENCIES ## FROM development as dependencies RUN yarn install --non-interactive --frozen-lockfile --ignore-optional --production ### BUILD MINIFIED PRODUCTION ## FROM node:12.16.2-alpine as production WORKDIR /var/app ARG SOURCE_COMMIT ENV SOURCE_COMMIT ${SOURCE_COMMIT} ARG DOCKER_TAG ENV DOCKER_TAG ${DOCKER_TAG} COPY --from=dependencies /var/app/package.json /var/app/package.json COPY --from=dependencies /var/app/config /var/app/config COPY --from=dependencies /var/app/dist /var/app/dist COPY --from=dependencies /var/app/lib /var/app/lib COPY --from=dependencies /var/app/src /var/app/src COPY --from=dependencies /var/app/tmp /var/app/tmp COPY --from=dependencies /var/app/webpack /var/app/webpack COPY --from=dependencies /var/app/node_modules /var/app/node_modules COPY --from=dependencies /var/app/healthcheck.js /var/app/healthcheck.js HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=5 CMD node /var/app/healthcheck.js CMD [ &quot;yarn&quot;, &quot;run&quot;, &quot;production&quot; ] What has been improved: Node.js version was upgraded from 8.7 to 12.16.2 which is the latest LTS at the moment. Always try using the latest framework versions, which may include security fixes and performance upgrades. It’s also a good habit to use a specific version up to the patch number. Multistage build was used to build an optimal image for production deployment. First, we build a development stage with every dependency to be able to compile React application. Next, we’re removing development dependencies with --production switch during the dependencies stage. After all, we’re creating a minimal image from the alpine node version which is the smallest base available, by copying only necessary files and directories. Healthcheck has been introduced, so the docker daemon can easily manage containers with automatic restarts if necessary and zero-downtime deployments which will be explained later in this post. It will be also useful for dynamic scaling capabilities with docker swarm. Also, package.json file was modified, but it’s not worth to post its content here: Dev dependencies like webpack, babel or eslint was moved into a proper list called devDependencies so yarn could install only production deps for the final image. Strict versions were introduced for every dependency to make sure every build produces exactly the same image. Semantic versioning is popular, but there is no way to check if the package author does not introduce breaking changes with only patch version increased. If you need to update a package, do it manually. If you have enough test coverage, you can update the package and run CI/CD to check if everything works fine. After all that work done, the condenser image size was massively reduced: $ docker image ls condenser latest 58406d338e67 8 seconds ago 226MB The compressed image in the docker registry is even smaller. Much better, right? Shame on you, Steemit! Healthcheck Simply speaking, docker is running containers and trying to keep it alive as long as possible. But the system needs to have a tool to determine if the container is actually alive. It may seem alive, but is your app responding to requests for example? Fortunately, docker has also integrated health check mechanism which can be integrated into Dockerfile or docker-compose.yml. Usually, you need to create an endpoint for liveness checks. Fortunately, condenser already has one so we can utilize it easily. There is a lot of examples with curl used as a docker health check, but it’s not a good way to go. Healthcheck should work cross-platform and curl implementation differs on Windows and Unix. You should write health check in the same technology or framework as your projects are written, for condenser it’s Node.js. const http = require(&quot;http&quot;); const options = { host: &quot;localhost&quot;, port: &quot;8080&quot;, path: '/.well-known/healthcheck.json', timeout: 5000 }; const request = http.request(options, (res) =&amp;gt; { console.log(`STATUS: ${res.statusCode}`); if (res.statusCode == 200) { process.exit(0); } else { console.error(`ERROR: ${res.statusCode}`); process.exit(1); } }); request.on('error', (err) =&amp;gt; { console.error('ERROR', err); process.exit(1); }); request.end(); When ready, instruct Docker to use your health check mechanism. Add following line into your Dockefile: HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=5 CMD node /var/app/healthcheck.js Make sure this file /var/app/healthcheck.js exists inside your image. If you want to be sure your health check is working, inspect your container after running it: $ docker container ls CONTAINER ID IMAGE COMMAND CREATED STATUS PORTS NAMES 060166cf52ee hiveio/condenser:development &quot;docker-entrypoint.s…&quot; 5 minutes ago Up 5 minutes (healthy) 0.0.0.0:8080-&amp;gt;8080/tcp mystifying_dhawan There should be a (healthy) indicator in STATUS column. And there is. Please also note that during the container startup process, it will indicate slightly different status (starting), as the docker daemon will wait before making the first check. It’s because we’re giving some time for our app to startup. It’s the start-period parameter. Depending on your app and traffic/load, those parameters should vary. Pushing images to Docker Hub We already have an improved (smaller) docker image, so it’s time to push it to the repository. Doing it manually is a waste of time and may cause human mistakes. The best way is to utilize Gitlab Runner to do it for us in an automatic and bullet-proof manner. Here is a job definition from .gitlab-ci.yml file with some additional code which we will breakdown: variables: DOCKER_IMAGE: hiveio/condenser .docker-job: &amp;amp;docker-job image: docker:stable services: - docker:dind before_script: - echo $HUB_TOKEN | docker login -u $HUB_USERNAME --password-stdin build-development: &amp;lt;&amp;lt;: *docker-job stage: build variables: DOCKER_TAG: $DOCKER_IMAGE:$CI_COMMIT_SHORT_SHA DOCKER_TAG_MAIN: $DOCKER_IMAGE:development SOURCE_COMMIT: $CI_COMMIT_SHA only: - develop script: - docker build -t $DOCKER_TAG -t $DOCKER_TAG_MAIN --build-arg SOURCE_COMMIT --build-arg DOCKER_TAG . - docker push $DOCKER_TAG - docker push $DOCKER_TAG_MAIN First, we’re creating global variable DOCKER_IMAGE so we can reuse it later in many places. And in case we would like to change the image name, we do it only in a single place. Hence we have multiple jobs defined in .gitlab-ci.yml file, it’s good to utilize advanced YAML syntax, which includes hidden keys and anchors. It will decrease the duplicated code and make the file easier to read and maintain. Every job name starting with the dot will be considered as a hidden key and won’t be directly executed. Btw, this is a quick way to temporarily disable any job in your GitLab CI/CD without commenting or removing it. By using .docker-job: &amp;amp;docker-job we created an anchor which can be later used to extend any job. If you add &amp;lt;&amp;lt;: *docker-job, it will populate image, services and before_script properties automatically. It’s a good move if you have multiple jobs that do similar things. Later on, we’re creating some additional local (job scoped) variables: DOCKER_TAG_MAIN which will be evaluated to hiveio/condenser:development DOCKER_TAG which will be evaluated to hiveio/condenser:344e55ef or similar SOURCE_COMMIT which will be evaluated to 344e55efefd56e00b15eea6ccf8560a1107b9ff6 (or similar commit SHA) It’s a good idea to double tag an image. Latest tag is useless if you want to track your development process. Later on, I will describe the way how we’re using this specific, sha-tagged image to track deployments and rollback them anytime with a single click. Finally, we’re building an image with additional build arguments by using --build-arg: docker build -t $DOCKER_TAG -t $DOCKER_TAG_MAIN --build-arg SOURCE_COMMIT --build-arg DOCKER_TAG . If you scroll up to the Dockerfile section, you will notice ARG SOURCE_COMMIT and ENV SOURCE_COMMIT ${SOURCE_COMMIT} which means these build arguments will be injected as an environment variables into your containers. It’s a quick and easy way to pass additional, build-level variables into your images. Those specific variables are later returned by the condenser health endpoint. It may be useful to check a specific instance source. $ curl &amp;lt;a href=&quot;https://staging.condenser.engrave.dev/.well-known/healthcheck.json&quot;&amp;gt;https://staging.condenser.engrave.dev/.well-known/healthcheck.json&amp;lt;/a&amp;gt; {&quot;status&quot;:&quot;ok&quot;,&quot;docker_tag&quot;:&quot;hiveio/condenser:344e55ef&quot;,&quot;source_commit&quot;:&quot;344e55efefd56e00b15eea6ccf8560a1107b9ff6&quot;} An important thing to mention is that HUB_TOKEN and HUB_USERNAME are environment variables injected into the GitLab runner job and configured in Projects Settings. To prevent unauthorized users from pushing malicious images into the official registry, those variables are configured as protected and masked, which means they can be only used on specific branches and are moderated from job logs, so there is no way it can leak without internal bad actor with elevated permissions. Merge requests To improve the process of adding new features and fixes to the codebase, Merge Requests have got a brand new CI/CD workflow which includes the following jobs: The entire pipeline is fired on every Merge Request and it’s required to pass before changes could be merged. If the pipeline fails for some reason (i.e. failing unit tests), there is no way to merge changes into the main branch. This will enforce code quality and prevent regression. Eslint Code quality and standardization are important, especially if it’s an open-source project that could be maintained by totally different developers from all around the world. Eslint is a tool that statically analyzes the code to quickly find potential problems and keep code organized with specified rules. Code analysis is especially useful when developing Javascript applications. It’s really easy to make some stupid mistakes. Eslint job will be fired on every Merge Request and on every branch pushed to the repository: run-eslint: stage: test image: node:12.16.2 only: - branches - merge_requests before_script: - yarn install --frozen-lockfile --ignore-optional script: - yarn ci:eslint allow_failure: true # will be changed to false when all linter errors removed Because the codebase is a bit neglected, run-eslint job is allowed to fail for the moment (allow_failure: true), which is indicated by an orange exclamation mark on a MR view or pipelines list. There are “some” errors and warnings right now but it should be cleaned up soon, so we can require eslint job to pass before merging proposed changes: ✖ 1208 problems (1187 errors, 21 warnings) 831 errors and 0 warnings potentially fixable with the `--fix` option. error Command failed with exit code 1. Unit tests Extensive testing is the only way to produce bullet-proof code and stable applications. Similar to run-eslint, run-unit-tests job is fired on every branch and every merge request. run-unit-tests: stage: test image: node:12.16.2 only: - branches - merge_requests before_script: - yarn install --frozen-lockfile --ignore-optional script: - yarn run ci:test coverage: /All files[^|]*\|[^|]*\s+([\d\.]+)/ Testing suit (jest) was configured to produce coverage report: This report is later parsed by a Gitlab, using coverage: /All files[^|]*\|[^|]*\s+([\d\.]+)/ configuration. It will display coverage status and percentage change on the Merge Request view, allowing reviewers to quickly inspect if the code quality is increasing or not. I would advise declining merging new features not covered with tests. This may be omitted for important fixes, but we all should try to make the code better, not worse. Also, repository settings were changed and Pipelines must succeed setting is checked by default. It means no more broken code on develop/production branches. Review apps Review Apps are a huge and very important feature. From now on, every feature can be inspected visually by the reviewer with a single click. Gitlab Runner will create a special instance built from proposed code and expose it for the reviewers: Review app requires three jobs to run on a merge request: build-review-app: &amp;lt;&amp;lt;: *docker-job stage: build variables: DOCKER_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA SOURCE_COMMIT: $CI_COMMIT_SHA only: - merge_requests before_script: - echo $CI_JOB_TOKEN | docker login -u $CI_REGISTRY_USER $CI_REGISTRY --password-stdin script: - docker build -t $DOCKER_TAG --build-arg SOURCE_COMMIT --build-arg DOCKER_TAG . - docker push $DOCKER_TAG deploy-review-app: &amp;lt;&amp;lt;: *docker-job &amp;lt;&amp;lt;: *docker-remote-host-review stage: deploy variables: DOCKER_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA SERVICE_NAME: review_$CI_ENVIRONMENT_SLUG only: - merge_requests script: - DOCKER_CERT_PATH=$CERTS docker -H $REVIEW_HOST --tlsverify pull $DOCKER_TAG - DOCKER_CERT_PATH=$CERTS docker -H $REVIEW_HOST --tlsverify service rm $SERVICE_NAME || true # try to remove previous service but do not fail if it not exist - DOCKER_CERT_PATH=$CERTS docker -H $REVIEW_HOST --tlsverify service create --with-registry-auth --network infrastructure --name $SERVICE_NAME $DOCKER_TAG - echo &quot;Review app deployed&quot; environment: name: review/$CI_COMMIT_REF_NAME url: &amp;lt;a href=&quot;https://&quot;&amp;gt;https://&amp;lt;/a&amp;gt; $CI_ENVIRONMENT_SLUG$APP_REVIEW_SUBDOMAIN on_stop: stop-review-app auto_stop_in: 1 week stop-review-app: &amp;lt;&amp;lt;: *docker-job &amp;lt;&amp;lt;: *docker-remote-host-review stage: deploy variables: SERVICE_NAME: review_$CI_ENVIRONMENT_SLUG only: - merge_requests when: manual script: - DOCKER_CERT_PATH=$CERTS docker -H $REVIEW_HOST --tlsverify service rm $SERVICE_NAME || true # try to remove previous service but do not fail if it not exist - echo &quot;Review app stopped&quot; environment: name: review/$CI_COMMIT_REF_NAME action: stop The first job should look familiar if you read previous parts of the post. The only difference is that we’re overwriting before_script. Note that if you’re using anchors, you can always overwrite the template freely which is what we did here. Because merge requests could be opened by developers which may not be well known in the community (vel. bad actors), it could be a security issue if the CI/CD on Merge Requests could push images to the official repository. To prevent this, we’re using an internal registry provided by the Gitlab itself. It’s private, will work well for Review Apps but won’t be accessible by anyone else. echo $CI_JOB_TOKEN | docker login -u $CI_REGISTRY_USER $CI_REGISTRY --password-stdin We are using CI_JOB_TOKEN, CI_REGISTRY_USER and CI_REGISTRY which are environment variables injected automatically by Gitlab, no need to configure them. Also, please note using --password-stdin which is a more secure way to log in as it will prevent the password from being exposed in job logs. By default, docker will connect to the local daemon on unsecured, but not exposed port. It is yet possible to configure Docker daemon to validate TLS certificates so it could be exposed to the external world in a secure way, which is how we deploy services from our runners to our machine. You need to pass additional parameters: -H which is remote docker address --tlsverify makes sure your daemon is trying to identify itself with certificates --with-registry-auth will send registry authentication to swarm agents --network will connect service to the specified network so the reverse proxy could expose the instance DOCKER_CERT_PATH will instruct demon where to search for TLS certificates DOCKER_CERT_PATH=$CERTS docker -H $REVIEW_HOST --tlsverify service create --with-registry-auth --network infrastructure --name $SERVICE_NAME $DOCKER_TAG This will create a new docker service and expose it automatically under the URL created with CI_ENVIRONMENT_SLUG, which is a variable provided by Gitlab. It’s guaranteed to be a valid URL or docker/kubernetes service name. Review App instances are automatically removed when MR is closed or 1 week after it’s opened. This is achieved by running stop-review-app job which is configured to be manually triggered (when: manual). Tracking environment deployments By using sha-tagged images, it’s possible to quickly redeploy the environment at any moment, with a single click. In case of emergency, project maintainers can rollback the environment to the specified point in time (docker image to be specific) Staging Deploying a staging environment is quite similar to deploying a Review App. It also uses remote docker daemon but the service is not created on-demand, it’s updated with a new image. With docker swarm mode, you can ensure your application to be highly available. The swarm agent will take care of your containers. It will restart them or spin a new one if necessary (this is why health check is so important). It is a built-in, native docker mode everyone should start using. deploy-staging: &amp;lt;&amp;lt;: *docker-job &amp;lt;&amp;lt;: *docker-remote-host-staging stage: deploy variables: DOCKER_TAG: $DOCKER_IMAGE:$CI_COMMIT_SHORT_SHA SERVICE_NAME: staging_condenser only: - develop script: - DOCKER_CERT_PATH=$CERTS docker -H $STAGING_HOST --tlsverify pull $DOCKER_TAG - DOCKER_CERT_PATH=$CERTS docker -H $STAGING_HOST --tlsverify service update --image $DOCKER_TAG --update-failure-action rollback --update-order start-first $SERVICE_NAME environment: name: staging url: &amp;lt;a href=&quot;https://&quot;&amp;gt;https://&amp;lt;/a&amp;gt; $STAGING_DOMAIN Job uses protected variables to prevent “bad” developers from pushing/deploying malicious code. It is only possible to push staging from the protected develop branch. Pushing directly to develop is disabled. Zero downtime deployments Updating single service is easy with docker swarm: DOCKER_CERT_PATH=$CERTS docker -H $STAGING_HOST --tlsverify service update --image $DOCKER_TAG --update-failure-action rollback --update-order start-first $SERVICE_NAME There are additional but important parameters provided: --image $DOCKER_TAG - update existing service by running new containers with the specified image. For this case, it’s sha-tagged image build from develop branch --update-failure-action rollback - by default, docker daemon will try to update the service and do nothing if it fails. By passing this parameter, we’re instructing docker to roll back the service to a previous state, which means containers using the previous image. --update-order start-first - by default, docker will kill current containers and spin new ones after it. It may cause some downtime which we don’t want. By setting start-first, we instruct docker to spin new containers first. Swarm agent will switch containers without downtime if the healtcheck result becomes positive. And in case something gone wrong (healtcheck failed for any reason), we end up with a working staging environment because old containers are not touched at all. Resources under control With docker swarm you have full control over your services and containers. This is an example configuration which is used for staging environment. With some tweaks, it could be used for production also: version: &quot;3.7&quot; services: condenser: image: hiveio/condenser:latest deploy: mode: replicated replicas: 2 resources: limits: cpus: &quot;0.85&quot; memory: 2024M restart_policy: condition: any delay: 5s update_config: parallelism: 1 delay: 10s failure_action: rollback order: start-first rollback_config: parallelism: 1 delay: 5s networks: - reverse-proxy networks: reverse-proxy: external: name: reverse-proxy Production It is not finished yet, but my advice is to start using docker swarm mode for production deployments (CI/CD is ready). It’s designed to serve services like a condenser. Some key features of Docker Swarm (based on official documentation): Cluster management integrated with Docker Engine: if you know how to build the docker image, start a container, read some logs, you’re ready to use Docker Swarm. You don’t need to install additional software as it is a native Docker feature. Decentralized design: adding a worker or a manager to your swarm is as easy as running a single command. Those could be machines from all around the world. Scaling: For each service, you can declare the number of tasks you want to run. When you scale up or down, the swarm manager automatically adapts by adding or removing tasks to maintain the desired state. Multi-host networking: You can specify an overlay network for your services. The swarm manager automatically assigns addresses to the containers on the overlay network when it initializes or updates the application. Load balancing: You can expose the ports for services to an external load balancer. Internally, the swarm lets you specify how to distribute service containers between nodes. Secure by default: Each node in the swarm enforces TLS mutual authentication and encryption to secure communications between itself and all other nodes. You have the option to use self-signed root certificates or certificates from a custom root CA. Rolling updates: At rollout time you can apply service updates to nodes incrementally. The swarm manager lets you control the delay between service deployment to different sets of nodes. If anything goes wrong, you can roll back to a previous version of the service. And after all, it is called Swarm, can’t be a coincidence! ;) I’m using Swarm mode for most of my projects. Within Engrave (dblog.org) swarm is automatically managing a set of 23 microservices with almost 30 containers at the moment. My requests and tips for condenser Developers (and not only) Please do write unit tests covering your code. Improving coverage will only cause fewer problems and bugs. Coverage is now visible on every merge request so it’s damn easy to see a regression. Take care of the code quality. Use exact package versions in package.json file. When using ^, it’s not guaranteed to install the same version on two different builds. And some developers like to introduce breaking changes without changing the major version number. Use alpine images to create minified production images. Use the latest images from official Docker HUB when possible. Use multi-stage builds to create leaner docker image Write and configure health checks for your applications Run eslint to clean up your code before you push it to the repository. You can use husky to ensure it happens automatically. Vote for @engrave witness if you find my work valuable See: Improvements for hive.blog, Continuous Integration and Deployments by @engrave</summary></entry><entry><title type="html">Hive Pressure #1: A New Hope</title><link href="https://hivedocs.info/news/devops/nodes/2020/04/19/hive-pressure-1-a-new-hope.html" rel="alternate" type="text/html" title="Hive Pressure #1: A New Hope" /><published>2020-04-19T10:28:03-07:00</published><updated>2020-04-19T10:28:03-07:00</updated><id>https://hivedocs.info/news/devops/nodes/2020/04/19/hive-pressure-1-a-new-hope</id><content type="html" xml:base="https://hivedocs.info/news/devops/nodes/2020/04/19/hive-pressure-1-a-new-hope.html">&lt;p&gt;A long time ago, in a block far, far away…
+No, wait, this is NOT the story you are looking for ;-)&lt;/p&gt;
+
+&lt;p&gt;This part was going to be filled with retrospectives, the origins of the &lt;del&gt;Steem&lt;/del&gt; Pressure series, stories about events that caused us to fork from &lt;del&gt;Steem&lt;/del&gt; but that would be just a waste of time, and time is a resource that we can’t afford to waste.
+TL;DR: &lt;del&gt;Steem&lt;/del&gt; is no longer what we knew it to be.&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;&lt;em&gt;“No Ned to worry.”&lt;/em&gt;
+&lt;sup&gt;&lt;/sup&gt;&lt;/p&gt;
+  &lt;ul&gt;
+    &lt;li&gt;Anonymous
+&amp;lt;/sup&amp;gt;&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;Our future is in our hands.
+We are Hive now.&lt;/p&gt;
+
+&lt;h1 id=&quot;paint-it-hive&quot;&gt;Paint it Hive&lt;/h1&gt;
+&lt;p&gt;Time to update promo materials.&lt;/p&gt;
+
+&lt;center&gt;
+&lt;a href=&quot;https://www.youtube.com/watch&quot;&gt;https://www.youtube.com/watch&lt;/a&gt;
+?v=vlW9lDE3DuI&lt;/center&gt;
+
+&lt;h1 id=&quot;new-net-new-nodes&quot;&gt;New Net, New Nodes&lt;/h1&gt;
+&lt;p&gt;Since many of us have just upgraded their toys to Hive, at the time of the HF23, most of what we used is now Hive compatible.&lt;/p&gt;
+
+&lt;h2 id=&quot;seed-nodes&quot;&gt;Seed nodes&lt;/h2&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;seed.openhive.network:2001     # gtg
+seed.roelandp.nl:2001          # roelandp
+hiveseed-se.privex.io:2001     # privex (SE)
+steemseed-fin.privex.io:2001   # privex (FI)
+seed.liondani.com:2016         # liondani
+hived.splinterlands.com:2001   # aggroed
+seed.hivekings.com:2001        # drakos
+node.mahdiyari.info:2001       # mahdiyari
+anyx.io:2001                   # anyx
+seed.buildteam.io:2001         # thecryptodrive
+hive-seed.lukestokes.info:2001 # lukestokes.mhth
+hive-seed.arcange.eu:2001      # arcange
+seed.chitty.me:2001            # chitty
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;api-nodes&quot;&gt;API nodes&lt;/h2&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://api.openhive.network&quot;&gt;https://api.openhive.network&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://api.hive.blog&quot;&gt;https://api.hive.blog&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://anyx.io&quot;&gt;https://anyx.io&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://api.hivekings.com&quot;&gt;https://api.hivekings.com&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://api.pharesim.me&quot;&gt;https://api.pharesim.me&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://hived.hive-engine.com&quot;&gt;https://hived.hive-engine.com&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://rpc.esteem.app&quot;&gt;https://rpc.esteem.app&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://hived.privex.io&quot;&gt;https://hived.privex.io&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://techcoderx.com&quot;&gt;https://techcoderx.com&lt;/a&gt;&lt;/p&gt;
+
+&lt;h1 id=&quot;diy&quot;&gt;DIY&lt;/h1&gt;
+&lt;p&gt;If you want to run your own node, here are some quick tips that can be useful:&lt;/p&gt;
+
+&lt;h2 id=&quot;seed-node&quot;&gt;Seed Node&lt;/h2&gt;
+&lt;p&gt;Configure your build with:&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;cmake \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DLOW_MEMORY_NODE=ON \
+        -DCLEAR_VOTES=ON \
+        -DSKIP_BY_TX_ID=OFF \
+        -DBUILD_STEEM_TESTNET=OFF \
+        -DENABLE_MIRA=OFF \
+        -DSTEEM_STATIC_BUILD=ON \
+        ../hive
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;Depending on your needs and resources, you might want to use either
+&lt;code class=&quot;highlighter-rouge&quot;&gt;ENABLE_MIRA=OFF&lt;/code&gt; or &lt;code class=&quot;highlighter-rouge&quot;&gt;ENABLE_MIRA=ON&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;config.ini&lt;/code&gt; for a seed node can be as simple as that:&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;plugin = witness
+p2p-endpoint = 0.0.0.0:2001
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;This is intended to be used as a seed node, but you can easily extend it to be more useful by enabling a webserver endpoint and useful APIs such as &lt;code class=&quot;highlighter-rouge&quot;&gt;block_api&lt;/code&gt; or &lt;code class=&quot;highlighter-rouge&quot;&gt;network_broadcast_api&lt;/code&gt;. However, if you choose to add a plugin such as &lt;code class=&quot;highlighter-rouge&quot;&gt;account_by_key&lt;/code&gt; or &lt;code class=&quot;highlighter-rouge&quot;&gt;market_history&lt;/code&gt; you will have to replay.&lt;/p&gt;
+
+&lt;h2 id=&quot;api-node&quot;&gt;API Node&lt;/h2&gt;
+&lt;p&gt;If you’ve read my &lt;del&gt;Steem&lt;/del&gt; Pressure series you know that I no longer use a monolithic node. Instead, I use &lt;code class=&quot;highlighter-rouge&quot;&gt;jussi&lt;/code&gt; to route specific methods to specialized endpoints.&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;Account History Node (non-MIRA)&lt;/li&gt;
+  &lt;li&gt;Fat Node (MIRA)&lt;/li&gt;
+  &lt;li&gt;Hivemind&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Please note that in my setup the Fat Node itself is &lt;em&gt;not enough&lt;/em&gt; to feed the Hivemind instance because of the lack of a market_history plugin. Not an issue in my environment, because I’m running both nodes, and I prefer to run plugins on the low memory node where possible.&lt;/p&gt;
+
+&lt;h3 id=&quot;account-history-node---reference-configuration&quot;&gt;Account History Node - reference configuration&lt;/h3&gt;
+&lt;p&gt;Configure your build with:&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;cmake \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DLOW_MEMORY_NODE=ON \
+        -DCLEAR_VOTES=ON \
+        -DSKIP_BY_TX_ID=OFF \
+        -DBUILD_STEEM_TESTNET=OFF \
+        -DENABLE_MIRA=OFF \
+        -DSTEEM_STATIC_BUILD=ON \
+        ../hive
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;We can’t use MIRA here, because we are going to use the pre-MIRA implementation of account history plugin: &lt;code class=&quot;highlighter-rouge&quot;&gt;account_history_rocksdb&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;Here’s reference &lt;code class=&quot;highlighter-rouge&quot;&gt;config.ini&lt;/code&gt; file:&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;log-appender = {&quot;appender&quot;:&quot;stderr&quot;,&quot;stream&quot;:&quot;std_error&quot;}
+log-logger = {&quot;name&quot;:&quot;default&quot;,&quot;level&quot;:&quot;info&quot;,&quot;appender&quot;:&quot;stderr&quot;}
+
+backtrace = yes
+
+plugin = webserver p2p json_rpc
+plugin = database_api condenser_api
+
+plugin = witness
+plugin = rc
+
+plugin = market_history
+plugin = market_history_api
+
+plugin = account_history_rocksdb
+plugin = account_history_api
+
+plugin = transaction_status
+plugin = transaction_status_api
+
+plugin = account_by_key
+plugin = account_by_key_api
+
+plugin = block_api network_broadcast_api rc_api
+
+p2p-endpoint = 0.0.0.0:2001
+p2p-seed-node = gtg.openhive.network:2001
+
+transaction-status-block-depth = 64000
+transaction-status-track-after-block = 42000000
+
+webserver-http-endpoint = 127.0.0.1:8091
+webserver-ws-endpoint = 127.0.0.1:8090
+
+webserver-thread-pool-size = 256
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h3 id=&quot;fat-node---reference-configuration&quot;&gt;Fat Node - reference configuration&lt;/h3&gt;
+&lt;p&gt;Configure your build with:&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;cmake \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DLOW_MEMORY_NODE=OFF \
+        -DCLEAR_VOTES=OFF \
+        -DSKIP_BY_TX_ID=ON \
+        -DBUILD_STEEM_TESTNET=OFF \
+        -DENABLE_MIRA=ON \
+        -DSTEEM_STATIC_BUILD=ON \
+        ../hive
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;For the fat node, I use  the MIRA build&lt;/p&gt;
+
+&lt;p&gt;Here’s reference &lt;code class=&quot;highlighter-rouge&quot;&gt;config.ini&lt;/code&gt; file:&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;log-appender = {&quot;appender&quot;:&quot;stderr&quot;,&quot;stream&quot;:&quot;std_error&quot;}
+log-logger = {&quot;name&quot;:&quot;default&quot;,&quot;level&quot;:&quot;info&quot;,&quot;appender&quot;:&quot;stderr&quot;}
+
+backtrace = yes
+
+plugin = webserver p2p json_rpc
+plugin = database_api condenser_api
+
+plugin = reputation
+plugin = reputation_api
+
+plugin = block_api
+
+p2p-endpoint = 0.0.0.0:32001
+p2p-seed-node = gtg.openhive.network:2001
+
+webserver-http-endpoint = 127.0.0.1:8091
+webserver-ws-endpoint = 127.0.0.1:8090
+
+webserver-thread-pool-size = 256
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;storage-needs&quot;&gt;Storage needs:&lt;/h2&gt;
+&lt;p&gt;As always, make sure that you have very fast storage.&lt;/p&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th&gt;Node type&lt;/th&gt;
+      &lt;th&gt;Storage&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td&gt;AH Node&lt;/td&gt;
+      &lt;td&gt;600 GB&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;Fat Node&lt;/td&gt;
+      &lt;td&gt;400 GB&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;Hivemind&lt;/td&gt;
+      &lt;td&gt;300 GB&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;In the next episode, I will write more about such setup and required hardware and about how long it takes nowadays to build it from scratch.&lt;/p&gt;
+&lt;div style=&quot;display: block; margin: 0 auto;&quot;&gt;
+  &lt;p&gt;&lt;img src=&quot;https://images.hive.blog/DQmSJUo4g9AmoVFoAbs6gzMw6coVURUQKg7URtBSfkEj5oJ/Hive_free-file.png&quot; alt=&quot;Hive_Queen&quot; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;hr /&gt;
+
+&lt;p&gt;
+  See: &lt;a href=&quot;https://hive.blog/hive-160391/@gtg/hive-pressure-1-a-new-hope&quot;&gt;Hive Pressure #1: A New Hope&lt;/a&gt;
+  by
+  &lt;a href=&quot;https://hive.blog/@gtg&quot;&gt;@gtg&lt;/a&gt;
+&lt;/p&gt;</content><author><name>gtg</name></author><summary type="html">A long time ago, in a block far, far away… No, wait, this is NOT the story you are looking for ;-) This part was going to be filled with retrospectives, the origins of the Steem Pressure series, stories about events that caused us to fork from Steem but that would be just a waste of time, and time is a resource that we can’t afford to waste. TL;DR: Steem is no longer what we knew it to be. “No Ned to worry.” Anonymous &amp;lt;/sup&amp;gt; Our future is in our hands. We are Hive now. Paint it Hive Time to update promo materials. https://www.youtube.com/watch ?v=vlW9lDE3DuI New Net, New Nodes Since many of us have just upgraded their toys to Hive, at the time of the HF23, most of what we used is now Hive compatible. Seed nodes seed.openhive.network:2001 # gtg seed.roelandp.nl:2001 # roelandp hiveseed-se.privex.io:2001 # privex (SE) steemseed-fin.privex.io:2001 # privex (FI) seed.liondani.com:2016 # liondani hived.splinterlands.com:2001 # aggroed seed.hivekings.com:2001 # drakos node.mahdiyari.info:2001 # mahdiyari anyx.io:2001 # anyx seed.buildteam.io:2001 # thecryptodrive hive-seed.lukestokes.info:2001 # lukestokes.mhth hive-seed.arcange.eu:2001 # arcange seed.chitty.me:2001 # chitty API nodes https://api.openhive.network https://api.hive.blog https://anyx.io https://api.hivekings.com https://api.pharesim.me https://hived.hive-engine.com https://rpc.esteem.app https://hived.privex.io https://techcoderx.com DIY If you want to run your own node, here are some quick tips that can be useful: Seed Node Configure your build with: cmake \ -DCMAKE_BUILD_TYPE=Release \ -DLOW_MEMORY_NODE=ON \ -DCLEAR_VOTES=ON \ -DSKIP_BY_TX_ID=OFF \ -DBUILD_STEEM_TESTNET=OFF \ -DENABLE_MIRA=OFF \ -DSTEEM_STATIC_BUILD=ON \ ../hive Depending on your needs and resources, you might want to use either ENABLE_MIRA=OFF or ENABLE_MIRA=ON. config.ini for a seed node can be as simple as that: plugin = witness p2p-endpoint = 0.0.0.0:2001 This is intended to be used as a seed node, but you can easily extend it to be more useful by enabling a webserver endpoint and useful APIs such as block_api or network_broadcast_api. However, if you choose to add a plugin such as account_by_key or market_history you will have to replay. API Node If you’ve read my Steem Pressure series you know that I no longer use a monolithic node. Instead, I use jussi to route specific methods to specialized endpoints. Account History Node (non-MIRA) Fat Node (MIRA) Hivemind Please note that in my setup the Fat Node itself is not enough to feed the Hivemind instance because of the lack of a market_history plugin. Not an issue in my environment, because I’m running both nodes, and I prefer to run plugins on the low memory node where possible. Account History Node - reference configuration Configure your build with: cmake \ -DCMAKE_BUILD_TYPE=Release \ -DLOW_MEMORY_NODE=ON \ -DCLEAR_VOTES=ON \ -DSKIP_BY_TX_ID=OFF \ -DBUILD_STEEM_TESTNET=OFF \ -DENABLE_MIRA=OFF \ -DSTEEM_STATIC_BUILD=ON \ ../hive We can’t use MIRA here, because we are going to use the pre-MIRA implementation of account history plugin: account_history_rocksdb. Here’s reference config.ini file: log-appender = {&quot;appender&quot;:&quot;stderr&quot;,&quot;stream&quot;:&quot;std_error&quot;} log-logger = {&quot;name&quot;:&quot;default&quot;,&quot;level&quot;:&quot;info&quot;,&quot;appender&quot;:&quot;stderr&quot;} backtrace = yes plugin = webserver p2p json_rpc plugin = database_api condenser_api plugin = witness plugin = rc plugin = market_history plugin = market_history_api plugin = account_history_rocksdb plugin = account_history_api plugin = transaction_status plugin = transaction_status_api plugin = account_by_key plugin = account_by_key_api plugin = block_api network_broadcast_api rc_api p2p-endpoint = 0.0.0.0:2001 p2p-seed-node = gtg.openhive.network:2001 transaction-status-block-depth = 64000 transaction-status-track-after-block = 42000000 webserver-http-endpoint = 127.0.0.1:8091 webserver-ws-endpoint = 127.0.0.1:8090 webserver-thread-pool-size = 256 Fat Node - reference configuration Configure your build with: cmake \ -DCMAKE_BUILD_TYPE=Release \ -DLOW_MEMORY_NODE=OFF \ -DCLEAR_VOTES=OFF \ -DSKIP_BY_TX_ID=ON \ -DBUILD_STEEM_TESTNET=OFF \ -DENABLE_MIRA=ON \ -DSTEEM_STATIC_BUILD=ON \ ../hive For the fat node, I use the MIRA build Here’s reference config.ini file: log-appender = {&quot;appender&quot;:&quot;stderr&quot;,&quot;stream&quot;:&quot;std_error&quot;} log-logger = {&quot;name&quot;:&quot;default&quot;,&quot;level&quot;:&quot;info&quot;,&quot;appender&quot;:&quot;stderr&quot;} backtrace = yes plugin = webserver p2p json_rpc plugin = database_api condenser_api plugin = reputation plugin = reputation_api plugin = block_api p2p-endpoint = 0.0.0.0:32001 p2p-seed-node = gtg.openhive.network:2001 webserver-http-endpoint = 127.0.0.1:8091 webserver-ws-endpoint = 127.0.0.1:8090 webserver-thread-pool-size = 256 Storage needs: As always, make sure that you have very fast storage. Node type Storage AH Node 600 GB Fat Node 400 GB Hivemind 300 GB In the next episode, I will write more about such setup and required hardware and about how long it takes nowadays to build it from scratch. See: Hive Pressure #1: A New Hope by @gtg</summary></entry><entry><title type="html">Hive Keychain Now Available on Chrome &amp;amp; Brave!</title><link href="https://hivedocs.info/news/nodejs/keychain/2020/04/17/hive-keychain-now-available-on-chrome-and-brave.html" rel="alternate" type="text/html" title="Hive Keychain Now Available on Chrome &amp; Brave!" /><published>2020-04-17T08:50:54-07:00</published><updated>2020-04-17T08:50:54-07:00</updated><id>https://hivedocs.info/news/nodejs/keychain/2020/04/17/hive-keychain-now-available-on-chrome-and-brave</id><content type="html" xml:base="https://hivedocs.info/news/nodejs/keychain/2020/04/17/hive-keychain-now-available-on-chrome-and-brave.html">&lt;p&gt;&lt;img src=&quot;https://files.peakd.com/file/peakd-hive/stoodkev/AmSWoznK-keychain_title.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;I am extremely happy to report that the Hive Keychain browser extension has FINALLY been approved by Google and is now available for everyone to install on the Google Chrome and Brave browsers!&lt;/p&gt;
 
@@ -1366,294 +1751,4 @@ Michael Garcia a.k.a. @TheCrazyGM
   See: &lt;a href=&quot;https://peakd.com/dev/@thecrazygm/simple-transaction-monitor&quot;&gt;Simple Transaction Monitor&lt;/a&gt;
   by
   &lt;a href=&quot;https://hive.blog/@thecrazygm&quot;&gt;@thecrazygm&lt;/a&gt;
-&lt;/p&gt;</content><author><name>thecrazygm</name></author><summary type="html">Pretty straight forward monitor I’m back again with another simple python snippet of code to use in future projects. A lot of projects begin as needing something to monitor the chain and react accordingly. I thought about this and decided the best example to show how simple it is and a teaching tool to myself was to monitor the transaction ops and insert them into a database if they were to or from me. This is the basis of listening for memos to react with a response of sorts. (In this case, put them into a simple sqlite3 DB) another popular option is to listen for the comments op and check if something is mentioned (that may be another project/lesson in the future) This example requires both beem and dataset and will watch for whatever account you set as the watch variable. #!/usr/bin/env python3 import dataset from beem import Steem from beem.blockchain import Blockchain watch = &quot;thecrazygm&quot; hive = Steem(node='https://anyx.io') db = dataset.connect('sqlite:///mydatabase.db') # System Variables blockchain = Blockchain(steem_instance=hive) stream = blockchain.stream(opNames=['transfer'], raw_ops=False, threading=True, thread_num=4) table = db[watch] # parse json data to SQL insert def update_db(post): try: table.insert(dict(post)) db.commit() except Exception as e: print(f'[Error: {e} moving on]') db.rollback() def monitor(): print(&quot;[Starting up...]&quot;) db.begin() # Read the live stream and filter out only transfers for post in stream: if post[&quot;to&quot;] == watch or post[&quot;from&quot;] == watch: print(f&quot;[Transaction Found from {post['from']} to {post['to']}]&quot;) update_db(post) if __name__ == &quot;__main__&quot;: monitor() The code can be found always up to date at my GitHub gist area at this file: monitor.py If you like what I’m doing consider following me, either here or on GitHub or buy me a coffee. Again, stay safe out there people, Michael Garcia a.k.a. @TheCrazyGM See: Simple Transaction Monitor by @thecrazygm</summary></entry><entry><title type="html">Quick Tip: Hive Scripting - In 3 easy steps</title><link href="https://hivedocs.info/howto/nodejs/2020/04/10/quick-tip-hive-scripting-in-3-easy-steps.html" rel="alternate" type="text/html" title="Quick Tip: Hive Scripting - In 3 easy steps" /><published>2020-04-10T16:38:45-07:00</published><updated>2020-04-10T16:38:45-07:00</updated><id>https://hivedocs.info/howto/nodejs/2020/04/10/quick-tip-hive-scripting-in-3-easy-steps</id><content type="html" xml:base="https://hivedocs.info/howto/nodejs/2020/04/10/quick-tip-hive-scripting-in-3-easy-steps.html">&lt;p&gt;&lt;img src=&quot;https://images.hive.blog/DQmTr8ePbYQa6TKsoQAjmMMYzcj1Fz7Cd5stNW5CxL86LgF/Untitled-1.png&quot; alt=&quot;Untitled-1.png&quot; /&gt;&lt;/p&gt;
-
-&lt;hr /&gt;
-
-&lt;p&gt;Hello, devs!
-my name is stav AKA lonelywolf,
-I’m a web developer, I worked with utopian-io for a good amount of time back in the days, I made a lot of useful tutorials mainly about STEEMjs
-which is what we’re going to talk about today.&lt;/p&gt;
-
-&lt;p&gt;so I’m not really familiar with Hive scripting, I don’t really have any idea how to transfer some projects of mine to Hive&lt;/p&gt;
-
-&lt;p&gt;but I found out that with one command I can transfer my steemJS projects to hive projects.&lt;/p&gt;
-
-&lt;h2 id=&quot;so-step-1&quot;&gt;so, Step 1&lt;/h2&gt;
-&lt;p&gt;Install steemjs if you haven’t&lt;/p&gt;
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;npm install steem --save
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h2 id=&quot;step-2&quot;&gt;Step 2&lt;/h2&gt;
-&lt;p&gt;create your script, for example:&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;const steem = require('steem');
-
-steem.api.getAccounts(['lonelywolf'], function(err, res){
-    console.log(res, err)
-})
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;this will give me all of my profile configuration and information&lt;/p&gt;
-
-&lt;p&gt;so now we want to transfer it to Hive API, right?&lt;/p&gt;
-
-&lt;h1 id=&quot;step-3&quot;&gt;Step 3&lt;/h1&gt;
-&lt;p&gt;Now, all you just need to change the API URL,&lt;/p&gt;
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;steem.api.setOptions({  url: 'https://api.hive.blog' })
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-&lt;p&gt;you can use any other node there is for hive.&lt;/p&gt;
-
-&lt;p&gt;so now I’ll get my profile but as Hive configuration and Information
-(results at the end of the post)&lt;/p&gt;
-
-&lt;h1 id=&quot;hope-you-found-it-useful-please-leave-an-upvote-and-comment-down-below-how-are-you-scripting-in-hive-blockchain&quot;&gt;Hope you found it useful, please leave an upvote and comment down below how are you scripting in hive blockchain&lt;/h1&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;[
-  {
-    id: 495898,
-    name: 'lonelywolf',
-    owner: { weight_threshold: 1, account_auths: [], key_auths: [Array] },
-    active: { weight_threshold: 1, account_auths: [], key_auths: [Array] },
-    posting: { weight_threshold: 1, account_auths: [Array], key_auths: [Array] },
-    memo_key: 'STM7RNp4DJL3zTUMsXsejuy7Grc3AoH1pTvgFv4cuhfvstHwAT4iW',
-    json_metadata: '{&quot;profile&quot;:{&quot;name&quot;:&quot;TheRealWolF&quot;,&quot;about&quot;:&quot;RealityHubs Moderator -- FS Developer&quot;,&quot;website&quot;:&quot;https://steemit.com/@lonelywolf&quot;,&quot;cover_image&quot;:&quot;https://cdn.steemitimages.com/DQmUxqC72fjzEraKeZLJU7WFJ89EJu4fTuGoxRNeRsc3GTc/steembanner.png&quot;,&quot;profile_image&quot;:&quot;https://cdn.steemitimages.com/DQmVSxtVsoeUgVN9sjvCFmBqUcPCVzCGoR9gouu8nWg8QUq/therealwolf_logo.png&quot;}}',
-    posting_json_metadata: '{&quot;profile&quot;:{&quot;name&quot;:&quot;TheRealWolF&quot;,&quot;about&quot;:&quot;RealityHubs Moderator -- FS Developer&quot;,&quot;website&quot;:&quot;https://steemit.com/@lonelywolf&quot;,&quot;cover_image&quot;:&quot;https://cdn.steemitimages.com/DQmUxqC72fjzEraKeZLJU7WFJ89EJu4fTuGoxRNeRsc3GTc/steembanner.png&quot;,&quot;profile_image&quot;:&quot;https://cdn.steemitimages.com/DQmVSxtVsoeUgVN9sjvCFmBqUcPCVzCGoR9gouu8nWg8QUq/therealwolf_logo.png&quot;}}',
-    proxy: '',
-    last_owner_update: '2018-10-13T14:13:21',
-    last_account_update: '2019-08-08T11:40:00',
-    created: '2017-12-14T15:13:15',
-    mined: false,
-    recovery_account: 'steem',
-    last_account_recovery: '1970-01-01T00:00:00',
-    reset_account: 'null',
-    comment_count: 0,
-    lifetime_vote_count: 0,
-    post_count: 865,
-    can_vote: true,
-    voting_manabar: { current_mana: '161750492879', last_update_time: 1586559381 },
-    downvote_manabar: { current_mana: '43566594492', last_update_time: 1586559381 },
-    voting_power: 9281,
-    balance: '0.001 HIVE',
-    savings_balance: '0.000 HIVE',
-    sbd_balance: '0.000 HBD',
-    sbd_seconds: '52214760',
-    sbd_seconds_last_update: '2020-04-07T23:19:45',
-    sbd_last_interest_payment: '2020-03-23T20:43:36',
-    savings_sbd_balance: '0.000 HBD',
-    savings_sbd_seconds: '0',
-    savings_sbd_seconds_last_update: '2020-04-10T04:08:21',
-    savings_sbd_last_interest_payment: '2020-04-10T04:08:21',
-    savings_withdraw_requests: 1,
-    reward_sbd_balance: '0.000 HBD',
-    reward_steem_balance: '0.000 HIVE',
-    reward_vesting_balance: '0.000000 VESTS',
-    reward_vesting_steem: '0.000 HIVE',
-    vesting_shares: '2984.805714 VESTS',
-    delegated_vesting_shares: '2982.828925 VESTS',
-    received_vesting_shares: '174264.401181 VESTS',
-    vesting_withdraw_rate: '0.000000 VESTS',
-    next_vesting_withdrawal: '1969-12-31T23:59:59',
-    withdrawn: '60272175916',
-    to_withdraw: '60272175916',
-    withdraw_routes: 0,
-    curation_rewards: 6910,
-    posting_rewards: 1207947,
-    proxied_vsf_votes: [ 0, 0, 0, 0 ],
-    witnesses_voted_for: 3,
-    last_post: '2020-04-10T23:12:00',
-    last_root_post: '2020-04-10T19:32:24',
-    last_vote_time: '2020-04-10T22:56:21',
-    post_bandwidth: 0,
-    pending_claimed_accounts: 0,
-    vesting_balance: '0.000 HIVE',
-    reputation: '16422564795330',
-    transfer_history: [],
-    market_history: [],
-    post_history: [],
-    vote_history: [],
-    other_history: [],
-    witness_votes: [ 'actifit', 'bdcommunity', 'emrebeyler' ],
-    tags_usage: [],
-    guest_bloggers: []
-  }
-] null
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-&lt;hr /&gt;
-
-&lt;p&gt;
-  See: &lt;a href=&quot;https://hive.blog/hive-139531/@lonelywolf/quick-tip-hive-scripting-in-3-easy-steps&quot;&gt;Quick Tip: Hive Scripting - In 3 easy steps&lt;/a&gt;
-  by
-  &lt;a href=&quot;https://hive.blog/@lonelywolf&quot;&gt;@lonelywolf&lt;/a&gt;
-&lt;/p&gt;</content><author><name>lonelywolf</name></author><summary type="html">Hello, devs! my name is stav AKA lonelywolf, I’m a web developer, I worked with utopian-io for a good amount of time back in the days, I made a lot of useful tutorials mainly about STEEMjs which is what we’re going to talk about today. so I’m not really familiar with Hive scripting, I don’t really have any idea how to transfer some projects of mine to Hive but I found out that with one command I can transfer my steemJS projects to hive projects. so, Step 1 Install steemjs if you haven’t npm install steem --save Step 2 create your script, for example: const steem = require('steem'); steem.api.getAccounts(['lonelywolf'], function(err, res){ console.log(res, err) }) this will give me all of my profile configuration and information so now we want to transfer it to Hive API, right? Step 3 Now, all you just need to change the API URL, steem.api.setOptions({ url: 'https://api.hive.blog' }) you can use any other node there is for hive. so now I’ll get my profile but as Hive configuration and Information (results at the end of the post) Hope you found it useful, please leave an upvote and comment down below how are you scripting in hive blockchain [ { id: 495898, name: 'lonelywolf', owner: { weight_threshold: 1, account_auths: [], key_auths: [Array] }, active: { weight_threshold: 1, account_auths: [], key_auths: [Array] }, posting: { weight_threshold: 1, account_auths: [Array], key_auths: [Array] }, memo_key: 'STM7RNp4DJL3zTUMsXsejuy7Grc3AoH1pTvgFv4cuhfvstHwAT4iW', json_metadata: '{&quot;profile&quot;:{&quot;name&quot;:&quot;TheRealWolF&quot;,&quot;about&quot;:&quot;RealityHubs Moderator -- FS Developer&quot;,&quot;website&quot;:&quot;https://steemit.com/@lonelywolf&quot;,&quot;cover_image&quot;:&quot;https://cdn.steemitimages.com/DQmUxqC72fjzEraKeZLJU7WFJ89EJu4fTuGoxRNeRsc3GTc/steembanner.png&quot;,&quot;profile_image&quot;:&quot;https://cdn.steemitimages.com/DQmVSxtVsoeUgVN9sjvCFmBqUcPCVzCGoR9gouu8nWg8QUq/therealwolf_logo.png&quot;}}', posting_json_metadata: '{&quot;profile&quot;:{&quot;name&quot;:&quot;TheRealWolF&quot;,&quot;about&quot;:&quot;RealityHubs Moderator -- FS Developer&quot;,&quot;website&quot;:&quot;https://steemit.com/@lonelywolf&quot;,&quot;cover_image&quot;:&quot;https://cdn.steemitimages.com/DQmUxqC72fjzEraKeZLJU7WFJ89EJu4fTuGoxRNeRsc3GTc/steembanner.png&quot;,&quot;profile_image&quot;:&quot;https://cdn.steemitimages.com/DQmVSxtVsoeUgVN9sjvCFmBqUcPCVzCGoR9gouu8nWg8QUq/therealwolf_logo.png&quot;}}', proxy: '', last_owner_update: '2018-10-13T14:13:21', last_account_update: '2019-08-08T11:40:00', created: '2017-12-14T15:13:15', mined: false, recovery_account: 'steem', last_account_recovery: '1970-01-01T00:00:00', reset_account: 'null', comment_count: 0, lifetime_vote_count: 0, post_count: 865, can_vote: true, voting_manabar: { current_mana: '161750492879', last_update_time: 1586559381 }, downvote_manabar: { current_mana: '43566594492', last_update_time: 1586559381 }, voting_power: 9281, balance: '0.001 HIVE', savings_balance: '0.000 HIVE', sbd_balance: '0.000 HBD', sbd_seconds: '52214760', sbd_seconds_last_update: '2020-04-07T23:19:45', sbd_last_interest_payment: '2020-03-23T20:43:36', savings_sbd_balance: '0.000 HBD', savings_sbd_seconds: '0', savings_sbd_seconds_last_update: '2020-04-10T04:08:21', savings_sbd_last_interest_payment: '2020-04-10T04:08:21', savings_withdraw_requests: 1, reward_sbd_balance: '0.000 HBD', reward_steem_balance: '0.000 HIVE', reward_vesting_balance: '0.000000 VESTS', reward_vesting_steem: '0.000 HIVE', vesting_shares: '2984.805714 VESTS', delegated_vesting_shares: '2982.828925 VESTS', received_vesting_shares: '174264.401181 VESTS', vesting_withdraw_rate: '0.000000 VESTS', next_vesting_withdrawal: '1969-12-31T23:59:59', withdrawn: '60272175916', to_withdraw: '60272175916', withdraw_routes: 0, curation_rewards: 6910, posting_rewards: 1207947, proxied_vsf_votes: [ 0, 0, 0, 0 ], witnesses_voted_for: 3, last_post: '2020-04-10T23:12:00', last_root_post: '2020-04-10T19:32:24', last_vote_time: '2020-04-10T22:56:21', post_bandwidth: 0, pending_claimed_accounts: 0, vesting_balance: '0.000 HIVE', reputation: '16422564795330', transfer_history: [], market_history: [], post_history: [], vote_history: [], other_history: [], witness_votes: [ 'actifit', 'bdcommunity', 'emrebeyler' ], tags_usage: [], guest_bloggers: [] } ] null See: Quick Tip: Hive Scripting - In 3 easy steps by @lonelywolf</summary></entry><entry><title type="html">Update for beem: beempy installer for windows and beempy as shell</title><link href="https://hivedocs.info/howto/beem/python/wallet/2020/04/08/update-for-beem-beempy-installer-for-windows-and-beempy-as-shell.html" rel="alternate" type="text/html" title="Update for beem: beempy installer for windows and beempy as shell" /><published>2020-04-08T07:26:15-07:00</published><updated>2020-04-08T07:26:15-07:00</updated><id>https://hivedocs.info/howto/beem/python/wallet/2020/04/08/update-for-beem-beempy-installer-for-windows-and-beempy-as-shell</id><content type="html" xml:base="https://hivedocs.info/howto/beem/python/wallet/2020/04/08/update-for-beem-beempy-installer-for-windows-and-beempy-as-shell.html">&lt;h2 id=&quot;repository&quot;&gt;Repository&lt;/h2&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://github.com/holgern/beem&quot;&gt;https://github.com/holgern/beem&lt;/a&gt;&lt;/p&gt;
-&lt;div style=&quot;display: block; margin: 0 auto;&quot;&gt;
-
-  &lt;p&gt;&lt;img src=&quot;https://cdn.steemitimages.com/DQmcRrwLPSywSYMierfP6um6mejeMNGjN9Rxw7audJqTDgb/beem-logo&quot; alt=&quot;beem-logo&quot; /&gt;&lt;/p&gt;
-
-&lt;/div&gt;
-&lt;p&gt;&lt;a href=&quot;https://github.com/holgern/beem&quot;&gt;beem&lt;/a&gt; is a python library for STEEM and HIVE.  The current version is 0.22.14.&lt;/p&gt;
-
-&lt;p&gt;There is also a discord channel for beem: 
-&lt;a href=&quot;https://discord.gg/4HM592V&quot;&gt;https://discord.gg/4HM592V&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;The newest beem version can be installed by:&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;pip install -U beem
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;Check that you are using hive nodes. The following command&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;beempy updatenodes --hive
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;updates the nodelist and uses only hive nodes. After setting hive as default_chain, &lt;code class=&quot;highlighter-rouge&quot;&gt;beempy updatenodes&lt;/code&gt; can be used without switching to steem.&lt;/p&gt;
-
-&lt;p&gt;The list of nodes can be checked with&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;beempy config
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;and&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;beempy currentnode
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;shows the currently connected node.&lt;/p&gt;
-
-&lt;h2 id=&quot;upcoming-changes&quot;&gt;Upcoming changes&lt;/h2&gt;
-&lt;p&gt;The next release will be 0.23.0 and the hive blockchain will then be set as new default. I will also rework the countless steem_instance parameters and replace them with a more fitting name. I will also create a new Hive class which is the new Steem() conterpart.&lt;/p&gt;
-
-&lt;h2 id=&quot;changelog-for-versions-02214&quot;&gt;Changelog for versions 0.22.14&lt;/h2&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;add click_shell to turn beempy into a shell utility with autocompletion&lt;/li&gt;
-  &lt;li&gt;new click_shell added as requirements&lt;/li&gt;
-  &lt;li&gt;Installer added for beempy on windows&lt;/li&gt;
-  &lt;li&gt;Add get_hive_nodes and get_steem_nodes functions to NodeList&lt;/li&gt;
-  &lt;li&gt;beempy command resteem renamed to reblog&lt;/li&gt;
-  &lt;li&gt;When using in shell mode, beempy walletinfo –unlock can be used to unlock the wallet and walletinfo –lock to unlock it again&lt;/li&gt;
-  &lt;li&gt;Add get_blockchain_name to Steem, returns either steem or hive&lt;/li&gt;
-  &lt;li&gt;Add switch_blockchain to Steem, can be used to switch between hive and steem&lt;/li&gt;
-  &lt;li&gt;Storage has now a new config “default_chain”, can be either hive or steem&lt;/li&gt;
-  &lt;li&gt;updatenode –hive switches to hive and use hive nodes&lt;/li&gt;
-  &lt;li&gt;updatenode –steem switches to steem and use steem nodes&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h2 id=&quot;upload-images&quot;&gt;Upload images&lt;/h2&gt;
-
-&lt;p&gt;The url for imageupload has been fixed for hive:&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;beempy uploadimage -a holger80 .\beempy_screencast.gif
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;results now in:&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;![](https://images.hive.blog/DQmX39y3dpZXUrvVxRGGmZsNxYmPEKmCDCE3XoUtbaFpodo/image)
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h2 id=&quot;shell-mode-for-beempy&quot;&gt;Shell mode for beempy&lt;/h2&gt;
-&lt;p&gt;beempy has now a shell mode, which is activated when started without any parameter:&lt;/p&gt;
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;beempy
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-&lt;p&gt;You an see it here in action:
-&lt;img src=&quot;https://images.hive.blog/DQmX39y3dpZXUrvVxRGGmZsNxYmPEKmCDCE3XoUtbaFpodo/image&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;h2 id=&quot;windows-installer-for-beempy&quot;&gt;Windows installer for beempy&lt;/h2&gt;
-
-&lt;p&gt;A windows installer is now automatically pushed to the release section:&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://github.com/holgern/beem/releases/tag/0.22.14&quot;&gt;https://github.com/holgern/beem/releases/tag/0.22.14&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://files.peakd.com/file/peakd-hive/holger80/njJoUl4k-image.png&quot; alt=&quot;image.png&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;After downloading and installing BeempySetup, a new icon is shown in the start menu:&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://files.peakd.com/file/peakd-hive/holger80/cJq9SSyz-image.png&quot; alt=&quot;image.png&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;When clicking on it, a new terminal with beempy in shell mode is started.&lt;/p&gt;
-
-&lt;h2 id=&quot;wallet-unlocking-in-shell-mode&quot;&gt;Wallet unlocking in shell mode&lt;/h2&gt;
-&lt;p&gt;When in shell mode, the wallet can be unlocked with&lt;/p&gt;
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;walletinfo --unlock
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-&lt;p&gt;and locked again with&lt;/p&gt;
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;walletinfo --lock
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-&lt;p&gt;Closing the program locks also the wallet.&lt;/p&gt;
-
-&lt;h2 id=&quot;nodelists-for-hive-and-steem&quot;&gt;Nodelists for hive and steem&lt;/h2&gt;
-&lt;p&gt;The nodelist class has now two new functions:&lt;/p&gt;
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;from beem.nodelist import NodeList
-nodelist = NodeList()
-print(nodelist.get_hive_nodes())
-print(nodelist.get_steem_nodes())
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-&lt;p&gt;This helps, to be sure to use always the correct node.&lt;/p&gt;
-
-&lt;h2 id=&quot;default_chain-as-new-config-parameter&quot;&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;default_chain&lt;/code&gt; as new config parameter&lt;/h2&gt;
-&lt;p&gt;The currently used chain is stored in &lt;code class=&quot;highlighter-rouge&quot;&gt;default_chain&lt;/code&gt;. It can be set either to steem or to hive.&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;beempy config
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-&lt;p&gt;returns now:&lt;/p&gt;
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;+-----------------+---------------------------------------------+
-| Key             | Value                                       |
-+-----------------+---------------------------------------------+
-| default_account | holger80                                    |
-| default_chain   | hive                                        |
-| nodes           | [                                           |
-|                 |     &quot;https://anyx.io&quot;,                      |
-|                 |     &quot;http://anyx.io&quot;,                       |
-|                 |     &quot;https://api.hivekings.com&quot;,            |
-|                 |     &quot;https://api.hive.blog&quot;,                |
-|                 |     &quot;https://api.openhive.network&quot;,         |
-|                 |     &quot;https://techcoderx.com&quot;,               |
-|                 |     &quot;https://rpc.esteem.app&quot;,               |
-|                 |     &quot;https://hived.privex.io&quot;               |
-|                 | ]                                           |
-| data_dir        | ...\beem\beem |
-+-----------------+---------------------------------------------+
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;beempy updatenodes
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-&lt;p&gt;will now return only hive nodes, as default_chain is set to hive. &lt;code class=&quot;highlighter-rouge&quot;&gt;default_chain&lt;/code&gt; can be either &lt;code class=&quot;highlighter-rouge&quot;&gt;hive&lt;/code&gt; or &lt;code class=&quot;highlighter-rouge&quot;&gt;steem&lt;/code&gt;.&lt;/p&gt;
-
-&lt;h2 id=&quot;switching-between-hive-and-steem-in-python&quot;&gt;Switching between Hive and Steem in python&lt;/h2&gt;
-&lt;p&gt;The steem object has now a &lt;code class=&quot;highlighter-rouge&quot;&gt;switch_blockchain&lt;/code&gt; function which switches between booth blockchains.&lt;/p&gt;
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;from beem import Steem
-stm = Steem()
-stm.switch_blockchain(&quot;steem&quot;)
-print(stm)
-stm.switch_blockchain(&quot;hive&quot;)
-print(stm)
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-&lt;p&gt;returns&lt;/p&gt;
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&amp;lt;Steem node=
-&amp;lt;a href=&quot;https://steemd.minnowsupportproject.org&quot;&amp;gt;https://steemd.minnowsupportproject.org&amp;lt;/a&amp;gt;
-, nobroadcast=False&amp;gt;
-&amp;lt;Steem node=
-&amp;lt;a href=&quot;https://anyx.io&quot;&amp;gt;https://anyx.io&amp;lt;/a&amp;gt;
-, nobroadcast=False&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h2 id=&quot;switching-between-steem-and-hive-with-beempy&quot;&gt;Switching between steem and hive with beempy&lt;/h2&gt;
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;beempy updatenodes --steem
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-&lt;p&gt;switches to the steem blockchain
-and&lt;/p&gt;
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;beempy updatenodes --hive
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-&lt;p&gt;will switch to the hive blockchain.&lt;/p&gt;
-
-&lt;hr /&gt;
-&lt;p&gt;&lt;em&gt;If you like what I do, consider casting a vote for me as witness on &lt;a href=&quot;https://hivesigner.com/sign/account-witness-vote?witness=holger80&amp;amp;approve=1&quot;&gt;Hivesigner&lt;/a&gt; or on &lt;a href=&quot;https://peakd.com/witnesses&quot;&gt;PeakD&lt;/a&gt;&lt;/em&gt;.&lt;/p&gt;
-&lt;hr /&gt;
-
-&lt;p&gt;
-  See: &lt;a href=&quot;https://peakd.com/hive-139531/@holger80/update-for-beem-beempy-installer-for-windows-and-beempy-as-shell&quot;&gt;Update for beem: beempy installer for windows and beempy as shell&lt;/a&gt;
-  by
-  &lt;a href=&quot;https://hive.blog/@holger80&quot;&gt;@holger80&lt;/a&gt;
-&lt;/p&gt;</content><author><name>holger80</name></author><summary type="html">Repository https://github.com/holgern/beem beem is a python library for STEEM and HIVE. The current version is 0.22.14. There is also a discord channel for beem: https://discord.gg/4HM592V The newest beem version can be installed by: pip install -U beem Check that you are using hive nodes. The following command beempy updatenodes --hive updates the nodelist and uses only hive nodes. After setting hive as default_chain, beempy updatenodes can be used without switching to steem. The list of nodes can be checked with beempy config and beempy currentnode shows the currently connected node. Upcoming changes The next release will be 0.23.0 and the hive blockchain will then be set as new default. I will also rework the countless steem_instance parameters and replace them with a more fitting name. I will also create a new Hive class which is the new Steem() conterpart. Changelog for versions 0.22.14 add click_shell to turn beempy into a shell utility with autocompletion new click_shell added as requirements Installer added for beempy on windows Add get_hive_nodes and get_steem_nodes functions to NodeList beempy command resteem renamed to reblog When using in shell mode, beempy walletinfo –unlock can be used to unlock the wallet and walletinfo –lock to unlock it again Add get_blockchain_name to Steem, returns either steem or hive Add switch_blockchain to Steem, can be used to switch between hive and steem Storage has now a new config “default_chain”, can be either hive or steem updatenode –hive switches to hive and use hive nodes updatenode –steem switches to steem and use steem nodes Upload images The url for imageupload has been fixed for hive: beempy uploadimage -a holger80 .\beempy_screencast.gif results now in: ![](https://images.hive.blog/DQmX39y3dpZXUrvVxRGGmZsNxYmPEKmCDCE3XoUtbaFpodo/image) Shell mode for beempy beempy has now a shell mode, which is activated when started without any parameter: beempy You an see it here in action: Windows installer for beempy A windows installer is now automatically pushed to the release section: https://github.com/holgern/beem/releases/tag/0.22.14 After downloading and installing BeempySetup, a new icon is shown in the start menu: When clicking on it, a new terminal with beempy in shell mode is started. Wallet unlocking in shell mode When in shell mode, the wallet can be unlocked with walletinfo --unlock and locked again with walletinfo --lock Closing the program locks also the wallet. Nodelists for hive and steem The nodelist class has now two new functions: from beem.nodelist import NodeList nodelist = NodeList() print(nodelist.get_hive_nodes()) print(nodelist.get_steem_nodes()) This helps, to be sure to use always the correct node. default_chain as new config parameter The currently used chain is stored in default_chain. It can be set either to steem or to hive. beempy config returns now: +-----------------+---------------------------------------------+ | Key | Value | +-----------------+---------------------------------------------+ | default_account | holger80 | | default_chain | hive | | nodes | [ | | | &quot;https://anyx.io&quot;, | | | &quot;http://anyx.io&quot;, | | | &quot;https://api.hivekings.com&quot;, | | | &quot;https://api.hive.blog&quot;, | | | &quot;https://api.openhive.network&quot;, | | | &quot;https://techcoderx.com&quot;, | | | &quot;https://rpc.esteem.app&quot;, | | | &quot;https://hived.privex.io&quot; | | | ] | | data_dir | ...\beem\beem | +-----------------+---------------------------------------------+ beempy updatenodes will now return only hive nodes, as default_chain is set to hive. default_chain can be either hive or steem. Switching between Hive and Steem in python The steem object has now a switch_blockchain function which switches between booth blockchains. from beem import Steem stm = Steem() stm.switch_blockchain(&quot;steem&quot;) print(stm) stm.switch_blockchain(&quot;hive&quot;) print(stm) returns &amp;lt;Steem node= &amp;lt;a href=&quot;https://steemd.minnowsupportproject.org&quot;&amp;gt;https://steemd.minnowsupportproject.org&amp;lt;/a&amp;gt; , nobroadcast=False&amp;gt; &amp;lt;Steem node= &amp;lt;a href=&quot;https://anyx.io&quot;&amp;gt;https://anyx.io&amp;lt;/a&amp;gt; , nobroadcast=False&amp;gt; Switching between steem and hive with beempy beempy updatenodes --steem switches to the steem blockchain and beempy updatenodes --hive will switch to the hive blockchain. If you like what I do, consider casting a vote for me as witness on Hivesigner or on PeakD. See: Update for beem: beempy installer for windows and beempy as shell by @holger80</summary></entry></feed>
+&lt;/p&gt;</content><author><name>thecrazygm</name></author><summary type="html">Pretty straight forward monitor I’m back again with another simple python snippet of code to use in future projects. A lot of projects begin as needing something to monitor the chain and react accordingly. I thought about this and decided the best example to show how simple it is and a teaching tool to myself was to monitor the transaction ops and insert them into a database if they were to or from me. This is the basis of listening for memos to react with a response of sorts. (In this case, put them into a simple sqlite3 DB) another popular option is to listen for the comments op and check if something is mentioned (that may be another project/lesson in the future) This example requires both beem and dataset and will watch for whatever account you set as the watch variable. #!/usr/bin/env python3 import dataset from beem import Steem from beem.blockchain import Blockchain watch = &quot;thecrazygm&quot; hive = Steem(node='https://anyx.io') db = dataset.connect('sqlite:///mydatabase.db') # System Variables blockchain = Blockchain(steem_instance=hive) stream = blockchain.stream(opNames=['transfer'], raw_ops=False, threading=True, thread_num=4) table = db[watch] # parse json data to SQL insert def update_db(post): try: table.insert(dict(post)) db.commit() except Exception as e: print(f'[Error: {e} moving on]') db.rollback() def monitor(): print(&quot;[Starting up...]&quot;) db.begin() # Read the live stream and filter out only transfers for post in stream: if post[&quot;to&quot;] == watch or post[&quot;from&quot;] == watch: print(f&quot;[Transaction Found from {post['from']} to {post['to']}]&quot;) update_db(post) if __name__ == &quot;__main__&quot;: monitor() The code can be found always up to date at my GitHub gist area at this file: monitor.py If you like what I’m doing consider following me, either here or on GitHub or buy me a coffee. Again, stay safe out there people, Michael Garcia a.k.a. @TheCrazyGM See: Simple Transaction Monitor by @thecrazygm</summary></entry></feed>
