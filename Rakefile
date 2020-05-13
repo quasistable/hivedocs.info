@@ -4,14 +4,14 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'rake/testtask'
 require 'json'
 require 'yaml'
-require 'steem'
+require 'hive'
 require 'open-uri'
 #require 'html-proofer'
 
 desc 'Grab a post.'
 task :grab, :url do |t, args|
   url = args[:url] || abort('Url required.')
-  api = Steem::Api.new(url: 'https://anyx.io')
+  api = Hive::Api.new(url: 'https://anyx.io')
   author, permlink = url.split('@').last.split('/')
   
   api.get_content(author, permlink) do |content|
