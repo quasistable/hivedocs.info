@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>update for beem: support for Ledger Nano (S/X) has been added | Hive Chain Documentation</title>
+<meta name="generator" content="Jekyll v4.0.0" />
+<meta property="og:title" content="update for beem: support for Ledger Nano (S/X) has been added" />
+<meta name="author" content="holger80" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Repository https://github.com/holgern/beem beem is a python library and command line tool for HIVE. The current version is 0.23.7. There is also a discord channel for beem: https://discord.gg/4HM592V The newest beem version can be installed by: pip install -U beem If you want to use Ledger Nano, then you need also: pip install -U ledgerblue Check that you are using hive nodes. The following command beempy updatenodes --hive updates the nodelist and uses only hive nodes. After setting hive as default_chain, beempy updatenodes can be used. The list of nodes can be checked with beempy config and beempy currentnode shows the currently connected node. Changelog for versions 0.23.7 Fix update_account_jsonmetadata and add posting_json_metadata property to Account Add Ledger Nano S support beempy -u activates ledger signing beempy -u listkeys shows pubkey from ledger beempy -u listaccounts searches for accounts that have pubkey derived from attached ledger beempy -u keygen creates pubkey lists that can be used for newaccount and changekeys new option use_ledger and path for Hive Allow role selection in keygen Changelog for versions 0.23.6 beempy --key key_list.json command can be used to set keys in beempy without using the wallet. Using the Ledger Nano for signing beem/beepy is the first library/application that supports signing of operation with the ledger Nano S/X hardware wallet. It uses the Hive wallet application for ledger Nano S/X from @netuoso. Uploading the app to a Nano X is not yet possible. You need to install the Hive app to your ledger Nano. You can download it from ledger-hive-app by @netuoso. Please read the readme on how to install the app to your ledger. When you sucessfully could install the Hive app to your ledger, you need to select it and enter Open application. You need also install ledgerblue pip install -U ledgerblue You can test if everything works with beempy -u listkeys The -u or --use-ledger parameter activates ledger support for all beempy commands. If you see ledgerblue.commException.CommException: Exception : Invalid status 6d00 (Unexpected state of device: verify that the right application is opened?) your setup is not correct. If you see +-------------------------------------------------------+ | Available Key for 48&#39;/13&#39;/0&#39;/0&#39;/0&#39; | +-------------------------------------------------------+ | STM... | +-------------------------------------------------------+ everything is set up. Changing your keys You need to change your keys to the public keys that your ledger provides before using the ledger for signing. It is also possible to change only the owner key. As private keys will not leave your hardware wallet, you cannot put them into keychain or peakd as before. You can only sign operations on apps that support the ledger. When you lose your ledger and your recovery phrase, you lose the ability to sign with that role. E.g. when you changed your owner key, and you lost your ledger and the recovery phrase, you cannot change your account keys anymore. In the current state (lack of ledger support by other apps), i recommend to change only the owner key. Seting the path The pubkeys that are provided by the ledger are derived from the given path. A path for hive consists of 48&#39;/13&#39;/role number&#39;/account index&#39;/key sequence&#39; The role number is 0 for owner, 1 for active, 4 for posting and 3 for memo. You need to assign an account index number to your account. You are starting with 0 and when you plan to use a second account, you need to increase this index. The key index starts with 0 for each role and account index. Whenever you change your keys, you need to increase the key sequence index. Changing your owner, active and posting key It is not recommended to change the memo key (no encryption support for ledger yet on beem yet), this is the maximum setup. Changing your owner, active and posting key means at this moment (when more app add support for ledger, this will change): all operation can only be broadcasted by beem/beempy Voting, transfering on a mobile device is not possible keychain usage is not possible peakd, hive.blog cannot be used for voting or any other operation hive-engine or any dapp cannot be longer used At first, three new pubkeys needs to be obtained from the ledger: beempy -u keygen --account 3 --role owner,active,posting This beempy command creates three pubkeys for the account index 3 derived from the following paths: 48&#39;/13&#39;/0&#39;/3&#39;/0&#39; 48&#39;/13&#39;/1&#39;/3&#39;/0&#39; 48&#39;/13&#39;/4&#39;/3&#39;/0&#39; You can save the pubkeys to a json for easier key changing by: beempy -u keygen --account 3 --role owner,active,posting --export-pub beembot.json In both cases you will be asked to approve the shown pubkeys on your ledger Nano. We can now change the keys with beempy changekeys --import-pub beembot.json beembot Changing your owner and active key This involves changing your owner and active key. all operation that need an active key can only be broadcasted by beem/beempy. transfering Hive/HBD on a mobile device is not possible keychain usage is not possible for operation needing an active key hive-engine or any dapps that are using custom_json signed with an active key cannot be longer used. beempy -u keygen --role owner,active --export-pub account_pubkeys.json You can set the account index with --account. Changing the keys can be done with beempy changekeys as shown above. Changing your owner key This changes only the owner key. Active and posting key are still managed with private keys as before. Until ledger is not supported by keychain or on mobile, this is the most likely usecase now. Changing your keys needs to be done with beem/beempy beempy -u keygen --role owner --export-pub account_pubkeys.json You can set the account index with --account. Changing the keys can be done with beempy changekeys as shown above. You may need to change the default path. When you used --account 2, you need to set beempy set default_path &quot;48&#39;/13&#39;/0&#39;/2&#39;/0&#39;&quot; Whenever you use beempy -u, this path is used for signing. Checking if changing keys was sucessfully The following command checks if a derived pubkey from the ledger is set somewhere in Hive using getAccountFromPublicKey from the wallet class. beempy -u listaccounts returns then +---------+---------+-------------------------------------------------------+------------------+ | Name | Type | Available Key | Path | +---------+---------+-------------------------------------------------------+------------------+ | beembot | owner | STM7UYXcqJsZqoroPKoziDmB3XHSVfnLbLJ9TWSVsD4zC7YHsdgo5 | 48&#39;/13&#39;/0&#39;/3&#39;/0&#39; | | beembot | active | STM7a1bcn9Anx7F2dKZGEkbVRFbCHT9exx42SSKd4JicJW82VQtAc | 48&#39;/13&#39;/1&#39;/3&#39;/0&#39; | | beembot | posting | STM7cvheXK2FTEAkWe1U7SD2W6H6H3a6uJ28ors37rxcE5evP5fji | 48&#39;/13&#39;/4&#39;/3&#39;/0&#39; | +---------+---------+-------------------------------------------------------+------------------+ Set the path As we have used a account index &gt; 0, we must change the default path. At the moment, only one path can be stored in default_path. beempy set default_path &quot;48&#39;/13&#39;/0&#39;/3&#39;/0&#39;&quot; We will now sign all transactions with the owner key, until the path is changed or set for a transaction with --path. You can check which pubkey is returned for the actually set default_path with beempy -u listkeys The shown pubkey can checked with beempy info STM... Using the ledger to sign transactions We can now sign all transaction by the ledger, when -u or --use-ledger is set. beempy -u transfer -a beembot holger80 0.001 HIVE &quot;test with ledger&quot; This is now signed with the owner key, as default_path is &quot;48&#39;/13&#39;/0&#39;/3&#39;/0&#39;&quot;. We can sign the same trx with the active by setting the path to &quot;48&#39;/13&#39;/1&#39;/3&#39;/0&#39;&quot;: beempy -u --path &quot;48&#39;/13&#39;/1&#39;/3&#39;/0&#39;&quot; transfer -a beembot holger80 0.001 HIVE &quot;test with ledger&quot; Building and signing a transaction in python from beem import Hive from beem.transactionbuilder import TransactionBuilder from beembase import operations hive = Hive(use_ledger=True, path=&quot;48&#39;/13&#39;/1&#39;/3&#39;/0&#39;&quot;) tx = TransactionBuilder(blockchain_instance=hive) transfer_dict = {&quot;from&quot;: &#39;beembot&#39;, &quot;to&quot;: &#39;holger80&#39;, &quot;amount&quot;: &#39;0.001 HIVE&#39;, &quot;memo&quot;: &#39;test with ledger&#39;} op = operations.Transfer(**transfer_dict) tx.appendOps(op) tx.sign() tx.broadcast() It is also possible to use the predifined broadcast function from beem import Hive from beem.account import Account hive = Hive(use_ledger=True, path=&quot;48&#39;/13&#39;/1&#39;/3&#39;/0&#39;&quot;) account = Account(&quot;beembot&quot;, blockchain_instance=hive) account.transfer(&quot;holger80&quot;, 0.001, &quot;HIVE&quot;, &quot;test with ledger&quot;) Sending all four transfers had worked: I was asked everytime to check the transfer op and had to validate every field. Advantages for changing the owner key Letting the ledger signing with the owner key has some advantages: beempy can be used without entering any keys, as I can sign all operations with the owner key Each operation must be reviewed on the ledger before broadcasting The owner key cannot be accedentially pasted When I lose the keys to my hive account, I can easily create new keys, as the owner key is stored in the ledger. My owner key is protected against pishing and hacking. I just need to take good care of the ledger device and the recovery words. Roadmap For the next release, I will work on multisigning with ledger as one signer (at the moment, only one signer is possible when using ledger). Also, a better path handling is needed. At the moment, only one default_path can be set. Something like storing the path for all used keys, depending on roles and accounts in a database would be useful. Parallel storage of keys and paths would also nice. If you like what I do, consider casting a vote for me as witness on Hivesigner or on PeakD See: update for beem: support for Ledger Nano (S/X) has been added by @holger80" />
+<meta property="og:description" content="Repository https://github.com/holgern/beem beem is a python library and command line tool for HIVE. The current version is 0.23.7. There is also a discord channel for beem: https://discord.gg/4HM592V The newest beem version can be installed by: pip install -U beem If you want to use Ledger Nano, then you need also: pip install -U ledgerblue Check that you are using hive nodes. The following command beempy updatenodes --hive updates the nodelist and uses only hive nodes. After setting hive as default_chain, beempy updatenodes can be used. The list of nodes can be checked with beempy config and beempy currentnode shows the currently connected node. Changelog for versions 0.23.7 Fix update_account_jsonmetadata and add posting_json_metadata property to Account Add Ledger Nano S support beempy -u activates ledger signing beempy -u listkeys shows pubkey from ledger beempy -u listaccounts searches for accounts that have pubkey derived from attached ledger beempy -u keygen creates pubkey lists that can be used for newaccount and changekeys new option use_ledger and path for Hive Allow role selection in keygen Changelog for versions 0.23.6 beempy --key key_list.json command can be used to set keys in beempy without using the wallet. Using the Ledger Nano for signing beem/beepy is the first library/application that supports signing of operation with the ledger Nano S/X hardware wallet. It uses the Hive wallet application for ledger Nano S/X from @netuoso. Uploading the app to a Nano X is not yet possible. You need to install the Hive app to your ledger Nano. You can download it from ledger-hive-app by @netuoso. Please read the readme on how to install the app to your ledger. When you sucessfully could install the Hive app to your ledger, you need to select it and enter Open application. You need also install ledgerblue pip install -U ledgerblue You can test if everything works with beempy -u listkeys The -u or --use-ledger parameter activates ledger support for all beempy commands. If you see ledgerblue.commException.CommException: Exception : Invalid status 6d00 (Unexpected state of device: verify that the right application is opened?) your setup is not correct. If you see +-------------------------------------------------------+ | Available Key for 48&#39;/13&#39;/0&#39;/0&#39;/0&#39; | +-------------------------------------------------------+ | STM... | +-------------------------------------------------------+ everything is set up. Changing your keys You need to change your keys to the public keys that your ledger provides before using the ledger for signing. It is also possible to change only the owner key. As private keys will not leave your hardware wallet, you cannot put them into keychain or peakd as before. You can only sign operations on apps that support the ledger. When you lose your ledger and your recovery phrase, you lose the ability to sign with that role. E.g. when you changed your owner key, and you lost your ledger and the recovery phrase, you cannot change your account keys anymore. In the current state (lack of ledger support by other apps), i recommend to change only the owner key. Seting the path The pubkeys that are provided by the ledger are derived from the given path. A path for hive consists of 48&#39;/13&#39;/role number&#39;/account index&#39;/key sequence&#39; The role number is 0 for owner, 1 for active, 4 for posting and 3 for memo. You need to assign an account index number to your account. You are starting with 0 and when you plan to use a second account, you need to increase this index. The key index starts with 0 for each role and account index. Whenever you change your keys, you need to increase the key sequence index. Changing your owner, active and posting key It is not recommended to change the memo key (no encryption support for ledger yet on beem yet), this is the maximum setup. Changing your owner, active and posting key means at this moment (when more app add support for ledger, this will change): all operation can only be broadcasted by beem/beempy Voting, transfering on a mobile device is not possible keychain usage is not possible peakd, hive.blog cannot be used for voting or any other operation hive-engine or any dapp cannot be longer used At first, three new pubkeys needs to be obtained from the ledger: beempy -u keygen --account 3 --role owner,active,posting This beempy command creates three pubkeys for the account index 3 derived from the following paths: 48&#39;/13&#39;/0&#39;/3&#39;/0&#39; 48&#39;/13&#39;/1&#39;/3&#39;/0&#39; 48&#39;/13&#39;/4&#39;/3&#39;/0&#39; You can save the pubkeys to a json for easier key changing by: beempy -u keygen --account 3 --role owner,active,posting --export-pub beembot.json In both cases you will be asked to approve the shown pubkeys on your ledger Nano. We can now change the keys with beempy changekeys --import-pub beembot.json beembot Changing your owner and active key This involves changing your owner and active key. all operation that need an active key can only be broadcasted by beem/beempy. transfering Hive/HBD on a mobile device is not possible keychain usage is not possible for operation needing an active key hive-engine or any dapps that are using custom_json signed with an active key cannot be longer used. beempy -u keygen --role owner,active --export-pub account_pubkeys.json You can set the account index with --account. Changing the keys can be done with beempy changekeys as shown above. Changing your owner key This changes only the owner key. Active and posting key are still managed with private keys as before. Until ledger is not supported by keychain or on mobile, this is the most likely usecase now. Changing your keys needs to be done with beem/beempy beempy -u keygen --role owner --export-pub account_pubkeys.json You can set the account index with --account. Changing the keys can be done with beempy changekeys as shown above. You may need to change the default path. When you used --account 2, you need to set beempy set default_path &quot;48&#39;/13&#39;/0&#39;/2&#39;/0&#39;&quot; Whenever you use beempy -u, this path is used for signing. Checking if changing keys was sucessfully The following command checks if a derived pubkey from the ledger is set somewhere in Hive using getAccountFromPublicKey from the wallet class. beempy -u listaccounts returns then +---------+---------+-------------------------------------------------------+------------------+ | Name | Type | Available Key | Path | +---------+---------+-------------------------------------------------------+------------------+ | beembot | owner | STM7UYXcqJsZqoroPKoziDmB3XHSVfnLbLJ9TWSVsD4zC7YHsdgo5 | 48&#39;/13&#39;/0&#39;/3&#39;/0&#39; | | beembot | active | STM7a1bcn9Anx7F2dKZGEkbVRFbCHT9exx42SSKd4JicJW82VQtAc | 48&#39;/13&#39;/1&#39;/3&#39;/0&#39; | | beembot | posting | STM7cvheXK2FTEAkWe1U7SD2W6H6H3a6uJ28ors37rxcE5evP5fji | 48&#39;/13&#39;/4&#39;/3&#39;/0&#39; | +---------+---------+-------------------------------------------------------+------------------+ Set the path As we have used a account index &gt; 0, we must change the default path. At the moment, only one path can be stored in default_path. beempy set default_path &quot;48&#39;/13&#39;/0&#39;/3&#39;/0&#39;&quot; We will now sign all transactions with the owner key, until the path is changed or set for a transaction with --path. You can check which pubkey is returned for the actually set default_path with beempy -u listkeys The shown pubkey can checked with beempy info STM... Using the ledger to sign transactions We can now sign all transaction by the ledger, when -u or --use-ledger is set. beempy -u transfer -a beembot holger80 0.001 HIVE &quot;test with ledger&quot; This is now signed with the owner key, as default_path is &quot;48&#39;/13&#39;/0&#39;/3&#39;/0&#39;&quot;. We can sign the same trx with the active by setting the path to &quot;48&#39;/13&#39;/1&#39;/3&#39;/0&#39;&quot;: beempy -u --path &quot;48&#39;/13&#39;/1&#39;/3&#39;/0&#39;&quot; transfer -a beembot holger80 0.001 HIVE &quot;test with ledger&quot; Building and signing a transaction in python from beem import Hive from beem.transactionbuilder import TransactionBuilder from beembase import operations hive = Hive(use_ledger=True, path=&quot;48&#39;/13&#39;/1&#39;/3&#39;/0&#39;&quot;) tx = TransactionBuilder(blockchain_instance=hive) transfer_dict = {&quot;from&quot;: &#39;beembot&#39;, &quot;to&quot;: &#39;holger80&#39;, &quot;amount&quot;: &#39;0.001 HIVE&#39;, &quot;memo&quot;: &#39;test with ledger&#39;} op = operations.Transfer(**transfer_dict) tx.appendOps(op) tx.sign() tx.broadcast() It is also possible to use the predifined broadcast function from beem import Hive from beem.account import Account hive = Hive(use_ledger=True, path=&quot;48&#39;/13&#39;/1&#39;/3&#39;/0&#39;&quot;) account = Account(&quot;beembot&quot;, blockchain_instance=hive) account.transfer(&quot;holger80&quot;, 0.001, &quot;HIVE&quot;, &quot;test with ledger&quot;) Sending all four transfers had worked: I was asked everytime to check the transfer op and had to validate every field. Advantages for changing the owner key Letting the ledger signing with the owner key has some advantages: beempy can be used without entering any keys, as I can sign all operations with the owner key Each operation must be reviewed on the ledger before broadcasting The owner key cannot be accedentially pasted When I lose the keys to my hive account, I can easily create new keys, as the owner key is stored in the ledger. My owner key is protected against pishing and hacking. I just need to take good care of the ledger device and the recovery words. Roadmap For the next release, I will work on multisigning with ledger as one signer (at the moment, only one signer is possible when using ledger). Also, a better path handling is needed. At the moment, only one default_path can be set. Something like storing the path for all used keys, depending on roles and accounts in a database would be useful. Parallel storage of keys and paths would also nice. If you like what I do, consider casting a vote for me as witness on Hivesigner or on PeakD See: update for beem: support for Ledger Nano (S/X) has been added by @holger80" />
+<link rel="canonical" href="https://hive.blog/hive-139531/@holger80/update-for-beem-support-for-ledger-nano-sx-has-been-added" />
+<meta property="og:url" content="https://hive.blog/hive-139531/@holger80/update-for-beem-support-for-ledger-nano-sx-has-been-added" />
+<meta property="og:site_name" content="Hive Chain Documentation" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2020-05-12T12:23:15-07:00" />
+<script type="application/ld+json">
+{"headline":"update for beem: support for Ledger Nano (S/X) has been added","url":"https://hive.blog/hive-139531/@holger80/update-for-beem-support-for-ledger-nano-sx-has-been-added","dateModified":"2020-05-12T12:23:15-07:00","datePublished":"2020-05-12T12:23:15-07:00","author":{"@type":"Person","name":"holger80"},"description":"Repository https://github.com/holgern/beem beem is a python library and command line tool for HIVE. The current version is 0.23.7. There is also a discord channel for beem: https://discord.gg/4HM592V The newest beem version can be installed by: pip install -U beem If you want to use Ledger Nano, then you need also: pip install -U ledgerblue Check that you are using hive nodes. The following command beempy updatenodes --hive updates the nodelist and uses only hive nodes. After setting hive as default_chain, beempy updatenodes can be used. The list of nodes can be checked with beempy config and beempy currentnode shows the currently connected node. Changelog for versions 0.23.7 Fix update_account_jsonmetadata and add posting_json_metadata property to Account Add Ledger Nano S support beempy -u activates ledger signing beempy -u listkeys shows pubkey from ledger beempy -u listaccounts searches for accounts that have pubkey derived from attached ledger beempy -u keygen creates pubkey lists that can be used for newaccount and changekeys new option use_ledger and path for Hive Allow role selection in keygen Changelog for versions 0.23.6 beempy --key key_list.json command can be used to set keys in beempy without using the wallet. Using the Ledger Nano for signing beem/beepy is the first library/application that supports signing of operation with the ledger Nano S/X hardware wallet. It uses the Hive wallet application for ledger Nano S/X from @netuoso. Uploading the app to a Nano X is not yet possible. You need to install the Hive app to your ledger Nano. You can download it from ledger-hive-app by @netuoso. Please read the readme on how to install the app to your ledger. When you sucessfully could install the Hive app to your ledger, you need to select it and enter Open application. You need also install ledgerblue pip install -U ledgerblue You can test if everything works with beempy -u listkeys The -u or --use-ledger parameter activates ledger support for all beempy commands. If you see ledgerblue.commException.CommException: Exception : Invalid status 6d00 (Unexpected state of device: verify that the right application is opened?) your setup is not correct. If you see +-------------------------------------------------------+ | Available Key for 48&#39;/13&#39;/0&#39;/0&#39;/0&#39; | +-------------------------------------------------------+ | STM... | +-------------------------------------------------------+ everything is set up. Changing your keys You need to change your keys to the public keys that your ledger provides before using the ledger for signing. It is also possible to change only the owner key. As private keys will not leave your hardware wallet, you cannot put them into keychain or peakd as before. You can only sign operations on apps that support the ledger. When you lose your ledger and your recovery phrase, you lose the ability to sign with that role. E.g. when you changed your owner key, and you lost your ledger and the recovery phrase, you cannot change your account keys anymore. In the current state (lack of ledger support by other apps), i recommend to change only the owner key. Seting the path The pubkeys that are provided by the ledger are derived from the given path. A path for hive consists of 48&#39;/13&#39;/role number&#39;/account index&#39;/key sequence&#39; The role number is 0 for owner, 1 for active, 4 for posting and 3 for memo. You need to assign an account index number to your account. You are starting with 0 and when you plan to use a second account, you need to increase this index. The key index starts with 0 for each role and account index. Whenever you change your keys, you need to increase the key sequence index. Changing your owner, active and posting key It is not recommended to change the memo key (no encryption support for ledger yet on beem yet), this is the maximum setup. Changing your owner, active and posting key means at this moment (when more app add support for ledger, this will change): all operation can only be broadcasted by beem/beempy Voting, transfering on a mobile device is not possible keychain usage is not possible peakd, hive.blog cannot be used for voting or any other operation hive-engine or any dapp cannot be longer used At first, three new pubkeys needs to be obtained from the ledger: beempy -u keygen --account 3 --role owner,active,posting This beempy command creates three pubkeys for the account index 3 derived from the following paths: 48&#39;/13&#39;/0&#39;/3&#39;/0&#39; 48&#39;/13&#39;/1&#39;/3&#39;/0&#39; 48&#39;/13&#39;/4&#39;/3&#39;/0&#39; You can save the pubkeys to a json for easier key changing by: beempy -u keygen --account 3 --role owner,active,posting --export-pub beembot.json In both cases you will be asked to approve the shown pubkeys on your ledger Nano. We can now change the keys with beempy changekeys --import-pub beembot.json beembot Changing your owner and active key This involves changing your owner and active key. all operation that need an active key can only be broadcasted by beem/beempy. transfering Hive/HBD on a mobile device is not possible keychain usage is not possible for operation needing an active key hive-engine or any dapps that are using custom_json signed with an active key cannot be longer used. beempy -u keygen --role owner,active --export-pub account_pubkeys.json You can set the account index with --account. Changing the keys can be done with beempy changekeys as shown above. Changing your owner key This changes only the owner key. Active and posting key are still managed with private keys as before. Until ledger is not supported by keychain or on mobile, this is the most likely usecase now. Changing your keys needs to be done with beem/beempy beempy -u keygen --role owner --export-pub account_pubkeys.json You can set the account index with --account. Changing the keys can be done with beempy changekeys as shown above. You may need to change the default path. When you used --account 2, you need to set beempy set default_path &quot;48&#39;/13&#39;/0&#39;/2&#39;/0&#39;&quot; Whenever you use beempy -u, this path is used for signing. Checking if changing keys was sucessfully The following command checks if a derived pubkey from the ledger is set somewhere in Hive using getAccountFromPublicKey from the wallet class. beempy -u listaccounts returns then +---------+---------+-------------------------------------------------------+------------------+ | Name | Type | Available Key | Path | +---------+---------+-------------------------------------------------------+------------------+ | beembot | owner | STM7UYXcqJsZqoroPKoziDmB3XHSVfnLbLJ9TWSVsD4zC7YHsdgo5 | 48&#39;/13&#39;/0&#39;/3&#39;/0&#39; | | beembot | active | STM7a1bcn9Anx7F2dKZGEkbVRFbCHT9exx42SSKd4JicJW82VQtAc | 48&#39;/13&#39;/1&#39;/3&#39;/0&#39; | | beembot | posting | STM7cvheXK2FTEAkWe1U7SD2W6H6H3a6uJ28ors37rxcE5evP5fji | 48&#39;/13&#39;/4&#39;/3&#39;/0&#39; | +---------+---------+-------------------------------------------------------+------------------+ Set the path As we have used a account index &gt; 0, we must change the default path. At the moment, only one path can be stored in default_path. beempy set default_path &quot;48&#39;/13&#39;/0&#39;/3&#39;/0&#39;&quot; We will now sign all transactions with the owner key, until the path is changed or set for a transaction with --path. You can check which pubkey is returned for the actually set default_path with beempy -u listkeys The shown pubkey can checked with beempy info STM... Using the ledger to sign transactions We can now sign all transaction by the ledger, when -u or --use-ledger is set. beempy -u transfer -a beembot holger80 0.001 HIVE &quot;test with ledger&quot; This is now signed with the owner key, as default_path is &quot;48&#39;/13&#39;/0&#39;/3&#39;/0&#39;&quot;. We can sign the same trx with the active by setting the path to &quot;48&#39;/13&#39;/1&#39;/3&#39;/0&#39;&quot;: beempy -u --path &quot;48&#39;/13&#39;/1&#39;/3&#39;/0&#39;&quot; transfer -a beembot holger80 0.001 HIVE &quot;test with ledger&quot; Building and signing a transaction in python from beem import Hive from beem.transactionbuilder import TransactionBuilder from beembase import operations hive = Hive(use_ledger=True, path=&quot;48&#39;/13&#39;/1&#39;/3&#39;/0&#39;&quot;) tx = TransactionBuilder(blockchain_instance=hive) transfer_dict = {&quot;from&quot;: &#39;beembot&#39;, &quot;to&quot;: &#39;holger80&#39;, &quot;amount&quot;: &#39;0.001 HIVE&#39;, &quot;memo&quot;: &#39;test with ledger&#39;} op = operations.Transfer(**transfer_dict) tx.appendOps(op) tx.sign() tx.broadcast() It is also possible to use the predifined broadcast function from beem import Hive from beem.account import Account hive = Hive(use_ledger=True, path=&quot;48&#39;/13&#39;/1&#39;/3&#39;/0&#39;&quot;) account = Account(&quot;beembot&quot;, blockchain_instance=hive) account.transfer(&quot;holger80&quot;, 0.001, &quot;HIVE&quot;, &quot;test with ledger&quot;) Sending all four transfers had worked: I was asked everytime to check the transfer op and had to validate every field. Advantages for changing the owner key Letting the ledger signing with the owner key has some advantages: beempy can be used without entering any keys, as I can sign all operations with the owner key Each operation must be reviewed on the ledger before broadcasting The owner key cannot be accedentially pasted When I lose the keys to my hive account, I can easily create new keys, as the owner key is stored in the ledger. My owner key is protected against pishing and hacking. I just need to take good care of the ledger device and the recovery words. Roadmap For the next release, I will work on multisigning with ledger as one signer (at the moment, only one signer is possible when using ledger). Also, a better path handling is needed. At the moment, only one default_path can be set. Something like storing the path for all used keys, depending on roles and accounts in a database would be useful. Parallel storage of keys and paths would also nice. If you like what I do, consider casting a vote for me as witness on Hivesigner or on PeakD See: update for beem: support for Ledger Nano (S/X) has been added by @holger80","mainEntityOfPage":{"@type":"WebPage","@id":"https://hive.blog/hive-139531/@holger80/update-for-beem-support-for-ledger-nano-sx-has-been-added"},"@type":"BlogPosting","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://hivedocs.info/feed.xml" title="Hive Chain Documentation" /><script>
+if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNotTrack === "yes" || navigator.msDoNotTrack === "1")) {
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-161692811-1', 'auto');
+  ga('send', 'pageview');
+}
+</script>
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/turbolinks/5.2.0/turbolinks.js" integrity="sha256-iM4Yzi/zLj/IshPWMC1IluRxTtRjMqjPGd97TZ9yYpU=" crossorigin="anonymous"></script>
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Cousine|Inconsolata" rel="stylesheet">
+  <link rel="shortcut icon" type="image/png" href="/assets/images/favicon.png">
+</head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Hive Chain Documentation</a>
+
+      <nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/news/">News</a><a class="page-link" href="/howto/">How To</a><a class="page-link" href="/links/">Useful Links</a><!-- HTML elements for search -->
+          <input type="text" id="search-input" placeholder="Search" />
+          
+          <ul id="results-container"></ul>
+
+          <script src="/assets/javascript/search.js"></script>
+          <script>
+            var sjs = SimpleJekyllSearch({
+              searchInput: document.getElementById('search-input'),
+              resultsContainer: document.getElementById('results-container'),
+              json: '/search.json'
+            })
+          </script>
+          <!-- <form style="float: right;" class="form-inline" method="get" action="http://www.google.com/search">
+            <input type="hidden" name="sitesearch" value="hivedocs.info" />
+            <input type="text" name="q" maxlength="255" placeholder="Search" />
+          </form> -->
+        </div>
+      </nav>
+  </div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">update for beem: support for Ledger Nano (S/X) has been added</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2020-05-12T12:23:15-07:00" itemprop="datePublished">May 12, 2020
+      </time>• <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">
+          <a href="https://hive.blog/@holger80">holger80</a>
+        </span></span></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<h2 id="repository">Repository</h2>
+
+<p><a href="https://github.com/holgern/beem">https://github.com/holgern/beem</a></p>
+<div style="display: block; margin: 0 auto;">
+
+  <p><img src="https://cdn.steemitimages.com/DQmcRrwLPSywSYMierfP6um6mejeMNGjN9Rxw7audJqTDgb/beem-logo" alt="beem-logo" /></p>
+
+</div>
+
+<p><a href="https://github.com/holgern/beem">beem</a> is a python library and command line tool for HIVE.  The current version is 0.23.7.</p>
+
+<p>There is also a discord channel for beem: 
+<a href="https://discord.gg/4HM592V">https://discord.gg/4HM592V</a></p>
+
+<p>The newest beem version can be installed by:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>pip install -U beem
+</code></pre></div></div>
+<p>If you want to use Ledger Nano, then you need also:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>pip install -U ledgerblue
+</code></pre></div></div>
+
+<p>Check that you are using hive nodes. The following command</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>beempy updatenodes --hive
+</code></pre></div></div>
+
+<p>updates the nodelist and uses only hive nodes. After setting hive as default_chain, <code class="highlighter-rouge">beempy updatenodes</code> can be used.</p>
+
+<p>The list of nodes can be checked with</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>beempy config
+</code></pre></div></div>
+
+<p>and</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>beempy currentnode
+</code></pre></div></div>
+
+<p>shows the currently connected node.</p>
+
+<h2 id="changelog-for-versions-0237">Changelog for versions 0.23.7</h2>
+<ul>
+  <li>Fix update_account_jsonmetadata and add posting_json_metadata property to Account</li>
+  <li>Add Ledger Nano S support</li>
+  <li>beempy -u activates ledger signing</li>
+  <li>beempy -u listkeys shows pubkey from ledger</li>
+  <li>beempy -u listaccounts searches for accounts that have pubkey derived from attached ledger</li>
+  <li>beempy -u keygen creates pubkey lists that can be used for newaccount and changekeys</li>
+  <li>new option use_ledger and path for Hive</li>
+  <li>Allow role selection in keygen</li>
+</ul>
+
+<h2 id="changelog-for-versions-0236">Changelog for versions 0.23.6</h2>
+<ul>
+  <li><code class="highlighter-rouge">beempy --key key_list.json command</code> can be used to set keys in beempy without using the wallet.</li>
+</ul>
+
+<h2 id="using-the-ledger-nano-for-signing">Using the Ledger Nano for signing</h2>
+
+<p>beem/beepy is the first library/application that supports signing of operation with the ledger Nano S/X hardware wallet. It uses the <a href="https://peakd.com/hive-139531/@netuoso/hive-application-for-the-ledger-nano-s-x-hardware-wallet">Hive wallet application for ledger Nano S/X</a> from @netuoso.</p>
+
+<p>Uploading the app to a Nano X is not yet possible.</p>
+
+<p>You need to install the Hive app to your ledger Nano. You can download it from <a href="https://github.com/netuoso/ledger-app-hive">ledger-hive-app</a> by @netuoso.
+Please read the readme on how to install the app to your ledger.</p>
+
+<p>When you sucessfully could install the Hive app to your ledger, you need to select it and enter <code class="highlighter-rouge">Open application</code>.</p>
+
+<p>You need also install ledgerblue</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>pip install -U ledgerblue
+</code></pre></div></div>
+
+<p>You can test if everything works with</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>beempy -u listkeys
+</code></pre></div></div>
+<p>The <code class="highlighter-rouge">-u</code> or <code class="highlighter-rouge">--use-ledger</code> parameter activates ledger support for all beempy commands.
+If you see</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ledgerblue.commException.CommException: Exception : Invalid status 6d00 (Unexpected state of device: verify that the right application is opened?)
+</code></pre></div></div>
+<p>your setup is not correct. If you see</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>+-------------------------------------------------------+
+| Available Key for 48'/13'/0'/0'/0'                    |
++-------------------------------------------------------+
+| STM...                                                | 
++-------------------------------------------------------+
+</code></pre></div></div>
+<p>everything is set up.</p>
+
+<h2 id="changing-your-keys">Changing your keys</h2>
+<p>You need to change your keys to the public keys that your ledger provides before using the ledger for signing. It is also possible to change only the owner key.</p>
+
+<p>As private keys will not leave your hardware wallet, you cannot put them into keychain or peakd as before. You can only sign operations on apps that support the ledger.</p>
+
+<p>When you lose your ledger and your recovery phrase, you lose the ability to sign with that role. E.g. when you changed your owner key, and you lost your ledger and the recovery phrase, you cannot change your account keys anymore.</p>
+
+<p>In the current state (lack of ledger support by other apps), i recommend to change only the owner key.</p>
+
+<h2 id="seting-the-path">Seting the path</h2>
+<p>The pubkeys that are provided by the ledger are derived from the given path.
+A  path for hive consists of</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>48'/13'/role number'/account index'/key sequence'
+</code></pre></div></div>
+<p>The role number is 0 for owner, 1 for active, 4 for posting and 3 for memo.</p>
+
+<p>You need to assign an account index number to your account. You are starting with 0 and when you plan to use a second account, you need to increase this index. The key index starts with 0 for each role and account index. Whenever you change your keys, you need to increase the key sequence index.</p>
+
+<h3 id="changing-your-owner-active-and-posting-key">Changing your owner, active and posting key</h3>
+<p>It is not recommended to change the memo key (no encryption support for ledger yet on beem yet), this is the maximum setup. Changing your owner, active and posting key means at this moment (when more app add support for ledger, this will change):</p>
+
+<ul>
+  <li>all operation can only be broadcasted by beem/beempy</li>
+  <li>Voting, transfering on a mobile device is not possible</li>
+  <li>keychain usage is not possible</li>
+  <li>peakd, hive.blog cannot be used for voting or any other operation</li>
+  <li>hive-engine or any dapp cannot be longer used</li>
+</ul>
+
+<p>At first, three new pubkeys needs to be obtained from the ledger:</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>beempy -u keygen --account 3 --role owner,active,posting
+</code></pre></div></div>
+
+<p>This beempy command creates three pubkeys for the account index 3 derived from the following paths:</p>
+
+<ul>
+  <li><code class="highlighter-rouge"> 48'/13'/0'/3'/0'</code></li>
+  <li><code class="highlighter-rouge"> 48'/13'/1'/3'/0'</code></li>
+  <li><code class="highlighter-rouge"> 48'/13'/4'/3'/0'</code></li>
+</ul>
+
+<p>You can save the pubkeys to a json for easier key changing by:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>beempy -u keygen --account 3 --role owner,active,posting --export-pub beembot.json
+</code></pre></div></div>
+
+<p>In both cases you will be asked to approve the shown pubkeys on your ledger Nano.</p>
+
+<p>We can now change the keys with</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>beempy changekeys --import-pub beembot.json beembot
+</code></pre></div></div>
+
+<h2 id="changing-your-owner-and-active-key">Changing your owner and active key</h2>
+<p>This involves changing your owner and active key.</p>
+
+<ul>
+  <li>all operation that need an active key can only be broadcasted by beem/beempy.</li>
+  <li>transfering Hive/HBD on a mobile device is not possible</li>
+  <li>keychain usage is not possible for operation needing an active key</li>
+  <li>hive-engine or any dapps that are using custom_json signed with an active key cannot be longer used.</li>
+</ul>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>beempy -u keygen  --role owner,active --export-pub account_pubkeys.json
+</code></pre></div></div>
+<p>You can set the account index with <code class="highlighter-rouge">--account</code>.
+Changing the keys can be done with <code class="highlighter-rouge">beempy changekeys</code> as shown above.</p>
+
+<h2 id="changing-your-owner-key">Changing your owner key</h2>
+<p>This changes only the owner key. Active and posting key are still managed with private keys as before. Until ledger is not supported by keychain or on mobile, this is the most likely usecase now.</p>
+
+<ul>
+  <li>Changing your keys needs to be done with beem/beempy</li>
+</ul>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>beempy -u keygen --role owner --export-pub account_pubkeys.json
+</code></pre></div></div>
+<p>You can set the account index with <code class="highlighter-rouge">--account</code>.
+Changing the keys can be done with <code class="highlighter-rouge">beempy changekeys</code> as shown above.</p>
+
+<p>You may need to change the default path. When you used <code class="highlighter-rouge">--account 2</code>, you need to set</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>beempy set default_path "48'/13'/0'/2'/0'"
+</code></pre></div></div>
+
+<p>Whenever you use <code class="highlighter-rouge">beempy -u</code>, this path is used for signing.</p>
+
+<h2 id="checking-if-changing-keys-was-sucessfully">Checking if changing keys was sucessfully</h2>
+<p>The following command checks if a derived pubkey from the ledger is set somewhere in Hive using <code class="highlighter-rouge">getAccountFromPublicKey</code> from the wallet class.</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>beempy -u listaccounts
+</code></pre></div></div>
+<p>returns then</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>+---------+---------+-------------------------------------------------------+------------------+
+| Name    | Type    | Available Key                                         | Path             |
++---------+---------+-------------------------------------------------------+------------------+
+| beembot | owner   | STM7UYXcqJsZqoroPKoziDmB3XHSVfnLbLJ9TWSVsD4zC7YHsdgo5 | 48'/13'/0'/3'/0' |
+| beembot | active  | STM7a1bcn9Anx7F2dKZGEkbVRFbCHT9exx42SSKd4JicJW82VQtAc | 48'/13'/1'/3'/0' |
+| beembot | posting | STM7cvheXK2FTEAkWe1U7SD2W6H6H3a6uJ28ors37rxcE5evP5fji | 48'/13'/4'/3'/0' |
++---------+---------+-------------------------------------------------------+------------------+
+</code></pre></div></div>
+
+<h2 id="set-the-path">Set the path</h2>
+<p>As we have used a account index &gt; 0, we must change the default path. At the moment, only one path can be stored in default_path.</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>beempy set default_path "48'/13'/0'/3'/0'"
+</code></pre></div></div>
+<p>We will now sign all transactions with the owner key, until the path is changed or set for a transaction with <code class="highlighter-rouge">--path</code>.</p>
+
+<p>You can check which pubkey is returned for the actually set <code class="highlighter-rouge">default_path</code> with</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>beempy -u listkeys
+</code></pre></div></div>
+<p>The shown pubkey can checked with</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>beempy info STM...
+</code></pre></div></div>
+
+<h2 id="using-the-ledger-to-sign-transactions">Using the ledger to sign transactions</h2>
+
+<p>We can now sign all transaction by the ledger, when <code class="highlighter-rouge">-u</code> or <code class="highlighter-rouge">--use-ledger</code> is set.</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>beempy -u transfer -a beembot holger80 0.001 HIVE "test with ledger"
+</code></pre></div></div>
+<p>This is now signed with the owner key, as default_path is <code class="highlighter-rouge">"48'/13'/0'/3'/0'"</code>.
+We can sign the same trx with the active by setting the path to <code class="highlighter-rouge">"48'/13'/1'/3'/0'"</code>:</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>beempy -u --path "48'/13'/1'/3'/0'" transfer -a beembot holger80 0.001 HIVE "test with ledger"
+</code></pre></div></div>
+
+<h2 id="building-and-signing-a-transaction-in-python">Building and signing a transaction in python</h2>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>from beem import Hive
+from beem.transactionbuilder import TransactionBuilder
+from beembase import operations
+hive = Hive(use_ledger=True, path="48'/13'/1'/3'/0'")
+
+tx = TransactionBuilder(blockchain_instance=hive)
+
+transfer_dict = {"from": 'beembot', "to": 'holger80',
+                 "amount": '0.001 HIVE', "memo": 'test with ledger'}
+op = operations.Transfer(**transfer_dict)
+tx.appendOps(op)
+tx.sign()
+tx.broadcast()
+
+</code></pre></div></div>
+
+<p>It is also possible to use the predifined broadcast function</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>from beem import Hive
+from beem.account import Account
+hive = Hive(use_ledger=True, path="48'/13'/1'/3'/0'")
+account = Account("beembot", blockchain_instance=hive)
+account.transfer("holger80", 0.001, "HIVE", "test with ledger")
+</code></pre></div></div>
+
+<p>Sending all four transfers had worked:
+<img src="https://images.hive.blog/DQmQP4epEqsc67hw44vAv7ZYphUJjjGJRcrYaEk4gCpR576/image" alt="" />
+I was asked everytime to check the transfer op and had to validate every field.</p>
+
+<h2 id="advantages-for-changing-the-owner-key">Advantages for changing the owner key</h2>
+<p>Letting the ledger signing with the owner key has some advantages:</p>
+
+<ul>
+  <li>beempy can be used without entering any keys, as I can sign all operations with the owner key</li>
+  <li>Each operation must be reviewed on the ledger before broadcasting</li>
+  <li>The owner key cannot be accedentially pasted</li>
+  <li>When I lose the keys to my hive account, I can easily create new keys, as the owner key is stored in the ledger.</li>
+  <li>My owner key is protected against pishing and hacking.</li>
+</ul>
+
+<p>I just need to take good care of the ledger device and the recovery words.</p>
+
+<h2 id="roadmap">Roadmap</h2>
+<p>For the next release, I will work on multisigning with ledger as one signer (at the moment, only one signer is possible when using ledger). Also, a better path handling is needed. At the moment, only one default_path can be set. Something like storing the path for all used keys, depending on roles and accounts in a database would be useful. Parallel storage of keys and paths would also nice.</p>
+
+<hr />
+
+<p><em>If you like what I do, consider casting a vote for me as witness on <a href="https://hivesigner.com/sign/account-witness-vote?witness=holger80&amp;approve=1">Hivesigner</a> or on <a href="https://peakd.com/witnesses">PeakD</a></em></p>
+<hr />
+
+<p>
+  See: <a href="https://hive.blog/hive-139531/@holger80/update-for-beem-support-for-ledger-nano-sx-has-been-added">update for beem: support for Ledger Nano (S/X) has been added</a>
+  by
+  <a href="https://hive.blog/@holger80">@holger80</a>
+</p>
+
+
+  </div><a class="u-url" href="/howto/beem/python/wallet/2020/05/12/update-for-beem-support-for-ledger-nano-sx-has-been-added.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading"><a rel="author" href="/">Hive Chain Documentation</a></h2>
+    
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">site curated by: @inertia</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>Your resource for various levels of Hive Documentation.</p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+</body>
+
+</html>
