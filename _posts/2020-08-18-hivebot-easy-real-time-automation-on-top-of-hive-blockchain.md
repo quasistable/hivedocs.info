@@ -6,5 +6,6 @@ description: "An open-source free library that provides real-time automation on 
 date: 2020-08-18 20:12:21 UTC
 categories: howto nodejs bot
 canonical_url: https://peakd.com/hive-139531/@ali-h/hivebot-easy-real-time-automation-on-top-of-hive-blockchain
+image: https://hivedocs.info/assets/images/favicon.png
 ---
 {% hive ali-h/hivebot-easy-real-time-automation-on-top-of-hive-blockchain %}

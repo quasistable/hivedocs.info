@@ -5,5 +5,6 @@ title: "Core development report #1"
 date: 2020-05-09 18:13:15 UTC
 categories: news core development
 canonical_url: https://peakd.com/hive/@howo/core-development-report-1
+image: https://hivedocs.info/assets/images/favicon.png
 ---
 {% hive howo/core-development-report-1 %}

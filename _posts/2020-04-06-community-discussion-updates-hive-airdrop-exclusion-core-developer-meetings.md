@@ -6,5 +6,6 @@ description: "Read more about corrected airdrop code, appeal groups, and Hive co
 date: 2020-04-06 21:48:21 UTC
 categories: news
 canonical_url: https://hive.blog/hiveblockchain/@hiveio/community-discussion-updates-hive-airdrop-exclusion-core-developer-meetings
+image: https://hivedocs.info/assets/images/favicon.png
 ---
 {% hive hiveio/community-discussion-updates-hive-airdrop-exclusion-core-developer-meetings %}
