@@ -29,6 +29,7 @@ task :grab, :url do |t, args|
     tags = metadata.fetch('tags', [])
     description = metadata.fetch('description', nil)
     canonical_url = metadata.fetch('canonical_url', canonical_url)
+    images = metadata.fetch('image', [])
     created_at = Time.parse(content.created + 'Z')
     
     output = <<~DONE
@@ -40,6 +41,7 @@ task :grab, :url do |t, args|
       date: #{created_at.strftime('%Y-%m-%d %H:%M:%S')} UTC
       categories: #{tags.join(' ')}
       canonical_url: #{canonical_url}
+      image: #{images[0] || 'https://hivedocs.info/assets/images/favicon.png'}
       ---
       {% hive #{author}/#{permlink} %}
     DONE
