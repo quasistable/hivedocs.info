@@ -8,15 +8,15 @@
 <meta property="og:title" content="Hive Pressure #1: A New Hope" />
 <meta name="author" content="gtg" />
 <meta property="og:locale" content="en_US" />
-<meta name="description" content="Your resource for various levels of Hive Documentation." />
-<meta property="og:description" content="Your resource for various levels of Hive Documentation." />
+<meta name="description" content="A long time ago, in a block far, far away… No, wait, this is NOT the story you are looking for ;-) This part was going to be filled with retrospectives, the origins of the ~~Steem~~ Pressure series, stories about events that caused us to fork from ~~Steem~~ but that would be just a waste of time, and time is a resource that we can’t afford to waste. TL;DR: ~~Steem~~ is no longer what we knew it to be. &gt; _“No Ned to worry.”_ &gt; - Anonymous Our future is in our hands. We are Hive now. # Paint it Hive Time to update promo materials. https://www.youtube.com/watch?v=vlW9lDE3DuI # New Net, New Nodes Since many of us have just upgraded their toys to Hive, at the time of the HF23, most of what we used is now Hive compatible. ## Seed nodes ``` seed.openhive.network:2001 # gtg seed.roelandp.nl:2001 # roelandp hiveseed-se.privex.io:2001 # privex (SE) steemseed-fin.privex.io:2001 # privex (FI) seed.liondani.com:2016 # liondani hived.splinterlands.com:2001 # aggroed seed.hivekings.com:2001 # drakos node.mahdiyari.info:2001 # mahdiyari anyx.io:2001 # anyx seed.buildteam.io:2001 # thecryptodrive hive-seed.lukestokes.info:2001 # lukestokes.mhth hive-seed.arcange.eu:2001 # arcange seed.chitty.me:2001 # chitty ``` ## API nodes https://api.openhive.network https://api.hive.blog https://anyx.io https://api.hivekings.com https://api.pharesim.me https://hived.hive-engine.com https://rpc.esteem.app https://hived.privex.io https://techcoderx.com # DIY If you want to run your own node, here are some quick tips that can be useful: ## Seed Node Configure your build with: ``` cmake \ -DCMAKE_BUILD_TYPE=Release \ -DLOW_MEMORY_NODE=ON \ -DCLEAR_VOTES=ON \ -DSKIP_BY_TX_ID=OFF \ -DBUILD_STEEM_TESTNET=OFF \ -DENABLE_MIRA=OFF \ -DSTEEM_STATIC_BUILD=ON \ ../hive ``` Depending on your needs and resources, you might want to use either `ENABLE_MIRA=OFF` or `ENABLE_MIRA=ON`. `config.ini` for a seed node can be as simple as that: ``` plugin = witness p2p-endpoint = 0.0.0.0:2001 ``` This is intended to be used as a seed node, but you can easily extend it to be more useful by enabling a webserver endpoint and useful APIs such as `block_api` or `network_broadcast_api`. However, if you choose to add a plugin such as `account_by_key` or `market_history` you will have to replay. ## API Node If you’ve read my ~~Steem~~ Pressure series you know that I no longer use a monolithic node. Instead, I use `jussi` to route specific methods to specialized endpoints. - Account History Node (non-MIRA) - Fat Node (MIRA) - Hivemind Please note that in my setup the Fat Node itself is *not enough* to feed the Hivemind instance because of the lack of a market_history plugin. Not an issue in my environment, because I’m running both nodes, and I prefer to run plugins on the low memory node where possible. ### Account History Node - reference configuration Configure your build with: ``` cmake \ -DCMAKE_BUILD_TYPE=Release \ -DLOW_MEMORY_NODE=ON \ -DCLEAR_VOTES=ON \ -DSKIP_BY_TX_ID=OFF \ -DBUILD_STEEM_TESTNET=OFF \ -DENABLE_MIRA=OFF \ -DSTEEM_STATIC_BUILD=ON \ ../hive ``` We can’t use MIRA here, because we are going to use the pre-MIRA implementation of account history plugin: `account_history_rocksdb`. Here’s reference `config.ini` file: ``` log-appender = {&quot;appender&quot;:&quot;stderr&quot;,&quot;stream&quot;:&quot;std_error&quot;} log-logger = {&quot;name&quot;:&quot;default&quot;,&quot;level&quot;:&quot;info&quot;,&quot;appender&quot;:&quot;stderr&quot;} backtrace = yes plugin = webserver p2p json_rpc plugin = database_api condenser_api plugin = witness plugin = rc plugin = market_history plugin = market_history_api plugin = account_history_rocksdb plugin = account_history_api plugin = transaction_status plugin = transaction_status_api plugin = account_by_key plugin = account_by_key_api plugin = block_api network_broadcast_api rc_api p2p-endpoint = 0.0.0.0:2001 p2p-seed-node = gtg.openhive.network:2001 transaction-status-block-depth = 64000 transaction-status-track-after-block = 42000000 webserver-http-endpoint = 127.0.0.1:8091 webserver-ws-endpoint = 127.0.0.1:8090 webserver-thread-pool-size = 256 ``` ### Fat Node - reference configuration Configure your build with: ``` cmake \ -DCMAKE_BUILD_TYPE=Release \ -DLOW_MEMORY_NODE=OFF \ -DCLEAR_VOTES=OFF \ -DSKIP_BY_TX_ID=ON \ -DBUILD_STEEM_TESTNET=OFF \ -DENABLE_MIRA=ON \ -DSTEEM_STATIC_BUILD=ON \ ../hive ``` For the fat node, I use the MIRA build Here’s reference `config.ini` file: ``` log-appender = {&quot;appender&quot;:&quot;stderr&quot;,&quot;stream&quot;:&quot;std_error&quot;} log-logger = {&quot;name&quot;:&quot;default&quot;,&quot;level&quot;:&quot;info&quot;,&quot;appender&quot;:&quot;stderr&quot;} backtrace = yes plugin = webserver p2p json_rpc plugin = database_api condenser_api plugin = reputation plugin = reputation_api plugin = block_api p2p-endpoint = 0.0.0.0:32001 p2p-seed-node = gtg.openhive.network:2001 webserver-http-endpoint = 127.0.0.1:8091 webserver-ws-endpoint = 127.0.0.1:8090 webserver-thread-pool-size = 256 ``` ## Storage needs: As always, make sure that you have very fast storage. |Node type|Storage| |---------|-------| |AH Node |600 GB| |Fat Node |400 GB| |Hivemind |300 GB| In the next episode, I will write more about such setup and required hardware and about how long it takes nowadays to build it from scratch. ![Hive_Queen](https://images.hive.blog/DQmSJUo4g9AmoVFoAbs6gzMw6coVURUQKg7URtBSfkEj5oJ/Hive_free-file.png) See: Hive Pressure #1: A New Hope by @gtg" />
+<meta property="og:description" content="A long time ago, in a block far, far away… No, wait, this is NOT the story you are looking for ;-) This part was going to be filled with retrospectives, the origins of the ~~Steem~~ Pressure series, stories about events that caused us to fork from ~~Steem~~ but that would be just a waste of time, and time is a resource that we can’t afford to waste. TL;DR: ~~Steem~~ is no longer what we knew it to be. &gt; _“No Ned to worry.”_ &gt; - Anonymous Our future is in our hands. We are Hive now. # Paint it Hive Time to update promo materials. https://www.youtube.com/watch?v=vlW9lDE3DuI # New Net, New Nodes Since many of us have just upgraded their toys to Hive, at the time of the HF23, most of what we used is now Hive compatible. ## Seed nodes ``` seed.openhive.network:2001 # gtg seed.roelandp.nl:2001 # roelandp hiveseed-se.privex.io:2001 # privex (SE) steemseed-fin.privex.io:2001 # privex (FI) seed.liondani.com:2016 # liondani hived.splinterlands.com:2001 # aggroed seed.hivekings.com:2001 # drakos node.mahdiyari.info:2001 # mahdiyari anyx.io:2001 # anyx seed.buildteam.io:2001 # thecryptodrive hive-seed.lukestokes.info:2001 # lukestokes.mhth hive-seed.arcange.eu:2001 # arcange seed.chitty.me:2001 # chitty ``` ## API nodes https://api.openhive.network https://api.hive.blog https://anyx.io https://api.hivekings.com https://api.pharesim.me https://hived.hive-engine.com https://rpc.esteem.app https://hived.privex.io https://techcoderx.com # DIY If you want to run your own node, here are some quick tips that can be useful: ## Seed Node Configure your build with: ``` cmake \ -DCMAKE_BUILD_TYPE=Release \ -DLOW_MEMORY_NODE=ON \ -DCLEAR_VOTES=ON \ -DSKIP_BY_TX_ID=OFF \ -DBUILD_STEEM_TESTNET=OFF \ -DENABLE_MIRA=OFF \ -DSTEEM_STATIC_BUILD=ON \ ../hive ``` Depending on your needs and resources, you might want to use either `ENABLE_MIRA=OFF` or `ENABLE_MIRA=ON`. `config.ini` for a seed node can be as simple as that: ``` plugin = witness p2p-endpoint = 0.0.0.0:2001 ``` This is intended to be used as a seed node, but you can easily extend it to be more useful by enabling a webserver endpoint and useful APIs such as `block_api` or `network_broadcast_api`. However, if you choose to add a plugin such as `account_by_key` or `market_history` you will have to replay. ## API Node If you’ve read my ~~Steem~~ Pressure series you know that I no longer use a monolithic node. Instead, I use `jussi` to route specific methods to specialized endpoints. - Account History Node (non-MIRA) - Fat Node (MIRA) - Hivemind Please note that in my setup the Fat Node itself is *not enough* to feed the Hivemind instance because of the lack of a market_history plugin. Not an issue in my environment, because I’m running both nodes, and I prefer to run plugins on the low memory node where possible. ### Account History Node - reference configuration Configure your build with: ``` cmake \ -DCMAKE_BUILD_TYPE=Release \ -DLOW_MEMORY_NODE=ON \ -DCLEAR_VOTES=ON \ -DSKIP_BY_TX_ID=OFF \ -DBUILD_STEEM_TESTNET=OFF \ -DENABLE_MIRA=OFF \ -DSTEEM_STATIC_BUILD=ON \ ../hive ``` We can’t use MIRA here, because we are going to use the pre-MIRA implementation of account history plugin: `account_history_rocksdb`. Here’s reference `config.ini` file: ``` log-appender = {&quot;appender&quot;:&quot;stderr&quot;,&quot;stream&quot;:&quot;std_error&quot;} log-logger = {&quot;name&quot;:&quot;default&quot;,&quot;level&quot;:&quot;info&quot;,&quot;appender&quot;:&quot;stderr&quot;} backtrace = yes plugin = webserver p2p json_rpc plugin = database_api condenser_api plugin = witness plugin = rc plugin = market_history plugin = market_history_api plugin = account_history_rocksdb plugin = account_history_api plugin = transaction_status plugin = transaction_status_api plugin = account_by_key plugin = account_by_key_api plugin = block_api network_broadcast_api rc_api p2p-endpoint = 0.0.0.0:2001 p2p-seed-node = gtg.openhive.network:2001 transaction-status-block-depth = 64000 transaction-status-track-after-block = 42000000 webserver-http-endpoint = 127.0.0.1:8091 webserver-ws-endpoint = 127.0.0.1:8090 webserver-thread-pool-size = 256 ``` ### Fat Node - reference configuration Configure your build with: ``` cmake \ -DCMAKE_BUILD_TYPE=Release \ -DLOW_MEMORY_NODE=OFF \ -DCLEAR_VOTES=OFF \ -DSKIP_BY_TX_ID=ON \ -DBUILD_STEEM_TESTNET=OFF \ -DENABLE_MIRA=ON \ -DSTEEM_STATIC_BUILD=ON \ ../hive ``` For the fat node, I use the MIRA build Here’s reference `config.ini` file: ``` log-appender = {&quot;appender&quot;:&quot;stderr&quot;,&quot;stream&quot;:&quot;std_error&quot;} log-logger = {&quot;name&quot;:&quot;default&quot;,&quot;level&quot;:&quot;info&quot;,&quot;appender&quot;:&quot;stderr&quot;} backtrace = yes plugin = webserver p2p json_rpc plugin = database_api condenser_api plugin = reputation plugin = reputation_api plugin = block_api p2p-endpoint = 0.0.0.0:32001 p2p-seed-node = gtg.openhive.network:2001 webserver-http-endpoint = 127.0.0.1:8091 webserver-ws-endpoint = 127.0.0.1:8090 webserver-thread-pool-size = 256 ``` ## Storage needs: As always, make sure that you have very fast storage. |Node type|Storage| |---------|-------| |AH Node |600 GB| |Fat Node |400 GB| |Hivemind |300 GB| In the next episode, I will write more about such setup and required hardware and about how long it takes nowadays to build it from scratch. ![Hive_Queen](https://images.hive.blog/DQmSJUo4g9AmoVFoAbs6gzMw6coVURUQKg7URtBSfkEj5oJ/Hive_free-file.png) See: Hive Pressure #1: A New Hope by @gtg" />
 <link rel="canonical" href="https://hive.blog/hive-160391/@gtg/hive-pressure-1-a-new-hope" />
 <meta property="og:url" content="https://hive.blog/hive-160391/@gtg/hive-pressure-1-a-new-hope" />
 <meta property="og:site_name" content="Hive Chain Documentation" />
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2020-04-19T10:28:03-07:00" />
 <script type="application/ld+json">
-{"description":"Your resource for various levels of Hive Documentation.","headline":"Hive Pressure #1: A New Hope","dateModified":"2020-04-19T10:28:03-07:00","datePublished":"2020-04-19T10:28:03-07:00","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://hive.blog/hive-160391/@gtg/hive-pressure-1-a-new-hope"},"url":"https://hive.blog/hive-160391/@gtg/hive-pressure-1-a-new-hope","author":{"@type":"Person","name":"gtg"},"@context":"https://schema.org"}</script>
+{"description":"A long time ago, in a block far, far away… No, wait, this is NOT the story you are looking for ;-) This part was going to be filled with retrospectives, the origins of the ~~Steem~~ Pressure series, stories about events that caused us to fork from ~~Steem~~ but that would be just a waste of time, and time is a resource that we can’t afford to waste. TL;DR: ~~Steem~~ is no longer what we knew it to be. &gt; _“No Ned to worry.”_ &gt; - Anonymous Our future is in our hands. We are Hive now. # Paint it Hive Time to update promo materials. https://www.youtube.com/watch?v=vlW9lDE3DuI # New Net, New Nodes Since many of us have just upgraded their toys to Hive, at the time of the HF23, most of what we used is now Hive compatible. ## Seed nodes ``` seed.openhive.network:2001 # gtg seed.roelandp.nl:2001 # roelandp hiveseed-se.privex.io:2001 # privex (SE) steemseed-fin.privex.io:2001 # privex (FI) seed.liondani.com:2016 # liondani hived.splinterlands.com:2001 # aggroed seed.hivekings.com:2001 # drakos node.mahdiyari.info:2001 # mahdiyari anyx.io:2001 # anyx seed.buildteam.io:2001 # thecryptodrive hive-seed.lukestokes.info:2001 # lukestokes.mhth hive-seed.arcange.eu:2001 # arcange seed.chitty.me:2001 # chitty ``` ## API nodes https://api.openhive.network https://api.hive.blog https://anyx.io https://api.hivekings.com https://api.pharesim.me https://hived.hive-engine.com https://rpc.esteem.app https://hived.privex.io https://techcoderx.com # DIY If you want to run your own node, here are some quick tips that can be useful: ## Seed Node Configure your build with: ``` cmake \\ -DCMAKE_BUILD_TYPE=Release \\ -DLOW_MEMORY_NODE=ON \\ -DCLEAR_VOTES=ON \\ -DSKIP_BY_TX_ID=OFF \\ -DBUILD_STEEM_TESTNET=OFF \\ -DENABLE_MIRA=OFF \\ -DSTEEM_STATIC_BUILD=ON \\ ../hive ``` Depending on your needs and resources, you might want to use either `ENABLE_MIRA=OFF` or `ENABLE_MIRA=ON`. `config.ini` for a seed node can be as simple as that: ``` plugin = witness p2p-endpoint = 0.0.0.0:2001 ``` This is intended to be used as a seed node, but you can easily extend it to be more useful by enabling a webserver endpoint and useful APIs such as `block_api` or `network_broadcast_api`. However, if you choose to add a plugin such as `account_by_key` or `market_history` you will have to replay. ## API Node If you’ve read my ~~Steem~~ Pressure series you know that I no longer use a monolithic node. Instead, I use `jussi` to route specific methods to specialized endpoints. - Account History Node (non-MIRA) - Fat Node (MIRA) - Hivemind Please note that in my setup the Fat Node itself is *not enough* to feed the Hivemind instance because of the lack of a market_history plugin. Not an issue in my environment, because I’m running both nodes, and I prefer to run plugins on the low memory node where possible. ### Account History Node - reference configuration Configure your build with: ``` cmake \\ -DCMAKE_BUILD_TYPE=Release \\ -DLOW_MEMORY_NODE=ON \\ -DCLEAR_VOTES=ON \\ -DSKIP_BY_TX_ID=OFF \\ -DBUILD_STEEM_TESTNET=OFF \\ -DENABLE_MIRA=OFF \\ -DSTEEM_STATIC_BUILD=ON \\ ../hive ``` We can’t use MIRA here, because we are going to use the pre-MIRA implementation of account history plugin: `account_history_rocksdb`. Here’s reference `config.ini` file: ``` log-appender = {&quot;appender&quot;:&quot;stderr&quot;,&quot;stream&quot;:&quot;std_error&quot;} log-logger = {&quot;name&quot;:&quot;default&quot;,&quot;level&quot;:&quot;info&quot;,&quot;appender&quot;:&quot;stderr&quot;} backtrace = yes plugin = webserver p2p json_rpc plugin = database_api condenser_api plugin = witness plugin = rc plugin = market_history plugin = market_history_api plugin = account_history_rocksdb plugin = account_history_api plugin = transaction_status plugin = transaction_status_api plugin = account_by_key plugin = account_by_key_api plugin = block_api network_broadcast_api rc_api p2p-endpoint = 0.0.0.0:2001 p2p-seed-node = gtg.openhive.network:2001 transaction-status-block-depth = 64000 transaction-status-track-after-block = 42000000 webserver-http-endpoint = 127.0.0.1:8091 webserver-ws-endpoint = 127.0.0.1:8090 webserver-thread-pool-size = 256 ``` ### Fat Node - reference configuration Configure your build with: ``` cmake \\ -DCMAKE_BUILD_TYPE=Release \\ -DLOW_MEMORY_NODE=OFF \\ -DCLEAR_VOTES=OFF \\ -DSKIP_BY_TX_ID=ON \\ -DBUILD_STEEM_TESTNET=OFF \\ -DENABLE_MIRA=ON \\ -DSTEEM_STATIC_BUILD=ON \\ ../hive ``` For the fat node, I use the MIRA build Here’s reference `config.ini` file: ``` log-appender = {&quot;appender&quot;:&quot;stderr&quot;,&quot;stream&quot;:&quot;std_error&quot;} log-logger = {&quot;name&quot;:&quot;default&quot;,&quot;level&quot;:&quot;info&quot;,&quot;appender&quot;:&quot;stderr&quot;} backtrace = yes plugin = webserver p2p json_rpc plugin = database_api condenser_api plugin = reputation plugin = reputation_api plugin = block_api p2p-endpoint = 0.0.0.0:32001 p2p-seed-node = gtg.openhive.network:2001 webserver-http-endpoint = 127.0.0.1:8091 webserver-ws-endpoint = 127.0.0.1:8090 webserver-thread-pool-size = 256 ``` ## Storage needs: As always, make sure that you have very fast storage. |Node type|Storage| |---------|-------| |AH Node |600 GB| |Fat Node |400 GB| |Hivemind |300 GB| In the next episode, I will write more about such setup and required hardware and about how long it takes nowadays to build it from scratch. ![Hive_Queen](https://images.hive.blog/DQmSJUo4g9AmoVFoAbs6gzMw6coVURUQKg7URtBSfkEj5oJ/Hive_free-file.png) See: Hive Pressure #1: A New Hope by @gtg","author":{"@type":"Person","name":"gtg"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://hive.blog/hive-160391/@gtg/hive-pressure-1-a-new-hope"},"@type":"BlogPosting","url":"https://hive.blog/hive-160391/@gtg/hive-pressure-1-a-new-hope","headline":"Hive Pressure #1: A New Hope","dateModified":"2020-04-19T10:28:03-07:00","datePublished":"2020-04-19T10:28:03-07:00","@context":"https://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://hivedocs.info/feed.xml" title="Hive Chain Documentation" /><script>
 if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNotTrack === "yes" || navigator.msDoNotTrack === "1")) {
@@ -85,36 +85,29 @@ if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNo
   </header>
 
   <div class="post-content e-content" itemprop="articleBody">
-    <p>A long time ago, in a block far, far away…
-No, wait, this is NOT the story you are looking for ;-)</p>
+    <div id="content-gtg-hive-pressure-1-a-new-hope">A long time ago, in a block far, far away…
+No, wait, this is NOT the story you are looking for ;-)
 
-<p>This part was going to be filled with retrospectives, the origins of the <del>Steem</del> Pressure series, stories about events that caused us to fork from <del>Steem</del> but that would be just a waste of time, and time is a resource that we can’t afford to waste.
-TL;DR: <del>Steem</del> is no longer what we knew it to be.</p>
+This part was going to be filled with retrospectives, the origins of the ~~Steem~~ Pressure series, stories about events that caused us to fork from ~~Steem~~ but that would be just a waste of time, and time is a resource that we can’t afford to waste.
+TL;DR: ~~Steem~~ is no longer what we knew it to be.
 
-<blockquote>
-  <p><em>“No Ned to worry.”</em>
-<sup></sup></p>
-  <ul>
-    <li>Anonymous
-&lt;/sup&gt;</li>
-  </ul>
-</blockquote>
+&gt; _“No Ned to worry.”_
+&gt; <sup> - Anonymous</sup>
 
-<p>Our future is in our hands.
-We are Hive now.</p>
+Our future is in our hands.
+We are Hive now.
 
-<h1 id="paint-it-hive">Paint it Hive</h1>
-<p>Time to update promo materials.</p>
+# Paint it Hive
+Time to update promo materials.
 
-<center>
-<a href="https://www.youtube.com/watch">https://www.youtube.com/watch</a>
-?v=vlW9lDE3DuI</center>
+<center>https://www.youtube.com/watch?v=vlW9lDE3DuI</center>
 
-<h1 id="new-net-new-nodes">New Net, New Nodes</h1>
-<p>Since many of us have just upgraded their toys to Hive, at the time of the HF23, most of what we used is now Hive compatible.</p>
+# New Net, New Nodes
+Since many of us have just upgraded their toys to Hive, at the time of the HF23, most of what we used is now Hive compatible.
 
-<h2 id="seed-nodes">Seed nodes</h2>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>seed.openhive.network:2001     # gtg
+## Seed nodes
+```
+seed.openhive.network:2001     # gtg
 seed.roelandp.nl:2001          # roelandp
 hiveseed-se.privex.io:2001     # privex (SE)
 steemseed-fin.privex.io:2001   # privex (FI)
@@ -127,34 +120,26 @@ seed.buildteam.io:2001         # thecryptodrive
 hive-seed.lukestokes.info:2001 # lukestokes.mhth
 hive-seed.arcange.eu:2001      # arcange
 seed.chitty.me:2001            # chitty
-</code></pre></div></div>
+```
 
-<h2 id="api-nodes">API nodes</h2>
+## API nodes
+https://api.openhive.network
+https://api.hive.blog
+https://anyx.io
+https://api.hivekings.com
+https://api.pharesim.me
+https://hived.hive-engine.com
+https://rpc.esteem.app
+https://hived.privex.io
+https://techcoderx.com
 
-<p><a href="https://api.openhive.network">https://api.openhive.network</a></p>
+# DIY
+If you want to run your own node, here are some quick tips that can be useful:
 
-<p><a href="https://api.hive.blog">https://api.hive.blog</a></p>
-
-<p><a href="https://anyx.io">https://anyx.io</a></p>
-
-<p><a href="https://api.hivekings.com">https://api.hivekings.com</a></p>
-
-<p><a href="https://api.pharesim.me">https://api.pharesim.me</a></p>
-
-<p><a href="https://hived.hive-engine.com">https://hived.hive-engine.com</a></p>
-
-<p><a href="https://rpc.esteem.app">https://rpc.esteem.app</a></p>
-
-<p><a href="https://hived.privex.io">https://hived.privex.io</a></p>
-
-<p><a href="https://techcoderx.com">https://techcoderx.com</a></p>
-
-<h1 id="diy">DIY</h1>
-<p>If you want to run your own node, here are some quick tips that can be useful:</p>
-
-<h2 id="seed-node">Seed Node</h2>
-<p>Configure your build with:</p>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>cmake \
+## Seed Node
+Configure your build with:
+```
+cmake \
         -DCMAKE_BUILD_TYPE=Release \
         -DLOW_MEMORY_NODE=ON \
         -DCLEAR_VOTES=ON \
@@ -163,29 +148,29 @@ seed.chitty.me:2001            # chitty
         -DENABLE_MIRA=OFF \
         -DSTEEM_STATIC_BUILD=ON \
         ../hive
-</code></pre></div></div>
-<p>Depending on your needs and resources, you might want to use either
-<code class="highlighter-rouge">ENABLE_MIRA=OFF</code> or <code class="highlighter-rouge">ENABLE_MIRA=ON</code>.</p>
+```
+Depending on your needs and resources, you might want to use either
+`ENABLE_MIRA=OFF` or `ENABLE_MIRA=ON`.
 
-<p><code class="highlighter-rouge">config.ini</code> for a seed node can be as simple as that:</p>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>plugin = witness
+`config.ini` for a seed node can be as simple as that:
+```
+plugin = witness
 p2p-endpoint = 0.0.0.0:2001
-</code></pre></div></div>
-<p>This is intended to be used as a seed node, but you can easily extend it to be more useful by enabling a webserver endpoint and useful APIs such as <code class="highlighter-rouge">block_api</code> or <code class="highlighter-rouge">network_broadcast_api</code>. However, if you choose to add a plugin such as <code class="highlighter-rouge">account_by_key</code> or <code class="highlighter-rouge">market_history</code> you will have to replay.</p>
+```
+This is intended to be used as a seed node, but you can easily extend it to be more useful by enabling a webserver endpoint and useful APIs such as `block_api` or `network_broadcast_api`. However, if you choose to add a plugin such as `account_by_key` or `market_history` you will have to replay.
 
-<h2 id="api-node">API Node</h2>
-<p>If you’ve read my <del>Steem</del> Pressure series you know that I no longer use a monolithic node. Instead, I use <code class="highlighter-rouge">jussi</code> to route specific methods to specialized endpoints.</p>
-<ul>
-  <li>Account History Node (non-MIRA)</li>
-  <li>Fat Node (MIRA)</li>
-  <li>Hivemind</li>
-</ul>
+## API Node
+If you’ve read my ~~Steem~~ Pressure series you know that I no longer use a monolithic node. Instead, I use `jussi` to route specific methods to specialized endpoints.
+- Account History Node (non-MIRA)
+- Fat Node (MIRA)
+- Hivemind
 
-<p>Please note that in my setup the Fat Node itself is <em>not enough</em> to feed the Hivemind instance because of the lack of a market_history plugin. Not an issue in my environment, because I’m running both nodes, and I prefer to run plugins on the low memory node where possible.</p>
+Please note that in my setup the Fat Node itself is *not enough* to feed the Hivemind instance because of the lack of a market_history plugin. Not an issue in my environment, because I’m running both nodes, and I prefer to run plugins on the low memory node where possible.
 
-<h3 id="account-history-node---reference-configuration">Account History Node - reference configuration</h3>
-<p>Configure your build with:</p>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>cmake \
+### Account History Node - reference configuration
+Configure your build with:
+```
+cmake \
         -DCMAKE_BUILD_TYPE=Release \
         -DLOW_MEMORY_NODE=ON \
         -DCLEAR_VOTES=ON \
@@ -194,11 +179,12 @@ p2p-endpoint = 0.0.0.0:2001
         -DENABLE_MIRA=OFF \
         -DSTEEM_STATIC_BUILD=ON \
         ../hive
-</code></pre></div></div>
-<p>We can’t use MIRA here, because we are going to use the pre-MIRA implementation of account history plugin: <code class="highlighter-rouge">account_history_rocksdb</code>.</p>
+```
+We can’t use MIRA here, because we are going to use the pre-MIRA implementation of account history plugin: `account_history_rocksdb`.
 
-<p>Here’s reference <code class="highlighter-rouge">config.ini</code> file:</p>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>log-appender = {"appender":"stderr","stream":"std_error"}
+Here’s reference `config.ini` file:
+```
+log-appender = {"appender":"stderr","stream":"std_error"}
 log-logger = {"name":"default","level":"info","appender":"stderr"}
 
 backtrace = yes
@@ -233,11 +219,12 @@ webserver-http-endpoint = 127.0.0.1:8091
 webserver-ws-endpoint = 127.0.0.1:8090
 
 webserver-thread-pool-size = 256
-</code></pre></div></div>
+```
 
-<h3 id="fat-node---reference-configuration">Fat Node - reference configuration</h3>
-<p>Configure your build with:</p>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>cmake \
+### Fat Node - reference configuration
+Configure your build with:
+```
+cmake \
         -DCMAKE_BUILD_TYPE=Release \
         -DLOW_MEMORY_NODE=OFF \
         -DCLEAR_VOTES=OFF \
@@ -246,11 +233,12 @@ webserver-thread-pool-size = 256
         -DENABLE_MIRA=ON \
         -DSTEEM_STATIC_BUILD=ON \
         ../hive
-</code></pre></div></div>
-<p>For the fat node, I use  the MIRA build</p>
+```
+For the fat node, I use  the MIRA build
 
-<p>Here’s reference <code class="highlighter-rouge">config.ini</code> file:</p>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>log-appender = {"appender":"stderr","stream":"std_error"}
+Here’s reference `config.ini` file:
+```
+log-appender = {"appender":"stderr","stream":"std_error"}
 log-logger = {"name":"default","level":"info","appender":"stderr"}
 
 backtrace = yes
@@ -270,38 +258,87 @@ webserver-http-endpoint = 127.0.0.1:8091
 webserver-ws-endpoint = 127.0.0.1:8090
 
 webserver-thread-pool-size = 256
-</code></pre></div></div>
+```
 
-<h2 id="storage-needs">Storage needs:</h2>
-<p>As always, make sure that you have very fast storage.</p>
+## Storage needs:
+As always, make sure that you have very fast storage.
 
-<table>
-  <thead>
-    <tr>
-      <th>Node type</th>
-      <th>Storage</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>AH Node</td>
-      <td>600 GB</td>
-    </tr>
-    <tr>
-      <td>Fat Node</td>
-      <td>400 GB</td>
-    </tr>
-    <tr>
-      <td>Hivemind</td>
-      <td>300 GB</td>
-    </tr>
-  </tbody>
-</table>
+|Node type|Storage|
+|---------|-------|
+|AH Node  |600 GB|
+|Fat Node |400 GB|
+|Hivemind |300 GB|
 
-<p>In the next episode, I will write more about such setup and required hardware and about how long it takes nowadays to build it from scratch.</p>
-<div style="display: block; margin: 0 auto;">
-  <p><img src="https://images.hive.blog/DQmSJUo4g9AmoVFoAbs6gzMw6coVURUQKg7URtBSfkEj5oJ/Hive_free-file.png" alt="Hive_Queen" /></p>
-</div>
+In the next episode, I will write more about such setup and required hardware and about how long it takes nowadays to build it from scratch.
+<center>![Hive_Queen](https://images.hive.blog/DQmSJUo4g9AmoVFoAbs6gzMw6coVURUQKg7URtBSfkEj5oJ/Hive_free-file.png)</center></div>
+<script crossorigin="anonymous" integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=" src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+
+<script src="https://unpkg.com/steem-content-renderer"></script>
+
+<script>
+  $(document).ready(function() {
+    try {
+      const renderer = new SteemContentRenderer.DefaultRenderer({
+        baseUrl: "https://hive.blog/",
+        breaks: true,
+        skipSanitization: false,
+        allowInsecureScriptTags: false,
+        addNofollowToLinks: true,
+        doNotShowImages: false,
+        ipfsPrefix: "",
+        assetsWidth: 640,
+        assetsHeight: 480,
+        imageProxyFn: (url) => url,
+        usertagUrlFn: (account) => "/@gtg",
+        hashtagUrlFn: (hashtag) => "/hive-pressure-1-a-new-hope",
+        isLinkSafeFn: (url) => true,
+      });
+      
+      const inputElem = $('#content-gtg-hive-pressure-1-a-new-hope').html();
+      const outputElem = $('#content-gtg-hive-pressure-1-a-new-hope');
+      const output = renderer.render(inputElem);
+      
+      outputElem.html(output);
+    } catch(e) {
+      console.log(e);
+    }
+  });
+</script>
+
+<style>
+  #content-gtg-hive-pressure-1-a-new-hope {
+    padding: 0 3rem;
+    color: #444444;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.8;
+    text-shadow: 0 1px 0 #ffffff;
+    padding: 0.5rem;
+  }
+  #content-gtg-hive-pressure-1-a-new-hope code {
+    background: white;
+  }
+  #content-gtg-hive-pressure-1-a-new-hope a {
+    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
+  }
+  #content-gtg-hive-pressure-1-a-new-hope a:hover {
+    border-bottom: 0;
+  }
+  #content-gtg-hive-pressure-1-a-new-hope h1 {
+    font-size: 2.2em;
+  }
+  #content-gtg-hive-pressure-1-a-new-hope h2, h3, h4, h5 {
+    margin-bottom: 0;
+  }
+  #content-gtg-hive-pressure-1-a-new-hope header small {
+    color: #999;
+    font-size: 50%;
+  }
+  #content-gtg-hive-pressure-1-a-new-hope img {
+    max-width: 100%;
+  }
+</style>
+
 <hr />
 
 <p>

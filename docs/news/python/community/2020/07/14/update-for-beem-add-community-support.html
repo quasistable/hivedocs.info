@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>update for beem: add community support | Hive Chain Documentation</title>
+<meta name="generator" content="Jekyll v4.0.0" />
+<meta property="og:title" content="update for beem: add community support" />
+<meta name="author" content="holger80" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="## Repository https://github.com/holgern/beem ![beem-logo](https://cdn.steemitimages.com/DQmcRrwLPSywSYMierfP6um6mejeMNGjN9Rxw7audJqTDgb/beem-logo) [beem](https://github.com/holgern/beem) is a python library and command line tool for HIVE. The current version is 0.24.5. There is also a discord channel for beem: https://discord.gg/4HM592V The newest beem version can be installed by: ``` pip install -U beem ``` Check that you are using hive nodes. The following command ``` beempy updatenodes --hive ``` updates the nodelist and uses only hive nodes. After setting hive as default_chain, `beempy updatenodes` can be used. The list of nodes can be checked with ``` beempy config ``` and ``` beempy currentnode ``` shows the currently connected node. ## Changelog for versions 0.24.5 * replace percent_hive_dollars by percent_hbd (to make beem HF24 ready) * Remove whaleshares related code * Fix adding of a wif in beempy * Remove SteemConnect * Fix set token in HiveSigner * Add Blurt * Add Community for community reladed requests and broadcasts * Improve community lookup for beempy createpost * Improved beempy history command output * Improved beempy stream ## Community support I added community support to beem. The following example shows the content of a community dict: ``` from beem.community import Community from prettytable import PrettyTable community = Community(&quot;hive-139531&quot;) t = PrettyTable([&quot;key&quot;, &quot;value&quot;]) t.align = &quot;l&quot; t._max_width = {&quot;value&quot; : 60} for key in community.json(): t.add_row([key, community.json()[key]]) print(t) ``` returns ``` +-------------+--------------------------------------------------------------+ | key | value | +-------------+--------------------------------------------------------------+ | id | 1357761 | | name | hive-139531 | | title | HiveDevs | | about | HiveDevs - A community of developers working on Hive related | | | projects. Visit our Discord at https://discord.gg/cvnByhu | | lang | en | | type_id | 1 | | is_nsfw | False | | subscribers | 1005 | | sum_pending | 638 | | num_pending | 253 | | num_authors | 120 | | created_at | 2020-01-23 16:27:39 | | avatar_url | | | context | {} | | description | | | flag_text | | | settings | {} | | team | [[&#39;hive-139531&#39;, &#39;owner&#39;, &#39;&#39;], [&#39;netuoso&#39;, &#39;admin&#39;, &#39;&#39;], | | | [&#39;abit&#39;, &#39;mod&#39;, &#39;&#39;], [&#39;roadscape&#39;, &#39;mod&#39;, &#39;&#39;], [&#39;acidyo&#39;, | | | &#39;mod&#39;, &#39;&#39;], [&#39;gtg&#39;, &#39;mod&#39;, &#39;&#39;], [&#39;good-karma&#39;, &#39;mod&#39;, | | | &#39;Founder of Esteem&#39;], [&#39;jesta&#39;, &#39;mod&#39;, &#39;&#39;], [&#39;inertia&#39;, | | | &#39;mod&#39;, &#39;#1138&#39;], [&#39;arcange&#39;, &#39;mod&#39;, &#39;&#39;], [&#39;someguy123&#39;, | | | &#39;mod&#39;, &#39;&#39;], [&#39;mahdiyari&#39;, &#39;mod&#39;, &#39;&#39;], [&#39;blocktrades&#39;, &#39;mod&#39;, | | | &#39;&#39;], [&#39;drakos&#39;, &#39;mod&#39;, &#39;&#39;], [&#39;themarkymark&#39;, &#39;mod&#39;, &#39;&#39;], | | | [&#39;stoodkev&#39;, &#39;mod&#39;, &#39;&#39;], [&#39;therealwolf&#39;, &#39;mod&#39;, &#39;&#39;], | | | [&#39;yabapmatt&#39;, &#39;mod&#39;, &#39;&#39;], [&#39;eonwarped&#39;, &#39;mod&#39;, &#39;&#39;], | | | [&#39;emrebeyler&#39;, &#39;mod&#39;, &#39;&#39;], [&#39;bobinson&#39;, &#39;mod&#39;, &#39;&#39;], | | | [&#39;asgarth&#39;, &#39;mod&#39;, &#39;&#39;], [&#39;quochuy&#39;, &#39;mod&#39;, &#39;Witness&#39;], | | | [&#39;crimsonclad&#39;, &#39;mod&#39;, &#39;&#39;], [&#39;pharesim&#39;, &#39;mod&#39;, &#39;&#39;]] | +-------------+--------------------------------------------------------------+ ``` The following API functions have been implemented: ``` roles = community.get_community_roles() print(&quot;len %d - first entry: %s&quot; % (len(roles), str(roles[0]))) subscribers = community.get_subscribers() print(&quot;len %d - first entry: %s&quot; % (len(subscribers), str(subscribers[0]))) last_activity = community.get_activities(limit=100, last_id=None) print(&quot;len %d - first entry: %s&quot; % (len(last_activity), str(last_activity[0]))) latest_post = community.get_ranked_posts(limit=25) print(&quot;len %d - first entry: %s&quot; % (len(latest_post), str(latest_post[0])[:120])) ``` returns: ``` len 50 - first entry: [&#39;hive-139531&#39;, &#39;owner&#39;, &#39;&#39;] len 250 - first entry: [&#39;joshman&#39;, &#39;guest&#39;, None, &#39;2020-07-14 16:16:15&#39;] len 100 - first entry: {&#39;id&#39;: 78159733, &#39;type&#39;: &#39;subscribe&#39;, &#39;score&#39;: 35, &#39;date&#39;: &#39;2020-07-14T16:16:15&#39;, &#39;msg&#39;: &#39;@joshman subscribed to HiveDevs&#39;, &#39;url&#39;: &#39;trending/hive-139531&#39;} len 25 - first entry: {&#39;post_id&#39;: 83702748, &#39;author&#39;: &#39;netuoso&#39;, &#39;permlink&#39;: &#39;creation-of-steemdevs-community-information-about-steemdevs&#39;, &#39;c ``` `get_subscribers()` returns only 250 subscribers and it is currently not possible to receive all subscribers (`hive-139531` has 1005 subscribers in total). A way to receive all subscribers could be parsing `get_activities`, as there is an entry for each new subscriber. ## Communities `Communities` returns a list of registred communities. The communities inside the list can be printed by `printAsTable()` and it is possible to search the community title for a match: ``` from beem.community import Communities communities = Communities(limit=100) communities.search_title(&quot;dev&quot;).printAsTable() ``` returns ``` +-----+-------------+----------+------+-------------+-------------+-------------+-------------+ | Nr. | Name | Title | lang | subscribers | sum_pending | num_pending | num_authors | +-----+-------------+----------+------+-------------+-------------+-------------+-------------+ | 1 | hive-139531 | HiveDevs | en | 1000 | 945 | 236 | 113 | +-----+-------------+----------+------+-------------+-------------+-------------+-------------+ ``` The limit of returned communities can be increased by using the `limit` parameter: ``` from beem.community import Communities communities = Communities(limit=1000) communities.search_title(&quot;dev&quot;).printAsTable() ``` returns ``` +-----+-------------+---------------+------+-------------+-------------+-------------+-------------+ | Nr. | Name | Title | lang | subscribers | sum_pending | num_pending | num_authors | +-----+-------------+---------------+------+-------------+-------------+-------------+-------------+ | 1 | hive-139531 | HiveDevs | en | 1000 | 945 | 236 | 113 | | 2 | hive-152825 | DEVCOIN | en | 2 | 0 | 5 | 2 | | 3 | hive-199094 | Devotionals | en | 1 | 0 | 3 | 1 | | 4 | hive-192808 | kr-dev-center | kr | 20 | 0 | 0 | 0 | | 5 | hive-150008 | Game Dev | en | 12 | 0 | 0 | 0 | | 6 | hive-101482 | BeeWiki.Dev | en | 6 | 0 | 0 | 0 | +-----+-------------+---------------+------+-------------+-------------+-------------+-------------+ ``` Searching a community by its title was also added to `beempy createpost` ![](https://images.hive.blog/DQmUZ5J5Z4ov6aXobXunqGybcdkdiVHui5Y8jJ58MNVVKpY/image) Currently a title is searched in the top 1000. ## Broadcasting community related ops The following shows all operation that can be broadcasted: ``` from beem.community import Community community = Community(&quot;hive-111111&quot;) community.set_role(&quot;account_a&quot;, &quot;mod&quot;, &quot;new mod&quot;) community.set_user_title(&quot;account_b&quot;, &quot;investor&quot;) community.mute_post(&quot;author_a&quot;, &quot;permlink_a&quot;, &quot;spam&quot;, &quot;mod_a&quot;) community.unmute_post(&quot;author_a&quot;, &quot;permlink_a&quot;, &quot;no spam&quot;, &quot;mod_a&quot;) community.update_props(&quot;My Community&quot;, &quot;Great community&quot;, False, &quot;About me&quot;, &quot;Not about me&quot;, &quot;admin_a&quot;) community.subscribe(&quot;user_c&quot;) community.unsubscribe(&quot;user_c&quot;) community.pin_post(&quot;author_a&quot;, &quot;permlink_a&quot;, &quot;mod_a&quot;) community.unpin_post(&quot;author_a&quot;, &quot;permlink_a&quot;, &quot;mod_a&quot;) community.flag_post(&quot;author_a&quot;, &quot;permlink_a&quot;, &quot;please check&quot;, &quot;user_a&quot;) ``` ## HiveSigner / steemconnect I removed the SteemConnect class from beem, as steemconnect.com is no longer working. I fixed the token parameter in HiveSigner: ``` from beem.HiveSigner import HiveSigner hs = HiveSigner(token=[&quot;32...&quot;]) print(hs.me()) ``` where 32... is a valid HiveSinger token. ## Improved beempy stream ``` beempy stream -t -f ``` retuns now a table for each block: ``` +----------+---------+-------------+------------------------------------------------------+ | blocknum | trx_num | type | content | +----------+---------+-------------+------------------------------------------------------+ | 45157440 | 0 | custom_json | sm_submit_team | | 45157440 | 1 | custom_json | sm_find_match | | 45157440 | 2 | vote | 100.00% @mattsanthonyit/uty6wgup4ul - mattsanthonyit | | 45157440 | 3 | custom_json | sm_find_match | | 45157440 | 4 | custom_json | sm_find_match | | 45157440 | 5 | custom_json | sm_find_match | | 45157440 | 6 | custom_json | sm_find_match | | 45157440 | 7 | custom_json | sm_find_match | | 45157440 | 8 | custom_json | sm_find_match | | 45157440 | 9 | custom_json | sm_submit_team | | 45157440 | 10 | custom_json | sm_submit_team | | 45157440 | 11 | custom_json | sm_find_match | | 45157440 | 12 | custom_json | sm_find_match | | 45157440 | 13 | custom_json | sm_find_match | | 45157440 | 14 | custom_json | scot_claim_token | | 45157440 | 15 | vote | 5.00% @xr-hammergaming/52ktvx97870 - innerhive | | 45157440 | 16 | custom_json | sm_find_match | +----------+---------+-------------+------------------------------------------------------+ ``` where custom_json, vote, transfer and transfer_to_vesting have a shortened output. ``` beempy stream -f ``` streams the output in raw format. ## Blurt As some beem users were interested in using beem on blurt, I added a Blurt class to beem. This adds support for blurt to beempy. The following commands will change the nodes, and check if they are set ``` beempy updatenodes --blurt beempy config ``` It is then possible to check the amount of powered up BLURT and to power it down by ``` beempy power holger80 beempy powerdown -a holger80 33244 ``` The powerdown command will ask for your active keys. You can check the activity on blurt by ``` beempy stream -t ``` you need to be patient, as there is currently not much activity...: ``` {&#39;block_num&#39;: 306762, &#39;op&#39;: [&#39;withdraw_vesting&#39;, {&#39;account&#39;: &#39;oth1&#39;, &#39;vesting_shares&#39;: {&#39;amount&#39;: &#39;36699505048&#39;, &#39;nai&#39;: &#39;@@000000037&#39;, &#39;timestamp&#39;: &#39;2020-07-14T21:53:57&#39;, &#39;trx_num&#39;: 0} {&#39;block_num&#39;: 306765, &#39;op&#39;: [&#39;vote&#39;, {&#39;author&#39;: &#39;discernente&#39;, &#39;permlink&#39;: &#39;0alhcnfp0r7dh2t&#39;, &#39;voter&#39;: &#39;discernente&#39;, &#39;weight&#39;: 10000}], &#39;timestamp&#39;: &#39;2020-07-14T21:54:06&#39;, &#39;trx_num&#39;: 0} ``` You can switch back to hive with: ``` beempy updatenodes --hive ``` The Blurt class can be used to simplify the access to the Blurt blockchain: ``` from beem import Blurt blurt = Blurt(node= [&quot;https://rpc.blurt.world&quot;, &quot;https://blurt-rpc.steem.buzz&quot;]) print(blurt) ``` returns ``` &lt;Blurt node=https://rpc.blurt.world, nobroadcast=False&gt; ``` ___ *If you like what I do, consider casting a vote for me as witness on [Hivesigner](https://hivesigner.com/sign/account-witness-vote?witness=holger80&amp;approve=1) or on [PeakD](https://peakd.com/witnesses)* See: update for beem: add community support by @holger80" />
+<meta property="og:description" content="## Repository https://github.com/holgern/beem ![beem-logo](https://cdn.steemitimages.com/DQmcRrwLPSywSYMierfP6um6mejeMNGjN9Rxw7audJqTDgb/beem-logo) [beem](https://github.com/holgern/beem) is a python library and command line tool for HIVE. The current version is 0.24.5. There is also a discord channel for beem: https://discord.gg/4HM592V The newest beem version can be installed by: ``` pip install -U beem ``` Check that you are using hive nodes. The following command ``` beempy updatenodes --hive ``` updates the nodelist and uses only hive nodes. After setting hive as default_chain, `beempy updatenodes` can be used. The list of nodes can be checked with ``` beempy config ``` and ``` beempy currentnode ``` shows the currently connected node. ## Changelog for versions 0.24.5 * replace percent_hive_dollars by percent_hbd (to make beem HF24 ready) * Remove whaleshares related code * Fix adding of a wif in beempy * Remove SteemConnect * Fix set token in HiveSigner * Add Blurt * Add Community for community reladed requests and broadcasts * Improve community lookup for beempy createpost * Improved beempy history command output * Improved beempy stream ## Community support I added community support to beem. The following example shows the content of a community dict: ``` from beem.community import Community from prettytable import PrettyTable community = Community(&quot;hive-139531&quot;) t = PrettyTable([&quot;key&quot;, &quot;value&quot;]) t.align = &quot;l&quot; t._max_width = {&quot;value&quot; : 60} for key in community.json(): t.add_row([key, community.json()[key]]) print(t) ``` returns ``` +-------------+--------------------------------------------------------------+ | key | value | +-------------+--------------------------------------------------------------+ | id | 1357761 | | name | hive-139531 | | title | HiveDevs | | about | HiveDevs - A community of developers working on Hive related | | | projects. Visit our Discord at https://discord.gg/cvnByhu | | lang | en | | type_id | 1 | | is_nsfw | False | | subscribers | 1005 | | sum_pending | 638 | | num_pending | 253 | | num_authors | 120 | | created_at | 2020-01-23 16:27:39 | | avatar_url | | | context | {} | | description | | | flag_text | | | settings | {} | | team | [[&#39;hive-139531&#39;, &#39;owner&#39;, &#39;&#39;], [&#39;netuoso&#39;, &#39;admin&#39;, &#39;&#39;], | | | [&#39;abit&#39;, &#39;mod&#39;, &#39;&#39;], [&#39;roadscape&#39;, &#39;mod&#39;, &#39;&#39;], [&#39;acidyo&#39;, | | | &#39;mod&#39;, &#39;&#39;], [&#39;gtg&#39;, &#39;mod&#39;, &#39;&#39;], [&#39;good-karma&#39;, &#39;mod&#39;, | | | &#39;Founder of Esteem&#39;], [&#39;jesta&#39;, &#39;mod&#39;, &#39;&#39;], [&#39;inertia&#39;, | | | &#39;mod&#39;, &#39;#1138&#39;], [&#39;arcange&#39;, &#39;mod&#39;, &#39;&#39;], [&#39;someguy123&#39;, | | | &#39;mod&#39;, &#39;&#39;], [&#39;mahdiyari&#39;, &#39;mod&#39;, &#39;&#39;], [&#39;blocktrades&#39;, &#39;mod&#39;, | | | &#39;&#39;], [&#39;drakos&#39;, &#39;mod&#39;, &#39;&#39;], [&#39;themarkymark&#39;, &#39;mod&#39;, &#39;&#39;], | | | [&#39;stoodkev&#39;, &#39;mod&#39;, &#39;&#39;], [&#39;therealwolf&#39;, &#39;mod&#39;, &#39;&#39;], | | | [&#39;yabapmatt&#39;, &#39;mod&#39;, &#39;&#39;], [&#39;eonwarped&#39;, &#39;mod&#39;, &#39;&#39;], | | | [&#39;emrebeyler&#39;, &#39;mod&#39;, &#39;&#39;], [&#39;bobinson&#39;, &#39;mod&#39;, &#39;&#39;], | | | [&#39;asgarth&#39;, &#39;mod&#39;, &#39;&#39;], [&#39;quochuy&#39;, &#39;mod&#39;, &#39;Witness&#39;], | | | [&#39;crimsonclad&#39;, &#39;mod&#39;, &#39;&#39;], [&#39;pharesim&#39;, &#39;mod&#39;, &#39;&#39;]] | +-------------+--------------------------------------------------------------+ ``` The following API functions have been implemented: ``` roles = community.get_community_roles() print(&quot;len %d - first entry: %s&quot; % (len(roles), str(roles[0]))) subscribers = community.get_subscribers() print(&quot;len %d - first entry: %s&quot; % (len(subscribers), str(subscribers[0]))) last_activity = community.get_activities(limit=100, last_id=None) print(&quot;len %d - first entry: %s&quot; % (len(last_activity), str(last_activity[0]))) latest_post = community.get_ranked_posts(limit=25) print(&quot;len %d - first entry: %s&quot; % (len(latest_post), str(latest_post[0])[:120])) ``` returns: ``` len 50 - first entry: [&#39;hive-139531&#39;, &#39;owner&#39;, &#39;&#39;] len 250 - first entry: [&#39;joshman&#39;, &#39;guest&#39;, None, &#39;2020-07-14 16:16:15&#39;] len 100 - first entry: {&#39;id&#39;: 78159733, &#39;type&#39;: &#39;subscribe&#39;, &#39;score&#39;: 35, &#39;date&#39;: &#39;2020-07-14T16:16:15&#39;, &#39;msg&#39;: &#39;@joshman subscribed to HiveDevs&#39;, &#39;url&#39;: &#39;trending/hive-139531&#39;} len 25 - first entry: {&#39;post_id&#39;: 83702748, &#39;author&#39;: &#39;netuoso&#39;, &#39;permlink&#39;: &#39;creation-of-steemdevs-community-information-about-steemdevs&#39;, &#39;c ``` `get_subscribers()` returns only 250 subscribers and it is currently not possible to receive all subscribers (`hive-139531` has 1005 subscribers in total). A way to receive all subscribers could be parsing `get_activities`, as there is an entry for each new subscriber. ## Communities `Communities` returns a list of registred communities. The communities inside the list can be printed by `printAsTable()` and it is possible to search the community title for a match: ``` from beem.community import Communities communities = Communities(limit=100) communities.search_title(&quot;dev&quot;).printAsTable() ``` returns ``` +-----+-------------+----------+------+-------------+-------------+-------------+-------------+ | Nr. | Name | Title | lang | subscribers | sum_pending | num_pending | num_authors | +-----+-------------+----------+------+-------------+-------------+-------------+-------------+ | 1 | hive-139531 | HiveDevs | en | 1000 | 945 | 236 | 113 | +-----+-------------+----------+------+-------------+-------------+-------------+-------------+ ``` The limit of returned communities can be increased by using the `limit` parameter: ``` from beem.community import Communities communities = Communities(limit=1000) communities.search_title(&quot;dev&quot;).printAsTable() ``` returns ``` +-----+-------------+---------------+------+-------------+-------------+-------------+-------------+ | Nr. | Name | Title | lang | subscribers | sum_pending | num_pending | num_authors | +-----+-------------+---------------+------+-------------+-------------+-------------+-------------+ | 1 | hive-139531 | HiveDevs | en | 1000 | 945 | 236 | 113 | | 2 | hive-152825 | DEVCOIN | en | 2 | 0 | 5 | 2 | | 3 | hive-199094 | Devotionals | en | 1 | 0 | 3 | 1 | | 4 | hive-192808 | kr-dev-center | kr | 20 | 0 | 0 | 0 | | 5 | hive-150008 | Game Dev | en | 12 | 0 | 0 | 0 | | 6 | hive-101482 | BeeWiki.Dev | en | 6 | 0 | 0 | 0 | +-----+-------------+---------------+------+-------------+-------------+-------------+-------------+ ``` Searching a community by its title was also added to `beempy createpost` ![](https://images.hive.blog/DQmUZ5J5Z4ov6aXobXunqGybcdkdiVHui5Y8jJ58MNVVKpY/image) Currently a title is searched in the top 1000. ## Broadcasting community related ops The following shows all operation that can be broadcasted: ``` from beem.community import Community community = Community(&quot;hive-111111&quot;) community.set_role(&quot;account_a&quot;, &quot;mod&quot;, &quot;new mod&quot;) community.set_user_title(&quot;account_b&quot;, &quot;investor&quot;) community.mute_post(&quot;author_a&quot;, &quot;permlink_a&quot;, &quot;spam&quot;, &quot;mod_a&quot;) community.unmute_post(&quot;author_a&quot;, &quot;permlink_a&quot;, &quot;no spam&quot;, &quot;mod_a&quot;) community.update_props(&quot;My Community&quot;, &quot;Great community&quot;, False, &quot;About me&quot;, &quot;Not about me&quot;, &quot;admin_a&quot;) community.subscribe(&quot;user_c&quot;) community.unsubscribe(&quot;user_c&quot;) community.pin_post(&quot;author_a&quot;, &quot;permlink_a&quot;, &quot;mod_a&quot;) community.unpin_post(&quot;author_a&quot;, &quot;permlink_a&quot;, &quot;mod_a&quot;) community.flag_post(&quot;author_a&quot;, &quot;permlink_a&quot;, &quot;please check&quot;, &quot;user_a&quot;) ``` ## HiveSigner / steemconnect I removed the SteemConnect class from beem, as steemconnect.com is no longer working. I fixed the token parameter in HiveSigner: ``` from beem.HiveSigner import HiveSigner hs = HiveSigner(token=[&quot;32...&quot;]) print(hs.me()) ``` where 32... is a valid HiveSinger token. ## Improved beempy stream ``` beempy stream -t -f ``` retuns now a table for each block: ``` +----------+---------+-------------+------------------------------------------------------+ | blocknum | trx_num | type | content | +----------+---------+-------------+------------------------------------------------------+ | 45157440 | 0 | custom_json | sm_submit_team | | 45157440 | 1 | custom_json | sm_find_match | | 45157440 | 2 | vote | 100.00% @mattsanthonyit/uty6wgup4ul - mattsanthonyit | | 45157440 | 3 | custom_json | sm_find_match | | 45157440 | 4 | custom_json | sm_find_match | | 45157440 | 5 | custom_json | sm_find_match | | 45157440 | 6 | custom_json | sm_find_match | | 45157440 | 7 | custom_json | sm_find_match | | 45157440 | 8 | custom_json | sm_find_match | | 45157440 | 9 | custom_json | sm_submit_team | | 45157440 | 10 | custom_json | sm_submit_team | | 45157440 | 11 | custom_json | sm_find_match | | 45157440 | 12 | custom_json | sm_find_match | | 45157440 | 13 | custom_json | sm_find_match | | 45157440 | 14 | custom_json | scot_claim_token | | 45157440 | 15 | vote | 5.00% @xr-hammergaming/52ktvx97870 - innerhive | | 45157440 | 16 | custom_json | sm_find_match | +----------+---------+-------------+------------------------------------------------------+ ``` where custom_json, vote, transfer and transfer_to_vesting have a shortened output. ``` beempy stream -f ``` streams the output in raw format. ## Blurt As some beem users were interested in using beem on blurt, I added a Blurt class to beem. This adds support for blurt to beempy. The following commands will change the nodes, and check if they are set ``` beempy updatenodes --blurt beempy config ``` It is then possible to check the amount of powered up BLURT and to power it down by ``` beempy power holger80 beempy powerdown -a holger80 33244 ``` The powerdown command will ask for your active keys. You can check the activity on blurt by ``` beempy stream -t ``` you need to be patient, as there is currently not much activity...: ``` {&#39;block_num&#39;: 306762, &#39;op&#39;: [&#39;withdraw_vesting&#39;, {&#39;account&#39;: &#39;oth1&#39;, &#39;vesting_shares&#39;: {&#39;amount&#39;: &#39;36699505048&#39;, &#39;nai&#39;: &#39;@@000000037&#39;, &#39;timestamp&#39;: &#39;2020-07-14T21:53:57&#39;, &#39;trx_num&#39;: 0} {&#39;block_num&#39;: 306765, &#39;op&#39;: [&#39;vote&#39;, {&#39;author&#39;: &#39;discernente&#39;, &#39;permlink&#39;: &#39;0alhcnfp0r7dh2t&#39;, &#39;voter&#39;: &#39;discernente&#39;, &#39;weight&#39;: 10000}], &#39;timestamp&#39;: &#39;2020-07-14T21:54:06&#39;, &#39;trx_num&#39;: 0} ``` You can switch back to hive with: ``` beempy updatenodes --hive ``` The Blurt class can be used to simplify the access to the Blurt blockchain: ``` from beem import Blurt blurt = Blurt(node= [&quot;https://rpc.blurt.world&quot;, &quot;https://blurt-rpc.steem.buzz&quot;]) print(blurt) ``` returns ``` &lt;Blurt node=https://rpc.blurt.world, nobroadcast=False&gt; ``` ___ *If you like what I do, consider casting a vote for me as witness on [Hivesigner](https://hivesigner.com/sign/account-witness-vote?witness=holger80&amp;approve=1) or on [PeakD](https://peakd.com/witnesses)* See: update for beem: add community support by @holger80" />
+<link rel="canonical" href="https://hive.blog/hive-139531/@holger80/update-for-beem-add-community-support" />
+<meta property="og:url" content="https://hive.blog/hive-139531/@holger80/update-for-beem-add-community-support" />
+<meta property="og:site_name" content="Hive Chain Documentation" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2020-07-14T15:12:51-07:00" />
+<script type="application/ld+json">
+{"description":"## Repository https://github.com/holgern/beem ![beem-logo](https://cdn.steemitimages.com/DQmcRrwLPSywSYMierfP6um6mejeMNGjN9Rxw7audJqTDgb/beem-logo) [beem](https://github.com/holgern/beem) is a python library and command line tool for HIVE. The current version is 0.24.5. There is also a discord channel for beem: https://discord.gg/4HM592V The newest beem version can be installed by: ``` pip install -U beem ``` Check that you are using hive nodes. The following command ``` beempy updatenodes --hive ``` updates the nodelist and uses only hive nodes. After setting hive as default_chain, `beempy updatenodes` can be used. The list of nodes can be checked with ``` beempy config ``` and ``` beempy currentnode ``` shows the currently connected node. ## Changelog for versions 0.24.5 * replace percent_hive_dollars by percent_hbd (to make beem HF24 ready) * Remove whaleshares related code * Fix adding of a wif in beempy * Remove SteemConnect * Fix set token in HiveSigner * Add Blurt * Add Community for community reladed requests and broadcasts * Improve community lookup for beempy createpost * Improved beempy history command output * Improved beempy stream ## Community support I added community support to beem. The following example shows the content of a community dict: ``` from beem.community import Community from prettytable import PrettyTable community = Community(&quot;hive-139531&quot;) t = PrettyTable([&quot;key&quot;, &quot;value&quot;]) t.align = &quot;l&quot; t._max_width = {&quot;value&quot; : 60} for key in community.json(): t.add_row([key, community.json()[key]]) print(t) ``` returns ``` +-------------+--------------------------------------------------------------+ | key | value | +-------------+--------------------------------------------------------------+ | id | 1357761 | | name | hive-139531 | | title | HiveDevs | | about | HiveDevs - A community of developers working on Hive related | | | projects. Visit our Discord at https://discord.gg/cvnByhu | | lang | en | | type_id | 1 | | is_nsfw | False | | subscribers | 1005 | | sum_pending | 638 | | num_pending | 253 | | num_authors | 120 | | created_at | 2020-01-23 16:27:39 | | avatar_url | | | context | {} | | description | | | flag_text | | | settings | {} | | team | [[&#39;hive-139531&#39;, &#39;owner&#39;, &#39;&#39;], [&#39;netuoso&#39;, &#39;admin&#39;, &#39;&#39;], | | | [&#39;abit&#39;, &#39;mod&#39;, &#39;&#39;], [&#39;roadscape&#39;, &#39;mod&#39;, &#39;&#39;], [&#39;acidyo&#39;, | | | &#39;mod&#39;, &#39;&#39;], [&#39;gtg&#39;, &#39;mod&#39;, &#39;&#39;], [&#39;good-karma&#39;, &#39;mod&#39;, | | | &#39;Founder of Esteem&#39;], [&#39;jesta&#39;, &#39;mod&#39;, &#39;&#39;], [&#39;inertia&#39;, | | | &#39;mod&#39;, &#39;#1138&#39;], [&#39;arcange&#39;, &#39;mod&#39;, &#39;&#39;], [&#39;someguy123&#39;, | | | &#39;mod&#39;, &#39;&#39;], [&#39;mahdiyari&#39;, &#39;mod&#39;, &#39;&#39;], [&#39;blocktrades&#39;, &#39;mod&#39;, | | | &#39;&#39;], [&#39;drakos&#39;, &#39;mod&#39;, &#39;&#39;], [&#39;themarkymark&#39;, &#39;mod&#39;, &#39;&#39;], | | | [&#39;stoodkev&#39;, &#39;mod&#39;, &#39;&#39;], [&#39;therealwolf&#39;, &#39;mod&#39;, &#39;&#39;], | | | [&#39;yabapmatt&#39;, &#39;mod&#39;, &#39;&#39;], [&#39;eonwarped&#39;, &#39;mod&#39;, &#39;&#39;], | | | [&#39;emrebeyler&#39;, &#39;mod&#39;, &#39;&#39;], [&#39;bobinson&#39;, &#39;mod&#39;, &#39;&#39;], | | | [&#39;asgarth&#39;, &#39;mod&#39;, &#39;&#39;], [&#39;quochuy&#39;, &#39;mod&#39;, &#39;Witness&#39;], | | | [&#39;crimsonclad&#39;, &#39;mod&#39;, &#39;&#39;], [&#39;pharesim&#39;, &#39;mod&#39;, &#39;&#39;]] | +-------------+--------------------------------------------------------------+ ``` The following API functions have been implemented: ``` roles = community.get_community_roles() print(&quot;len %d - first entry: %s&quot; % (len(roles), str(roles[0]))) subscribers = community.get_subscribers() print(&quot;len %d - first entry: %s&quot; % (len(subscribers), str(subscribers[0]))) last_activity = community.get_activities(limit=100, last_id=None) print(&quot;len %d - first entry: %s&quot; % (len(last_activity), str(last_activity[0]))) latest_post = community.get_ranked_posts(limit=25) print(&quot;len %d - first entry: %s&quot; % (len(latest_post), str(latest_post[0])[:120])) ``` returns: ``` len 50 - first entry: [&#39;hive-139531&#39;, &#39;owner&#39;, &#39;&#39;] len 250 - first entry: [&#39;joshman&#39;, &#39;guest&#39;, None, &#39;2020-07-14 16:16:15&#39;] len 100 - first entry: {&#39;id&#39;: 78159733, &#39;type&#39;: &#39;subscribe&#39;, &#39;score&#39;: 35, &#39;date&#39;: &#39;2020-07-14T16:16:15&#39;, &#39;msg&#39;: &#39;@joshman subscribed to HiveDevs&#39;, &#39;url&#39;: &#39;trending/hive-139531&#39;} len 25 - first entry: {&#39;post_id&#39;: 83702748, &#39;author&#39;: &#39;netuoso&#39;, &#39;permlink&#39;: &#39;creation-of-steemdevs-community-information-about-steemdevs&#39;, &#39;c ``` `get_subscribers()` returns only 250 subscribers and it is currently not possible to receive all subscribers (`hive-139531` has 1005 subscribers in total). A way to receive all subscribers could be parsing `get_activities`, as there is an entry for each new subscriber. ## Communities `Communities` returns a list of registred communities. The communities inside the list can be printed by `printAsTable()` and it is possible to search the community title for a match: ``` from beem.community import Communities communities = Communities(limit=100) communities.search_title(&quot;dev&quot;).printAsTable() ``` returns ``` +-----+-------------+----------+------+-------------+-------------+-------------+-------------+ | Nr. | Name | Title | lang | subscribers | sum_pending | num_pending | num_authors | +-----+-------------+----------+------+-------------+-------------+-------------+-------------+ | 1 | hive-139531 | HiveDevs | en | 1000 | 945 | 236 | 113 | +-----+-------------+----------+------+-------------+-------------+-------------+-------------+ ``` The limit of returned communities can be increased by using the `limit` parameter: ``` from beem.community import Communities communities = Communities(limit=1000) communities.search_title(&quot;dev&quot;).printAsTable() ``` returns ``` +-----+-------------+---------------+------+-------------+-------------+-------------+-------------+ | Nr. | Name | Title | lang | subscribers | sum_pending | num_pending | num_authors | +-----+-------------+---------------+------+-------------+-------------+-------------+-------------+ | 1 | hive-139531 | HiveDevs | en | 1000 | 945 | 236 | 113 | | 2 | hive-152825 | DEVCOIN | en | 2 | 0 | 5 | 2 | | 3 | hive-199094 | Devotionals | en | 1 | 0 | 3 | 1 | | 4 | hive-192808 | kr-dev-center | kr | 20 | 0 | 0 | 0 | | 5 | hive-150008 | Game Dev | en | 12 | 0 | 0 | 0 | | 6 | hive-101482 | BeeWiki.Dev | en | 6 | 0 | 0 | 0 | +-----+-------------+---------------+------+-------------+-------------+-------------+-------------+ ``` Searching a community by its title was also added to `beempy createpost` ![](https://images.hive.blog/DQmUZ5J5Z4ov6aXobXunqGybcdkdiVHui5Y8jJ58MNVVKpY/image) Currently a title is searched in the top 1000. ## Broadcasting community related ops The following shows all operation that can be broadcasted: ``` from beem.community import Community community = Community(&quot;hive-111111&quot;) community.set_role(&quot;account_a&quot;, &quot;mod&quot;, &quot;new mod&quot;) community.set_user_title(&quot;account_b&quot;, &quot;investor&quot;) community.mute_post(&quot;author_a&quot;, &quot;permlink_a&quot;, &quot;spam&quot;, &quot;mod_a&quot;) community.unmute_post(&quot;author_a&quot;, &quot;permlink_a&quot;, &quot;no spam&quot;, &quot;mod_a&quot;) community.update_props(&quot;My Community&quot;, &quot;Great community&quot;, False, &quot;About me&quot;, &quot;Not about me&quot;, &quot;admin_a&quot;) community.subscribe(&quot;user_c&quot;) community.unsubscribe(&quot;user_c&quot;) community.pin_post(&quot;author_a&quot;, &quot;permlink_a&quot;, &quot;mod_a&quot;) community.unpin_post(&quot;author_a&quot;, &quot;permlink_a&quot;, &quot;mod_a&quot;) community.flag_post(&quot;author_a&quot;, &quot;permlink_a&quot;, &quot;please check&quot;, &quot;user_a&quot;) ``` ## HiveSigner / steemconnect I removed the SteemConnect class from beem, as steemconnect.com is no longer working. I fixed the token parameter in HiveSigner: ``` from beem.HiveSigner import HiveSigner hs = HiveSigner(token=[&quot;32...&quot;]) print(hs.me()) ``` where 32... is a valid HiveSinger token. ## Improved beempy stream ``` beempy stream -t -f ``` retuns now a table for each block: ``` +----------+---------+-------------+------------------------------------------------------+ | blocknum | trx_num | type | content | +----------+---------+-------------+------------------------------------------------------+ | 45157440 | 0 | custom_json | sm_submit_team | | 45157440 | 1 | custom_json | sm_find_match | | 45157440 | 2 | vote | 100.00% @mattsanthonyit/uty6wgup4ul - mattsanthonyit | | 45157440 | 3 | custom_json | sm_find_match | | 45157440 | 4 | custom_json | sm_find_match | | 45157440 | 5 | custom_json | sm_find_match | | 45157440 | 6 | custom_json | sm_find_match | | 45157440 | 7 | custom_json | sm_find_match | | 45157440 | 8 | custom_json | sm_find_match | | 45157440 | 9 | custom_json | sm_submit_team | | 45157440 | 10 | custom_json | sm_submit_team | | 45157440 | 11 | custom_json | sm_find_match | | 45157440 | 12 | custom_json | sm_find_match | | 45157440 | 13 | custom_json | sm_find_match | | 45157440 | 14 | custom_json | scot_claim_token | | 45157440 | 15 | vote | 5.00% @xr-hammergaming/52ktvx97870 - innerhive | | 45157440 | 16 | custom_json | sm_find_match | +----------+---------+-------------+------------------------------------------------------+ ``` where custom_json, vote, transfer and transfer_to_vesting have a shortened output. ``` beempy stream -f ``` streams the output in raw format. ## Blurt As some beem users were interested in using beem on blurt, I added a Blurt class to beem. This adds support for blurt to beempy. The following commands will change the nodes, and check if they are set ``` beempy updatenodes --blurt beempy config ``` It is then possible to check the amount of powered up BLURT and to power it down by ``` beempy power holger80 beempy powerdown -a holger80 33244 ``` The powerdown command will ask for your active keys. You can check the activity on blurt by ``` beempy stream -t ``` you need to be patient, as there is currently not much activity...: ``` {&#39;block_num&#39;: 306762, &#39;op&#39;: [&#39;withdraw_vesting&#39;, {&#39;account&#39;: &#39;oth1&#39;, &#39;vesting_shares&#39;: {&#39;amount&#39;: &#39;36699505048&#39;, &#39;nai&#39;: &#39;@@000000037&#39;, &#39;timestamp&#39;: &#39;2020-07-14T21:53:57&#39;, &#39;trx_num&#39;: 0} {&#39;block_num&#39;: 306765, &#39;op&#39;: [&#39;vote&#39;, {&#39;author&#39;: &#39;discernente&#39;, &#39;permlink&#39;: &#39;0alhcnfp0r7dh2t&#39;, &#39;voter&#39;: &#39;discernente&#39;, &#39;weight&#39;: 10000}], &#39;timestamp&#39;: &#39;2020-07-14T21:54:06&#39;, &#39;trx_num&#39;: 0} ``` You can switch back to hive with: ``` beempy updatenodes --hive ``` The Blurt class can be used to simplify the access to the Blurt blockchain: ``` from beem import Blurt blurt = Blurt(node= [&quot;https://rpc.blurt.world&quot;, &quot;https://blurt-rpc.steem.buzz&quot;]) print(blurt) ``` returns ``` &lt;Blurt node=https://rpc.blurt.world, nobroadcast=False&gt; ``` ___ *If you like what I do, consider casting a vote for me as witness on [Hivesigner](https://hivesigner.com/sign/account-witness-vote?witness=holger80&amp;approve=1) or on [PeakD](https://peakd.com/witnesses)* See: update for beem: add community support by @holger80","author":{"@type":"Person","name":"holger80"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://hive.blog/hive-139531/@holger80/update-for-beem-add-community-support"},"@type":"BlogPosting","url":"https://hive.blog/hive-139531/@holger80/update-for-beem-add-community-support","headline":"update for beem: add community support","dateModified":"2020-07-14T15:12:51-07:00","datePublished":"2020-07-14T15:12:51-07:00","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://hivedocs.info/feed.xml" title="Hive Chain Documentation" /><script>
+if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNotTrack === "yes" || navigator.msDoNotTrack === "1")) {
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-161692811-1', 'auto');
+  ga('send', 'pageview');
+}
+</script>
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/turbolinks/5.2.0/turbolinks.js" integrity="sha256-iM4Yzi/zLj/IshPWMC1IluRxTtRjMqjPGd97TZ9yYpU=" crossorigin="anonymous"></script>
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Cousine|Inconsolata" rel="stylesheet">
+  <link rel="shortcut icon" type="image/png" href="/assets/images/favicon.png">
+</head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Hive Chain Documentation</a>
+
+      <nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/news/">News</a><a class="page-link" href="/howto/">How To</a><a class="page-link" href="/links/">Useful Links</a><!-- HTML elements for search -->
+          <input type="text" id="search-input" placeholder="Search" />
+          
+          <ul id="results-container"></ul>
+
+          <script src="/assets/javascript/search.js"></script>
+          <script>
+            var sjs = SimpleJekyllSearch({
+              searchInput: document.getElementById('search-input'),
+              resultsContainer: document.getElementById('results-container'),
+              json: '/search.json'
+            })
+          </script>
+          <!-- <form style="float: right;" class="form-inline" method="get" action="http://www.google.com/search">
+            <input type="hidden" name="sitesearch" value="hivedocs.info" />
+            <input type="text" name="q" maxlength="255" placeholder="Search" />
+          </form> -->
+        </div>
+      </nav>
+  </div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">update for beem: add community support</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2020-07-14T15:12:51-07:00" itemprop="datePublished">Jul 14, 2020
+      </time>• <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">
+          <a href="https://hive.blog/@holger80">holger80</a>
+        </span></span></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <div id="content-holger80-update-for-beem-add-community-support">
+## Repository
+
+https://github.com/holgern/beem<center>
+![beem-logo](https://cdn.steemitimages.com/DQmcRrwLPSywSYMierfP6um6mejeMNGjN9Rxw7audJqTDgb/beem-logo)
+</center>
+
+[beem](https://github.com/holgern/beem) is a python library and command line tool for HIVE.  The current version is 0.24.5.
+
+There is also a discord channel for beem: https://discord.gg/4HM592V
+
+The newest beem version can be installed by:
+
+```
+pip install -U beem
+```
+
+Check that you are using hive nodes. The following command 
+
+```
+beempy updatenodes --hive
+```
+
+updates the nodelist and uses only hive nodes. After setting hive as default_chain, `beempy updatenodes` can be used.
+
+The list of nodes can be checked with
+
+```
+beempy config
+```
+
+and
+
+```
+beempy currentnode
+```
+
+shows the currently connected node.
+
+## Changelog for versions 0.24.5
+* replace percent_hive_dollars by percent_hbd (to make beem HF24 ready)
+* Remove whaleshares related code 
+* Fix adding of a wif in beempy
+* Remove SteemConnect
+* Fix set token in HiveSigner
+* Add Blurt
+* Add Community for community reladed requests and broadcasts
+* Improve community lookup for beempy createpost
+* Improved beempy history command output
+* Improved beempy stream
+  
+## Community support
+I added community support to beem. The following example shows the content of a community dict:
+
+
+```
+from beem.community import Community
+from prettytable import PrettyTable
+community = Community("hive-139531")
+t = PrettyTable(["key", "value"])
+t.align = "l"
+t._max_width = {"value" : 60}
+for key in community.json():
+    t.add_row([key, community.json()[key]])
+print(t)
+```
+returns
+```
++-------------+--------------------------------------------------------------+
+| key         | value                                                        |
++-------------+--------------------------------------------------------------+
+| id          | 1357761                                                      |
+| name        | hive-139531                                                  |
+| title       | HiveDevs                                                     |
+| about       | HiveDevs - A community of developers working on Hive related |
+|             | projects. Visit our Discord at https://discord.gg/cvnByhu    |
+| lang        | en                                                           |
+| type_id     | 1                                                            |
+| is_nsfw     | False                                                        |
+| subscribers | 1005                                                         |
+| sum_pending | 638                                                          |
+| num_pending | 253                                                          |
+| num_authors | 120                                                          |
+| created_at  | 2020-01-23 16:27:39                                          |
+| avatar_url  |                                                              |
+| context     | {}                                                           |
+| description |                                                              |
+| flag_text   |                                                              |
+| settings    | {}                                                           |
+| team        | [['hive-139531', 'owner', ''], ['netuoso', 'admin', ''],     |
+|             | ['abit', 'mod', ''], ['roadscape', 'mod', ''], ['acidyo',    |
+|             | 'mod', ''], ['gtg', 'mod', ''], ['good-karma', 'mod',        |
+|             | 'Founder of Esteem'], ['jesta', 'mod', ''], ['inertia',      |
+|             | 'mod', '#1138'], ['arcange', 'mod', ''], ['someguy123',      |
+|             | 'mod', ''], ['mahdiyari', 'mod', ''], ['blocktrades', 'mod', |
+|             | ''], ['drakos', 'mod', ''], ['themarkymark', 'mod', ''],     |
+|             | ['stoodkev', 'mod', ''], ['therealwolf', 'mod', ''],         |
+|             | ['yabapmatt', 'mod', ''], ['eonwarped', 'mod', ''],          |
+|             | ['emrebeyler', 'mod', ''], ['bobinson', 'mod', ''],          |
+|             | ['asgarth', 'mod', ''], ['quochuy', 'mod', 'Witness'],       |
+|             | ['crimsonclad', 'mod', ''], ['pharesim', 'mod', '']]         |
++-------------+--------------------------------------------------------------+
+```
+The following API functions have been implemented:
+
+```
+roles = community.get_community_roles()
+print("len %d - first entry: %s" % (len(roles), str(roles[0])))
+subscribers = community.get_subscribers()
+print("len %d - first entry: %s" % (len(subscribers), str(subscribers[0])))
+last_activity = community.get_activities(limit=100, last_id=None)
+print("len %d - first entry: %s" % (len(last_activity), str(last_activity[0])))
+latest_post = community.get_ranked_posts(limit=25)
+print("len %d - first entry: %s" % (len(latest_post), str(latest_post[0])[:120]))
+```
+returns:
+```
+len 50 - first entry: ['hive-139531', 'owner', '']
+len 250 - first entry: ['joshman', 'guest', None, '2020-07-14 16:16:15']
+len 100 - first entry: {'id': 78159733, 'type': 'subscribe', 'score': 35, 'date': '2020-07-14T16:16:15', 'msg': '@joshman subscribed to HiveDevs', 'url': 'trending/hive-139531'}
+len 25 - first entry: {'post_id': 83702748, 'author': 'netuoso', 'permlink': 'creation-of-steemdevs-community-information-about-steemdevs', 'c
+
+```
+
+`get_subscribers()` returns only 250 subscribers and it is currently not possible to receive all subscribers (`hive-139531` has 1005 subscribers in total). A way to receive all subscribers could be parsing `get_activities`, as there is an entry for each new subscriber.
+
+## Communities
+`Communities` returns a list of registred communities. The communities inside the list can be printed by `printAsTable()` and it is possible to search the community title for a match:
+```
+from beem.community import Communities
+communities = Communities(limit=100)
+communities.search_title("dev").printAsTable()
+```
+returns
+```
++-----+-------------+----------+------+-------------+-------------+-------------+-------------+
+| Nr. | Name        | Title    | lang | subscribers | sum_pending | num_pending | num_authors |
++-----+-------------+----------+------+-------------+-------------+-------------+-------------+
+| 1   | hive-139531 | HiveDevs | en   | 1000        | 945         | 236         | 113         |
++-----+-------------+----------+------+-------------+-------------+-------------+-------------+
+```
+The limit of returned communities can be increased by using the `limit` parameter:
+```
+from beem.community import Communities
+communities = Communities(limit=1000)
+communities.search_title("dev").printAsTable()
+```
+returns
+```
++-----+-------------+---------------+------+-------------+-------------+-------------+-------------+
+| Nr. | Name        | Title         | lang | subscribers | sum_pending | num_pending | num_authors |
++-----+-------------+---------------+------+-------------+-------------+-------------+-------------+
+| 1   | hive-139531 | HiveDevs      | en   | 1000        | 945         | 236         | 113         |
+| 2   | hive-152825 | DEVCOIN       | en   | 2           | 0           | 5           | 2           |
+| 3   | hive-199094 | Devotionals   | en   | 1           | 0           | 3           | 1           |
+| 4   | hive-192808 | kr-dev-center | kr   | 20          | 0           | 0           | 0           |
+| 5   | hive-150008 | Game Dev   | en   | 12          | 0           | 0           | 0           |
+| 6   | hive-101482 | BeeWiki.Dev   | en   | 6           | 0           | 0           | 0           |
++-----+-------------+---------------+------+-------------+-------------+-------------+-------------+
+```
+Searching a community by its title was also added to `beempy createpost`
+![](https://images.hive.blog/DQmUZ5J5Z4ov6aXobXunqGybcdkdiVHui5Y8jJ58MNVVKpY/image)
+Currently a title is searched in the top 1000.
+
+## Broadcasting community related ops
+The following shows all operation that can be broadcasted:
+```
+from beem.community import Community
+community = Community("hive-111111")
+community.set_role("account_a", "mod", "new mod")
+community.set_user_title("account_b", "investor")
+community.mute_post("author_a", "permlink_a", "spam", "mod_a")
+community.unmute_post("author_a", "permlink_a", "no spam", "mod_a")
+community.update_props("My Community", "Great community", False, "About me", "Not about me", "admin_a")
+community.subscribe("user_c")
+community.unsubscribe("user_c")
+community.pin_post("author_a", "permlink_a", "mod_a")
+community.unpin_post("author_a", "permlink_a", "mod_a")
+community.flag_post("author_a", "permlink_a", "please check", "user_a")
+```
+
+## HiveSigner / steemconnect
+I removed the SteemConnect class from beem, as steemconnect.com is no longer working.
+
+I fixed the token parameter in HiveSigner:
+```
+from beem.HiveSigner import HiveSigner
+hs = HiveSigner(token=["32..."])
+print(hs.me())
+```
+where 32... is a valid HiveSinger token.
+
+## Improved beempy stream
+
+```
+beempy stream -t -f
+```
+retuns now a table for each block:
+```
++----------+---------+-------------+------------------------------------------------------+
+| blocknum | trx_num | type        | content                                              |
++----------+---------+-------------+------------------------------------------------------+
+| 45157440 | 0       | custom_json | sm_submit_team                                       |
+| 45157440 | 1       | custom_json | sm_find_match                                        |
+| 45157440 | 2       | vote        | 100.00% @mattsanthonyit/uty6wgup4ul - mattsanthonyit |
+| 45157440 | 3       | custom_json | sm_find_match                                        |
+| 45157440 | 4       | custom_json | sm_find_match                                        |
+| 45157440 | 5       | custom_json | sm_find_match                                        |
+| 45157440 | 6       | custom_json | sm_find_match                                        |
+| 45157440 | 7       | custom_json | sm_find_match                                        |
+| 45157440 | 8       | custom_json | sm_find_match                                        |
+| 45157440 | 9       | custom_json | sm_submit_team                                       |
+| 45157440 | 10      | custom_json | sm_submit_team                                       |
+| 45157440 | 11      | custom_json | sm_find_match                                        |
+| 45157440 | 12      | custom_json | sm_find_match                                        |
+| 45157440 | 13      | custom_json | sm_find_match                                        |
+| 45157440 | 14      | custom_json | scot_claim_token                                     |
+| 45157440 | 15      | vote        | 5.00% @xr-hammergaming/52ktvx97870 - innerhive       |
+| 45157440 | 16      | custom_json | sm_find_match                                        |
++----------+---------+-------------+------------------------------------------------------+
+```
+where custom_json, vote, transfer and transfer_to_vesting have a shortened output.
+```
+beempy stream -f
+```
+streams the output in raw format.
+
+## Blurt
+As some beem users were interested in using beem on blurt, I added a Blurt class to beem. This adds support for blurt to beempy.
+The following commands will change the nodes, and check if they are set
+```
+beempy updatenodes --blurt
+beempy config
+```
+It is then possible to check the amount of powered up BLURT and to power it down by
+```
+beempy power holger80
+beempy powerdown -a holger80 33244
+```
+The powerdown command will ask for your active keys. 
+
+You can check the activity on blurt by
+```
+beempy stream -t
+```
+you need to be patient, as there is currently not much activity...:
+```
+{'block_num': 306762,
+ 'op': ['withdraw_vesting',
+        {'account': 'oth1',
+         'vesting_shares': {'amount': '36699505048',
+                            'nai': '@@000000037',
+ 'timestamp': '2020-07-14T21:53:57',
+ 'trx_num': 0}
+{'block_num': 306765,
+ 'op': ['vote',
+        {'author': 'discernente',
+         'permlink': '0alhcnfp0r7dh2t',
+         'voter': 'discernente',
+         'weight': 10000}],
+ 'timestamp': '2020-07-14T21:54:06',
+ 'trx_num': 0}
+ ```
+You can switch back to hive with:
+```
+beempy updatenodes --hive
+```
+The Blurt class can be used to simplify the access to the Blurt blockchain:
+```
+from beem import Blurt
+blurt = Blurt(node= ["https://rpc.blurt.world", "https://blurt-rpc.steem.buzz"])
+print(blurt)
+```
+returns
+```
+&lt;Blurt node=https://rpc.blurt.world, nobroadcast=False&gt;
+```
+
+___
+
+*If you like what I do, consider casting a vote for me as witness on [Hivesigner](https://hivesigner.com/sign/account-witness-vote?witness=holger80&amp;approve=1) or on [PeakD](https://peakd.com/witnesses)*</div>
+<script crossorigin="anonymous" integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=" src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+
+<script src="https://unpkg.com/steem-content-renderer"></script>
+
+<script>
+  $(document).ready(function() {
+    try {
+      const renderer = new SteemContentRenderer.DefaultRenderer({
+        baseUrl: "https://hive.blog/",
+        breaks: true,
+        skipSanitization: false,
+        allowInsecureScriptTags: false,
+        addNofollowToLinks: true,
+        doNotShowImages: false,
+        ipfsPrefix: "",
+        assetsWidth: 640,
+        assetsHeight: 480,
+        imageProxyFn: (url) => url,
+        usertagUrlFn: (account) => "/@holger80",
+        hashtagUrlFn: (hashtag) => "/update-for-beem-add-community-support",
+        isLinkSafeFn: (url) => true,
+      });
+      
+      const inputElem = $('#content-holger80-update-for-beem-add-community-support').html();
+      const outputElem = $('#content-holger80-update-for-beem-add-community-support');
+      const output = renderer.render(inputElem);
+      
+      outputElem.html(output);
+    } catch(e) {
+      console.log(e);
+    }
+  });
+</script>
+
+<style>
+  #content-holger80-update-for-beem-add-community-support {
+    padding: 0 3rem;
+    color: #444444;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.8;
+    text-shadow: 0 1px 0 #ffffff;
+    padding: 0.5rem;
+  }
+  #content-holger80-update-for-beem-add-community-support code {
+    background: white;
+  }
+  #content-holger80-update-for-beem-add-community-support a {
+    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
+  }
+  #content-holger80-update-for-beem-add-community-support a:hover {
+    border-bottom: 0;
+  }
+  #content-holger80-update-for-beem-add-community-support h1 {
+    font-size: 2.2em;
+  }
+  #content-holger80-update-for-beem-add-community-support h2, h3, h4, h5 {
+    margin-bottom: 0;
+  }
+  #content-holger80-update-for-beem-add-community-support header small {
+    color: #999;
+    font-size: 50%;
+  }
+  #content-holger80-update-for-beem-add-community-support img {
+    max-width: 100%;
+  }
+</style>
+
+<hr />
+
+<p>
+  See: <a href="https://hive.blog/hive-139531/@holger80/update-for-beem-add-community-support">update for beem: add community support</a>
+  by
+  <a href="https://hive.blog/@holger80">@holger80</a>
+</p>
+
+
+  </div><a class="u-url" href="/news/python/community/2020/07/14/update-for-beem-add-community-support.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading"><a rel="author" href="/">Hive Chain Documentation</a></h2>
+    
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">site curated by: @inertia</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>Your resource for various levels of Hive Documentation.</p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+</body>
+
+</html>

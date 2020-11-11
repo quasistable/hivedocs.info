@@ -16,7 +16,7 @@
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2020-05-07T01:16:18-07:00" />
 <script type="application/ld+json">
-{"description":"The hive-ruby gem was written from the ground.","headline":"Ruby Client for Hive: hive-ruby-1.0.0.pre.1","dateModified":"2020-05-07T01:16:18-07:00","datePublished":"2020-05-07T01:16:18-07:00","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://peakd.com/hive-139531/@inertia/ruby-client-for-hive-hive-ruby-1-0-0-pre-1"},"url":"https://peakd.com/hive-139531/@inertia/ruby-client-for-hive-hive-ruby-1-0-0-pre-1","author":{"@type":"Person","name":"inertia"},"@context":"https://schema.org"}</script>
+{"description":"The hive-ruby gem was written from the ground.","author":{"@type":"Person","name":"inertia"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://peakd.com/hive-139531/@inertia/ruby-client-for-hive-hive-ruby-1-0-0-pre-1"},"@type":"BlogPosting","url":"https://peakd.com/hive-139531/@inertia/ruby-client-for-hive-hive-ruby-1-0-0-pre-1","headline":"Ruby Client for Hive: hive-ruby-1.0.0.pre.1","dateModified":"2020-05-07T01:16:18-07:00","datePublished":"2020-05-07T01:16:18-07:00","@context":"https://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://hivedocs.info/feed.xml" title="Hive Chain Documentation" /><script>
 if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNotTrack === "yes" || navigator.msDoNotTrack === "1")) {
@@ -85,296 +85,317 @@ if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNo
   </header>
 
   <div class="post-content e-content" itemprop="articleBody">
-    <div class="pull-right">
+    <div id="content-inertia-ruby-client-for-hive-hive-ruby-1-0-0-pre-1"><div class="pull-right">
   <img src="https://files.peakd.com/file/peakd-hive/inertia/aJnQFjOw-logo-128.png" />
 </div>
 
-<h1 id="hive-ruby"><a href="https://gitlab.syncad.com/hive/hive-ruby"><code class="highlighter-rouge">hive-ruby</code></a></h1>
-
-<p>Hive-ruby the Ruby API for Hive blockchain.</p>
-
-<h2 id="radiator-vs-hive-ruby"><code class="highlighter-rouge">radiator</code> vs. <code class="highlighter-rouge">hive-ruby</code></h2>
-
-<p>The <code class="highlighter-rouge">hive-ruby</code> gem was written from the ground up by <code class="highlighter-rouge">@inertia</code>, who is also the author of <a href="https://github.com/inertia186/radiator"><code class="highlighter-rouge">radiator</code></a>.</p>
-
-<blockquote>
-  <p>“I intend to continue work on <code class="highlighter-rouge">radiator</code> indefinitely. But in <code class="highlighter-rouge">radiator-0.5</code>, I intend to refactor <code class="highlighter-rouge">radiator</code> so that is uses <code class="highlighter-rouge">hive-ruby</code> as its core. This means that some features of <code class="highlighter-rouge">radiator</code> like Serialization will become redundant. I think it’s still useful for radiator to do its own serialization because it reduces the number of API requests.” - @inertia</p>
-</blockquote>
-
-<table>
-  <thead>
-    <tr>
-      <th><code class="highlighter-rouge">radiator</code></th>
-      <th><code class="highlighter-rouge">hive-ruby</code></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Has internal failover logic</td>
-      <td>Can have failover delegated externally</td>
-    </tr>
-    <tr>
-      <td>Passes <code class="highlighter-rouge">error</code> responses to the caller</td>
-      <td>Handles <code class="highlighter-rouge">error</code> responses and raises exceptions</td>
-    </tr>
-    <tr>
-      <td>Supports tx signing, does its own serialization</td>
-      <td>Also supports tx signing, but delegates serialization to <code class="highlighter-rouge">database_api.get_transaction_hex</code>, then deserializes to verify</td>
-    </tr>
-    <tr>
-      <td>All apis and methods are hardcoded</td>
-      <td>Asks <code class="highlighter-rouge">jsonrpc</code> what apis and methods are available from the node</td>
-    </tr>
-    <tr>
-      <td>(<code class="highlighter-rouge">radiator-0.4.x</code>) Only supports AppBase but relies on <code class="highlighter-rouge">condenser_api</code></td>
-      <td>Only supports AppBase but does not rely on <code class="highlighter-rouge">condenser_api</code> <strong>(WIP)</strong></td>
-    </tr>
-    <tr>
-      <td>Small list of helper methods for select ops (in addition to build your own transaction)</td>
-      <td>Complete implementation of helper methods for every op (in addition to build your own transaction)</td>
-    </tr>
-    <tr>
-      <td>Does not (yet) support <code class="highlighter-rouge">json-rpc-batch</code> requests</td>
-      <td>Supports <code class="highlighter-rouge">json-rpc-batch</code> requests</td>
-    </tr>
-  </tbody>
-</table>
+# [`hive-ruby`](https://gitlab.syncad.com/hive/hive-ruby)
 
-<h2 id="getting-started">Getting Started</h2>
+Hive-ruby the Ruby API for Hive blockchain.
 
-<p>The hive-ruby gem is compatible with Ruby 2.2.5 or later.</p>
+## `radiator` vs. `hive-ruby`
 
-<h3 id="install-the-gem-for-your-project">Install the gem for your project</h3>
+The `hive-ruby` gem was written from the ground up by `@inertia`, who is also the author of [`radiator`](https://github.com/inertia186/radiator).
 
-<p><em>(Assuming that <a href="https://www.ruby-lang.org/en/downloads/">Ruby is installed</a> on your computer, as well as <a href="http://rubygems.org/pages/download">RubyGems</a>)</em></p>
+&gt; "I intend to continue work on `radiator` indefinitely. But in `radiator-0.5`, I intend to refactor `radiator` so that is uses `hive-ruby` as its core. This means that some features of `radiator` like Serialization will become redundant. I think it's still useful for radiator to do its own serialization because it reduces the number of API requests." - @inertia
 
-<p>To install the gem on your computer, run in shell:</p>
+`radiator` | `hive-ruby`
+---------- | ------------
+Has internal failover logic | Can have failover delegated externally
+Passes `error` responses to the caller | Handles `error` responses and raises exceptions
+Supports tx signing, does its own serialization | Also supports tx signing, but delegates serialization to `database_api.get_transaction_hex`, then deserializes to verify
+All apis and methods are hardcoded | Asks `jsonrpc` what apis and methods are available from the node
+(`radiator-0.4.x`) Only supports AppBase but relies on `condenser_api` | Only supports AppBase but does not rely on `condenser_api` **(WIP)**
+Small list of helper methods for select ops (in addition to build your own transaction) | Complete implementation of helper methods for every op (in addition to build your own transaction)
+Does not (yet) support `json-rpc-batch` requests | Supports `json-rpc-batch` requests
 
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>gem <span class="nb">install </span>hive-ruby
-</code></pre></div></div>
+## Getting Started
 
-<p>… then add in your code:</p>
+The hive-ruby gem is compatible with Ruby 2.2.5 or later.
 
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">require</span> <span class="s1">'hive'</span>
-</code></pre></div></div>
+### Install the gem for your project
 
-<p>To add the gem as a dependency to your project with <a href="http://bundler.io/">Bundler</a>, you can add this line in your Gemfile:</p>
+*(Assuming that [Ruby is installed](https://www.ruby-lang.org/en/downloads/) on your computer, as well as [RubyGems](http://rubygems.org/pages/download))*
 
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">gem</span> <span class="s1">'hive-ruby'</span><span class="p">,</span> <span class="ss">require: </span><span class="s1">'hive'</span>
-</code></pre></div></div>
+To install the gem on your computer, run in shell:
 
-<h2 id="examples">Examples</h2>
+```bash
+gem install hive-ruby
+```
 
-<h3 id="broadcast-vote">Broadcast Vote</h3>
+... then add in your code:
 
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">params</span> <span class="o">=</span> <span class="p">{</span>
-  <span class="ss">voter: </span><span class="n">voter</span><span class="p">,</span>
-  <span class="ss">author: </span><span class="n">author</span><span class="p">,</span>
-  <span class="ss">permlink: </span><span class="n">permlink</span><span class="p">,</span>
-  <span class="ss">weight: </span><span class="n">weight</span>
-<span class="p">}</span>
+```ruby
+require 'hive'
+```
 
-<span class="no">Hive</span><span class="o">::</span><span class="no">Broadcast</span><span class="p">.</span><span class="nf">vote</span><span class="p">(</span><span class="ss">wif: </span><span class="n">wif</span><span class="p">,</span> <span class="ss">params: </span><span class="n">params</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">result</span><span class="o">|</span>
-  <span class="nb">puts</span> <span class="n">result</span>
-<span class="k">end</span>
-</code></pre></div></div>
+To add the gem as a dependency to your project with [Bundler](http://bundler.io/), you can add this line in your Gemfile:
 
-<h3 id="streaming">Streaming</h3>
+```ruby
+gem 'hive-ruby', require: 'hive'
+```
 
-<p>The value passed to the block is an object, with the keys: <code class="highlighter-rouge">:type</code> and <code class="highlighter-rouge">:value</code>.</p>
+## Examples
 
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">stream</span> <span class="o">=</span> <span class="no">Hive</span><span class="o">::</span><span class="no">Stream</span><span class="p">.</span><span class="nf">new</span>
+### Broadcast Vote
 
-<span class="n">stream</span><span class="p">.</span><span class="nf">operations</span> <span class="k">do</span> <span class="o">|</span><span class="n">op</span><span class="o">|</span>
-  <span class="nb">puts</span> <span class="s2">"</span><span class="si">#{</span><span class="n">op</span><span class="p">.</span><span class="nf">type</span><span class="si">}</span><span class="s2">: </span><span class="si">#{</span><span class="n">op</span><span class="p">.</span><span class="nf">value</span><span class="si">}</span><span class="s2">"</span>
-<span class="k">end</span>
-</code></pre></div></div>
+```ruby
+params = {
+  voter: voter,
+  author: author,
+  permlink: permlink,
+  weight: weight
+}
 
-<p>To start a stream from a specific block number, pass it as an argument:</p>
+Hive::Broadcast.vote(wif: wif, params: params) do |result|
+  puts result
+end
+```
 
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">stream</span> <span class="o">=</span> <span class="no">Hive</span><span class="o">::</span><span class="no">Stream</span><span class="p">.</span><span class="nf">new</span>
+### Streaming
 
-<span class="n">stream</span><span class="p">.</span><span class="nf">operations</span><span class="p">(</span><span class="ss">at_block_num: </span><span class="mi">9001</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">op</span><span class="o">|</span>
-  <span class="nb">puts</span> <span class="s2">"</span><span class="si">#{</span><span class="n">op</span><span class="p">.</span><span class="nf">type</span><span class="si">}</span><span class="s2">: </span><span class="si">#{</span><span class="n">op</span><span class="p">.</span><span class="nf">value</span><span class="si">}</span><span class="s2">"</span>
-<span class="k">end</span>
-</code></pre></div></div>
+The value passed to the block is an object, with the keys: `:type` and `:value`.
 
-<p>You can also grab the related transaction id and block number for each operation:</p>
+```ruby
+stream = Hive::Stream.new
 
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">stream</span> <span class="o">=</span> <span class="no">Hive</span><span class="o">::</span><span class="no">Stream</span><span class="p">.</span><span class="nf">new</span>
+stream.operations do |op|
+  puts "#{op.type}: #{op.value}"
+end
+```
 
-<span class="n">stream</span><span class="p">.</span><span class="nf">operations</span> <span class="k">do</span> <span class="o">|</span><span class="n">op</span><span class="p">,</span> <span class="n">trx_id</span><span class="p">,</span> <span class="n">block_num</span><span class="o">|</span>
-  <span class="nb">puts</span> <span class="s2">"</span><span class="si">#{</span><span class="n">block_num</span><span class="si">}</span><span class="s2"> :: </span><span class="si">#{</span><span class="n">trx_id</span><span class="si">}</span><span class="s2">"</span>
-  <span class="nb">puts</span> <span class="s2">"</span><span class="si">#{</span><span class="n">op</span><span class="p">.</span><span class="nf">type</span><span class="si">}</span><span class="s2">: </span><span class="si">#{</span><span class="n">op</span><span class="p">.</span><span class="nf">value</span><span class="si">}</span><span class="s2">"</span>
-<span class="k">end</span>
-</code></pre></div></div>
+To start a stream from a specific block number, pass it as an argument:
 
-<p>To stream only certain operations:</p>
+```ruby
+stream = Hive::Stream.new
 
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">stream</span> <span class="o">=</span> <span class="no">Hive</span><span class="o">::</span><span class="no">Stream</span><span class="p">.</span><span class="nf">new</span>
+stream.operations(at_block_num: 9001) do |op|
+  puts "#{op.type}: #{op.value}"
+end
+```
 
-<span class="n">stream</span><span class="p">.</span><span class="nf">operations</span><span class="p">(</span><span class="ss">types: :vote_operation</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">op</span><span class="o">|</span>
-  <span class="nb">puts</span> <span class="s2">"</span><span class="si">#{</span><span class="n">op</span><span class="p">.</span><span class="nf">type</span><span class="si">}</span><span class="s2">: </span><span class="si">#{</span><span class="n">op</span><span class="p">.</span><span class="nf">value</span><span class="si">}</span><span class="s2">"</span>
-<span class="k">end</span>
-</code></pre></div></div>
+You can also grab the related transaction id and block number for each operation:
 
-<p>Or pass an array of certain operations:</p>
+```ruby
+stream = Hive::Stream.new
 
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">stream</span> <span class="o">=</span> <span class="no">Hive</span><span class="o">::</span><span class="no">Stream</span><span class="p">.</span><span class="nf">new</span>
+stream.operations do |op, trx_id, block_num|
+  puts "#{block_num} :: #{trx_id}"
+  puts "#{op.type}: #{op.value}"
+end
+```
 
-<span class="n">stream</span><span class="p">.</span><span class="nf">operations</span><span class="p">(</span><span class="ss">types: </span><span class="p">[</span><span class="ss">:comment_operation</span><span class="p">,</span> <span class="ss">:vote_operation</span><span class="p">])</span> <span class="k">do</span> <span class="o">|</span><span class="n">op</span><span class="o">|</span>
-  <span class="nb">puts</span> <span class="s2">"</span><span class="si">#{</span><span class="n">op</span><span class="p">.</span><span class="nf">type</span><span class="si">}</span><span class="s2">: </span><span class="si">#{</span><span class="n">op</span><span class="p">.</span><span class="nf">value</span><span class="si">}</span><span class="s2">"</span>
-<span class="k">end</span>
-</code></pre></div></div>
+To stream only certain operations:
 
-<p>Or (optionally) just pass the operation(s) you want as the only arguments.  This is semantic sugar for when you want specific types and take all of the defaults.</p>
+```ruby
+stream = Hive::Stream.new
 
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">stream</span> <span class="o">=</span> <span class="no">Hive</span><span class="o">::</span><span class="no">Stream</span><span class="p">.</span><span class="nf">new</span>
+stream.operations(types: :vote_operation) do |op|
+  puts "#{op.type}: #{op.value}"
+end
+```
 
-<span class="n">stream</span><span class="p">.</span><span class="nf">operations</span><span class="p">(</span><span class="ss">:vote_operation</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">op</span><span class="o">|</span>
-  <span class="nb">puts</span> <span class="s2">"</span><span class="si">#{</span><span class="n">op</span><span class="p">.</span><span class="nf">type</span><span class="si">}</span><span class="s2">: </span><span class="si">#{</span><span class="n">op</span><span class="p">.</span><span class="nf">value</span><span class="si">}</span><span class="s2">"</span>
-<span class="k">end</span>
-</code></pre></div></div>
-
-<p>To also include virtual operations:</p>
-
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">stream</span> <span class="o">=</span> <span class="no">Hive</span><span class="o">::</span><span class="no">Stream</span><span class="p">.</span><span class="nf">new</span>
-
-<span class="n">stream</span><span class="p">.</span><span class="nf">operations</span><span class="p">(</span><span class="ss">include_virtual: </span><span class="kp">true</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">op</span><span class="o">|</span>
-  <span class="nb">puts</span> <span class="s2">"</span><span class="si">#{</span><span class="n">op</span><span class="p">.</span><span class="nf">type</span><span class="si">}</span><span class="s2">: </span><span class="si">#{</span><span class="n">op</span><span class="p">.</span><span class="nf">value</span><span class="si">}</span><span class="s2">"</span>
-<span class="k">end</span>
-</code></pre></div></div>
-
-<h3 id="multisig">Multisig</h3>
-
-<p>You can use multisignature to broadcast an operation.</p>
-
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">params</span> <span class="o">=</span> <span class="p">{</span>
-  <span class="ss">voter: </span><span class="n">voter</span><span class="p">,</span>
-  <span class="ss">author: </span><span class="n">author</span><span class="p">,</span>
-  <span class="ss">permlink: </span><span class="n">permlink</span><span class="p">,</span>
-  <span class="ss">weight: </span><span class="n">weight</span>
-<span class="p">}</span>
-
-<span class="no">Hive</span><span class="o">::</span><span class="no">Broadcast</span><span class="p">.</span><span class="nf">vote</span><span class="p">(</span><span class="ss">wif: </span><span class="p">[</span><span class="n">wif1</span><span class="p">,</span> <span class="n">wif2</span><span class="p">],</span> <span class="ss">params: </span><span class="n">params</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">result</span><span class="o">|</span>
-  <span class="nb">puts</span> <span class="n">result</span>
-<span class="k">end</span>
-</code></pre></div></div>
-
-<p>In addition to signing with multiple <code class="highlighter-rouge">wif</code> private keys, it is possible to also export a partially signed transaction to have signing completed by someone else.</p>
-
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">builder</span> <span class="o">=</span> <span class="no">Hive</span><span class="o">::</span><span class="no">TransactionBuilder</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="ss">wif: </span><span class="n">wif1</span><span class="p">)</span>
-
-<span class="n">builder</span><span class="p">.</span><span class="nf">put</span><span class="p">(</span><span class="ss">vote: </span><span class="p">{</span>
-  <span class="ss">voter: </span><span class="n">voter</span><span class="p">,</span>
-  <span class="ss">author: </span><span class="n">author</span><span class="p">,</span>
-  <span class="ss">permlink: </span><span class="n">permlink</span><span class="p">,</span>
-  <span class="ss">weight: </span><span class="n">weight</span>
-<span class="p">})</span>
-
-<span class="n">trx</span> <span class="o">=</span> <span class="n">builder</span><span class="p">.</span><span class="nf">sign</span><span class="p">.</span><span class="nf">to_json</span>
-
-<span class="no">File</span><span class="p">.</span><span class="nf">open</span><span class="p">(</span><span class="s1">'trx.json'</span><span class="p">,</span> <span class="s1">'w'</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">f</span><span class="o">|</span>
-  <span class="n">f</span><span class="p">.</span><span class="nf">write</span><span class="p">(</span><span class="n">trx</span><span class="p">)</span>
-<span class="k">end</span>
-</code></pre></div></div>
-
-<p>Then send the contents of <code class="highlighter-rouge">trx.json</code> to the other signing party so they can privately sign and broadcast the transaction.</p>
-
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">trx</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s1">'trx.json'</span><span class="p">).</span><span class="nf">read</span>
-<span class="n">builder</span> <span class="o">=</span> <span class="no">Hive</span><span class="o">::</span><span class="no">TransactionBuilder</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="ss">wif: </span><span class="n">wif2</span><span class="p">,</span> <span class="ss">trx: </span><span class="n">trx</span><span class="p">)</span>
-<span class="n">api</span> <span class="o">=</span> <span class="no">Hive</span><span class="o">::</span><span class="no">CondenserApi</span><span class="p">.</span><span class="nf">new</span>
-<span class="n">trx</span> <span class="o">=</span> <span class="n">builder</span><span class="p">.</span><span class="nf">transaction</span>
-<span class="n">api</span><span class="p">.</span><span class="nf">broadcast_transaction_synchronous</span><span class="p">(</span><span class="n">trx</span><span class="p">)</span>
-</code></pre></div></div>
-
-<h3 id="get-accounts">Get Accounts</h3>
-
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">api</span> <span class="o">=</span> <span class="no">Hive</span><span class="o">::</span><span class="no">DatabaseApi</span><span class="p">.</span><span class="nf">new</span>
-
-<span class="n">api</span><span class="p">.</span><span class="nf">find_accounts</span><span class="p">(</span><span class="ss">accounts: </span><span class="p">[</span><span class="s1">'hiveio'</span><span class="p">,</span> <span class="s1">'alice'</span><span class="p">])</span> <span class="k">do</span> <span class="o">|</span><span class="n">result</span><span class="o">|</span>
-  <span class="nb">puts</span> <span class="n">result</span><span class="p">.</span><span class="nf">accounts</span>
-<span class="k">end</span>
-</code></pre></div></div>
-
-<h3 id="reputation-formatter">Reputation Formatter</h3>
-
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">rep</span> <span class="o">=</span> <span class="no">Hive</span><span class="o">::</span><span class="no">Formatter</span><span class="p">.</span><span class="nf">reputation</span><span class="p">(</span><span class="n">account</span><span class="p">.</span><span class="nf">reputation</span><span class="p">)</span>
-<span class="nb">puts</span> <span class="n">rep</span>
-</code></pre></div></div>
-
-<h3 id="tests">Tests</h3>
-
-<ul>
-  <li>Clone the client repository into a directory of your choice:
-    <ul>
-      <li><code class="highlighter-rouge">git clone 
-&lt;a href="https://gitlab.syncad.com/hive/hive-ruby.git"&gt;https://gitlab.syncad.com/hive/hive-ruby.git&lt;/a&gt;
-</code></li>
-    </ul>
-  </li>
-  <li>Navigate into the new folder
-    <ul>
-      <li><code class="highlighter-rouge">cd hive-ruby</code></li>
-    </ul>
-  </li>
-  <li>All tests can be invoked as follows:
-    <ul>
-      <li><code class="highlighter-rouge">bundle exec rake test</code></li>
-    </ul>
-  </li>
-  <li>To run <code class="highlighter-rouge">static</code> tests:
-    <ul>
-      <li><code class="highlighter-rouge">bundle exec rake test:static</code></li>
-    </ul>
-  </li>
-  <li>To run <code class="highlighter-rouge">broadcast</code> tests (broadcast is simulated, only <code class="highlighter-rouge">verify</code> is actually used):
-    <ul>
-      <li><code class="highlighter-rouge">bundle exec rake test:broadcast</code></li>
-    </ul>
-  </li>
-  <li>To run <code class="highlighter-rouge">threads</code> tests (which quickly verifies thread safety):
-    <ul>
-      <li><code class="highlighter-rouge">bundle exec rake test:threads</code></li>
-    </ul>
-  </li>
-  <li>To run <code class="highlighter-rouge">testnet</code> tests (which does actual broadcasts)
-    <ul>
-      <li><code class="highlighter-rouge">TEST_NODE=
-&lt;a href="https://testnet-api.openhive.network"&gt;https://testnet-api.openhive.network&lt;/a&gt;
- bundle exec rake test:testnet</code></li>
-    </ul>
-  </li>
-</ul>
-
-<p>You can also run other tests that are not part of the above <code class="highlighter-rouge">test</code> execution:</p>
-
-<ul>
-  <li>To run <code class="highlighter-rouge">block_range</code>, which streams blocks (using <code class="highlighter-rouge">json-rpc-batch</code>)
-    <ul>
-      <li><code class="highlighter-rouge">bundle exec rake stream:block_range</code></li>
-    </ul>
-  </li>
-</ul>
-
-<p>If you want to point to any node for tests, instead of letting the test suite pick the default, set the environment variable to <code class="highlighter-rouge">TEST_NODE</code>, e.g.:</p>
-
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ TEST_NODE</span><span class="o">=</span>
-&lt;a <span class="nv">href</span><span class="o">=</span><span class="s2">"https://testnet-api.openhive.network"</span><span class="o">&gt;</span>https://testnet-api.openhive.network&lt;/a&gt;
- bundle <span class="nb">exec </span>rake <span class="nb">test</span>
-</code></pre></div></div>
-
-<h2 id="contributions">Contributions</h2>
-
-<p>Patches are welcome! Contributors are listed in the <code class="highlighter-rouge">hive-ruby.gemspec</code> file. Please run the tests (<code class="highlighter-rouge">rake test</code>) before opening a pull request and make sure that you are passing all of them. If you would like to contribute, but don’t know what to work on, check the issues list.</p>
-
-<h2 id="issues">Issues</h2>
-
-<p>When you find issues, please report them!</p>
-
-<h2 id="license">License</h2>
-
-<p>MIT</p>
+Or pass an array of certain operations:
+
+```ruby
+stream = Hive::Stream.new
+
+stream.operations(types: [:comment_operation, :vote_operation]) do |op|
+  puts "#{op.type}: #{op.value}"
+end
+```
+
+Or (optionally) just pass the operation(s) you want as the only arguments.  This is semantic sugar for when you want specific types and take all of the defaults.
+
+```ruby
+stream = Hive::Stream.new
+
+stream.operations(:vote_operation) do |op|
+  puts "#{op.type}: #{op.value}"
+end
+```
+
+To also include virtual operations:
+
+```ruby
+stream = Hive::Stream.new
+
+stream.operations(include_virtual: true) do |op|
+  puts "#{op.type}: #{op.value}"
+end
+```
+
+### Multisig
+
+You can use multisignature to broadcast an operation.
+
+```ruby
+params = {
+  voter: voter,
+  author: author,
+  permlink: permlink,
+  weight: weight
+}
+
+Hive::Broadcast.vote(wif: [wif1, wif2], params: params) do |result|
+  puts result
+end
+```
+
+In addition to signing with multiple `wif` private keys, it is possible to also export a partially signed transaction to have signing completed by someone else.
+
+```ruby
+builder = Hive::TransactionBuilder.new(wif: wif1)
+
+builder.put(vote: {
+  voter: voter,
+  author: author,
+  permlink: permlink,
+  weight: weight
+})
+
+trx = builder.sign.to_json
+
+File.open('trx.json', 'w') do |f|
+  f.write(trx)
+end
+```
+
+Then send the contents of `trx.json` to the other signing party so they can privately sign and broadcast the transaction.
+
+```ruby
+trx = open('trx.json').read
+builder = Hive::TransactionBuilder.new(wif: wif2, trx: trx)
+api = Hive::CondenserApi.new
+trx = builder.transaction
+api.broadcast_transaction_synchronous(trx)
+```
+
+### Get Accounts
+
+```ruby
+api = Hive::DatabaseApi.new
+
+api.find_accounts(accounts: ['hiveio', 'alice']) do |result|
+  puts result.accounts
+end
+```
+
+### Reputation Formatter
+
+```ruby
+rep = Hive::Formatter.reputation(account.reputation)
+puts rep
+```
+
+### Tests
+
+* Clone the client repository into a directory of your choice:
+  * `git clone https://gitlab.syncad.com/hive/hive-ruby.git`
+* Navigate into the new folder
+  * `cd hive-ruby`
+* All tests can be invoked as follows:
+  * `bundle exec rake test`
+* To run `static` tests:
+  * `bundle exec rake test:static`
+* To run `broadcast` tests (broadcast is simulated, only `verify` is actually used):
+  * `bundle exec rake test:broadcast`
+* To run `threads` tests (which quickly verifies thread safety):
+  * `bundle exec rake test:threads`
+* To run `testnet` tests (which does actual broadcasts)
+  * `TEST_NODE=https://testnet-api.openhive.network bundle exec rake test:testnet`
+
+You can also run other tests that are not part of the above `test` execution:
+
+* To run `block_range`, which streams blocks (using `json-rpc-batch`)
+  * `bundle exec rake stream:block_range`
+
+
+If you want to point to any node for tests, instead of letting the test suite pick the default, set the environment variable to `TEST_NODE`, e.g.:
+
+```bash
+$ TEST_NODE=https://testnet-api.openhive.network bundle exec rake test
+```
+
+## Contributions
+
+Patches are welcome! Contributors are listed in the `hive-ruby.gemspec` file. Please run the tests (`rake test`) before opening a pull request and make sure that you are passing all of them. If you would like to contribute, but don't know what to work on, check the issues list.
+
+## Issues
+
+When you find issues, please report them!
+
+## License
+
+MIT
+</div>
+<script crossorigin="anonymous" integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=" src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+
+<script src="https://unpkg.com/steem-content-renderer"></script>
+
+<script>
+  $(document).ready(function() {
+    try {
+      const renderer = new SteemContentRenderer.DefaultRenderer({
+        baseUrl: "https://hive.blog/",
+        breaks: true,
+        skipSanitization: false,
+        allowInsecureScriptTags: false,
+        addNofollowToLinks: true,
+        doNotShowImages: false,
+        ipfsPrefix: "",
+        assetsWidth: 640,
+        assetsHeight: 480,
+        imageProxyFn: (url) => url,
+        usertagUrlFn: (account) => "/@inertia",
+        hashtagUrlFn: (hashtag) => "/ruby-client-for-hive-hive-ruby-1-0-0-pre-1",
+        isLinkSafeFn: (url) => true,
+      });
+      
+      const inputElem = $('#content-inertia-ruby-client-for-hive-hive-ruby-1-0-0-pre-1').html();
+      const outputElem = $('#content-inertia-ruby-client-for-hive-hive-ruby-1-0-0-pre-1');
+      const output = renderer.render(inputElem);
+      
+      outputElem.html(output);
+    } catch(e) {
+      console.log(e);
+    }
+  });
+</script>
+
+<style>
+  #content-inertia-ruby-client-for-hive-hive-ruby-1-0-0-pre-1 {
+    padding: 0 3rem;
+    color: #444444;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.8;
+    text-shadow: 0 1px 0 #ffffff;
+    padding: 0.5rem;
+  }
+  #content-inertia-ruby-client-for-hive-hive-ruby-1-0-0-pre-1 code {
+    background: white;
+  }
+  #content-inertia-ruby-client-for-hive-hive-ruby-1-0-0-pre-1 a {
+    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
+  }
+  #content-inertia-ruby-client-for-hive-hive-ruby-1-0-0-pre-1 a:hover {
+    border-bottom: 0;
+  }
+  #content-inertia-ruby-client-for-hive-hive-ruby-1-0-0-pre-1 h1 {
+    font-size: 2.2em;
+  }
+  #content-inertia-ruby-client-for-hive-hive-ruby-1-0-0-pre-1 h2, h3, h4, h5 {
+    margin-bottom: 0;
+  }
+  #content-inertia-ruby-client-for-hive-hive-ruby-1-0-0-pre-1 header small {
+    color: #999;
+    font-size: 50%;
+  }
+  #content-inertia-ruby-client-for-hive-hive-ruby-1-0-0-pre-1 img {
+    max-width: 100%;
+  }
+</style>
 
 <hr />
 

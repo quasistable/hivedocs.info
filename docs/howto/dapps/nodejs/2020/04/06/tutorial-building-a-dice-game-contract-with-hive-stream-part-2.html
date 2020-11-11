@@ -16,7 +16,7 @@
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2020-04-06T04:00:21-07:00" />
 <script type="application/ld+json">
-{"description":"Elaborating on part one of our dice contract tutorial and beefing it up","headline":"Tutorial: Building A Dice Game Contract With Hive Stream (Part 2)","dateModified":"2020-04-06T04:00:21-07:00","datePublished":"2020-04-06T04:00:21-07:00","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://peakd.com/hive-139531/@beggars/tutorial-building-a-dice-game-contract-with-hive-stream-part-2"},"url":"https://peakd.com/hive-139531/@beggars/tutorial-building-a-dice-game-contract-with-hive-stream-part-2","author":{"@type":"Person","name":"beggars"},"@context":"https://schema.org"}</script>
+{"description":"Elaborating on part one of our dice contract tutorial and beefing it up","author":{"@type":"Person","name":"beggars"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://peakd.com/hive-139531/@beggars/tutorial-building-a-dice-game-contract-with-hive-stream-part-2"},"@type":"BlogPosting","url":"https://peakd.com/hive-139531/@beggars/tutorial-building-a-dice-game-contract-with-hive-stream-part-2","headline":"Tutorial: Building A Dice Game Contract With Hive Stream (Part 2)","dateModified":"2020-04-06T04:00:21-07:00","datePublished":"2020-04-06T04:00:21-07:00","@context":"https://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://hivedocs.info/feed.xml" title="Hive Chain Documentation" /><script>
 if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNotTrack === "yes" || navigator.msDoNotTrack === "1")) {
@@ -85,29 +85,30 @@ if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNo
   </header>
 
   <div class="post-content e-content" itemprop="articleBody">
-    <p>If you missed <a href="https://peakd.com/hive-139531/@beggars/tutorial-building-a-dice-game-contract-with-hive-stream">part one here</a>, we built a basic dice game contract which allows people to bet on an outcome and either win or lose. The tutorial left out some things that you might want to do in a real deployment.</p>
+    <div id="content-beggars-tutorial-building-a-dice-game-contract-with-hive-stream-part-2">If you missed [part one here](https://peakd.com/hive-139531/@beggars/tutorial-building-a-dice-game-contract-with-hive-stream), we built a basic dice game contract which allows people to bet on an outcome and either win or lose. The tutorial left out some things that you might want to do in a real deployment.
 
-<h2 id="install-mongodb">Install MongoDB</h2>
+## Install MongoDB
 
-<p>For this tutorial, we are going to use MongoDB as the database behind it. We’ll be storing transactions and outcomes in the database, so we can ensure that transfers are not processed multiple times.</p>
+For this tutorial, we are going to use MongoDB as the database behind it. We'll be storing transactions and outcomes in the database, so we can ensure that transfers are not processed multiple times.
 
-<p>While the streamer keeps track of the last processed block number in a JSON file or SQLite database, what happens if your node goes down and the file gets edited or deleted? It would result in missed transactions which would be a pain to manually process.</p>
+While the streamer keeps track of the last processed block number in a JSON file or SQLite database, what happens if your node goes down and the file gets edited or deleted? It would result in missed transactions which would be a pain to manually process.
 
-<p>Download the community version installer from the official <a href="https://www.mongodb.com/download-center/community">MongoDB</a> website. Choose the appropriate installer for your operating system and follow the instructions. It should require very little input, just keep clicking next basically and keep everything as default.</p>
+Download the community version installer from the official [MongoDB](https://www.mongodb.com/download-center/community) website. Choose the appropriate installer for your operating system and follow the instructions. It should require very little input, just keep clicking next basically and keep everything as default.
 
-<h2 id="build-a-mongodb-adapter">Build a MongoDB adapter</h2>
+## Build a MongoDB adapter
 
-<p>Now, we need to write an adapter that will allow Hive Stream to work with MongoDB instead of the file databases that it is configured out-of-the-box to use. Provided you have Hive Stream installed (version 2+) you should have the new adapter’s functionality.</p>
+Now, we need to write an adapter that will allow Hive Stream to work with MongoDB instead of the file databases that it is configured out-of-the-box to use. Provided you have Hive Stream installed (version 2+) you should have the new adapter's functionality.
 
-<p>An adapter for standard use cases consists of just two mandatory methods <code class="highlighter-rouge">loadState</code> and <code class="highlighter-rouge">saveState</code> the <code class="highlighter-rouge">loadState</code> method gets called when the streamer starts to start at the last block it finished. The <code class="highlighter-rouge">saveState</code> method updates with the latest processed block.</p>
+An adapter for standard use cases consists of just two mandatory methods `loadState` and `saveState` the `loadState` method gets called when the streamer starts to start at the last block it finished. The `saveState` method updates with the latest processed block.
 
-<p>There are however other lifecycle methods which we can use in our more functional adapters. <code class="highlighter-rouge">create</code> is called on initialisation, you can setup instances and connections in here. <code class="highlighter-rouge">destroy</code> is called when everything is stopped, so naturally you close database connections in here.</p>
+There are however other lifecycle methods which we can use in our more functional adapters. `create` is called on initialisation, you can setup instances and connections in here. `destroy` is called when everything is stopped, so naturally you close database connections in here.
 
-<p>The <code class="highlighter-rouge">processOperation</code> is a method that gets the latest block number, transaction ID and so forth. It’s metadata used to identify specific transactions and their block data. The <code class="highlighter-rouge">processTransfer</code> and <code class="highlighter-rouge">processCustomJson</code> methods are called when a matching transfer or custom JSON operation is matched to a contract. It also gets contract information as well as the payload and other helpful info.</p>
+The `processOperation` is a method that gets the latest block number, transaction ID and so forth. It's metadata used to identify specific transactions and their block data. The `processTransfer` and `processCustomJson` methods are called when a matching transfer or custom JSON operation is matched to a contract. It also gets contract information as well as the payload and other helpful info.
 
-<p><strong>Save the following as <code class="highlighter-rouge">mongo.adapter.js</code></strong></p>
+**Save the following as `mongo.adapter.js`**
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>import { AdapterBase } from 'hive-stream';
+```
+import { AdapterBase } from 'hive-stream';
 
 import { MongoClient, Db } from 'mongodb';
 
@@ -222,52 +223,59 @@ export class MongodbAdapter extends AdapterBase {
         return true;
     }
 }
-</code></pre></div></div>
+```
 
-<h2 id="expanding-the-dice-contract">Expanding the dice contract</h2>
+## Expanding the dice contract
 
-<p>Now we have MongoDB support added via our adapter, let’s modify the contract code to flag whether or not a transfer was processed (winnings sent or loss memo sent). This will allow us to replay our dice game and not worry about paying out users who already received their winnings multiple times.</p>
+Now we have MongoDB support added via our adapter, let's modify the contract code to flag whether or not a transfer was processed (winnings sent or loss memo sent). This will allow us to replay our dice game and not worry about paying out users who already received their winnings multiple times.
 
-<p>Above the <code class="highlighter-rouge">if (verify)</code> line of code, let’s access the Mongo database client and connection.</p>
+Above the `if (verify)` line of code, let's access the Mongo database client and connection.
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>const db = this._instance['adapter']['db'];
+```
+const db = this._instance['adapter']['db'];
 const collection = db.collection('transfers');
-</code></pre></div></div>
+```
 
-<p>Because contracts get access to the streamer instance, it means we can access the adapter and <code class="highlighter-rouge">db</code> property. The downside here is for any adapter that doesn’t have a <code class="highlighter-rouge">db</code> property, this will fail. In our case, we know we want to use the database adapter, so the slightly tighter coupling is fine.</p>
+Because contracts get access to the streamer instance, it means we can access the adapter and `db` property. The downside here is for any adapter that doesn't have a `db` property, this will fail. In our case, we know we want to use the database adapter, so the slightly tighter coupling is fine.
 
-<p>Inside of the balance check that refunds if the account doesn’t have more than the maximum bet, we’ll add some code that sets the status to <code class="highlighter-rouge">refund</code></p>
+Inside of the balance check that refunds if the account doesn't have more than the maximum bet, we'll add some code that sets the status to `refund`
 
-<p>Put the following inside of this if statement: <code class="highlighter-rouge">if (balance &lt; MAX_BET) {</code> underneath the <code class="highlighter-rouge">transferHiveTokens</code> call.</p>
+Put the following inside of this if statement: ``if (balance &lt; MAX_BET) {`` underneath the `transferHiveTokens` call.
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>await collection.findOneAndUpdate({ id: this.transactionId }, { $set: { status: 'refund' } });
-</code></pre></div></div>
+```
+await collection.findOneAndUpdate({ id: this.transactionId }, { $set: { status: 'refund' } });
+```
 
-<p>What we are doing here is querying the database for our transaction based on its ID, then using the MongoDB <code class="highlighter-rouge">$set</code> property to only add/update one specific property in the <code class="highlighter-rouge">transfers</code> collection.</p>
+What we are doing here is querying the database for our transaction based on its ID, then using the MongoDB `$set` property to only add/update one specific property in the `transfers` collection.
 
-<p>Next, inside of the if statement <code class="highlighter-rouge">if (parseFloat(tokensWon) &gt; balance) {</code> add in the same line of code beneath the <code class="highlighter-rouge">transferHiveTokens</code> call:</p>
+Next, inside of the if statement ``if (parseFloat(tokensWon) &gt; balance) {`` add in the same line of code beneath the `transferHiveTokens` call:
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>await collection.findOneAndUpdate({ id: this.transactionId }, { $set: { status: 'refund' } });
-</code></pre></div></div>
+```
+await collection.findOneAndUpdate({ id: this.transactionId }, { $set: { status: 'refund' } });
+```
 
-<p>Underneath the transfer code for winnings <code class="highlighter-rouge">await this._instance.transferHiveTokens(ACCOUNT, sender, tokensWon, TOKEN_SYMBOL, winningMemo);</code> add in the following:</p>
+Underneath the transfer code for winnings ``await this._instance.transferHiveTokens(ACCOUNT, sender, tokensWon, TOKEN_SYMBOL, winningMemo);`` add in the following:
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>await collection.findOneAndUpdate({ id: this.transactionId }, { $set: { status: 'win' } });
-</code></pre></div></div>
+```
+await collection.findOneAndUpdate({ id: this.transactionId }, { $set: { status: 'win' } });
+```
 
-<p>And now for the loss inside of the else statement beneath <code class="highlighter-rouge">await this._instance.transferHiveTokens(ACCOUNT, sender, '0.001', TOKEN_SYMBOL, losingMemo);</code></p>
+And now for the loss inside of the else statement beneath ``await this._instance.transferHiveTokens(ACCOUNT, sender, '0.001', TOKEN_SYMBOL, losingMemo);``
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>await collection.findOneAndUpdate({ id: this.transactionId }, { $set: { status: 'loss' } });
-</code></pre></div></div>
+```
+await collection.findOneAndUpdate({ id: this.transactionId }, { $set: { status: 'loss' } });
+```
 
-<p>Finally, another underneath <code class="highlighter-rouge">await this._instance.transferHiveTokens(ACCOUNT, sender, amountTrim[0], amountTrim[1], `[Refund] Invalid bet params.`);</code> which refunds the user if their bet amount is higher than the max, their dice roll is too high or low.</p>
+Finally, another underneath ``await this._instance.transferHiveTokens(ACCOUNT, sender, amountTrim[0], amountTrim[1], `[Refund] Invalid bet params.`);`` which refunds the user if their bet amount is higher than the max, their dice roll is too high or low.
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>await collection.findOneAndUpdate({ id: this.transactionId }, { $set: { status: 'refund' } });
-</code></pre></div></div>
+```
+await collection.findOneAndUpdate({ id: this.transactionId }, { $set: { status: 'refund' } });
+```
 
-<p><strong>The final dice contract code ends up looking like this:</strong></p>
+**The final dice contract code ends up looking like this:**
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>import { Utils } from 'hive-stream';
+```
+import { Utils } from 'hive-stream';
 import seedrandom from 'seedrandom';
 import BigNumber from 'bignumber.js';
 
@@ -451,13 +459,14 @@ class DiceContract {
 }
 
 export default new DiceContract();
-</code></pre></div></div>
+```
 
-<h2 id="register-your-adapter-run-it">Register your adapter, run it</h2>
+## Register your adapter, run it
 
-<p>We take the code we bootstrapped our app with from part one and it remains largely untouched, except we register our MongoDB adapter and pass in some configuration information to the constructor.</p>
+We take the code we bootstrapped our app with from part one and it remains largely untouched, except we register our MongoDB adapter and pass in some configuration information to the constructor.
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>import { Streamer } from 'hive-stream';
+```
+import { Streamer } from 'hive-stream';
 import DiceContract from './dice.contract';
 import { MongodbAdapter } from './mongo.adapter';
 
@@ -473,17 +482,85 @@ streamer.registerContract('hivedice', DiceContract);
 
 // Starts the streamer watching the blockchain
 streamer.start();
-</code></pre></div></div>
+```
 
-<p><img src="https://files.peakd.com/file/peakd-hive/beggars/UpZgH9Fl-Screen20Shot202020-04-0620at208.14.4220pm.png" alt="Screen Shot 20200406 at 8.14.42 pm.png" /></p>
+![Screen Shot 20200406 at 8.14.42 pm.png](https://files.peakd.com/file/peakd-hive/beggars/UpZgH9Fl-Screen20Shot202020-04-0620at208.14.4220pm.png)
 
-<p>Here is a screenshot of a modified transaction that was refunded updated in our Mongo database to show that it all works as intended.</p>
+Here is a screenshot of a modified transaction that was refunded updated in our Mongo database to show that it all works as intended.
 
-<h2 id="conclusion">Conclusion</h2>
+## Conclusion
 
-<p>What did we learn? We learned how to write a custom adapter for interfacing with a database, we learned how to access to the database instance inside of our contract and interact with it. We also learned we can then look up transactions by their ID from within contract actions and modify them (in our case, setting a status property).</p>
+What did we learn? We learned how to write a custom adapter for interfacing with a database, we learned how to access to the database instance inside of our contract and interact with it. We also learned we can then look up transactions by their ID from within contract actions and modify them (in our case, setting a status property).
 
-<p>PS. The Mongo adapter ships with the Hive Stream package, so you don’t have to custom code it yourself, I built it as part of the process of this tutorial. Enjoy.</p>
+PS. The Mongo adapter ships with the Hive Stream package, so you don't have to custom code it yourself, I built it as part of the process of this tutorial. Enjoy.</div>
+<script crossorigin="anonymous" integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=" src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+
+<script src="https://unpkg.com/steem-content-renderer"></script>
+
+<script>
+  $(document).ready(function() {
+    try {
+      const renderer = new SteemContentRenderer.DefaultRenderer({
+        baseUrl: "https://hive.blog/",
+        breaks: true,
+        skipSanitization: false,
+        allowInsecureScriptTags: false,
+        addNofollowToLinks: true,
+        doNotShowImages: false,
+        ipfsPrefix: "",
+        assetsWidth: 640,
+        assetsHeight: 480,
+        imageProxyFn: (url) => url,
+        usertagUrlFn: (account) => "/@beggars",
+        hashtagUrlFn: (hashtag) => "/tutorial-building-a-dice-game-contract-with-hive-stream-part-2",
+        isLinkSafeFn: (url) => true,
+      });
+      
+      const inputElem = $('#content-beggars-tutorial-building-a-dice-game-contract-with-hive-stream-part-2').html();
+      const outputElem = $('#content-beggars-tutorial-building-a-dice-game-contract-with-hive-stream-part-2');
+      const output = renderer.render(inputElem);
+      
+      outputElem.html(output);
+    } catch(e) {
+      console.log(e);
+    }
+  });
+</script>
+
+<style>
+  #content-beggars-tutorial-building-a-dice-game-contract-with-hive-stream-part-2 {
+    padding: 0 3rem;
+    color: #444444;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.8;
+    text-shadow: 0 1px 0 #ffffff;
+    padding: 0.5rem;
+  }
+  #content-beggars-tutorial-building-a-dice-game-contract-with-hive-stream-part-2 code {
+    background: white;
+  }
+  #content-beggars-tutorial-building-a-dice-game-contract-with-hive-stream-part-2 a {
+    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
+  }
+  #content-beggars-tutorial-building-a-dice-game-contract-with-hive-stream-part-2 a:hover {
+    border-bottom: 0;
+  }
+  #content-beggars-tutorial-building-a-dice-game-contract-with-hive-stream-part-2 h1 {
+    font-size: 2.2em;
+  }
+  #content-beggars-tutorial-building-a-dice-game-contract-with-hive-stream-part-2 h2, h3, h4, h5 {
+    margin-bottom: 0;
+  }
+  #content-beggars-tutorial-building-a-dice-game-contract-with-hive-stream-part-2 header small {
+    color: #999;
+    font-size: 50%;
+  }
+  #content-beggars-tutorial-building-a-dice-game-contract-with-hive-stream-part-2 img {
+    max-width: 100%;
+  }
+</style>
+
 <hr />
 
 <p>

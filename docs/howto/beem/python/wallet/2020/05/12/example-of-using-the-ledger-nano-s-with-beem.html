@@ -16,7 +16,7 @@
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2020-05-12T19:46:45-07:00" />
 <script type="application/ld+json">
-{"description":"Example of using the Ledger Nano S with Beem","headline":"Example of using the Ledger Nano S with Beem","dateModified":"2020-05-12T19:46:45-07:00","datePublished":"2020-05-12T19:46:45-07:00","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://peakd.com/hive-139531/@netuoso/example-of-using-the-ledger-nano-s-with-beem"},"url":"https://peakd.com/hive-139531/@netuoso/example-of-using-the-ledger-nano-s-with-beem","author":{"@type":"Person","name":"netuoso"},"@context":"https://schema.org"}</script>
+{"description":"Example of using the Ledger Nano S with Beem","author":{"@type":"Person","name":"netuoso"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://peakd.com/hive-139531/@netuoso/example-of-using-the-ledger-nano-s-with-beem"},"@type":"BlogPosting","url":"https://peakd.com/hive-139531/@netuoso/example-of-using-the-ledger-nano-s-with-beem","headline":"Example of using the Ledger Nano S with Beem","dateModified":"2020-05-12T19:46:45-07:00","datePublished":"2020-05-12T19:46:45-07:00","@context":"https://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://hivedocs.info/feed.xml" title="Hive Chain Documentation" /><script>
 if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNotTrack === "yes" || navigator.msDoNotTrack === "1")) {
@@ -85,41 +85,37 @@ if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNo
   </header>
 
   <div class="post-content e-content" itemprop="articleBody">
-    <h1 id="example-of-using-the-ledger-nano-s-with-beem">Example of using the Ledger Nano S with Beem</h1>
+    <div id="content-netuoso-example-of-using-the-ledger-nano-s-with-beem"># Example of using the Ledger Nano S with Beem
 
-<p><img src="https://files.peakd.com/file/peakd-hive/netuoso/qo0CRK3m-hiveledgerbanenr.png" alt="hive ledger" /></p>
+![hive ledger](https://files.peakd.com/file/peakd-hive/netuoso/qo0CRK3m-hiveledgerbanenr.png)
 
-<hr />
+---
 
-<p>Earlier today, @holger80 announced the release of Beem v0.23.8 which has support for signing transactions via the Hive application on the Ledger Nano S. You can find that post here: 
-<a href="https://peakd.com/hive-139531/@holger80/update-for-beem-support-for-ledger-nano-sx-has-been-added">https://peakd.com/hive-139531/@holger80/update-for-beem-support-for-ledger-nano-sx-has-been-added</a></p>
+Earlier today, @holger80 announced the release of Beem v0.23.8 which has support for signing transactions via the Hive application on the Ledger Nano S. You can find that post here: https://peakd.com/hive-139531/@holger80/update-for-beem-support-for-ledger-nano-sx-has-been-added
 
-<p>This post will give a quick demonstration of using the <code class="highlighter-rouge">cli_wallet</code> to configure your account to be able to use your Ledger Nano S for signing.</p>
+This post will give a quick demonstration of using the `cli_wallet` to configure your account to be able to use your Ledger Nano S for signing.
 
-<h2 id="first-things-first-install-beem">First thing’s first, install Beem</h2>
-<ul>
-  <li><code class="highlighter-rouge">pip install -U beem</code></li>
-</ul>
+## First thing's first, install Beem
+- `pip install -U beem`
 
-<h2 id="getting-your-new-public-key">Getting your new Public Key</h2>
-<p>The first step of configuring your account to use the Ledger Nano S is to get your public key from the device.</p>
-<ul>
-  <li><code class="highlighter-rouge">beempy -u listkeys</code>
-    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>+-------------------------------------------------------+
+## Getting your new Public Key
+The first step of configuring your account to use the Ledger Nano S is to get your public key from the device.
+- `beempy -u listkeys`
+```
++-------------------------------------------------------+
 | Available Key for 48'/13'/0'/0'/0'                    |
 +-------------------------------------------------------+
 | STM8SZg3gBcuAEkz9xGKVMnwJHWESHcXFYWDbRcSBCz322dH6jPwy |
 +-------------------------------------------------------+
-</code></pre></div>    </div>
-    <p>You can see the <code class="highlighter-rouge">path</code> is <code class="highlighter-rouge">48'/13'/0'/0'/0'</code>. For now we are going to ignore the reason for that specific path and just proceed using it as it is the default path. The public key that you get from the result relates to the path shown above; changing the path, changes the key.</p>
-  </li>
-</ul>
+```
+You can see the `path` is `48'/13'/0'/0'/0'`. For now we are going to ignore the reason for that specific path and just proceed using it as it is the default path. The public key that you get from the result relates to the path shown above; changing the path, changes the key.
 
-<h3 id="configuring-your-account">Configuring your Account</h3>
-<p>Now that you have obtained the public key from your Ledger Nano S you can proceed with configuring your account using the <code class="highlighter-rouge">cli_wallet</code>. This guide will assume you already have knowledge of installing and using the <code class="highlighter-rouge">cli_wallet</code> and have imported your account’s owner private key already.</p>
+### Configuring your Account
+Now that you have obtained the public key from your Ledger Nano S you can proceed with configuring your account using the `cli_wallet`. This guide will assume you already have knowledge of installing and using the `cli_wallet` and have imported your account's owner private key already.
 
-<p>Next, let’s use the <code class="highlighter-rouge">get_account</code> method to list our current keys. Here is the current sample output of my @nettybot account:</p>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  "name": "nettybot",
+Next, let's use the `get_account` method to list our current keys. Here is the current sample output of my @nettybot account:
+```
+  "name": "nettybot",
   "owner": {
     "weight_threshold": 1,
     "account_auths": [],
@@ -148,10 +144,11 @@ if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNo
     ]
   },
   "memo_key": "STM5qQY3f2ByahSuYw5pkR2fAFrhDFB6T9jm8mvzFFpRkNVZfyFLB",
-</code></pre></div></div>
+```
 
-<p>With that out of the way, you can use the <code class="highlighter-rouge">update_account</code> command. First let’s check the help for this command:</p>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>This method updates the keys of an existing account.
+With that out of the way, you can use the `update_account` command. First let's check the help for this command:
+```
+This method updates the keys of an existing account.
 
 Parameters:
     accountname: The name of the account (type: string)
@@ -162,18 +159,19 @@ Parameters:
     posting: New public posting key for the account (type: public_key_type)
     memo: New public memo key for the account (type: public_key_type)
     broadcast: true if you wish to broadcast the transaction (type: bool)
-</code></pre></div></div>
+```
 
-<p>Now we can use the information we have and put everything together.</p>
+Now we can use the information we have and put everything together.
 
-<p><code class="highlighter-rouge">update_account nettybot "" STM8SZg3gBcuAEkz9xGKVMnwJHWESHcXFYWDbRcSBCz322dH6jPwy STM8SZg3gBcuAEkz9xGKVMnwJHWESHcXFYWDbRcSBCz322dH6jPwy STM7PCZiSjxkLcP5KeQLWDSoP7AKRFBbZagrrpJSXNt4PyiQ3nuLB STM5qQY3f2ByahSuYw5pkR2fAFrhDFB6T9jm8mvzFFpRkNVZfyFLB
-true</code></p>
+`update_account nettybot "" STM8SZg3gBcuAEkz9xGKVMnwJHWESHcXFYWDbRcSBCz322dH6jPwy STM8SZg3gBcuAEkz9xGKVMnwJHWESHcXFYWDbRcSBCz322dH6jPwy STM7PCZiSjxkLcP5KeQLWDSoP7AKRFBbZagrrpJSXNt4PyiQ3nuLB STM5qQY3f2ByahSuYw5pkR2fAFrhDFB6T9jm8mvzFFpRkNVZfyFLB
+true`
 
-<p>The above command will set @nettybot’s owner and active key to the result we got from the Ledger Nano S using <code class="highlighter-rouge">listkeys</code>. <em>(note: in this example I am setting the owner and active key to the same key. For optimal security, you should use a different key for each but since we are using a Ledger Nano S and @nettybot is a test account, I am going to use a single key for both)</em>.</p>
+The above command will set @nettybot's owner and active key to the result we got from the Ledger Nano S using `listkeys`. *(note: in this example I am setting the owner and active key to the same key. For optimal security, you should use a different key for each but since we are using a Ledger Nano S and @nettybot is a test account, I am going to use a single key for both)*.
 
-<p>After running the <code class="highlighter-rouge">update_account</code> command, we can check the result again by using <code class="highlighter-rouge">get_account</code> once more.</p>
+After running the `update_account` command, we can check the result again by using `get_account` once more.
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  "name": "nettybot",
+```
+  "name": "nettybot",
   "owner": {
     "weight_threshold": 1,
     "account_auths": [],
@@ -202,43 +200,104 @@ true</code></p>
     ]
   },
   "memo_key": "STM5qQY3f2ByahSuYw5pkR2fAFrhDFB6T9jm8mvzFFpRkNVZfyFLB",
-</code></pre></div></div>
+```
 
-<p>Success .. the owner and active key are now protected inside my Ledger Nano S. There is very little risk of me ever having these keys stolen or lost. If my Ledger Nano S ever breaks, I can use my backup words to initialize a new Ledger Nano S and generate the same exact keys again.</p>
+Success .. the owner and active key are now protected inside my Ledger Nano S. There is very little risk of me ever having these keys stolen or lost. If my Ledger Nano S ever breaks, I can use my backup words to initialize a new Ledger Nano S and generate the same exact keys again.
 
-<p>Hopefully you noticed that means you should <strong>ALWAYS KEEP YOUR LEDGER RECOVERY PHRASE OFFLINE</strong>.</p>
+Hopefully you noticed that means you should **ALWAYS KEEP YOUR LEDGER RECOVERY PHRASE OFFLINE**.
 
-<h3 id="using-our-account-with-beem--ledger">Using our Account with Beem + Ledger</h3>
-<p>Alright, now that our account is configured to have the proper key setup, we can use beem to perform operations on the Hive blockchain.</p>
+### Using our Account with Beem + Ledger
+Alright, now that our account is configured to have the proper key setup, we can use beem to perform operations on the Hive blockchain.
 
-<ul>
-  <li>
-    <p>Want to vote on this post?
-<code class="highlighter-rouge">beempy -u upvote -w 100 -a nettybot "@netuoso/example-of-using-the-ledger-nano-s-with-beem"</code></p>
-  </li>
-  <li>
-    <p>Want to vote for a witness?
-<code class="highlighter-rouge">beempy -u approvewitness -a nettybot netuoso</code></p>
-  </li>
-  <li>
-    <p>Want to delegate some HP?
-<code class="highlighter-rouge">beempy -u delegate -a nettybot "1000.000 HIVE" netuoso</code></p>
-  </li>
-  <li>
-    <p>Want to send some tokens?
-<code class="highlighter-rouge">beempy -u transfer -a nettybot netuoso 1000.000 HIVE "Ledger Nano S tip :)"</code></p>
-  </li>
-</ul>
+- Want to vote on this post?
+`beempy -u upvote -w 100 -a nettybot "@netuoso/example-of-using-the-ledger-nano-s-with-beem"`
 
-<hr />
+- Want to vote for a witness?
+`beempy -u approvewitness -a nettybot netuoso`
 
-<p>That’s pretty the idea .. no need to import keys to Beem because the keys are all stored inside the Ledger Nano S hardware wallet. This is the absolute most secure way possible to configure your Hive account and execute transactions on the blockchain.</p>
+- Want to delegate some HP?
+`beempy -u delegate -a nettybot "1000.000 HIVE" netuoso`
 
-<p>Beem is going to keep growing because @holger80 is a badass dev so be sure to tell him thanks for making this integration so awesome. Soon hopefully we will even see Keychain integrations.</p>
+- Want to send some tokens?
+`beempy -u transfer -a nettybot netuoso 1000.000 HIVE "Ledger Nano S tip :)"`
 
-<p>By the way, a Vessel Ledger Nano S integration is also around the corner. Stay tuned for that as more and more options for using the Ledger Nano S with your Hive account become available.</p>
+---
 
-<h3 id="vote-for-netuoso-for-hive-witness-and-be-sure-to-vote-for-holger80-as-well">Vote for @netuoso for Hive Witness and be sure to vote for @holger80 as well!</h3>
+That's pretty the idea .. no need to import keys to Beem because the keys are all stored inside the Ledger Nano S hardware wallet. This is the absolute most secure way possible to configure your Hive account and execute transactions on the blockchain.
+
+Beem is going to keep growing because @holger80 is a badass dev so be sure to tell him thanks for making this integration so awesome. Soon hopefully we will even see Keychain integrations.
+
+By the way, a Vessel Ledger Nano S integration is also around the corner. Stay tuned for that as more and more options for using the Ledger Nano S with your Hive account become available.
+
+### Vote for @netuoso for Hive Witness and be sure to vote for @holger80 as well!</div>
+<script crossorigin="anonymous" integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=" src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+
+<script src="https://unpkg.com/steem-content-renderer"></script>
+
+<script>
+  $(document).ready(function() {
+    try {
+      const renderer = new SteemContentRenderer.DefaultRenderer({
+        baseUrl: "https://hive.blog/",
+        breaks: true,
+        skipSanitization: false,
+        allowInsecureScriptTags: false,
+        addNofollowToLinks: true,
+        doNotShowImages: false,
+        ipfsPrefix: "",
+        assetsWidth: 640,
+        assetsHeight: 480,
+        imageProxyFn: (url) => url,
+        usertagUrlFn: (account) => "/@netuoso",
+        hashtagUrlFn: (hashtag) => "/example-of-using-the-ledger-nano-s-with-beem",
+        isLinkSafeFn: (url) => true,
+      });
+      
+      const inputElem = $('#content-netuoso-example-of-using-the-ledger-nano-s-with-beem').html();
+      const outputElem = $('#content-netuoso-example-of-using-the-ledger-nano-s-with-beem');
+      const output = renderer.render(inputElem);
+      
+      outputElem.html(output);
+    } catch(e) {
+      console.log(e);
+    }
+  });
+</script>
+
+<style>
+  #content-netuoso-example-of-using-the-ledger-nano-s-with-beem {
+    padding: 0 3rem;
+    color: #444444;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.8;
+    text-shadow: 0 1px 0 #ffffff;
+    padding: 0.5rem;
+  }
+  #content-netuoso-example-of-using-the-ledger-nano-s-with-beem code {
+    background: white;
+  }
+  #content-netuoso-example-of-using-the-ledger-nano-s-with-beem a {
+    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
+  }
+  #content-netuoso-example-of-using-the-ledger-nano-s-with-beem a:hover {
+    border-bottom: 0;
+  }
+  #content-netuoso-example-of-using-the-ledger-nano-s-with-beem h1 {
+    font-size: 2.2em;
+  }
+  #content-netuoso-example-of-using-the-ledger-nano-s-with-beem h2, h3, h4, h5 {
+    margin-bottom: 0;
+  }
+  #content-netuoso-example-of-using-the-ledger-nano-s-with-beem header small {
+    color: #999;
+    font-size: 50%;
+  }
+  #content-netuoso-example-of-using-the-ledger-nano-s-with-beem img {
+    max-width: 100%;
+  }
+</style>
+
 <hr />
 
 <p>

@@ -16,7 +16,7 @@
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2020-04-27T12:30:21-07:00" />
 <script type="application/ld+json">
-{"description":"In this post you’ll learn how to setup a Hive witness, or upgrade from Steem-docker","headline":"How to set up a Hive Witness or Seed node (non-MIRA) / Upgrade from Steem-Docker to Hive-Docker","dateModified":"2020-04-27T12:30:21-07:00","datePublished":"2020-04-27T12:30:21-07:00","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://peakd.com/hive-139531/@someguy123/how-to-set-up-a-hive-witness-or-seed-node-non-mira-upgrade-from-steem-docker-to-hive-docker"},"url":"https://peakd.com/hive-139531/@someguy123/how-to-set-up-a-hive-witness-or-seed-node-non-mira-upgrade-from-steem-docker-to-hive-docker","author":{"@type":"Person","name":"someguy123"},"@context":"https://schema.org"}</script>
+{"description":"In this post you’ll learn how to setup a Hive witness, or upgrade from Steem-docker","author":{"@type":"Person","name":"someguy123"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://peakd.com/hive-139531/@someguy123/how-to-set-up-a-hive-witness-or-seed-node-non-mira-upgrade-from-steem-docker-to-hive-docker"},"@type":"BlogPosting","url":"https://peakd.com/hive-139531/@someguy123/how-to-set-up-a-hive-witness-or-seed-node-non-mira-upgrade-from-steem-docker-to-hive-docker","headline":"How to set up a Hive Witness or Seed node (non-MIRA) / Upgrade from Steem-Docker to Hive-Docker","dateModified":"2020-04-27T12:30:21-07:00","datePublished":"2020-04-27T12:30:21-07:00","@context":"https://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://hivedocs.info/feed.xml" title="Hive Chain Documentation" /><script>
 if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNotTrack === "yes" || navigator.msDoNotTrack === "1")) {
@@ -85,124 +85,132 @@ if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNo
   </header>
 
   <div class="post-content e-content" itemprop="articleBody">
-    
-<div style="display: block; margin: 0 auto;">
+    <div id="content-someguy123-how-to-set-up-a-hive-witness-or-seed-node-non-mira-upgrade-from-steem-docker-to-hive-docker">
+<center>
 
-  <p><img src="https://cdn.privex.io/img/posts/hive-in-a-box.png" alt="Hive-in-a-box Logo" /></p>
+![Hive-in-a-box Logo](https://cdn.privex.io/img/posts/hive-in-a-box.png)
 
-</div>
+</center>
 
-<h1 id="fresh-install">Fresh install</h1>
+# Fresh install
 
-<p>To become a witness without using MIRA, you’ll require a server with at LEAST 64GB of RAM, 500GB disk (preferably SSD / NVMe), and a fast, reliable network.</p>
+To become a witness without using MIRA, you'll require a server with at LEAST 64GB of RAM, 500GB disk (preferably SSD / NVMe), and a fast, reliable network. 
 
-<p>If you do not have a server which meets these requirements, you can order one from <a href="privex.io">Privex</a> (you can even pay with HIVE/HBD!)</p>
+If you do not have a server which meets these requirements, you can order one from [Privex](privex.io) (you can even pay with HIVE/HBD!)
 
-<p>I personally use @privex for my own witness as a Top 20. While I am the CEO of Privex, there are many other customers, including witnesses who use our servers for their witness nodes, seed nodes, RPC nodes and/or other projects.</p>
+I personally use @privex for my own witness as a Top 20. While I am the CEO of Privex, there are many other customers, including witnesses who use our servers for their witness nodes, seed nodes, RPC nodes and/or other projects.
 
-<p>You’re free to use any other server provider. I don’t recommend trying to run a witness on your home internet, as it’s likely not reliable enough for a witness.</p>
+You're free to use any other server provider. I don't recommend trying to run a witness on your home internet, as it's likely not reliable enough for a witness.
 
-<p>Be aware that certain server providers have poor networks or hardware, which may cause missed blocks, so you may be hopping around a few until you can find one that’s suitable for a witness node.</p>
+Be aware that certain server providers have poor networks or hardware, which may cause missed blocks, so you may be hopping around a few until you can find one that's suitable for a witness node.
 
-<p>If you want to learn more about witnesses and what they do, check out my article: <a href="https://peakd.com/witness-category/@someguy123/seriously-what-is-a-witness-why-should-i-care-how-do-i-become-one-answer">here</a></p>
+If you want to learn more about witnesses and what they do, check out my article: [here](https://peakd.com/witness-category/@someguy123/seriously-what-is-a-witness-why-should-i-care-how-do-i-become-one-answer)
 
-<h3 id="shared-memory-note">Shared memory note</h3>
+### Shared memory note
 
-<p>Right now, the minimum RAM requirement for non-MIRA witnesses is 64GB due to shared memory.</p>
+Right now, the minimum RAM requirement for non-MIRA witnesses is 64GB due to shared memory. 
 
-<p>This is because Hive stores information in a file called “shared_memory.bin” which is used similar to RAM. This file is around 58GB on HF23, and will continue to grow overtime.</p>
+This is because Hive stores information in a file called "shared_memory.bin" which is used similar to RAM. This file is around 58GB on HF23, and will continue to grow overtime. 
 
-<p>As this file continues to grow, you will need to increase the amount of RAM in your server. So it is better to have some room.</p>
+As this file continues to grow, you will need to increase the amount of RAM in your server. So it is better to have some room. 
 
-<h3 id="install-hive-docker-and-dependencies">Install hive-docker and dependencies</h3>
+### Install hive-docker and dependencies
 
-<p>First, we install some basic dependencies (assuming you’re on Ubuntu/Debian).</p>
+First, we install some basic dependencies (assuming you're on Ubuntu/Debian).
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sudo apt update
+```
+sudo apt update
 sudo apt install git curl wget
-</code></pre></div></div>
+```
 
-<p>Next, we install hive-docker (a line starting with a # is a comment, you don’t need to paste them)</p>
+Next, we install hive-docker (a line starting with a # is a comment, you don't need to paste them)
 
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git clone 
-&lt;a <span class="nv">href</span><span class="o">=</span><span class="s2">"https://github.com/someguy123/hive-docker.git"</span><span class="o">&gt;</span>https://github.com/someguy123/hive-docker.git&lt;/a&gt;
-
-<span class="nb">cd </span>hive-docker
-<span class="c"># If you don't already have a docker installation, this will install it for you</span>
+```bash
+git clone https://github.com/someguy123/hive-docker.git
+cd hive-docker
+# If you don't already have a docker installation, this will install it for you
 ./run.sh install_docker
-</code></pre></div></div>
+```
 
-<p>After the install_docker command has finished, it’s recommended to log out and back in again (e.g. close your SSH client and re-connect) to ensure that the shell correctly detects docker.</p>
+After the install_docker command has finished, it's recommended to log out and back in again (e.g. close your SSH client and re-connect) to ensure that the shell correctly detects docker.
 
-<p>Then, you can download and install the latest witness/seed docker image</p>
+Then, you can download and install the latest witness/seed docker image
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code># This downloads/updates the low-memory docker image for Hive
+```
+# This downloads/updates the low-memory docker image for Hive
 ./run.sh install
-</code></pre></div></div>
+```
 
-<p>If you are a witness, you need to adjust the configuration as needed e.g. witness name, private key, logging config, turn off p2p-endpoint etc.</p>
+If you are a witness, you need to adjust the configuration as needed e.g. witness name, private key, logging config, turn off p2p-endpoint etc.
 
-<p>If you’re running a seed, then don’t worry about the config, it will just work and you can skip the signing key/config section</p>
+If you're running a seed, then don't worry about the config, it will just work and you can skip the signing key/config section
 
-<h3 id="generating-a-signing-key">Generating a signing key</h3>
+### Generating a signing key
 
-<p>For witnesses, you’ll need to generate a signing key first. You can use the remote wallet for this.</p>
+For witnesses, you'll need to generate a signing key first. You can use the remote wallet for this.
 
-<p>Open the wallet using a public server with the following command:</p>
+Open the wallet using a public server with the following command:
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>./run.sh remote_wallet
-</code></pre></div></div>
+```
+./run.sh remote_wallet
+```
 
-<p><strong>Note: you may receive an error such as “timeout” or “invalid http status”. This is normal, it’s usually due to a server in the Privex load balancer having temporary problems.</strong></p>
+**Note: you may receive an error such as "timeout" or "invalid http status". This is normal, it's usually due to a server in the Privex load balancer having temporary problems.**
 
-<p><strong>Just run the command again a few times until it connects (you’ll see new»&gt; or locked»&gt;)</strong></p>
+**Just run the command again a few times until it connects (you'll see new&gt;&gt;&gt; or locked&gt;&gt;&gt;)**
 
-<p>Create a key pair for your witness.</p>
+Create a key pair for your witness. 
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>suggest_brain_key
-</code></pre></div></div>
+```
+suggest_brain_key
+```
 
-<div style="display: block; margin: 0 auto;">
+<center>
 
-  <p><img src="https://cdn.privex.io/img/posts/hive-suggest-brainkey.png" alt="Screenshot of cli_wallet suggest_brain_key command" /></p>
+![Screenshot of cli_wallet suggest_brain_key command](https://cdn.privex.io/img/posts/hive-suggest-brainkey.png)
 
-</div>
+</center>
 
-<p>You should get something similar to this:</p>
+You should get something similar to this:
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>{
+```
+{
   "brain_priv_key": "GOCART VINCENT PHOTIC IRON OUTHIT UNGLOBE SICCA LOP TASKIT BOOSTER WINDED SPRY SACKBUT UNICE WELL RUBELLE",
   "wif_priv_key": "5J1Wn41BbSS4L83N9n7P5nmMSVg9uaWfVySnd363TvyhWPzU2e9",
   "pub_key": "STM7iCEkCR261F7CeBCsmpE1RcW8hnR5pZYKCFbuVqe5HSJ41YewE"
 }
-</code></pre></div></div>
+```
 
-<p><strong>Put the keys in Notepad or something similar for the moment so you don’t lose them.</strong></p>
+**Put the keys in Notepad or something similar for the moment so you don't lose them.**
 
-<p>Press CTRL-D to exit the wallet.</p>
+Press CTRL-D to exit the wallet.
 
-<h3 id="setting-up-your-config">Setting up your config</h3>
+### Setting up your config
 
-<p>Now, to set your witness name and private key. You can use <code class="highlighter-rouge">nano</code> (a simple text editor on Linux) for this.</p>
+Now, to set your witness name and private key. You can use `nano` (a simple text editor on Linux) for this.
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>nano data/witness_node_data_dir/config.ini
-</code></pre></div></div>
+```
+nano data/witness_node_data_dir/config.ini
+```
 
-<p>If you are running a witness, you’ll want to change one of the first lines in the file to disable the seed.</p>
+If you are running a witness, you'll want to change one of the first lines in the file to disable the seed.
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code># Endpoint for P2P node to listen on
+```
+# Endpoint for P2P node to listen on
 p2p-endpoint = 0.0.0.0:2001
-</code></pre></div></div>
+```
 
-<p>Simply place a # (hash sign) at the start of the p2p-endpoint line. This will disable the seed. Example:</p>
+Simply place a # (hash sign) at the start of the p2p-endpoint line. This will disable the seed. Example:
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code># Endpoint for P2P node to listen on
+```
+# Endpoint for P2P node to listen on
 #p2p-endpoint = 0.0.0.0:2001
-</code></pre></div></div>
+```
 
-<p>Now to add your witness settings. Scroll down the file (use the up/down arrows, or page up/down) until you see something like this:</p>
+Now to add your witness settings. Scroll down the file (use the up/down arrows, or page up/down) until you see something like this:
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code># Percent of witnesses (0-99) that must be participating in order to produce blocks
+```
+# Percent of witnesses (0-99) that must be participating in order to produce blocks
 required-participation = 33
 
 # name of witness controlled by this node (e.g. initwitness )
@@ -216,23 +224,24 @@ required-participation = 33
 
 # WIF PRIVATE KEY to be used by one or more witnesses or miners
 # private-key =
-</code></pre></div></div>
+```
 
-<div style="display: block; margin: 0 auto;">
+<center>
 
-  <p><img src="https://cdn.privex.io/img/posts/hive-witness-config.png" alt="Screenshot of witness config.ini" /></p>
+![Screenshot of witness config.ini](https://cdn.privex.io/img/posts/hive-witness-config.png)
 
-</div>
+</center>
 
-<p>You’ll want to uncomment (remove the # from the start) the <code class="highlighter-rouge">witness =</code> line, and the <code class="highlighter-rouge">private-key =</code> line.</p>
+You'll want to uncomment (remove the # from the start) the `witness =` line, and the `private-key =` line.
 
-<p>Grab your public/private key that you saved earlier into notepad (or other similar app).</p>
+Grab your public/private key that you saved earlier into notepad (or other similar app).
 
-<p>Then, similar to below, add your witness’ name in quotes, e.g. “someguy123” in front of the <code class="highlighter-rouge">witness =</code>, and your private key (without quotes) in front of the <code class="highlighter-rouge">private-key =</code> line. To save you time in the future, it can be useful to place your public signing key in a comment above your private key (see example)</p>
+Then, similar to below, add your witness' name in quotes, e.g. "someguy123" in front of the `witness =`, and your private key (without quotes) in front of the `private-key =` line. To save you time in the future, it can be useful to place your public signing key in a comment above your private key (see example)
 
-<p>Example:</p>
+Example:
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code># name of witness controlled by this node (e.g. initwitness )
+```
+# name of witness controlled by this node (e.g. initwitness )
 witness = "someguy123"
 
 # name of miner and its private key (e.g. ["account","WIF PRIVATE KEY"] )
@@ -244,62 +253,68 @@ witness = "someguy123"
 # WIF PRIVATE KEY to be used by one or more witnesses or miners
 # public key: STM7iCEkCR261F7CeBCsmpE1RcW8hnR5pZYKCFbuVqe5HSJ41YewE
 private-key = 5J1Wn41BbSS4L83N9n7P5nmMSVg9uaWfVySnd363TvyhWPzU2e9
-</code></pre></div></div>
+```
 
-<p>Now (assuming you’re using nano) press CTRL-X, and press the y key when it asks if you would like to save.</p>
 
-<h3 id="environment-settings">Environment settings</h3>
 
-<p>If you’re already comfortable with Linux, and want to play around with settings for hive-docker you may want to consider setting up a .env file, see the <a href="https://github.com/someguy123/hive-docker">README for more information</a></p>
+Now (assuming you're using nano) press CTRL-X, and press the y key when it asks if you would like to save.
 
-<p>Otherwise, let’s continue. The defaults are generally fine for most people.</p>
+### Environment settings
 
-<h3 id="setting-up-shared-memory-swap-settings-and-downloading-the-blockchain">Setting up shared memory, swap settings, and downloading the blockchain</h3>
+If you're already comfortable with Linux, and want to play around with settings for hive-docker you may want to consider setting up a .env file, see the [README for more information](https://github.com/someguy123/hive-docker) 
 
-<p>At this point you should have:</p>
+Otherwise, let's continue. The defaults are generally fine for most people.
 
-<ul>
-  <li>installed hive-in-a-box</li>
-  <li>installed docker (through the run.sh command)</li>
-  <li>downloaded and installed the Hive docker container</li>
-  <li>set up your witness configuration</li>
-</ul>
+### Setting up shared memory, swap settings, and downloading the blockchain
 
-<p>Your witness is almost ready. Just a few more small things.</p>
+At this point you should have:
 
-<p>You’ll need to set the shared memory size (use sudo if not logged in as root). 64 gigabytes is recommended (64G). Please be aware that the shared memory size changes constantly.</p>
+ - installed hive-in-a-box
+ - installed docker (through the run.sh command)
+ - downloaded and installed the Hive docker container
+ - set up your witness configuration
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sudo ./run.sh shm_size 64G
-</code></pre></div></div>
+Your witness is almost ready. Just a few more small things.
 
-<p>You’ll also want to adjust your “swappiness”. This is a setting which tells Linux how much it should use swap (virtual memory on your disk. very slow). You’ll want to set this to 1, which means “don’t use the swap unless it’s absolutely necessary”. This helps to prevent missed blocks due to excessive swapping despite plenty of free RAM.</p>
+You'll need to set the shared memory size (use sudo if not logged in as root). 64 gigabytes is recommended (64G). Please be aware that the shared memory size changes constantly.
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code># To persist on reboot, place 'vm.swappiness=1' in /etc/sysctl.conf
+```
+sudo ./run.sh shm_size 64G
+```
+
+You'll also want to adjust your "swappiness". This is a setting which tells Linux how much it should use swap (virtual memory on your disk. very slow). You'll want to set this to 1, which means "don't use the swap unless it's absolutely necessary". This helps to prevent missed blocks due to excessive swapping despite plenty of free RAM.
+
+```
+# To persist on reboot, place 'vm.swappiness=1' in /etc/sysctl.conf
 sudo sysctl -w vm.swappiness=1
-</code></pre></div></div>
+```
 
-<p>Now that you’ve configured your server, it’s recommended to download the block log, as replays can be faster than p2p download.</p>
+Now that you've configured your server, it's recommended to download the block log, as replays can be faster than p2p download.
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>./run.sh dlblocks
-</code></pre></div></div>
+```
+./run.sh dlblocks
+```
 
-<p><img src="https://cdn.privex.io/img/posts/hive-dlblocks.png" alt="Screenshot of run.sh dlblocks command" /></p>
+![Screenshot of run.sh dlblocks command](https://cdn.privex.io/img/posts/hive-dlblocks.png)
 
-<h3 id="almost-ready">Almost ready!</h3>
+### Almost ready!
 
-<p>Once this is done, you should be ready to start your server. The <code class="highlighter-rouge">replay</code> command will start <code class="highlighter-rouge">steemd</code> (the binary is still called <code class="highlighter-rouge">steemd</code> for Hive) in docker, and begin replaying the blockchain which was downloaded to create a block index, and the shared_memory file.</p>
+Once this is done, you should be ready to start your server. The `replay` command will start `steemd` (the binary is still called `steemd` for Hive) in docker, and begin replaying the blockchain which was downloaded to create a block index, and the shared_memory file. 
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>./run.sh replay
-</code></pre></div></div>
+```
+./run.sh replay
+```
 
-<p>You can check the status with the <code class="highlighter-rouge">logs</code> command.</p>
+You can check the status with the `logs` command.
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>./run.sh logs
-</code></pre></div></div>
+```
+./run.sh logs
+```
 
-<p>Assuming you did everything correctly, you should see something like this:</p>
+Assuming you did everything correctly, you should see something like this:
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>------------------------------------------------------
+```
+------------------------------------------------------
 
             STARTING HIVE NETWORK
 
@@ -315,138 +330,144 @@ blockchain version: 0.23.0
 2396435ms block_log.cpp:142             open                 ] Log is nonempty
 2396435ms block_log.cpp:151             open                 ] Index is nonempty
 2396435ms database.cpp:193              reindex              ] Replaying blocks...
-</code></pre></div></div>
+```
 
-<p>Please be aware that this can take many hours depending on your disk speed and CPU. In some cases it can take up to 24 hours.</p>
+Please be aware that this can take many hours depending on your disk speed and CPU. In some cases it can take up to 24 hours.
 
-<p>You can press CTRL-C to exit the logs, or just leave it if you want to watch it replay.</p>
+You can press CTRL-C to exit the logs, or just leave it if you want to watch it replay.
 
-<h3 id="after-youve-replayed">After you’ve replayed</h3>
+### After you've replayed
 
-<p>Once you see something which looks like this, it means your server is now ready to go:</p>
+Once you see something which looks like this, it means your server is now ready to go:
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>1299055ms th_a       application.cpp:507           handle_block         ] Got 14 transactions on block 12928269 by pharesim -- latency: 55 ms
+```
+1299055ms th_a       application.cpp:507           handle_block         ] Got 14 transactions on block 12928269 by pharesim -- latency: 55 ms
 1302427ms th_a       application.cpp:507           handle_block         ] Got 18 transactions on block 12928270 by xeldal -- latency: 426 ms
 1305291ms th_a       application.cpp:507           handle_block         ] Got 26 transactions on block 12928271 by arhag -- latency: 291 ms
 1308045ms th_a       application.cpp:507           handle_block         ] Got 20 transactions on block 12928272 by pfunk -- latency: 45 ms
 1311092ms th_a       application.cpp:507           handle_block         ] Got 23 transactions on block 12928273 by bhuz -- latency: 92 ms
-</code></pre></div></div>
+```
 
-<p>Go to your profile:</p>
+Go to your profile: 
 
-<ul>
-  <li>
-    <p><a href="https://wallet.hive.blog/@yourusername/permissions">https://wallet.hive.blog/@yourusername/permissions</a></p>
-  </li>
-  <li>
-    <p><a href="https://peakd.com/@yourusername/permissions">https://peakd.com/@yourusername/permissions</a></p>
-  </li>
-  <li>
-    <p>(for the links, you need to edit the @yourusername part)</p>
-  </li>
-</ul>
+ - https://wallet.hive.blog/@yourusername/permissions
+ - https://peakd.com/@yourusername/permissions
+ - (for the links, you need to edit the @yourusername part)
 
-<p>Click Wallet, then Permissions. Next to “Active Key” you should see “Reveal”. Click that button and log in. Then press “Show private key”, to reveal it. Make sure it begins with a “5”.</p>
+Click Wallet, then Permissions. Next to "Active Key" you should see "Reveal". Click that button and log in. Then press "Show private key", to reveal it. Make sure it begins with a "5".
 
-<p>Copy the key.</p>
+Copy the key.
 
-<p>Now open the wallet with:</p>
+Now open the wallet with:
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>./run.sh wallet
-</code></pre></div></div>
+```
+./run.sh wallet
+```
 
-<p><img src="https://cdn.privex.io/img/posts/hive-wallet-activekey.png" alt="Screenshot of Hive Wallet active key page" /></p>
+![Screenshot of Hive Wallet active key page](https://cdn.privex.io/img/posts/hive-wallet-activekey.png)
 
-<p>Set a password, unlock the wallet with the same password, then import your ACTIVE private key from wallet.hive.blog / Peakd (NOT the one in notepad):</p>
+Set a password, unlock the wallet with the same password, then import your ACTIVE private key from wallet.hive.blog / Peakd (NOT the one in notepad):
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>set_password "hunter2"
+```
+set_password "hunter2"
 unlock "hunter2"
 import_key 5somethingprivatekey
-</code></pre></div></div>
+```
 
-<p>Finally, we can update/create the witness on the network. Replace the STMxxxx key with the public key you saved earlier in notepad (or if you wrote it as a comment in your config file, you can open that and get it from there), and replace YOURNAME with your witness name on Hive.</p>
+Finally, we can update/create the witness on the network. Replace the STMxxxx key with the public key you saved earlier in notepad (or if you wrote it as a comment in your config file, you can open that and get it from there), and replace YOURNAME with your witness name on Hive.
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>update_witness "YOURNAME" "https://hive.blog/witness-category/@YOURNAME/my-witness-thread" "STMxxxxxxx" {"account_creation_fee":"3.000 HIVE","maximum_block_size":65536,"sbd_interest_rate":0} true
-</code></pre></div></div>
+```
+update_witness "YOURNAME" "https://hive.blog/witness-category/@YOURNAME/my-witness-thread" "STMxxxxxxx" {"account_creation_fee":"3.000 HIVE","maximum_block_size":65536,"sbd_interest_rate":0} true
+```
 
-<h1 id="congratulations-your-witness-should-now-be-working-and-you-can-begin-getting-votes-and-producing-blocks">Congratulations, your witness should now be working, and you can begin getting votes and producing blocks</h1>
+# Congratulations, your witness should now be working, and you can begin getting votes and producing blocks
 
-<h3 id="other-useful-information">Other useful information</h3>
+### Other useful information
 
-<p>You may want to persist the /dev/shm size (shared memory) across reboots. To do this, you can edit <code class="highlighter-rouge">/etc/fstab</code>, please be very careful, as any mistakes in this file will cause your system to become unbootable. (<strong>if you are not comfortable with linux, please don’t try this as you may break your server</strong>).</p>
+You may want to persist the /dev/shm size (shared memory) across reboots. To do this, you can edit `/etc/fstab`, please be very careful, as any mistakes in this file will cause your system to become unbootable. (**if you are not comfortable with linux, please don't try this as you may break your server**).
 
-<p>Simply add this to the bottom of the file on a new line. Be sure not to damage any other lines in the file. Adjust “64G” to whatever size you would like /dev/shm to be.</p>
+Simply add this to the bottom of the file on a new line. Be sure not to damage any other lines in the file. Adjust "64G" to whatever size you would like /dev/shm to be.
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>tmpfs   /dev/shm         tmpfs   nodev,nosuid,size=64G          0  0
-</code></pre></div></div>
+```
+tmpfs   /dev/shm         tmpfs   nodev,nosuid,size=64G          0  0
+```
 
-<p>See <a href="https://github.com/someguy123/hive-docker">the README</a> for more advanced options.</p>
+See [the README](https://github.com/someguy123/hive-docker) for more advanced options.
 
-<h1 id="upgrading-steem-docker-to-hive-docker">Upgrading steem-docker to hive-docker</h1>
+# Upgrading steem-docker to hive-docker
 
-<p>If you have an existing <code class="highlighter-rouge">steem-docker</code> installation, you can convert it into a <code class="highlighter-rouge">hive-docker</code> installation by following the below steps.</p>
+If you have an existing `steem-docker` installation, you can convert it into a `hive-docker` installation by following the below steps.
 
-<h2 id="updating-your-git-repository">Updating your Git repository</h2>
 
-<p>Use <code class="highlighter-rouge">git remote set-url</code> to change your steem-docker installation to track my <code class="highlighter-rouge">hive-docker</code> repository. Then <code class="highlighter-rouge">git fetch</code> to download any updates, checkout master, and <code class="highlighter-rouge">git pull</code> to update to <code class="highlighter-rouge">hive-docker</code>.</p>
+## Updating your Git repository
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
-~/steem-docker $ git remote set-url origin 
-&lt;a href="https://github.com/Someguy123/hive-docker.git"&gt;https://github.com/Someguy123/hive-docker.git&lt;/a&gt;
+Use `git remote set-url` to change your steem-docker installation to track my `hive-docker` repository. Then `git fetch` to download any updates, checkout master, and `git pull` to update to `hive-docker`.
 
+```
+
+~/steem-docker $ git remote set-url origin https://github.com/Someguy123/hive-docker.git
 ~/steem-docker $ git fetch
 ~/steem-docker $ git checkout master
 ~/steem-docker $ git pull
-</code></pre></div></div>
+```
 
-<p>To ensure <code class="highlighter-rouge">hive-docker</code> always uses the Hive network, add <code class="highlighter-rouge">NETWORK=hive</code> to your <code class="highlighter-rouge">.env</code> file</p>
+To ensure `hive-docker` always uses the Hive network, add `NETWORK=hive` to your `.env` file
 
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
-<span class="nb">echo</span> <span class="s2">"NETWORK=hive"</span> <span class="o">&gt;&gt;</span> .env
+```shell
 
-</code></pre></div></div>
+echo "NETWORK=hive" &gt;&gt; .env
 
-<p>Download the Hive HF23 docker image using this command.</p>
+```
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>./run.sh install
-</code></pre></div></div>
+Download the Hive HF23 docker image using this command.
 
-<h2 id="if-you-were-previously-running-steem-youll-need-to-replace-your-blockchain-and-state-files">If you were previously running Steem, you’ll need to replace your blockchain and state files</h2>
+```
+./run.sh install
+```
 
-<p>Delete your blockchain files and shared memory files using the <code class="highlighter-rouge">clean</code> command:</p>
+## If you were previously running Steem, you'll need to replace your blockchain and state files
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>./run.sh clean
-</code></pre></div></div>
+Delete your blockchain files and shared memory files using the `clean` command:
 
-<p><img src="https://cdn.privex.io/img/posts/hive-clean.png" alt="Screenshot of run.sh clean command" /></p>
+```
+./run.sh clean
+```
 
-<p>Download a fresh block_log:</p>
+![Screenshot of run.sh clean command](https://cdn.privex.io/img/posts/hive-clean.png)
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>./run.sh dlblocks
-</code></pre></div></div>
 
-<p><img src="https://cdn.privex.io/img/posts/hive-dlblocks.png" alt="Screenshot of run.sh dlblocks command" /></p>
+Download a fresh block_log:
 
-<h3 id="now-for-the-slow-part---replaying">Now for the slow part - replaying</h3>
+```
+./run.sh dlblocks
+```
 
-<p>When upgrading from Steem to Hive, you’ll need to replay.</p>
+![Screenshot of run.sh dlblocks command](https://cdn.privex.io/img/posts/hive-dlblocks.png)
 
-<p>To replay your witness, do the following (this will shutdown and remove the Steem software, and start a Hive one in replay mode)</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>./run.sh stop
+### Now for the slow part - replaying
+
+When upgrading from Steem to Hive, you'll need to replay.
+
+To replay your witness, do the following (this will shutdown and remove the Steem software, and start a Hive one in replay mode)
+
+```
+./run.sh stop
 ./run.sh replay
-</code></pre></div></div>
+```
 
-<p>You can check the status of the replay with the logs command</p>
+You can check the status of the replay with the logs command
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>./run.sh logs
-</code></pre></div></div>
+```
+./run.sh logs
+```
 
-<p>Note: the command now automatically updates in realtime. to exit the logs press CTRL-C</p>
+Note: the command now automatically updates in realtime. to exit the logs press CTRL-C
 
-<p>If all is well, you’ll see it replaying on v0.23.0 (or whatever version is out by the time you read this):</p>
+If all is well, you'll see it replaying on v0.23.0 (or whatever version is out by the time you read this):
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>------------------------------------------------------
+```
+------------------------------------------------------
 
             STARTING HIVE NETWORK
 
@@ -462,53 +483,122 @@ blockchain version: 0.23.0
 2396435ms block_log.cpp:142             open                 ] Log is nonempty
 2396435ms block_log.cpp:151             open                 ] Index is nonempty
 2396435ms database.cpp:193              reindex              ] Replaying blocks...
-</code></pre></div></div>
+```
 
-<p>Once it’s replayed (may take 3 or more hours), you’ll see the standard “got x transactions on block y”.</p>
+Once it's replayed (may take 3 or more hours), you'll see the standard "got x transactions on block y".
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>1668107ms p2p_plugin.cpp:210            handle_block         ] Got 54 transactions on block 25299003 by cervantes -- latency: 107 ms
+
+```
+1668107ms p2p_plugin.cpp:210            handle_block         ] Got 54 transactions on block 25299003 by cervantes -- latency: 107 ms
 1671090ms p2p_plugin.cpp:210            handle_block         ] Got 36 transactions on block 25299004 by blocktrades -- latency: 90 ms
 1674098ms p2p_plugin.cpp:210            handle_block         ] Got 28 transactions on block 25299005 by roelandp -- latency: 98 ms
-</code></pre></div></div>
+```
 
-<p>If you see this, you can now re-enable this server :)</p>
+If you see this, you can now re-enable this server :)
 
-<p>You’re successfully upgraded to 0.23.0 (or higher).</p>
+You're successfully upgraded to 0.23.0 (or higher).
 
-<p>For future HF23 releases, it will now be as simple as <code class="highlighter-rouge">./run.sh install &amp;&amp; ./run.sh restart</code>, but as always, be careful, always assume a replay may be needed. Test on your backup, or disable your witness before attempting to update.</p>
+For future HF23 releases, it will now be as simple as `./run.sh install &amp;&amp; ./run.sh restart`, but as always, be careful, always assume a replay may be needed. Test on your backup, or disable your witness before attempting to update. 
 
-<p>To see if I’ve released a new version of the docker image and haven’t made a post yet, just check my docker hub: 
-<a href="https://hub.docker.com/r/someguy123/hive/tags/">https://hub.docker.com/r/someguy123/hive/tags/</a></p>
+To see if I've released a new version of the docker image and haven't made a post yet, just check my docker hub: https://hub.docker.com/r/someguy123/hive/tags/
 
-<hr />
+---
 
-<div style="display: block; margin: 0 auto;">
+<center>
 
-  <p><img src="https://i.giphy.com/media/l378lvuErndt84HII/giphy.gif" alt="" /></p>
+![](https://i.giphy.com/media/l378lvuErndt84HII/giphy.gif)
+
+</center>
+
+GIF Avatar by @stellabelle
+
+---
+
+### Do you like what I'm doing for Hive?
+
+
+[Vote for me to be a witness](https://wallet.hive.blog/~witnesses) - every vote counts. 
+
+### Don't forget to follow me for more like this.
+
+---
+
+Are you looking for a new server provider? My company @privex offers highly-reliable and affordable dedicated and virtual servers for HIVE, HBD, EOS, Monero, DOGE, LTC, and BTC! 
+
+Check out our website at https://www.privex.io
+
+Join the Privex discord at: https://invite.gg/privex
+
+---
 
 </div>
+<script crossorigin="anonymous" integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=" src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 
-<p>GIF Avatar by @stellabelle</p>
+<script src="https://unpkg.com/steem-content-renderer"></script>
 
-<hr />
+<script>
+  $(document).ready(function() {
+    try {
+      const renderer = new SteemContentRenderer.DefaultRenderer({
+        baseUrl: "https://hive.blog/",
+        breaks: true,
+        skipSanitization: false,
+        allowInsecureScriptTags: false,
+        addNofollowToLinks: true,
+        doNotShowImages: false,
+        ipfsPrefix: "",
+        assetsWidth: 640,
+        assetsHeight: 480,
+        imageProxyFn: (url) => url,
+        usertagUrlFn: (account) => "/@someguy123",
+        hashtagUrlFn: (hashtag) => "/how-to-set-up-a-hive-witness-or-seed-node-non-mira-upgrade-from-steem-docker-to-hive-docker",
+        isLinkSafeFn: (url) => true,
+      });
+      
+      const inputElem = $('#content-someguy123-how-to-set-up-a-hive-witness-or-seed-node-non-mira-upgrade-from-steem-docker-to-hive-docker').html();
+      const outputElem = $('#content-someguy123-how-to-set-up-a-hive-witness-or-seed-node-non-mira-upgrade-from-steem-docker-to-hive-docker');
+      const output = renderer.render(inputElem);
+      
+      outputElem.html(output);
+    } catch(e) {
+      console.log(e);
+    }
+  });
+</script>
 
-<h3 id="do-you-like-what-im-doing-for-hive">Do you like what I’m doing for Hive?</h3>
-
-<p><a href="https://wallet.hive.blog/~witnesses">Vote for me to be a witness</a> - every vote counts.</p>
-
-<h3 id="dont-forget-to-follow-me-for-more-like-this">Don’t forget to follow me for more like this.</h3>
-
-<hr />
-
-<p>Are you looking for a new server provider? My company @privex offers highly-reliable and affordable dedicated and virtual servers for HIVE, HBD, EOS, Monero, DOGE, LTC, and BTC!</p>
-
-<p>Check out our website at 
-<a href="https://www.privex.io">https://www.privex.io</a></p>
-
-<p>Join the Privex discord at: 
-<a href="https://invite.gg/privex">https://invite.gg/privex</a></p>
-
-<hr />
+<style>
+  #content-someguy123-how-to-set-up-a-hive-witness-or-seed-node-non-mira-upgrade-from-steem-docker-to-hive-docker {
+    padding: 0 3rem;
+    color: #444444;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.8;
+    text-shadow: 0 1px 0 #ffffff;
+    padding: 0.5rem;
+  }
+  #content-someguy123-how-to-set-up-a-hive-witness-or-seed-node-non-mira-upgrade-from-steem-docker-to-hive-docker code {
+    background: white;
+  }
+  #content-someguy123-how-to-set-up-a-hive-witness-or-seed-node-non-mira-upgrade-from-steem-docker-to-hive-docker a {
+    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
+  }
+  #content-someguy123-how-to-set-up-a-hive-witness-or-seed-node-non-mira-upgrade-from-steem-docker-to-hive-docker a:hover {
+    border-bottom: 0;
+  }
+  #content-someguy123-how-to-set-up-a-hive-witness-or-seed-node-non-mira-upgrade-from-steem-docker-to-hive-docker h1 {
+    font-size: 2.2em;
+  }
+  #content-someguy123-how-to-set-up-a-hive-witness-or-seed-node-non-mira-upgrade-from-steem-docker-to-hive-docker h2, h3, h4, h5 {
+    margin-bottom: 0;
+  }
+  #content-someguy123-how-to-set-up-a-hive-witness-or-seed-node-non-mira-upgrade-from-steem-docker-to-hive-docker header small {
+    color: #999;
+    font-size: 50%;
+  }
+  #content-someguy123-how-to-set-up-a-hive-witness-or-seed-node-non-mira-upgrade-from-steem-docker-to-hive-docker img {
+    max-width: 100%;
+  }
+</style>
 
 <hr />
 

@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>Misconceptions about 2nd layer apps: part 1 | Hive Chain Documentation</title>
+<meta name="generator" content="Jekyll v4.0.0" />
+<meta property="og:title" content="Misconceptions about 2nd layer apps: part 1" />
+<meta name="author" content="blocktrades" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="@howo recently shared with me the image below (neither of us made this image, but I have a reasonable belief that it&#39;s copyright free), and it made me realize there are some common misconceptions about 2nd layer apps that are worth dispelling. Originally, I was going to make one post about this, but it started to run long when I tried to avoid skipping any steps in my explanations, so I’ve decided to break it up into a few short, easy-to-digest posts. This also means I won&#39;t be explaining all the problems with this image today, either, but hey, what&#39;s life without a little anticipation? ![image (3).png](https://images.hive.blog/DQmWapVWwsacyTitpb8oF4XFMDjQDNmvDJUfSj7mPQ5fgyp/image%20(3).png) # Misconception 1: it’s difficult (or impossible) to make decentralized 2nd layer apps Creating a 2nd layer app on Hive is almost trivially easy for an experienced programmer. How easy? Let’s take a look at how to go about creating a 2nd layer app for playing decentralized tic-tac-toe matches. ## Design the transactions and protocol rules for your tic-tac-toe app To start a game, we just need two operations: `offer_match, “player”: “mynextvictim”` `accept_offer, “transaction_id”: transaction_id_of_offer` Whenever a player wants to challenge a player he broadcasts an offer_match. For this simple example, our app will just auto-expire an offer if it isn’t accepted in 24 hours. To accept an offer, the challenged player broadcasts a transaction with the “accept_offer” operation that includes the transaction id of the original offer. If the acceptance is broadcast within the 24 hour period, the app will start a game and accept moves from each player. So we just need one more operation, the “move” operation: `move, &quot;transaction_id&quot;:transaction_id_of_offer, “coordinates”: [row_number, column_number]` Again, for simplicity, we’ll design our app so that the challenged player gets the first move, but we could easily make this a parameter of either the offer or the acceptance operation. We just need to add a few more protocol rules: 1) players need to take turns moving, 2) players can’t move to a previously occupied square, 3) player wins if he gets 3 in a row, and 4) game ends in a tie if 9 valid moves occur without a winner (i.e. all the squares get filled). Defining the protocol rules are so simple, there’s probably marginally more work in writing the user interface that displays the tic-tac-toe board, allows the user to click on squares, and updates the board as moves are received from the blockchain. But all of this is pretty easy to do, code-wise. For Hive, two great choices for a programming language to do this would be Python or Javascript, as Hive has easy-to-use libraries that allow your application to publish and read transactions from the blockchain. ## Decentralize your tic-tac-toe game Now, as easy as it was to design, there’s still the “hard step” of decentralizing your tic-tac-toe app, right? Nope, that’s the really easy part. Simply publish the official rules publicly. Ideally, you would also publish your source code with a license that lets anyone run your code. Congratulations, you can play decentralized tic-tac-toe with other people around the world, secure in the knowledge they can’t cheat. Anyone can run your code on their computer, connect it up to a Hive API node, verify all the game transactions, and determine who really won each game (although, fair warning, most of those games are probably going to be ties). The blockchain maintains an immutable record of what moves were actually made, and by whom, so all you need is the publicly available “tic-tac-toe” rules to determine the winner. Someone can run a server that provides false answers, but you can always run your own server to find out the truth. See: Misconceptions about 2nd layer apps: part 1 by @blocktrades" />
+<meta property="og:description" content="@howo recently shared with me the image below (neither of us made this image, but I have a reasonable belief that it&#39;s copyright free), and it made me realize there are some common misconceptions about 2nd layer apps that are worth dispelling. Originally, I was going to make one post about this, but it started to run long when I tried to avoid skipping any steps in my explanations, so I’ve decided to break it up into a few short, easy-to-digest posts. This also means I won&#39;t be explaining all the problems with this image today, either, but hey, what&#39;s life without a little anticipation? ![image (3).png](https://images.hive.blog/DQmWapVWwsacyTitpb8oF4XFMDjQDNmvDJUfSj7mPQ5fgyp/image%20(3).png) # Misconception 1: it’s difficult (or impossible) to make decentralized 2nd layer apps Creating a 2nd layer app on Hive is almost trivially easy for an experienced programmer. How easy? Let’s take a look at how to go about creating a 2nd layer app for playing decentralized tic-tac-toe matches. ## Design the transactions and protocol rules for your tic-tac-toe app To start a game, we just need two operations: `offer_match, “player”: “mynextvictim”` `accept_offer, “transaction_id”: transaction_id_of_offer` Whenever a player wants to challenge a player he broadcasts an offer_match. For this simple example, our app will just auto-expire an offer if it isn’t accepted in 24 hours. To accept an offer, the challenged player broadcasts a transaction with the “accept_offer” operation that includes the transaction id of the original offer. If the acceptance is broadcast within the 24 hour period, the app will start a game and accept moves from each player. So we just need one more operation, the “move” operation: `move, &quot;transaction_id&quot;:transaction_id_of_offer, “coordinates”: [row_number, column_number]` Again, for simplicity, we’ll design our app so that the challenged player gets the first move, but we could easily make this a parameter of either the offer or the acceptance operation. We just need to add a few more protocol rules: 1) players need to take turns moving, 2) players can’t move to a previously occupied square, 3) player wins if he gets 3 in a row, and 4) game ends in a tie if 9 valid moves occur without a winner (i.e. all the squares get filled). Defining the protocol rules are so simple, there’s probably marginally more work in writing the user interface that displays the tic-tac-toe board, allows the user to click on squares, and updates the board as moves are received from the blockchain. But all of this is pretty easy to do, code-wise. For Hive, two great choices for a programming language to do this would be Python or Javascript, as Hive has easy-to-use libraries that allow your application to publish and read transactions from the blockchain. ## Decentralize your tic-tac-toe game Now, as easy as it was to design, there’s still the “hard step” of decentralizing your tic-tac-toe app, right? Nope, that’s the really easy part. Simply publish the official rules publicly. Ideally, you would also publish your source code with a license that lets anyone run your code. Congratulations, you can play decentralized tic-tac-toe with other people around the world, secure in the knowledge they can’t cheat. Anyone can run your code on their computer, connect it up to a Hive API node, verify all the game transactions, and determine who really won each game (although, fair warning, most of those games are probably going to be ties). The blockchain maintains an immutable record of what moves were actually made, and by whom, so all you need is the publicly available “tic-tac-toe” rules to determine the winner. Someone can run a server that provides false answers, but you can always run your own server to find out the truth. See: Misconceptions about 2nd layer apps: part 1 by @blocktrades" />
+<link rel="canonical" href="https://hive.blog/hive-139531/@blocktrades/misconceptions-about-2nd-layer-apps-part-1" />
+<meta property="og:url" content="https://hive.blog/hive-139531/@blocktrades/misconceptions-about-2nd-layer-apps-part-1" />
+<meta property="og:site_name" content="Hive Chain Documentation" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2020-08-28T17:16:54-07:00" />
+<script type="application/ld+json">
+{"description":"@howo recently shared with me the image below (neither of us made this image, but I have a reasonable belief that it&#39;s copyright free), and it made me realize there are some common misconceptions about 2nd layer apps that are worth dispelling. Originally, I was going to make one post about this, but it started to run long when I tried to avoid skipping any steps in my explanations, so I’ve decided to break it up into a few short, easy-to-digest posts. This also means I won&#39;t be explaining all the problems with this image today, either, but hey, what&#39;s life without a little anticipation? ![image (3).png](https://images.hive.blog/DQmWapVWwsacyTitpb8oF4XFMDjQDNmvDJUfSj7mPQ5fgyp/image%20(3).png) # Misconception 1: it’s difficult (or impossible) to make decentralized 2nd layer apps Creating a 2nd layer app on Hive is almost trivially easy for an experienced programmer. How easy? Let’s take a look at how to go about creating a 2nd layer app for playing decentralized tic-tac-toe matches. ## Design the transactions and protocol rules for your tic-tac-toe app To start a game, we just need two operations: `offer_match, “player”: “mynextvictim”` `accept_offer, “transaction_id”: transaction_id_of_offer` Whenever a player wants to challenge a player he broadcasts an offer_match. For this simple example, our app will just auto-expire an offer if it isn’t accepted in 24 hours. To accept an offer, the challenged player broadcasts a transaction with the “accept_offer” operation that includes the transaction id of the original offer. If the acceptance is broadcast within the 24 hour period, the app will start a game and accept moves from each player. So we just need one more operation, the “move” operation: `move, &quot;transaction_id&quot;:transaction_id_of_offer, “coordinates”: [row_number, column_number]` Again, for simplicity, we’ll design our app so that the challenged player gets the first move, but we could easily make this a parameter of either the offer or the acceptance operation. We just need to add a few more protocol rules: 1) players need to take turns moving, 2) players can’t move to a previously occupied square, 3) player wins if he gets 3 in a row, and 4) game ends in a tie if 9 valid moves occur without a winner (i.e. all the squares get filled). Defining the protocol rules are so simple, there’s probably marginally more work in writing the user interface that displays the tic-tac-toe board, allows the user to click on squares, and updates the board as moves are received from the blockchain. But all of this is pretty easy to do, code-wise. For Hive, two great choices for a programming language to do this would be Python or Javascript, as Hive has easy-to-use libraries that allow your application to publish and read transactions from the blockchain. ## Decentralize your tic-tac-toe game Now, as easy as it was to design, there’s still the “hard step” of decentralizing your tic-tac-toe app, right? Nope, that’s the really easy part. Simply publish the official rules publicly. Ideally, you would also publish your source code with a license that lets anyone run your code. Congratulations, you can play decentralized tic-tac-toe with other people around the world, secure in the knowledge they can’t cheat. Anyone can run your code on their computer, connect it up to a Hive API node, verify all the game transactions, and determine who really won each game (although, fair warning, most of those games are probably going to be ties). The blockchain maintains an immutable record of what moves were actually made, and by whom, so all you need is the publicly available “tic-tac-toe” rules to determine the winner. Someone can run a server that provides false answers, but you can always run your own server to find out the truth. See: Misconceptions about 2nd layer apps: part 1 by @blocktrades","author":{"@type":"Person","name":"blocktrades"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://hive.blog/hive-139531/@blocktrades/misconceptions-about-2nd-layer-apps-part-1"},"@type":"BlogPosting","url":"https://hive.blog/hive-139531/@blocktrades/misconceptions-about-2nd-layer-apps-part-1","headline":"Misconceptions about 2nd layer apps: part 1","dateModified":"2020-08-28T17:16:54-07:00","datePublished":"2020-08-28T17:16:54-07:00","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://hivedocs.info/feed.xml" title="Hive Chain Documentation" /><script>
+if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNotTrack === "yes" || navigator.msDoNotTrack === "1")) {
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-161692811-1', 'auto');
+  ga('send', 'pageview');
+}
+</script>
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/turbolinks/5.2.0/turbolinks.js" integrity="sha256-iM4Yzi/zLj/IshPWMC1IluRxTtRjMqjPGd97TZ9yYpU=" crossorigin="anonymous"></script>
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Cousine|Inconsolata" rel="stylesheet">
+  <link rel="shortcut icon" type="image/png" href="/assets/images/favicon.png">
+</head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Hive Chain Documentation</a>
+
+      <nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/news/">News</a><a class="page-link" href="/howto/">How To</a><a class="page-link" href="/links/">Useful Links</a><!-- HTML elements for search -->
+          <input type="text" id="search-input" placeholder="Search" />
+          
+          <ul id="results-container"></ul>
+
+          <script src="/assets/javascript/search.js"></script>
+          <script>
+            var sjs = SimpleJekyllSearch({
+              searchInput: document.getElementById('search-input'),
+              resultsContainer: document.getElementById('results-container'),
+              json: '/search.json'
+            })
+          </script>
+          <!-- <form style="float: right;" class="form-inline" method="get" action="http://www.google.com/search">
+            <input type="hidden" name="sitesearch" value="hivedocs.info" />
+            <input type="text" name="q" maxlength="255" placeholder="Search" />
+          </form> -->
+        </div>
+      </nav>
+  </div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Misconceptions about 2nd layer apps: part 1</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2020-08-28T17:16:54-07:00" itemprop="datePublished">Aug 28, 2020
+      </time>• <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">
+          <a href="https://hive.blog/@blocktrades">blocktrades</a>
+        </span></span></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <div id="content-blocktrades-misconceptions-about-2nd-layer-apps-part-1">@howo recently shared with me the image below (neither of us made this image, but I have a reasonable belief that it's copyright free), and it made me realize there are some common misconceptions about 2nd layer apps that are worth dispelling. 
+
+Originally, I was going to make one post about this, but it started to run long when I tried to avoid skipping any steps in my explanations, so I’ve decided to break it up into a few short, easy-to-digest posts. This also means I won't be explaining all the problems with this image today, either, but hey, what's life without a little anticipation?
+
+
+![image (3).png](https://images.hive.blog/DQmWapVWwsacyTitpb8oF4XFMDjQDNmvDJUfSj7mPQ5fgyp/image%20(3).png)
+
+
+# Misconception 1: it’s difficult (or impossible) to make decentralized 2nd layer apps
+
+Creating a 2nd layer app on Hive is almost trivially easy for an experienced programmer. How easy? Let’s take a look at how to go about creating a 2nd layer app for playing decentralized tic-tac-toe matches.
+
+## Design the transactions and protocol rules for your tic-tac-toe app 
+
+To start a game, we just need two operations:
+`offer_match, “player”: “mynextvictim”`
+`accept_offer, “transaction_id”: transaction_id_of_offer`
+
+Whenever a player wants to challenge a player he broadcasts an offer_match. For this simple example, our app will just auto-expire an offer if it isn’t accepted in 24 hours. 
+
+To accept an offer, the challenged player broadcasts a transaction with the “accept_offer” operation that includes the transaction id of the original offer. If the acceptance is broadcast within the 24 hour period, the app will start a game and accept moves from each player.
+
+So we just need one more operation, the “move” operation:
+`move, "transaction_id":transaction_id_of_offer, “coordinates”: [row_number, column_number]`
+
+Again, for simplicity, we’ll design our app so that the challenged player gets the first move, but we could easily make this a parameter of either the offer or the acceptance operation.
+
+We just need to add a few more protocol rules: 1) players need to take turns moving, 2) players can’t move to a previously occupied square, 3) player wins if he gets 3 in a row, and 4) game ends in a tie if 9 valid moves occur without a winner (i.e. all the squares get filled).
+
+Defining the protocol rules are so simple, there’s probably marginally more work in writing the user interface that displays the tic-tac-toe board, allows the user to click on squares, and updates the board as moves are received from the blockchain. But all of this is pretty easy to do, code-wise. 
+
+For Hive, two great choices for a programming language to do this would be Python or Javascript, as Hive has easy-to-use libraries that allow your application to publish and read transactions from the blockchain.
+
+## Decentralize your tic-tac-toe game
+
+Now, as easy as it was to design, there’s still the “hard step” of decentralizing your tic-tac-toe app, right? Nope, that’s the really easy part.
+
+Simply publish the official rules publicly. Ideally, you would also publish your source code with a license that lets anyone run your code. Congratulations, you can play decentralized tic-tac-toe with other people around the world, secure in the knowledge they can’t cheat. Anyone can run your code on their computer, connect it up to a Hive API node, verify all the game transactions, and determine who really won each game (although, fair warning, most of those games are probably going to be ties). 
+
+The blockchain maintains an immutable record of what moves were actually made, and by whom, so all you need is the publicly available “tic-tac-toe” rules to determine the winner. Someone can run a server that provides false answers, but you can always run your own server to find out the truth.</div>
+<script crossorigin="anonymous" integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=" src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+
+<script src="https://unpkg.com/steem-content-renderer"></script>
+
+<script>
+  $(document).ready(function() {
+    try {
+      const renderer = new SteemContentRenderer.DefaultRenderer({
+        baseUrl: "https://hive.blog/",
+        breaks: true,
+        skipSanitization: false,
+        allowInsecureScriptTags: false,
+        addNofollowToLinks: true,
+        doNotShowImages: false,
+        ipfsPrefix: "",
+        assetsWidth: 640,
+        assetsHeight: 480,
+        imageProxyFn: (url) => url,
+        usertagUrlFn: (account) => "/@blocktrades",
+        hashtagUrlFn: (hashtag) => "/misconceptions-about-2nd-layer-apps-part-1",
+        isLinkSafeFn: (url) => true,
+      });
+      
+      const inputElem = $('#content-blocktrades-misconceptions-about-2nd-layer-apps-part-1').html();
+      const outputElem = $('#content-blocktrades-misconceptions-about-2nd-layer-apps-part-1');
+      const output = renderer.render(inputElem);
+      
+      outputElem.html(output);
+    } catch(e) {
+      console.log(e);
+    }
+  });
+</script>
+
+<style>
+  #content-blocktrades-misconceptions-about-2nd-layer-apps-part-1 {
+    padding: 0 3rem;
+    color: #444444;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.8;
+    text-shadow: 0 1px 0 #ffffff;
+    padding: 0.5rem;
+  }
+  #content-blocktrades-misconceptions-about-2nd-layer-apps-part-1 code {
+    background: white;
+  }
+  #content-blocktrades-misconceptions-about-2nd-layer-apps-part-1 a {
+    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
+  }
+  #content-blocktrades-misconceptions-about-2nd-layer-apps-part-1 a:hover {
+    border-bottom: 0;
+  }
+  #content-blocktrades-misconceptions-about-2nd-layer-apps-part-1 h1 {
+    font-size: 2.2em;
+  }
+  #content-blocktrades-misconceptions-about-2nd-layer-apps-part-1 h2, h3, h4, h5 {
+    margin-bottom: 0;
+  }
+  #content-blocktrades-misconceptions-about-2nd-layer-apps-part-1 header small {
+    color: #999;
+    font-size: 50%;
+  }
+  #content-blocktrades-misconceptions-about-2nd-layer-apps-part-1 img {
+    max-width: 100%;
+  }
+</style>
+
+<hr />
+
+<p>
+  See: <a href="https://hive.blog/hive-139531/@blocktrades/misconceptions-about-2nd-layer-apps-part-1">Misconceptions about 2nd layer apps: part 1</a>
+  by
+  <a href="https://hive.blog/@blocktrades">@blocktrades</a>
+</p>
+
+
+  </div><a class="u-url" href="/dapps/2020/08/28/misconceptions-about-2nd-layer-apps-part-1.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading"><a rel="author" href="/">Hive Chain Documentation</a></h2>
+    
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">site curated by: @inertia</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>Your resource for various levels of Hive Documentation.</p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+</body>
+
+</html>
