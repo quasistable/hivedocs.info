@@ -5,6 +5,6 @@ title: "How to use HiveJs (or other modules referencing core Node.js modules) on
 date: 2020-07-08 03:54:39 UTC
 categories: howto nodejs react
 canonical_url: https://peakd.com/hive-139531/@stoodkev/how-to-use-hivejs-or-other-modules-referencing-core-node-js-modules-on-react-native
-image: https://hivedocs.info/assets/images/favicon.png
+image: https://files.peakd.com/file/peakd-hive/stoodkev/C3S6phs5-image.png
 ---
 {% hive stoodkev/how-to-use-hivejs-or-other-modules-referencing-core-node-js-modules-on-react-native %}

@@ -6,6 +6,6 @@ description: "The hive-ruby gem was written from the ground."
 date: 2020-05-07 08:16:18 UTC
 categories: tools ruby
 canonical_url: https://peakd.com/hive-139531/@inertia/ruby-client-for-hive-hive-ruby-1-0-0-pre-1
-image: https://hivedocs.info/assets/images/favicon.png
+image: https://files.peakd.com/file/peakd-hive/inertia/aJnQFjOw-logo-128.png
 ---
 {% hive inertia/ruby-client-for-hive-hive-ruby-1-0-0-pre-1 %}
