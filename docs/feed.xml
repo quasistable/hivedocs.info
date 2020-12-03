@@ -1,4 +1,321 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.0.1">Jekyll</generator><link href="https://hivedocs.info/feed.xml" rel="self" type="application/atom+xml" /><link href="https://hivedocs.info/" rel="alternate" type="text/html" /><updated>2020-11-29T10:20:36-08:00</updated><id>https://hivedocs.info/feed.xml</id><title type="html">Hive Chain Documentation</title><subtitle>Your resource for various levels of Hive Documentation.</subtitle><author><name>site curated by: @inertia</name></author><entry><title type="html">Hivesearcher website opensourced</title><link href="https://hivedocs.info/seo/api/2020/11/27/hivesearcher-website-opensourced.html" rel="alternate" type="text/html" title="Hivesearcher website opensourced" /><published>2020-11-27T04:26:03-08:00</published><updated>2020-11-27T04:26:03-08:00</updated><id>https://hivedocs.info/seo/api/2020/11/27/hivesearcher-website-opensourced</id><content type="html" xml:base="https://hivedocs.info/seo/api/2020/11/27/hivesearcher-website-opensourced.html">&lt;div id=&quot;content-good-karma-hivesearcher-website-opensourced&quot;&gt;We have opensourced Hivesearcher website earlier today and pushed some documentation improvements.
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="https://hivedocs.info/feed.xml" rel="self" type="application/atom+xml" /><link href="https://hivedocs.info/" rel="alternate" type="text/html" /><updated>2020-12-02T19:51:56-08:00</updated><id>https://hivedocs.info/feed.xml</id><title type="html">Hive Chain Documentation</title><subtitle>Your resource for various levels of Hive Documentation.</subtitle><author><name>site curated by: @inertia</name></author><entry><title type="html">Roadmap for Hive-related work by BlockTrades in the next 6 months</title><link href="https://hivedocs.info/news/core/development/2020/12/02/roadmap-for-hive-related-work-by-blocktrades-in-the-next-6-months.html" rel="alternate" type="text/html" title="Roadmap for Hive-related work by BlockTrades in the next 6 months" /><published>2020-12-02T15:36:21-08:00</published><updated>2020-12-02T15:36:21-08:00</updated><id>https://hivedocs.info/news/core/development/2020/12/02/roadmap-for-hive-related-work-by-blocktrades-in-the-next-6-months</id><content type="html" xml:base="https://hivedocs.info/news/core/development/2020/12/02/roadmap-for-hive-related-work-by-blocktrades-in-the-next-6-months.html">&lt;div id=&quot;content-blocktrades-roadmap-for-hive-related-work-by-blocktrades-in-the-next-6-months&quot;&gt;The BlockTrades team is planning a lot of future work to the Hive ecosystem. This posts details some of the changes we’re planning so far. 
+
+I want to apologize in advance, as this is still a somewhat raw dump of my thoughts about sometimes complicated issues. This means that some of the topics are written for everyone, but other topics contain fairly technical details that will likely be difficult to grasp at first reading (and maybe subsequent ones). As we get closer to implementation of some of these ideas, I’ll try to elaborate more on individual ideas from this post in later posts (if someone else hasn’t taken on that challenge in the meantime).
+
+I’m dividing these changes up into several categories, because they impact different systems and therefore have different scheduling needs.
+
+
+# Blockchain-consensus changes (hardfork changes)
+
+These are changes to Hive’s governance model, so they require a hardfork and approval by the top 20 witnesses. 
+
+Hardfork changes require all nodes to update to continue operating on the Hive network, which is a bit of a pain to coordinate, so Hive devs try to avoid requiring too many hardforks (usually by scheduling several hardfork changes at once). 
+
+The current plan is to schedule hardfork 25 for around 6 months from now (mainly to avoid requiring exchanges from having too upgrade too soon after the last hardfork). The protocol changes planned for hardfork 25 are expected to be rather easy changes and will likely be coded much sooner than 6 months from now.
+
+The changes planned for the hardfork are NOT required in order to execute on our other planned changes to the Hive ecosystem: this means we can make many important and useful changes to Hive before the next hardfork.
+
+# What about HMTs (user-defined tokens)?
+
+The only potential change we might conceivably make to the blockchain rules in hardfork 25 that wouldn’t necessarily be easy would be enabling HMTs (mainly because the HMT code hasn’t been tested well yet and would likely need improvements prior to release). 
+
+At this point, we haven’t made any decision about whether or not to enable HMTs, because we think there’s a reasonable chance that we can do something more useful in the way of tokenization at the 2nd layer. In short, the topic needs more research, and will be discussed in depth in a later post, after we’ve fully explored the options. 
+
+My personal preference at the moment is to implement user-defined tokens at the 2nd layer using a smart contract evaluation system, which will allow for much more flexibility than is possible with HMTs. But to make this feasible, we have to define a robust model for decentralized 2nd layer apps (to be discussed more in later sections of this post). 
+
+It’s also worth noting that these don’t have to be exclusive options: it’s possible to implement HMTs at the first layer and smart contract-based tokens at the 2nd layer. But this could be more confusing for Hive users and may offer no real benefit.
+
+# Governance changes planned for hardfork 25
+
+##  Vote expiration for witnesses, proxies, and proposals
+
+Currently governance votes don’t expire, which can lead to votes that never change, either due to inattention of the voter or in worse cases, because the owner loses their keys or passes away (yes, on Hive, dead people really can still be voting). This can lead to non-optimal voting, since the stake isn’t properly monitoring the people and proposals being voted for.
+
+To address this issue, we’ll set governance votes to automatically expire one year after the last governance action by an account. This will be implemented by storing a “last governance action time” for each Hive account (this information will be part of an account’s profile information).
+
+Whenever a user sets a voting proxy, or vote/unvotes a witness or a proposal, this last governance action time will be updated to the current time. If a year passes without a governance action by the account, the account’s votes for witnesses and proposals will be canceled, and any proxying of the account will be reset.
+
+User interfaces like Hive wallets and browsers will be updated to report a warning when an account’s votes are getting near to expiration. Such warnings should prevent any active user from forgetting to take a governance action that keeps their votes from expiring.
+
+Just to be clear about how this works in practice: your votes will only expire if you don’t take any governance action for an entire year. So this change should only impact people who are no longer “paying attention” to what’s going on (or who have lost control of their keys).
+
+##  Change 5min vote window to longer window and provide proportional rewards during the window
+
+Currently, voting earlier than 5 minutes after a post is published results in less curation rewards for the voter. This led to the rise of auto-vote bots that vote at or near the end of this 5 minute window, severely disadvantaging manual voters.
+
+With this change, there will no longer be a penalty for early voting of a post/comment. Furthermore, there will be no advantage to voting earlier than anyone else who votes within the new longer time period. 
+
+There will still be an advantage for voters who vote within the time window, but the idea is that the new window time should be long enough for manual curators to find good content, putting them on equal footing with the vote bots. 
+
+How long should the new window be? I’d argue for somewhere between 2 hours and 24 hours at most. I generally favor it being closer to 2 hours, to allow for some friendly competition between manual voters, and to encourage somewhat rapid curation that brings good content to the trending page quicker.
+
+This change isn’t expected to eliminate auto-vote bots, but it should remove the financial incentive to use an auto-vote bot instead of voting manually. 
+
+This change will still lead to an incentive to select “popular” content, since voters during the first 2 hours will gain somewhat more rewards than later voters on a post.
+
+The above means that “Smart” auto-vote bots will likely begin trailing successful manual curators by voting near the end of the 2 hour period in an attempt to maximize their rewards. On the whole, this incentive seems beneficial, since it should lead to good manual curation being the guiding force for how the bots vote as well.
+
+# Non-consensus changes to hived blockchain software
+
+These are changes that can be made without a hardfork, and often don’t require everyone to upgrade their node. Changes of this type include: 1) speed and memory optimizations, 2) minor bug fixes, 3) addition and changes to API functionality. They are also usually not very controversial, because they don’t affect governance.
+
+Because non-consensus changes usually don’t require everyone to upgrade their node, these changes can be released whenever they are ready, instead of being scheduled as part of a big planned release. As a simple example, we’ve had 7 such non-consensus releases since HF 24 (we’re at hived v1.24.7 right now). 
+
+Most of these changes only impacted API node operators, so normal witnesses and exchanges didn’t need to upgrade their nodes (most hived nodes are still running v1.24.2).
+
+There’s several areas we can explore making non-consensus improvements to the blockchain:
+1) further reductions to memory usage
+2) improvements to peer-to-peer networking layer
+3) improvements to API services
+4) a hived plugin to provide real-time data to 2nd layer apps
+
+Of the above areas, I believe 4) is the most critical change. Currently it takes over 4 days to sync all the existing blockchain data to a new hivemind instance. We should be able to significantly reduce this time by creating a custom plugin that can fill a hivemind database (we’ve made measurements that show that hivemind database filling time is the main bottleneck in hivemind full sync timing on a system with fast IO, because of cpu bottlenecking on the hived side).
+
+Another issue is that the current hivemind “live sync” process intentionally lags 2 blocks behind the head block, because hivemind isn’t able to handle micro-forking by hived. The creation of a plugin that directly writes to hivemind’s database will allow for faster data filling and also allow hived to manage the required changes to hivemind’s database in the case of microforks. This, in turn, means that hivemind will be able to operate with the most recent block data, eliminating the 6 second lag (2 blocks behind the head block at 3s block intervals = 6s) that it currently has. This is very important for an interactive experience by Hive users on the various Hive frontends.
+
+# Development of 2nd layer ecosystem
+
+This is one of the areas where I expect we’ll be devoting the most time in the next few months. The most important thing I want to do is to create an easy framework for the creation of new Hive apps.
+
+Right now, apps usually rely on API nodes to supply a lot of their blockchain information via API calls  (with the data coming from a hived blockchain node and the hivemind social media microservice). Some apps also directly process custom_json operations to implement functionality that is generally unique to their application. This approach “works”, but it could definitely be improved. 
+
+
+## Implementation challenges for 2nd layer apps
+
+One issue is that apps either need to run their own heavy weight API node or rely on the API nodes provided by others. Ideally, it should be possible for an app to run a lightweight node that provides all the data needed by the app, avoiding reliance on uptime and data integrity of external API nodes.
+
+Another issue is the processing of custom_json streams (and other operations) in the face of forks, where operations in blocks that have already been processed have to be discarded in favor of new data. This is one of the most potentially problematic issues for any blockchain-based app.
+
+## A lightweight framework for 2nd layer apps (via “modular hivemind” nodes)
+
+To address, the above issues, we plan to create a lightweight framework using much of the technology stack of hivemind, combined with the new hived plugin we’re developing that will simplify real-time reception and processing of blockchain data and support easy fork-handling via a generic undo mechanism. 
+
+However, unlike in a traditional hivemind installation, the operator of a 2nd layer node of this type will get to decide what data he wants to store and what APIs he wants to support. For example, a 2nd layer node that supports a game might initially only track account balances and game history, but no social media data. But if the node operator later wants to add more data and API support to their 2nd layer node, we want to make it easy to add it via some form of upgrade mechanism. I believe it was @howo that coined the term “modular hivemind” to refer to this idea.
+
+## Consistency checking to decentralize trust in blockchain ecosystems
+
+Note: this is one of those topics that I mentioned at the outset of this post that might not be trivial to understand unless you’re a programmer (and maybe not even then).
+
+Another important capability that would be very useful for 2nd layer apps is a way of automating the checking of data consistency between multiple API servers. A system of this sort would go a long way towards reducing the need to trust any particular node that supports a 2nd layer app (i.e. decentralizing trust).
+
+One way to do this would be for decentralized 2nd layer apps to periodically (for example, once every 1000 blocks) generate a hash of their state (or some portion thereof)  and publish it as a blockchain transaction. 2nd layer apps that generate the same hash are making a statement that they interpret the blockchain data in the same way (i.e. they are operating under the same protocol rules).
+
+In such a system, 2nd layer apps can decide to operate by different rules (a protocol fork), while continuing to coexist on the same blockchain network. But by publishing hashes of their state, users will know which nodes have decided to operate under a common set of rules, and they can therefore make an informed choice about which nodes they want to rely on for data. Of course, a user can always decide to simply run their own node, which is something we want to make it much cheaper and easier to do. But even in this case, it’s very valuable information to know who is supporting a particular protocol, as the amount of consensus among protocol users is a major determinant of the value of that protocol.
+
+# Increase development pace of open-source user interfaces for Hive (e.g hive.blog , ecency.com, etc)
+
+For the past few months, I’ve focused on adding more user interface programmers to our team to support increased development of open-sourced Hive-based front ends. Naturally BlockTrades already employed a number of front-end programmers, but they were all tied up on other projects, and couldn’t be moved without serious impacts on the scheduling of those projects.
+
+There’s little point in going into specifics at this moment as to the exact changes we’ll be making on Hive front ends, as often these changes are quite small, can be done at any time, and are generally driven by user demand. But I felt it’s important to say we recognize the importance of how user interfaces impact enjoyment of Hive in all it’s facets (as a currency, as a platform of blockchain based apps, and as a social media backbone) and that we will be increasing our efforts in this area.
+
+# A new decentralized reputation/rating system using web-of-trust concepts
+
+This last topic is the one that I’m most interested in, and I’ll have much more to say about it later, but it’s a huge topic and deserves many posts of its own to divide it up into digestible bites. 
+
+The basic idea for this system is you assign judgment skill ratings to people you know in various disciplines and you also publish your own ratings on products/people/ideas. Based on who you trust and how much you trust them in different areas of judgment, this system will compute rating scores using your web of trust network on potentially any subject where people form opinions.
+
+I almost didn’t mention it in this post, but since this is something like a roadmap of planned Hive-related work for BlockTrades and this will function as a 2nd layer Hive app, I figured I should at least give it a brief mention now, as I plan to start this effort in the next 6 months. I say “start” because the reputation/rating system is planned to be a long-term project that will grow over many years and expand to address many different areas. Initially, of course, we’ll need to focus on creating a prototype that covers a relative small subset of things that can be rated and a few mechanisms for computing ratings and analyzing how ratings change as a user makes changes to his trust network.
+
+# Final note
+
+Also note that this is just a roadmap of things BlockTrades is currently planning to work on. For example, @howo is working on support for recurrent payments currently, to allow for Patreon-style payment models.&lt;/div&gt;
+&lt;script crossorigin=&quot;anonymous&quot; integrity=&quot;sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=&quot; src=&quot;https://code.jquery.com/jquery-3.5.1.slim.min.js&quot;&gt;&lt;/script&gt;
+
+&lt;script src=&quot;https://unpkg.com/steem-content-renderer&quot;&gt;&lt;/script&gt;
+
+&lt;script&gt;
+  $(document).ready(function() {
+    try {
+      const renderer = new SteemContentRenderer.DefaultRenderer({
+        baseUrl: &quot;https://hive.blog/&quot;,
+        breaks: true,
+        skipSanitization: false,
+        allowInsecureScriptTags: false,
+        addNofollowToLinks: true,
+        doNotShowImages: false,
+        ipfsPrefix: &quot;&quot;,
+        assetsWidth: 640,
+        assetsHeight: 480,
+        imageProxyFn: (url) =&gt; url,
+        usertagUrlFn: (account) =&gt; &quot;/@blocktrades&quot;,
+        hashtagUrlFn: (hashtag) =&gt; &quot;/roadmap-for-hive-related-work-by-blocktrades-in-the-next-6-months&quot;,
+        isLinkSafeFn: (url) =&gt; true,
+      });
+      
+      const inputElem = $('#content-blocktrades-roadmap-for-hive-related-work-by-blocktrades-in-the-next-6-months').html();
+      const outputElem = $('#content-blocktrades-roadmap-for-hive-related-work-by-blocktrades-in-the-next-6-months');
+      const output = renderer.render(inputElem);
+      
+      outputElem.html(output);
+    } catch(e) {
+      console.log(e);
+    }
+  });
+&lt;/script&gt;
+
+&lt;style&gt;
+  #content-blocktrades-roadmap-for-hive-related-work-by-blocktrades-in-the-next-6-months {
+    padding: 0 3rem;
+    color: #444444;
+    font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.8;
+    text-shadow: 0 1px 0 #ffffff;
+    padding: 0.5rem;
+  }
+  #content-blocktrades-roadmap-for-hive-related-work-by-blocktrades-in-the-next-6-months code {
+    background: white;
+  }
+  #content-blocktrades-roadmap-for-hive-related-work-by-blocktrades-in-the-next-6-months a {
+    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
+  }
+  #content-blocktrades-roadmap-for-hive-related-work-by-blocktrades-in-the-next-6-months a:hover {
+    border-bottom: 0;
+  }
+  #content-blocktrades-roadmap-for-hive-related-work-by-blocktrades-in-the-next-6-months h1 {
+    font-size: 2.2em;
+  }
+  #content-blocktrades-roadmap-for-hive-related-work-by-blocktrades-in-the-next-6-months h2, h3, h4, h5 {
+    margin-bottom: 0;
+  }
+  #content-blocktrades-roadmap-for-hive-related-work-by-blocktrades-in-the-next-6-months header small {
+    color: #999;
+    font-size: 50%;
+  }
+  #content-blocktrades-roadmap-for-hive-related-work-by-blocktrades-in-the-next-6-months img {
+    max-width: 100%;
+  }
+&lt;/style&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;
+  See: &lt;a href=&quot;https://hive.blog/hive-139531/@blocktrades/roadmap-for-hive-related-work-by-blocktrades-in-the-next-6-months&quot;&gt;Roadmap for Hive-related work by BlockTrades in the next 6 months&lt;/a&gt;
+  by
+  &lt;a href=&quot;https://hive.blog/@blocktrades&quot;&gt;@blocktrades&lt;/a&gt;
+&lt;/p&gt;</content><author><name>blocktrades</name></author><category term="news" /><category term="core" /><category term="development" /><summary type="html">The BlockTrades team is planning a lot of future work to the Hive ecosystem. This posts details some of the changes we’re planning so far. I want to apologize in advance, as this is still a somewhat raw dump of my thoughts about sometimes complicated issues. This means that some of the topics are written for everyone, but other topics contain fairly technical details that will likely be difficult to grasp at first reading (and maybe subsequent ones). As we get closer to implementation of some of these ideas, I’ll try to elaborate more on individual ideas from this post in later posts (if someone else hasn’t taken on that challenge in the meantime). I’m dividing these changes up into several categories, because they impact different systems and therefore have different scheduling needs. # Blockchain-consensus changes (hardfork changes) These are changes to Hive’s governance model, so they require a hardfork and approval by the top 20 witnesses. Hardfork changes require all nodes to update to continue operating on the Hive network, which is a bit of a pain to coordinate, so Hive devs try to avoid requiring too many hardforks (usually by scheduling several hardfork changes at once). The current plan is to schedule hardfork 25 for around 6 months from now (mainly to avoid requiring exchanges from having too upgrade too soon after the last hardfork). The protocol changes planned for hardfork 25 are expected to be rather easy changes and will likely be coded much sooner than 6 months from now. The changes planned for the hardfork are NOT required in order to execute on our other planned changes to the Hive ecosystem: this means we can make many important and useful changes to Hive before the next hardfork. # What about HMTs (user-defined tokens)? The only potential change we might conceivably make to the blockchain rules in hardfork 25 that wouldn’t necessarily be easy would be enabling HMTs (mainly because the HMT code hasn’t been tested well yet and would likely need improvements prior to release). At this point, we haven’t made any decision about whether or not to enable HMTs, because we think there’s a reasonable chance that we can do something more useful in the way of tokenization at the 2nd layer. In short, the topic needs more research, and will be discussed in depth in a later post, after we’ve fully explored the options. My personal preference at the moment is to implement user-defined tokens at the 2nd layer using a smart contract evaluation system, which will allow for much more flexibility than is possible with HMTs. But to make this feasible, we have to define a robust model for decentralized 2nd layer apps (to be discussed more in later sections of this post). It’s also worth noting that these don’t have to be exclusive options: it’s possible to implement HMTs at the first layer and smart contract-based tokens at the 2nd layer. But this could be more confusing for Hive users and may offer no real benefit. # Governance changes planned for hardfork 25 ## Vote expiration for witnesses, proxies, and proposals Currently governance votes don’t expire, which can lead to votes that never change, either due to inattention of the voter or in worse cases, because the owner loses their keys or passes away (yes, on Hive, dead people really can still be voting). This can lead to non-optimal voting, since the stake isn’t properly monitoring the people and proposals being voted for. To address this issue, we’ll set governance votes to automatically expire one year after the last governance action by an account. This will be implemented by storing a “last governance action time” for each Hive account (this information will be part of an account’s profile information). Whenever a user sets a voting proxy, or vote/unvotes a witness or a proposal, this last governance action time will be updated to the current time. If a year passes without a governance action by the account, the account’s votes for witnesses and proposals will be canceled, and any proxying of the account will be reset. User interfaces like Hive wallets and browsers will be updated to report a warning when an account’s votes are getting near to expiration. Such warnings should prevent any active user from forgetting to take a governance action that keeps their votes from expiring. Just to be clear about how this works in practice: your votes will only expire if you don’t take any governance action for an entire year. So this change should only impact people who are no longer “paying attention” to what’s going on (or who have lost control of their keys). ## Change 5min vote window to longer window and provide proportional rewards during the window Currently, voting earlier than 5 minutes after a post is published results in less curation rewards for the voter. This led to the rise of auto-vote bots that vote at or near the end of this 5 minute window, severely disadvantaging manual voters. With this change, there will no longer be a penalty for early voting of a post/comment. Furthermore, there will be no advantage to voting earlier than anyone else who votes within the new longer time period. There will still be an advantage for voters who vote within the time window, but the idea is that the new window time should be long enough for manual curators to find good content, putting them on equal footing with the vote bots. How long should the new window be? I’d argue for somewhere between 2 hours and 24 hours at most. I generally favor it being closer to 2 hours, to allow for some friendly competition between manual voters, and to encourage somewhat rapid curation that brings good content to the trending page quicker. This change isn’t expected to eliminate auto-vote bots, but it should remove the financial incentive to use an auto-vote bot instead of voting manually. This change will still lead to an incentive to select “popular” content, since voters during the first 2 hours will gain somewhat more rewards than later voters on a post. The above means that “Smart” auto-vote bots will likely begin trailing successful manual curators by voting near the end of the 2 hour period in an attempt to maximize their rewards. On the whole, this incentive seems beneficial, since it should lead to good manual curation being the guiding force for how the bots vote as well. # Non-consensus changes to hived blockchain software These are changes that can be made without a hardfork, and often don’t require everyone to upgrade their node. Changes of this type include: 1) speed and memory optimizations, 2) minor bug fixes, 3) addition and changes to API functionality. They are also usually not very controversial, because they don’t affect governance. Because non-consensus changes usually don’t require everyone to upgrade their node, these changes can be released whenever they are ready, instead of being scheduled as part of a big planned release. As a simple example, we’ve had 7 such non-consensus releases since HF 24 (we’re at hived v1.24.7 right now). Most of these changes only impacted API node operators, so normal witnesses and exchanges didn’t need to upgrade their nodes (most hived nodes are still running v1.24.2). There’s several areas we can explore making non-consensus improvements to the blockchain: 1) further reductions to memory usage 2) improvements to peer-to-peer networking layer 3) improvements to API services 4) a hived plugin to provide real-time data to 2nd layer apps Of the above areas, I believe 4) is the most critical change. Currently it takes over 4 days to sync all the existing blockchain data to a new hivemind instance. We should be able to significantly reduce this time by creating a custom plugin that can fill a hivemind database (we’ve made measurements that show that hivemind database filling time is the main bottleneck in hivemind full sync timing on a system with fast IO, because of cpu bottlenecking on the hived side). Another issue is that the current hivemind “live sync” process intentionally lags 2 blocks behind the head block, because hivemind isn’t able to handle micro-forking by hived. The creation of a plugin that directly writes to hivemind’s database will allow for faster data filling and also allow hived to manage the required changes to hivemind’s database in the case of microforks. This, in turn, means that hivemind will be able to operate with the most recent block data, eliminating the 6 second lag (2 blocks behind the head block at 3s block intervals = 6s) that it currently has. This is very important for an interactive experience by Hive users on the various Hive frontends. # Development of 2nd layer ecosystem This is one of the areas where I expect we’ll be devoting the most time in the next few months. The most important thing I want to do is to create an easy framework for the creation of new Hive apps. Right now, apps usually rely on API nodes to supply a lot of their blockchain information via API calls (with the data coming from a hived blockchain node and the hivemind social media microservice). Some apps also directly process custom_json operations to implement functionality that is generally unique to their application. This approach “works”, but it could definitely be improved. ## Implementation challenges for 2nd layer apps One issue is that apps either need to run their own heavy weight API node or rely on the API nodes provided by others. Ideally, it should be possible for an app to run a lightweight node that provides all the data needed by the app, avoiding reliance on uptime and data integrity of external API nodes. Another issue is the processing of custom_json streams (and other operations) in the face of forks, where operations in blocks that have already been processed have to be discarded in favor of new data. This is one of the most potentially problematic issues for any blockchain-based app. ## A lightweight framework for 2nd layer apps (via “modular hivemind” nodes) To address, the above issues, we plan to create a lightweight framework using much of the technology stack of hivemind, combined with the new hived plugin we’re developing that will simplify real-time reception and processing of blockchain data and support easy fork-handling via a generic undo mechanism. However, unlike in a traditional hivemind installation, the operator of a 2nd layer node of this type will get to decide what data he wants to store and what APIs he wants to support. For example, a 2nd layer node that supports a game might initially only track account balances and game history, but no social media data. But if the node operator later wants to add more data and API support to their 2nd layer node, we want to make it easy to add it via some form of upgrade mechanism. I believe it was @howo that coined the term “modular hivemind” to refer to this idea. ## Consistency checking to decentralize trust in blockchain ecosystems Note: this is one of those topics that I mentioned at the outset of this post that might not be trivial to understand unless you’re a programmer (and maybe not even then). Another important capability that would be very useful for 2nd layer apps is a way of automating the checking of data consistency between multiple API servers. A system of this sort would go a long way towards reducing the need to trust any particular node that supports a 2nd layer app (i.e. decentralizing trust). One way to do this would be for decentralized 2nd layer apps to periodically (for example, once every 1000 blocks) generate a hash of their state (or some portion thereof) and publish it as a blockchain transaction. 2nd layer apps that generate the same hash are making a statement that they interpret the blockchain data in the same way (i.e. they are operating under the same protocol rules). In such a system, 2nd layer apps can decide to operate by different rules (a protocol fork), while continuing to coexist on the same blockchain network. But by publishing hashes of their state, users will know which nodes have decided to operate under a common set of rules, and they can therefore make an informed choice about which nodes they want to rely on for data. Of course, a user can always decide to simply run their own node, which is something we want to make it much cheaper and easier to do. But even in this case, it’s very valuable information to know who is supporting a particular protocol, as the amount of consensus among protocol users is a major determinant of the value of that protocol. # Increase development pace of open-source user interfaces for Hive (e.g hive.blog , ecency.com, etc) For the past few months, I’ve focused on adding more user interface programmers to our team to support increased development of open-sourced Hive-based front ends. Naturally BlockTrades already employed a number of front-end programmers, but they were all tied up on other projects, and couldn’t be moved without serious impacts on the scheduling of those projects. There’s little point in going into specifics at this moment as to the exact changes we’ll be making on Hive front ends, as often these changes are quite small, can be done at any time, and are generally driven by user demand. But I felt it’s important to say we recognize the importance of how user interfaces impact enjoyment of Hive in all it’s facets (as a currency, as a platform of blockchain based apps, and as a social media backbone) and that we will be increasing our efforts in this area. # A new decentralized reputation/rating system using web-of-trust concepts This last topic is the one that I’m most interested in, and I’ll have much more to say about it later, but it’s a huge topic and deserves many posts of its own to divide it up into digestible bites. The basic idea for this system is you assign judgment skill ratings to people you know in various disciplines and you also publish your own ratings on products/people/ideas. Based on who you trust and how much you trust them in different areas of judgment, this system will compute rating scores using your web of trust network on potentially any subject where people form opinions. I almost didn’t mention it in this post, but since this is something like a roadmap of planned Hive-related work for BlockTrades and this will function as a 2nd layer Hive app, I figured I should at least give it a brief mention now, as I plan to start this effort in the next 6 months. I say “start” because the reputation/rating system is planned to be a long-term project that will grow over many years and expand to address many different areas. Initially, of course, we’ll need to focus on creating a prototype that covers a relative small subset of things that can be rated and a few mechanisms for computing ratings and analyzing how ratings change as a user makes changes to his trust network. # Final note Also note that this is just a roadmap of things BlockTrades is currently planning to work on. For example, @howo is working on support for recurrent payments currently, to allow for Patreon-style payment models. See: Roadmap for Hive-related work by BlockTrades in the next 6 months by @blocktrades</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://hivedocs.info/assets/images/favicon.png" /><media:content medium="image" url="https://hivedocs.info/assets/images/favicon.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">NPM module for Hive Keychain</title><link href="https://hivedocs.info/news/nodejs/hive-keychain/2020/12/02/npm-module-for-hive-keychain.html" rel="alternate" type="text/html" title="NPM module for Hive Keychain" /><published>2020-12-02T02:19:03-08:00</published><updated>2020-12-02T02:19:03-08:00</updated><id>https://hivedocs.info/news/nodejs/hive-keychain/2020/12/02/npm-module-for-hive-keychain</id><content type="html" xml:base="https://hivedocs.info/news/nodejs/hive-keychain/2020/12/02/npm-module-for-hive-keychain.html">&lt;div id=&quot;content-therealwolf-npm-module-for-hive-keychain&quot;&gt;Greetings #Hivers,
+
+I've created a small Keychain helper for myself a while ago and recently converted it to an npm module to make it easier for other devs to integrate Keychain into their websites. Seriously, just install it and you're good to go.
+
+&amp;gt; https://www.npmjs.com/package/@hiveio/keychain
+
+&amp;gt; https://gitlab.syncad.com/hive/keychain-node
+
+## Example Code
+
+```
+import {keychain, isKeychainInstalled, hasKeychainBeenUsed} from '@hiveio/keychain'
+
+const {success, msg, cancel, notInstalled, notActive} = await keychain(window, 'requestTransfer', 'test', 'therealwolf', 5, 'test memo', 'HIVE')
+
+// All good
+if(success) {
+ // do your thing
+}
+// User didn't cancel, so something must have happened
+else if(!cancel) {
+  if(notActive) {
+    // alert('Please allow Keychain to access this website')
+  } else if(notInstalled) {
+    // alert('Please install Keychain')
+  } else {
+    // error happened - check msg
+  }
+}
+```
+
+## Explanation
+
+- `keychain`: run a specific keychain function
+- `isKeychainInstalled`: checks whether keychain is installed and can be found within the window object.
+- `hasKeychainBeenUsed`: checks whether a key/value inside the localStorage exists, which means Keychain has been used before, but isn't active. That can happen if extensions have to be activated per site.
+
+- `notInstalled`: Return boolean from `keychain` with same logic as `isKeychainInstalled`
+- `notActive`: Return boolean from `keychain` with same logic as `hasKeychainBeenUsed`
+- `cancel`: Return boolean from `keychain` which indicates whether the Keychain popup has been closed, thus cancelled. Should be ignored.
+- `success`: Return boolean from `keychain` which indicates whether the transaction was successful. Will be false in case of `cancel`.
+- `msg`: Return string from `keychain` which can be an error.
+
+For the normal workflow, you don't need to use `isKeychainInstalled` or `hasKeychainBeenUsed` as it's automatically checked when running `keychain`. These functions mostly matter for UX purposes.
+
+---
+
+Happy coding!&lt;/div&gt;
+&lt;script crossorigin=&quot;anonymous&quot; integrity=&quot;sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=&quot; src=&quot;https://code.jquery.com/jquery-3.5.1.slim.min.js&quot;&gt;&lt;/script&gt;
+
+&lt;script src=&quot;https://unpkg.com/steem-content-renderer&quot;&gt;&lt;/script&gt;
+
+&lt;script&gt;
+  $(document).ready(function() {
+    try {
+      const renderer = new SteemContentRenderer.DefaultRenderer({
+        baseUrl: &quot;https://hive.blog/&quot;,
+        breaks: true,
+        skipSanitization: false,
+        allowInsecureScriptTags: false,
+        addNofollowToLinks: true,
+        doNotShowImages: false,
+        ipfsPrefix: &quot;&quot;,
+        assetsWidth: 640,
+        assetsHeight: 480,
+        imageProxyFn: (url) =&gt; url,
+        usertagUrlFn: (account) =&gt; &quot;/@therealwolf&quot;,
+        hashtagUrlFn: (hashtag) =&gt; &quot;/npm-module-for-hive-keychain&quot;,
+        isLinkSafeFn: (url) =&gt; true,
+      });
+      
+      const inputElem = $('#content-therealwolf-npm-module-for-hive-keychain').html();
+      const outputElem = $('#content-therealwolf-npm-module-for-hive-keychain');
+      const output = renderer.render(inputElem);
+      
+      outputElem.html(output);
+    } catch(e) {
+      console.log(e);
+    }
+  });
+&lt;/script&gt;
+
+&lt;style&gt;
+  #content-therealwolf-npm-module-for-hive-keychain {
+    padding: 0 3rem;
+    color: #444444;
+    font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.8;
+    text-shadow: 0 1px 0 #ffffff;
+    padding: 0.5rem;
+  }
+  #content-therealwolf-npm-module-for-hive-keychain code {
+    background: white;
+  }
+  #content-therealwolf-npm-module-for-hive-keychain a {
+    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
+  }
+  #content-therealwolf-npm-module-for-hive-keychain a:hover {
+    border-bottom: 0;
+  }
+  #content-therealwolf-npm-module-for-hive-keychain h1 {
+    font-size: 2.2em;
+  }
+  #content-therealwolf-npm-module-for-hive-keychain h2, h3, h4, h5 {
+    margin-bottom: 0;
+  }
+  #content-therealwolf-npm-module-for-hive-keychain header small {
+    color: #999;
+    font-size: 50%;
+  }
+  #content-therealwolf-npm-module-for-hive-keychain img {
+    max-width: 100%;
+  }
+&lt;/style&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;
+  See: &lt;a href=&quot;https://peakd.com/hive-139531/@therealwolf/npm-module-for-hive-keychain&quot;&gt;NPM module for Hive Keychain&lt;/a&gt;
+  by
+  &lt;a href=&quot;https://hive.blog/@therealwolf&quot;&gt;@therealwolf&lt;/a&gt;
+&lt;/p&gt;</content><author><name>therealwolf</name></author><category term="news" /><category term="nodejs" /><category term="hive-keychain" /><summary type="html">Greetings #Hivers, I've created a small Keychain helper for myself a while ago and recently converted it to an npm module to make it easier for other devs to integrate Keychain into their websites. Seriously, just install it and you're good to go. &amp;gt; https://www.npmjs.com/package/@hiveio/keychain &amp;gt; https://gitlab.syncad.com/hive/keychain-node ## Example Code ``` import {keychain, isKeychainInstalled, hasKeychainBeenUsed} from '@hiveio/keychain' const {success, msg, cancel, notInstalled, notActive} = await keychain(window, 'requestTransfer', 'test', 'therealwolf', 5, 'test memo', 'HIVE') // All good if(success) { // do your thing } // User didn't cancel, so something must have happened else if(!cancel) { if(notActive) { // alert('Please allow Keychain to access this website') } else if(notInstalled) { // alert('Please install Keychain') } else { // error happened - check msg } } ``` ## Explanation - `keychain`: run a specific keychain function - `isKeychainInstalled`: checks whether keychain is installed and can be found within the window object. - `hasKeychainBeenUsed`: checks whether a key/value inside the localStorage exists, which means Keychain has been used before, but isn't active. That can happen if extensions have to be activated per site. - `notInstalled`: Return boolean from `keychain` with same logic as `isKeychainInstalled` - `notActive`: Return boolean from `keychain` with same logic as `hasKeychainBeenUsed` - `cancel`: Return boolean from `keychain` which indicates whether the Keychain popup has been closed, thus cancelled. Should be ignored. - `success`: Return boolean from `keychain` which indicates whether the transaction was successful. Will be false in case of `cancel`. - `msg`: Return string from `keychain` which can be an error. For the normal workflow, you don't need to use `isKeychainInstalled` or `hasKeychainBeenUsed` as it's automatically checked when running `keychain`. These functions mostly matter for UX purposes. --- Happy coding! See: NPM module for Hive Keychain by @therealwolf</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://hivedocs.info/assets/images/favicon.png" /><media:content medium="image" url="https://hivedocs.info/assets/images/favicon.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Hivesearcher website opensourced</title><link href="https://hivedocs.info/seo/api/2020/11/27/hivesearcher-website-opensourced.html" rel="alternate" type="text/html" title="Hivesearcher website opensourced" /><published>2020-11-27T04:26:03-08:00</published><updated>2020-11-27T04:26:03-08:00</updated><id>https://hivedocs.info/seo/api/2020/11/27/hivesearcher-website-opensourced</id><content type="html" xml:base="https://hivedocs.info/seo/api/2020/11/27/hivesearcher-website-opensourced.html">&lt;div id=&quot;content-good-karma-hivesearcher-website-opensourced&quot;&gt;We have opensourced Hivesearcher website earlier today and pushed some documentation improvements.
 
 &lt;center&gt;![hivesearcher-decentralized-search-engine](https://images.ecency.com/p/C3TZR1g81UNbFzApDTmvFYMje8p1iesaAcNjSh7JWYRiPQRX52L6rNRZipeiaBkx9daTxCyJyVvcKo3QMC9tjfRvNzgHxYuYyj6AFmCrd98w27oav6Nh8m4)&lt;/center&gt;
 
@@ -1096,224 +1413,4 @@ Thank you to all who supported the proposal and made HiveSQL free again!
   &lt;a href=&quot;https://hive.blog/@arcange&quot;&gt;@arcange&lt;/a&gt;
 &lt;/p&gt;
 
-&lt;/center&gt;&lt;/div&gt;</content><author><name>arcange</name></author><category term="news" /><category term="sql" /><category term="database" /><summary type="html">![](https://i.imgur.com/h4Ez40w.png) A few days ago, I introduced a [proposal](https://peakd.com/me/proposals/138) to make HiveSQL free to use again. The aim of the proposal is to enable as many developers and users as possible to benefit from this valuable tool and develop applications and services for our ecosystem. Today, thanks to your amazing support, I'm happy to announce that HiveSQL is free again! This means that anyone with a registered HiveSQL account will now have access to all the blockchain data and will be able to issue SQL queries for free. ## How to register your HiveSQL account? For obvious security reasons, before being able to access the HiveSQL database, you will have to create a HiveSQL account. The activation process is very simple: 1. Transfer **0.01 SBD** to @hivesql (no memo required) 2. As soon as @hivesql receives your transfer, your activation will be processed 3. A few seconds later, you will receive a micro-transfer back from @hivesql. ![](https://i.imgur.com/9yQYdUL.png) The @hivesql transfer memo contains your new credentials and is therefore encrypted. There are two easy ways to see its content; 1. if you use **peakd.com**, click on the small green lock ![](https://i.imgur.com/uugVmTH.png) 2. if you have **Keychain** installed, open it and click on the History button ![](https://i.imgur.com/7OerE4l.png) ![](https://i.imgur.com/jQtQGgl.png) The memo contains the following information: * the hostname to connect to the HiveSQL server. * your personal login * your password ## What's next Now that the proposal is funded, I will finally be able to tackle the many improvement projects that I wanted to implement. There is a lot of work ahead, among them the HiveSQL.io website update and the creation of decent documentation and tutorials. I would also like to partially review the design of the database to further improve its performance. I also want to add tables that can be useful and avoid redundant queries. I also have lots of other ideas, but one thing at a time... let's first consolidate the basics. ## Support If you have any questions, remarks or suggestions, support for HiveSQL is provided on the [HiveSQL Discord Channel](https://discord.gg/kyEFDfT) only. **Support the Proposal** Things keep moving in life, so additional support for the proposal is still welcome. * [Vote for this proposal on Peakd.com](https://peakd.com/me/proposals/138) * [Vote for this Proposal on Hive.blog](https://wallet.hive.blog/proposals/138) * [Vote for this Proposal using HiveSigner](https://hivesigner.com/sign/update_proposal_votes?proposal_ids=%5B%22138%22%5D&amp;amp;approve=true) Thank you to all who supported the proposal and made HiveSQL free again! --- ### Check out my apps and services ### [Vote for me as a witness ![](https://i.imgur.com/2bi4SnT.png)](https://hivesigner.com/sign/account-witness-vote?witness=arcange&amp;amp;approve=1) &amp;lt;/div&amp;gt; See: HiveSQL is free again - Thank you for your support! by @arcange</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://i.imgur.com/h4Ez40w.png" /><media:content medium="image" url="https://i.imgur.com/h4Ez40w.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Radiator v0.4.8 - Hive Ruby API Client: Eclipse Update</title><link href="https://hivedocs.info/news/ruby/eclipse/2020/11/09/radiator-v0-4-8-hive-ruby-api-client-eclipse-update.html" rel="alternate" type="text/html" title="Radiator v0.4.8 - Hive Ruby API Client: Eclipse Update" /><published>2020-11-09T11:32:33-08:00</published><updated>2020-11-09T11:32:33-08:00</updated><id>https://hivedocs.info/news/ruby/eclipse/2020/11/09/radiator-v0-4-8-hive-ruby-api-client-eclipse-update</id><content type="html" xml:base="https://hivedocs.info/news/ruby/eclipse/2020/11/09/radiator-v0-4-8-hive-ruby-api-client-eclipse-update.html">&lt;div id=&quot;content-inertia-radiator-v0-4-8-hive-ruby-api-client-eclipse-update&quot;&gt;&lt;div class=&quot;pull-right&quot;&gt;
-&lt;img src=&quot;https://i.imgur.com/1r9bHwF.png&quot; /&gt;
-&lt;/div&gt;
-
-Repository: https://github.com/inertia186/radiator
-
-In addition to bug fixes and general identifier name changes for Hive assets, this version of Radiator now incorporates `hive-ruby` as the primary basis for interacting with the blockchain.
-
-So why use Radiator at all when you can just use the `hive-ruby` gem directly?  Well, that's because Radiator can do failover as well as access the Hive Engine API.
-
-Not only that, but Radiator can also still work with Steem (and Steem Engine), if you're into that sort of thing.
-
-To update your applications:
-
-```bash
-bundle update
-```
-
-#### Changes in v0.4.8
-
-* Eclipse Update
-* Now wrapping [`hive-ruby`](https://gitlab.syncad.com/hive/hive-ruby) and [`steem-ruby`](https://github.com/steemit/steem-ruby)
-
-#### Changes in v0.4.7
-
-* Added `attr_reader` for `Radiator::Type::Amount` [#28](https://github.com/inertia186/radiator/issues/28)
-* Added restful fallback for `get_transaction` during `recover_transactions_on_error`
-* Fix beneficiary serialization (thanks @eonwarped)
-
-#### Changes in v0.4.6
-
-* Added health check and persist option
-
-#### Previous Changes
-- [Radiator v0.4.5 - Engine Support](https://hive.blog/utopian-io/@inertia/radiator-v0-4-5-steem-ruby-api-client-steem-engine-support)
-- [Radiator v0.4.0 - AppBase Update](https://hive.blog/radiator/@inertia/radiator-v0-4-0-steem-ruby-api-client-appbase-update)
-- [Radiator v0.3.0 - Now With Failover Support](https://hive.blog/radiator/@inertia/radiator-v0-3-0-steem-ruby-api-client-update-now-with-failover-support)
-
-#### Github
-https://github.com/inertia186&lt;/div&gt;
-&lt;script crossorigin=&quot;anonymous&quot; integrity=&quot;sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=&quot; src=&quot;https://code.jquery.com/jquery-3.5.1.slim.min.js&quot;&gt;&lt;/script&gt;
-
-&lt;script src=&quot;https://unpkg.com/steem-content-renderer&quot;&gt;&lt;/script&gt;
-
-&lt;script&gt;
-  $(document).ready(function() {
-    try {
-      const renderer = new SteemContentRenderer.DefaultRenderer({
-        baseUrl: &quot;https://hive.blog/&quot;,
-        breaks: true,
-        skipSanitization: false,
-        allowInsecureScriptTags: false,
-        addNofollowToLinks: true,
-        doNotShowImages: false,
-        ipfsPrefix: &quot;&quot;,
-        assetsWidth: 640,
-        assetsHeight: 480,
-        imageProxyFn: (url) =&gt; url,
-        usertagUrlFn: (account) =&gt; &quot;/@inertia&quot;,
-        hashtagUrlFn: (hashtag) =&gt; &quot;/radiator-v0-4-8-hive-ruby-api-client-eclipse-update&quot;,
-        isLinkSafeFn: (url) =&gt; true,
-      });
-      
-      const inputElem = $('#content-inertia-radiator-v0-4-8-hive-ruby-api-client-eclipse-update').html();
-      const outputElem = $('#content-inertia-radiator-v0-4-8-hive-ruby-api-client-eclipse-update');
-      const output = renderer.render(inputElem);
-      
-      outputElem.html(output);
-    } catch(e) {
-      console.log(e);
-    }
-  });
-&lt;/script&gt;
-
-&lt;style&gt;
-  #content-inertia-radiator-v0-4-8-hive-ruby-api-client-eclipse-update {
-    padding: 0 3rem;
-    color: #444444;
-    font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif;
-    font-size: 16px;
-    line-height: 1.8;
-    text-shadow: 0 1px 0 #ffffff;
-    padding: 0.5rem;
-  }
-  #content-inertia-radiator-v0-4-8-hive-ruby-api-client-eclipse-update code {
-    background: white;
-  }
-  #content-inertia-radiator-v0-4-8-hive-ruby-api-client-eclipse-update a {
-    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
-  }
-  #content-inertia-radiator-v0-4-8-hive-ruby-api-client-eclipse-update a:hover {
-    border-bottom: 0;
-  }
-  #content-inertia-radiator-v0-4-8-hive-ruby-api-client-eclipse-update h1 {
-    font-size: 2.2em;
-  }
-  #content-inertia-radiator-v0-4-8-hive-ruby-api-client-eclipse-update h2, h3, h4, h5 {
-    margin-bottom: 0;
-  }
-  #content-inertia-radiator-v0-4-8-hive-ruby-api-client-eclipse-update header small {
-    color: #999;
-    font-size: 50%;
-  }
-  #content-inertia-radiator-v0-4-8-hive-ruby-api-client-eclipse-update img {
-    max-width: 100%;
-  }
-&lt;/style&gt;
-
-&lt;hr /&gt;
-
-&lt;p&gt;
-  See: &lt;a href=&quot;https://hive.blog/hive-139531/@inertia/radiator-v0-4-8-hive-ruby-api-client-eclipse-update&quot;&gt;Radiator v0.4.8 - Hive Ruby API Client: Eclipse Update&lt;/a&gt;
-  by
-  &lt;a href=&quot;https://hive.blog/@inertia&quot;&gt;@inertia&lt;/a&gt;
-&lt;/p&gt;</content><author><name>inertia</name></author><category term="news" /><category term="ruby" /><category term="eclipse" /><summary type="html">Repository: https://github.com/inertia186/radiator In addition to bug fixes and general identifier name changes for Hive assets, this version of Radiator now incorporates `hive-ruby` as the primary basis for interacting with the blockchain. So why use Radiator at all when you can just use the `hive-ruby` gem directly? Well, that's because Radiator can do failover as well as access the Hive Engine API. Not only that, but Radiator can also still work with Steem (and Steem Engine), if you're into that sort of thing. To update your applications: ```bash bundle update ``` #### Changes in v0.4.8 * Eclipse Update * Now wrapping [`hive-ruby`](https://gitlab.syncad.com/hive/hive-ruby) and [`steem-ruby`](https://github.com/steemit/steem-ruby) #### Changes in v0.4.7 * Added `attr_reader` for `Radiator::Type::Amount` [#28](https://github.com/inertia186/radiator/issues/28) * Added restful fallback for `get_transaction` during `recover_transactions_on_error` * Fix beneficiary serialization (thanks @eonwarped) #### Changes in v0.4.6 * Added health check and persist option #### Previous Changes - [Radiator v0.4.5 - Engine Support](https://hive.blog/utopian-io/@inertia/radiator-v0-4-5-steem-ruby-api-client-steem-engine-support) - [Radiator v0.4.0 - AppBase Update](https://hive.blog/radiator/@inertia/radiator-v0-4-0-steem-ruby-api-client-appbase-update) - [Radiator v0.3.0 - Now With Failover Support](https://hive.blog/radiator/@inertia/radiator-v0-3-0-steem-ruby-api-client-update-now-with-failover-support) #### Github https://github.com/inertia186 See: Radiator v0.4.8 - Hive Ruby API Client: Eclipse Update by @inertia</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://i.imgur.com/1r9bHwF.png" /><media:content medium="image" url="https://i.imgur.com/1r9bHwF.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">My new contributions to the Hive Condenser</title><link href="https://hivedocs.info/news/nodejs/condenser/2020/11/09/29vxd3-my-new-contributions-to-the-hive-condenser.html" rel="alternate" type="text/html" title="My new contributions to the Hive Condenser" /><published>2020-11-09T02:30:06-08:00</published><updated>2020-11-09T02:30:06-08:00</updated><id>https://hivedocs.info/news/nodejs/condenser/2020/11/09/29vxd3-my-new-contributions-to-the-hive-condenser</id><content type="html" xml:base="https://hivedocs.info/news/nodejs/condenser/2020/11/09/29vxd3-my-new-contributions-to-the-hive-condenser.html">&lt;div id=&quot;content-quochuy-29vxd3-my-new-contributions-to-the-hive-condenser&quot;&gt;## Updates to the Badges and Achievements
-The recent addition of Peakd and Hivebuzz social and achievement badges stirred some controversy, some people loved it, some hated it and requested for its removal or at least for a way to opt-out.
-
-I initially thought of refactoring the look and feel of the badges bar on the user profile header and add a new user preferences but after discussing with other members of the dev team we agreed on implementing @guiltyparties' suggestion:
- - rename &quot;Communities&quot; tab to &quot;Social&quot; as it was pretty empty.
- - move the badges from the header into the &quot;Social&quot; tab.
-
-Merge request on GitLab:
-https://gitlab.syncad.com/hive/condenser/-/merge_requests/148
-
-![Badges and Achievements in the Social tab](https://gitlab.syncad.com/hive/condenser/uploads/ced62e0623456f39a1247e76d79ed0e1/Screen_Shot_2020-11-06_at_11.10.51_pm.png)
-
-## Bandcamp and Archive.org embedded players
-I think I forgot to mention in previous update that there is a pending merge request for embedded players for Bandcamp and Archive.org.
-
-Bandcamp embedded player:
-![Bandcamp embedded player](https://gitlab.syncad.com/hive/condenser/uploads/1e835b654231f31706e89a638e703442/Screen_Shot_2020-10-28_at_9.38.59_pm.png)
-
-Archive.org embedded player:
-![Archive.org embedded player](https://gitlab.syncad.com/hive/condenser/uploads/3c2b233d98a50c52b6be6877d8413a08/Screen_Shot_2020-10-28_at_9.40.03_pm.png)
-
-Merge request on GitLab: https://gitlab.syncad.com/hive/condenser/-/merge_requests/137
-
-## Notes
-- Both features are still pending review, tests and deployment from the dev team.
-- As for now, it is decided to slow down on addition of new embedded players since we have covered main ones already and would like to focus on other more important features and bug fixes.
-
----
-
-**Vote for my witness**
-[![Support @quochuy Witness.jpg](https://images.hive.blog/DQmecYTZemY8SwU6rrg7awhpNRBsehUp7ivk9RGyZsUUpVw/quochuy-hive-witness.jpg)](https://hivesigner.com/sign/account-witness-vote?witness=quochuy&amp;amp;approve=1)
-On Hive, Witnesses are playing the important role of providing a performant and safe network for all of us. You have the power to choose 30 trusty witnesses to package transactions and sign the blocks that will go in the Hive blockchain. [Vote for me via HiveSigner](https://hivesigner.com/sign/account-witness-vote?witness=quochuy&amp;amp;approve=1) to support my work for the community.&lt;/div&gt;
-&lt;script crossorigin=&quot;anonymous&quot; integrity=&quot;sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=&quot; src=&quot;https://code.jquery.com/jquery-3.5.1.slim.min.js&quot;&gt;&lt;/script&gt;
-
-&lt;script src=&quot;https://unpkg.com/steem-content-renderer&quot;&gt;&lt;/script&gt;
-
-&lt;script&gt;
-  $(document).ready(function() {
-    try {
-      const renderer = new SteemContentRenderer.DefaultRenderer({
-        baseUrl: &quot;https://hive.blog/&quot;,
-        breaks: true,
-        skipSanitization: false,
-        allowInsecureScriptTags: false,
-        addNofollowToLinks: true,
-        doNotShowImages: false,
-        ipfsPrefix: &quot;&quot;,
-        assetsWidth: 640,
-        assetsHeight: 480,
-        imageProxyFn: (url) =&gt; url,
-        usertagUrlFn: (account) =&gt; &quot;/@quochuy&quot;,
-        hashtagUrlFn: (hashtag) =&gt; &quot;/29vxd3-my-new-contributions-to-the-hive-condenser&quot;,
-        isLinkSafeFn: (url) =&gt; true,
-      });
-      
-      const inputElem = $('#content-quochuy-29vxd3-my-new-contributions-to-the-hive-condenser').html();
-      const outputElem = $('#content-quochuy-29vxd3-my-new-contributions-to-the-hive-condenser');
-      const output = renderer.render(inputElem);
-      
-      outputElem.html(output);
-    } catch(e) {
-      console.log(e);
-    }
-  });
-&lt;/script&gt;
-
-&lt;style&gt;
-  #content-quochuy-29vxd3-my-new-contributions-to-the-hive-condenser {
-    padding: 0 3rem;
-    color: #444444;
-    font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif;
-    font-size: 16px;
-    line-height: 1.8;
-    text-shadow: 0 1px 0 #ffffff;
-    padding: 0.5rem;
-  }
-  #content-quochuy-29vxd3-my-new-contributions-to-the-hive-condenser code {
-    background: white;
-  }
-  #content-quochuy-29vxd3-my-new-contributions-to-the-hive-condenser a {
-    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
-  }
-  #content-quochuy-29vxd3-my-new-contributions-to-the-hive-condenser a:hover {
-    border-bottom: 0;
-  }
-  #content-quochuy-29vxd3-my-new-contributions-to-the-hive-condenser h1 {
-    font-size: 2.2em;
-  }
-  #content-quochuy-29vxd3-my-new-contributions-to-the-hive-condenser h2, h3, h4, h5 {
-    margin-bottom: 0;
-  }
-  #content-quochuy-29vxd3-my-new-contributions-to-the-hive-condenser header small {
-    color: #999;
-    font-size: 50%;
-  }
-  #content-quochuy-29vxd3-my-new-contributions-to-the-hive-condenser img {
-    max-width: 100%;
-  }
-&lt;/style&gt;
-
-&lt;hr /&gt;
-
-&lt;p&gt;
-  See: &lt;a href=&quot;https://hive.blog/hive-139531/@quochuy/29vxd3-my-new-contributions-to-the-hive-condenser&quot;&gt;My new contributions to the Hive Condenser&lt;/a&gt;
-  by
-  &lt;a href=&quot;https://hive.blog/@quochuy&quot;&gt;@quochuy&lt;/a&gt;
-&lt;/p&gt;</content><author><name>quochuy</name></author><category term="news" /><category term="nodejs" /><category term="condenser" /><summary type="html">## Updates to the Badges and Achievements The recent addition of Peakd and Hivebuzz social and achievement badges stirred some controversy, some people loved it, some hated it and requested for its removal or at least for a way to opt-out. I initially thought of refactoring the look and feel of the badges bar on the user profile header and add a new user preferences but after discussing with other members of the dev team we agreed on implementing @guiltyparties' suggestion: - rename &quot;Communities&quot; tab to &quot;Social&quot; as it was pretty empty. - move the badges from the header into the &quot;Social&quot; tab. Merge request on GitLab: https://gitlab.syncad.com/hive/condenser/-/merge_requests/148 ![Badges and Achievements in the Social tab](https://gitlab.syncad.com/hive/condenser/uploads/ced62e0623456f39a1247e76d79ed0e1/Screen_Shot_2020-11-06_at_11.10.51_pm.png) ## Bandcamp and Archive.org embedded players I think I forgot to mention in previous update that there is a pending merge request for embedded players for Bandcamp and Archive.org. Bandcamp embedded player: ![Bandcamp embedded player](https://gitlab.syncad.com/hive/condenser/uploads/1e835b654231f31706e89a638e703442/Screen_Shot_2020-10-28_at_9.38.59_pm.png) Archive.org embedded player: ![Archive.org embedded player](https://gitlab.syncad.com/hive/condenser/uploads/3c2b233d98a50c52b6be6877d8413a08/Screen_Shot_2020-10-28_at_9.40.03_pm.png) Merge request on GitLab: https://gitlab.syncad.com/hive/condenser/-/merge_requests/137 ## Notes - Both features are still pending review, tests and deployment from the dev team. - As for now, it is decided to slow down on addition of new embedded players since we have covered main ones already and would like to focus on other more important features and bug fixes. --- **Vote for my witness** [![Support @quochuy Witness.jpg](https://images.hive.blog/DQmecYTZemY8SwU6rrg7awhpNRBsehUp7ivk9RGyZsUUpVw/quochuy-hive-witness.jpg)](https://hivesigner.com/sign/account-witness-vote?witness=quochuy&amp;amp;approve=1) On Hive, Witnesses are playing the important role of providing a performant and safe network for all of us. You have the power to choose 30 trusty witnesses to package transactions and sign the blocks that will go in the Hive blockchain. [Vote for me via HiveSigner](https://hivesigner.com/sign/account-witness-vote?witness=quochuy&amp;amp;approve=1) to support my work for the community. See: My new contributions to the Hive Condenser by @quochuy</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://gitlab.syncad.com/hive/condenser/uploads/ced62e0623456f39a1247e76d79ed0e1/Screen_Shot_2020-11-06_at_11.10.51_pm.png" /><media:content medium="image" url="https://gitlab.syncad.com/hive/condenser/uploads/ced62e0623456f39a1247e76d79ed0e1/Screen_Shot_2020-11-06_at_11.10.51_pm.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>
+&lt;/center&gt;&lt;/div&gt;</content><author><name>arcange</name></author><category term="news" /><category term="sql" /><category term="database" /><summary type="html">![](https://i.imgur.com/h4Ez40w.png) A few days ago, I introduced a [proposal](https://peakd.com/me/proposals/138) to make HiveSQL free to use again. The aim of the proposal is to enable as many developers and users as possible to benefit from this valuable tool and develop applications and services for our ecosystem. Today, thanks to your amazing support, I'm happy to announce that HiveSQL is free again! This means that anyone with a registered HiveSQL account will now have access to all the blockchain data and will be able to issue SQL queries for free. ## How to register your HiveSQL account? For obvious security reasons, before being able to access the HiveSQL database, you will have to create a HiveSQL account. The activation process is very simple: 1. Transfer **0.01 SBD** to @hivesql (no memo required) 2. As soon as @hivesql receives your transfer, your activation will be processed 3. A few seconds later, you will receive a micro-transfer back from @hivesql. ![](https://i.imgur.com/9yQYdUL.png) The @hivesql transfer memo contains your new credentials and is therefore encrypted. There are two easy ways to see its content; 1. if you use **peakd.com**, click on the small green lock ![](https://i.imgur.com/uugVmTH.png) 2. if you have **Keychain** installed, open it and click on the History button ![](https://i.imgur.com/7OerE4l.png) ![](https://i.imgur.com/jQtQGgl.png) The memo contains the following information: * the hostname to connect to the HiveSQL server. * your personal login * your password ## What's next Now that the proposal is funded, I will finally be able to tackle the many improvement projects that I wanted to implement. There is a lot of work ahead, among them the HiveSQL.io website update and the creation of decent documentation and tutorials. I would also like to partially review the design of the database to further improve its performance. I also want to add tables that can be useful and avoid redundant queries. I also have lots of other ideas, but one thing at a time... let's first consolidate the basics. ## Support If you have any questions, remarks or suggestions, support for HiveSQL is provided on the [HiveSQL Discord Channel](https://discord.gg/kyEFDfT) only. **Support the Proposal** Things keep moving in life, so additional support for the proposal is still welcome. * [Vote for this proposal on Peakd.com](https://peakd.com/me/proposals/138) * [Vote for this Proposal on Hive.blog](https://wallet.hive.blog/proposals/138) * [Vote for this Proposal using HiveSigner](https://hivesigner.com/sign/update_proposal_votes?proposal_ids=%5B%22138%22%5D&amp;amp;approve=true) Thank you to all who supported the proposal and made HiveSQL free again! --- ### Check out my apps and services ### [Vote for me as a witness ![](https://i.imgur.com/2bi4SnT.png)](https://hivesigner.com/sign/account-witness-vote?witness=arcange&amp;amp;approve=1) &amp;lt;/div&amp;gt; See: HiveSQL is free again - Thank you for your support! by @arcange</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://i.imgur.com/h4Ez40w.png" /><media:content medium="image" url="https://i.imgur.com/h4Ez40w.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>
