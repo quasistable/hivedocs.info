@@ -1,4 +1,249 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="https://hivedocs.info/feed.xml" rel="self" type="application/atom+xml" /><link href="https://hivedocs.info/" rel="alternate" type="text/html" /><updated>2020-12-02T19:51:56-08:00</updated><id>https://hivedocs.info/feed.xml</id><title type="html">Hive Chain Documentation</title><subtitle>Your resource for various levels of Hive Documentation.</subtitle><author><name>site curated by: @inertia</name></author><entry><title type="html">Roadmap for Hive-related work by BlockTrades in the next 6 months</title><link href="https://hivedocs.info/news/core/development/2020/12/02/roadmap-for-hive-related-work-by-blocktrades-in-the-next-6-months.html" rel="alternate" type="text/html" title="Roadmap for Hive-related work by BlockTrades in the next 6 months" /><published>2020-12-02T15:36:21-08:00</published><updated>2020-12-02T15:36:21-08:00</updated><id>https://hivedocs.info/news/core/development/2020/12/02/roadmap-for-hive-related-work-by-blocktrades-in-the-next-6-months</id><content type="html" xml:base="https://hivedocs.info/news/core/development/2020/12/02/roadmap-for-hive-related-work-by-blocktrades-in-the-next-6-months.html">&lt;div id=&quot;content-blocktrades-roadmap-for-hive-related-work-by-blocktrades-in-the-next-6-months&quot;&gt;The BlockTrades team is planning a lot of future work to the Hive ecosystem. This posts details some of the changes we’re planning so far. 
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="https://hivedocs.info/feed.xml" rel="self" type="application/atom+xml" /><link href="https://hivedocs.info/" rel="alternate" type="text/html" /><updated>2020-12-09T12:54:14-08:00</updated><id>https://hivedocs.info/feed.xml</id><title type="html">Hive Chain Documentation</title><subtitle>Your resource for various levels of Hive Documentation.</subtitle><author><name>site curated by: @inertia</name></author><entry><title type="html">How to use a coldcard MK3 to derive your new account password from a 24 word seed</title><link href="https://hivedocs.info/news/python/wallet/2020/12/05/how-to-use-a-coldcard-mk3-to-derive-your-new-account-password-from-a-24-word-seed.html" rel="alternate" type="text/html" title="How to use a coldcard MK3 to derive your new account password from a 24 word seed" /><published>2020-12-05T15:10:18-08:00</published><updated>2020-12-05T15:10:18-08:00</updated><id>https://hivedocs.info/news/python/wallet/2020/12/05/how-to-use-a-coldcard-mk3-to-derive-your-new-account-password-from-a-24-word-seed</id><content type="html" xml:base="https://hivedocs.info/news/python/wallet/2020/12/05/how-to-use-a-coldcard-mk3-to-derive-your-new-account-password-from-a-24-word-seed.html">&lt;div id=&quot;content-holger80-how-to-use-a-coldcard-mk3-to-derive-your-new-account-password-from-a-24-word-seed&quot;&gt;
+Each hive account has four keys which can be used to sign broadcast operations. As the key name says (owner key, active key, posting key), they have different use cases. Normally, a single password is used to derive these four keys from it. This has the advantage that only one passphrase needs to be securely stored.
+
+I can change my account keys by generating a new password:
+![New Password](https://images.hive.blog/DQmWagwVQs2GsJFQMMFpQCbLFSWxKS5jmDK5WYsfNAC6tkq/New%20Password)
+
+You need to `BACK IT UP BY STORING IN YOUR PASSWORD MANAGER OR A TEXT FILE.`, but what happens when your hard drive is failing or your password manager (lost the master password, ...)? You can print it, but what happens in case of a fire or water damage?
+
+## Using your bitcoin seed for Hive
+When you have stored your bitcoin seed (consisting normally of 24 words) in metal, it would be great if you could use this also to store your Hive password.
+
+It is possible to use [BIP-85 (Deterministic Entropy From BIP32 Keychains)](https://github.com/bitcoin/bips/blob/master/bip-0085.mediawiki) for creating a new password for a hive account using a coldcard mk3 hardware wallet (As far as I know this is the only device that support BIP85).
+
+![coldcard](https://images.hive.blog/DQmYZebd2XQzeyxR2LhQEuiCmvAZpweC1ywThuBnkmAtHVb/coldcard)
+
+
+When I use the derived WIF to create a new Password for my Hive account, I do not need to store my Hive keys and Password anymore, as they can be recreated from the securely stored bitcoin seed (I need to remember the used index number, or I need to try all possible numbers from 0 to 9999).
+
+Thus I can increase my account security when I do not store the password and the owner key in my computer.
+
+
+
+## How to use the coldcard mk3 to create a new Password for Hive
+This guide will use the [coldcard mk3](https://coldcardwallet.com/) which has the necessary bip-85 support and python (beem) for generating and changing the account keys.
+
+### Storing a WIF on a sdcard
+At first we use the coldcard to derive a new WIF and store it on a sdcard.
+
+
+![Go to Advanced](https://images.hive.blog/DQmUJxn6RzUbxNrXMMkP6PnT1UTMQC4kbHe6Ad1PYLiFyqD/Go%20to%20Advanced)
+![Then to Derive Entropy](https://images.hive.blog/DQmVjNSAtvVtuiDPnM4u91D8VypYkdhx1UeVsooFzkhSFVs/Then%20to%20Derive%20Entropy)
+We need to select WIF:
+![Then to WIF](https://images.hive.blog/DQmSn5u2kBPRsf7V5EiM2VrUSdKgS7VDQhkJjJCte8ZDS3f/Then%20to%20WIF)
+Select a number you can remember:
+![Select a number](https://images.hive.blog/DQmRrywjVhNWgscazDfVV9f1UrmVZKhpU1R9xj6xEjN7DT4/Select%20a%20number)
+Store the WIF to the MicroSD:
+![Press 1 to store the WIF on the sd card](https://images.hive.blog/DQmQiWagr6YLFoPCjrBBptJqGAhP5GP5ZzbGomEio1xYfAa/Press%201%20to%20store%20the%20WIF%20on%20the%20sd%20card)
+
+## Reading the WIF from the sdcard and change the HIVE keys
+We need the following python packages:
+```
+pip3 install beem
+```
+
+The WIF from the coldcard needs firstly converted into a HIVE WIF and then a password is derived by applying `PasswordKey` to it and adding a `P`:
+
+```
+from beemgraphenebase.account import PrivateKey, PasswordKey
+WIF=&quot;xxx&quot; # from coldcard
+wif = PrivateKey(WIF)
+pk = PasswordKey(&quot;&quot;, str(wif), role=&quot;&quot;)
+password = 'P' + str(pk.get_private())
+print(password)
+```
+`password` is the new account password that can be set in `https://wallet.hive.blog/@&lt;username&gt;/password`
+
+After changing the account password, the new posting, active and memo key should be stored and the Password and the WIF on the sdcard should be deleted.
+
+Whenever, an account key is getting lost or when the owner key is needed, 
+it can be created from the derive WIF which is created by the coldcard.
+
+
+It is also possible to automate everything. The following script will
+* Read the sdcard and extract the WIF
+* Create a new Password for the account
+* Change the account password by broadcasting `update_account`
+
+```
+from beem import Hive
+from beemgraphenebase.account import PrivateKey, PasswordKey
+import argparse
+from prettytable import PrettyTable
+import sys
+import getpass
+
+
+if __name__ == &quot;__main__&quot;:
+    parser = argparse.ArgumentParser(description=&quot;Derives a new password from a coldcard WIF&quot;)
+    parser.add_argument('wiffile', type=str, nargs='?',
+                        help='colcard wif key file to read.')
+    parser.add_argument('account', type=str, nargs='?',
+                        help='account name.')    
+    args = parser.parse_args()
+    wiffile = args.wiffile
+    account = args.account
+    next_var = &quot;&quot;
+    wif = &quot;&quot;
+    path = &quot;&quot;
+    with open(wiffile) as fp: 
+        for line in fp:
+            if line.strip() == &quot;&quot;:
+                continue
+            if line.strip() == &quot;WIF (privkey):&quot;:
+                next_var = &quot;wif&quot;
+                continue
+            elif &quot;Path Used&quot; in line.strip():
+                next_var = &quot;path&quot;
+                continue
+            if next_var == &quot;wif&quot;:
+                wif = line.strip()
+            elif next_var == &quot;path&quot;:
+                path = line
+            next_var = &quot;&quot;
+    wif = PrivateKey(wif)
+    pk = PasswordKey(&quot;&quot;, str(wif), role=&quot;&quot;)
+    password = 'P' + str(pk.get_private())
+    
+    owner_key = PasswordKey(account, password, role=&quot;owner&quot;)
+    owner_pubkey = format(owner_key.get_public_key(), &quot;STM&quot;)
+    
+    active_key = PasswordKey(account, password, role=&quot;active&quot;)
+    active_pubkey = format(active_key.get_public_key(), &quot;STM&quot;)
+    
+    posting_key = PasswordKey(account, password, role=&quot;posting&quot;)
+    posting_pubkey = format(posting_key.get_public_key(), &quot;STM&quot;)
+    
+    memo_key = PasswordKey(account, password, role=&quot;memo&quot;)
+    memo_pubkey = format(memo_key.get_public_key(), &quot;STM&quot;)
+    
+    
+    t = PrettyTable([&quot;Key&quot;, &quot;Value&quot;])
+    t.align = &quot;l&quot;
+    t.add_row([&quot;Account&quot;, account])
+    t.add_row([&quot;Path&quot;, path])   
+    t.add_row([&quot;New owner pubkey&quot;, owner_pubkey])
+    t.add_row([&quot;New active pubkey&quot;, active_pubkey])   
+    t.add_row([&quot;New posting pubkey&quot;, posting_pubkey])   
+    t.add_row([&quot;New memo pubkey&quot;, memo_pubkey])   
+    print(t)
+    ret = input(&quot;Broadcast update_account with new keys? [y/n]&quot;)
+    if ret in [&quot;y&quot;, &quot;yes&quot;]:
+        owner_key = getpass.getpass(prompt=&quot;current owner key:&quot;)
+        hive = Hive(keys=[owner_key])
+        tx = hive.update_account(account, owner_key=owner_pubkey, active_key=active_pubkey,
+                                 posting_key=posting_pubkey, memo_key=memo_pubkey)
+        print(tx)
+    
+    ret = input(&quot;Show private keys? [y/n]&quot;)
+    if ret in [&quot;y&quot;, &quot;yes&quot;]:
+        t = PrettyTable([&quot;Key&quot;, &quot;Value&quot;])
+        t.align = &quot;l&quot;
+        t.add_row([&quot;active privkey&quot;, str(active_key.get_private_key())])   
+        t.add_row([&quot;posting privkey&quot;, str(posting_key.get_private_key())])   
+        t.add_row([&quot;memo privkey&quot;, str(memo_key.get_private_key())])
+        print(t)
+    ret = input(&quot;Show owner key and password? [y/n]&quot;)
+    if ret in [&quot;y&quot;, &quot;yes&quot;]:
+        t = PrettyTable([&quot;Key&quot;, &quot;Value&quot;])
+        t.align = &quot;l&quot;
+        t.add_row([&quot;owner privkey&quot;, str(owner_key.get_private_key())])
+        t.add_row([&quot;Password&quot;, str(password)])
+        print(t)
+    del owner_key
+    del memo_key
+    del posting_key
+    del active_key
+    del password
+```
+This needs to be stored as py file (e.g. new_password.py) and can then be called:
+```
+python3 new_password.py F:\drv-wif-idx0.txt holger80
+```
+where `F:\drv-wif-idx0.txt` is the path to the exported WIF file.
+
+Deleting the WIF text file on the sdcard needs to be done by hand (remember to store the used index number).
+
+I'm currently adding this also to beempy, the CLI tool in beem.
+There is also a second way in creating a new password from a seed using hardware wallet (signing a message), which I'm investigating right now.
+
+
+___
+
+*If you like what I do, consider casting a vote for me as witness on [Hivesigner](https://hivesigner.com/sign/account-witness-vote?witness=holger80&amp;amp;approve=1) or on [PeakD](https://peakd.com/witnesses)*&amp;lt;/div&amp;gt;
+&lt;script crossorigin=&quot;anonymous&quot; integrity=&quot;sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=&quot; src=&quot;https://code.jquery.com/jquery-3.5.1.slim.min.js&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;https://unpkg.com/steem-content-renderer&quot;&gt;&lt;/script&gt;
+&lt;script&gt;
+  $(document).ready(function() {
+    try {
+      const renderer = new SteemContentRenderer.DefaultRenderer({
+        baseUrl: &quot;https://hive.blog/&quot;,
+        breaks: true,
+        skipSanitization: false,
+        allowInsecureScriptTags: false,
+        addNofollowToLinks: true,
+        doNotShowImages: false,
+        ipfsPrefix: &quot;&quot;,
+        assetsWidth: 640,
+        assetsHeight: 480,
+        imageProxyFn: (url) =&gt; url,
+        usertagUrlFn: (account) =&gt; &quot;/@holger80&quot;,
+        hashtagUrlFn: (hashtag) =&gt; &quot;/how-to-use-a-coldcard-mk3-to-derive-your-new-account-password-from-a-24-word-seed&quot;,
+        isLinkSafeFn: (url) =&gt; true,
+      });
+      
+      const inputElem = $('#content-holger80-how-to-use-a-coldcard-mk3-to-derive-your-new-account-password-from-a-24-word-seed').html();
+      const outputElem = $('#content-holger80-how-to-use-a-coldcard-mk3-to-derive-your-new-account-password-from-a-24-word-seed');
+      const output = renderer.render(inputElem);
+      
+      outputElem.html(output);
+    } catch(e) {
+      console.log(e);
+    }
+  });
+&lt;/script&gt;
+&lt;style&gt;
+  #content-holger80-how-to-use-a-coldcard-mk3-to-derive-your-new-account-password-from-a-24-word-seed {
+    padding: 0 3rem;
+    color: #444444;
+    font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.8;
+    text-shadow: 0 1px 0 #ffffff;
+    padding: 0.5rem;
+  }
+  #content-holger80-how-to-use-a-coldcard-mk3-to-derive-your-new-account-password-from-a-24-word-seed code {
+    background: white;
+  }
+  #content-holger80-how-to-use-a-coldcard-mk3-to-derive-your-new-account-password-from-a-24-word-seed a {
+    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
+  }
+  #content-holger80-how-to-use-a-coldcard-mk3-to-derive-your-new-account-password-from-a-24-word-seed a:hover {
+    border-bottom: 0;
+  }
+  #content-holger80-how-to-use-a-coldcard-mk3-to-derive-your-new-account-password-from-a-24-word-seed h1 {
+    font-size: 2.2em;
+  }
+  #content-holger80-how-to-use-a-coldcard-mk3-to-derive-your-new-account-password-from-a-24-word-seed h2, h3, h4, h5 {
+    margin-bottom: 0;
+  }
+  #content-holger80-how-to-use-a-coldcard-mk3-to-derive-your-new-account-password-from-a-24-word-seed header small {
+    color: #999;
+    font-size: 50%;
+  }
+  #content-holger80-how-to-use-a-coldcard-mk3-to-derive-your-new-account-password-from-a-24-word-seed img {
+    max-width: 100%;
+  }
+&lt;/style&gt;
+
+&lt;hr /&gt;
+&lt;p&gt;
+  See: &lt;a href=&quot;https://hive.blog/hive-139531/@holger80/how-to-use-a-coldcard-mk3-to-derive-your-new-account-password-from-a-24-word-seed&quot;&gt;How to use a coldcard MK3 to derive your new account password from a 24 word seed&lt;/a&gt;
+  by
+  &lt;a href=&quot;https://hive.blog/@holger80&quot;&gt;@holger80&lt;/a&gt;
+&lt;/p&gt;
+
+&lt;/username&gt;&lt;/div&gt;</content><author><name>holger80</name></author><category term="news" /><category term="python" /><category term="wallet" /><summary type="html">Each hive account has four keys which can be used to sign broadcast operations. As the key name says (owner key, active key, posting key), they have different use cases. Normally, a single password is used to derive these four keys from it. This has the advantage that only one passphrase needs to be securely stored. I can change my account keys by generating a new password: ![New Password](https://images.hive.blog/DQmWagwVQs2GsJFQMMFpQCbLFSWxKS5jmDK5WYsfNAC6tkq/New%20Password) You need to `BACK IT UP BY STORING IN YOUR PASSWORD MANAGER OR A TEXT FILE.`, but what happens when your hard drive is failing or your password manager (lost the master password, ...)? You can print it, but what happens in case of a fire or water damage? ## Using your bitcoin seed for Hive When you have stored your bitcoin seed (consisting normally of 24 words) in metal, it would be great if you could use this also to store your Hive password. It is possible to use [BIP-85 (Deterministic Entropy From BIP32 Keychains)](https://github.com/bitcoin/bips/blob/master/bip-0085.mediawiki) for creating a new password for a hive account using a coldcard mk3 hardware wallet (As far as I know this is the only device that support BIP85). ![coldcard](https://images.hive.blog/DQmYZebd2XQzeyxR2LhQEuiCmvAZpweC1ywThuBnkmAtHVb/coldcard) When I use the derived WIF to create a new Password for my Hive account, I do not need to store my Hive keys and Password anymore, as they can be recreated from the securely stored bitcoin seed (I need to remember the used index number, or I need to try all possible numbers from 0 to 9999). Thus I can increase my account security when I do not store the password and the owner key in my computer. ## How to use the coldcard mk3 to create a new Password for Hive This guide will use the [coldcard mk3](https://coldcardwallet.com/) which has the necessary bip-85 support and python (beem) for generating and changing the account keys. ### Storing a WIF on a sdcard At first we use the coldcard to derive a new WIF and store it on a sdcard. ![Go to Advanced](https://images.hive.blog/DQmUJxn6RzUbxNrXMMkP6PnT1UTMQC4kbHe6Ad1PYLiFyqD/Go%20to%20Advanced) ![Then to Derive Entropy](https://images.hive.blog/DQmVjNSAtvVtuiDPnM4u91D8VypYkdhx1UeVsooFzkhSFVs/Then%20to%20Derive%20Entropy) We need to select WIF: ![Then to WIF](https://images.hive.blog/DQmSn5u2kBPRsf7V5EiM2VrUSdKgS7VDQhkJjJCte8ZDS3f/Then%20to%20WIF) Select a number you can remember: ![Select a number](https://images.hive.blog/DQmRrywjVhNWgscazDfVV9f1UrmVZKhpU1R9xj6xEjN7DT4/Select%20a%20number) Store the WIF to the MicroSD: ![Press 1 to store the WIF on the sd card](https://images.hive.blog/DQmQiWagr6YLFoPCjrBBptJqGAhP5GP5ZzbGomEio1xYfAa/Press%201%20to%20store%20the%20WIF%20on%20the%20sd%20card) ## Reading the WIF from the sdcard and change the HIVE keys We need the following python packages: ``` pip3 install beem ``` The WIF from the coldcard needs firstly converted into a HIVE WIF and then a password is derived by applying `PasswordKey` to it and adding a `P`: ``` from beemgraphenebase.account import PrivateKey, PasswordKey WIF=&quot;xxx&quot; # from coldcard wif = PrivateKey(WIF) pk = PasswordKey(&quot;&quot;, str(wif), role=&quot;&quot;) password = 'P' + str(pk.get_private()) print(password) ``` `password` is the new account password that can be set in `https://wallet.hive.blog/@/password` After changing the account password, the new posting, active and memo key should be stored and the Password and the WIF on the sdcard should be deleted. Whenever, an account key is getting lost or when the owner key is needed, it can be created from the derive WIF which is created by the coldcard. It is also possible to automate everything. The following script will * Read the sdcard and extract the WIF * Create a new Password for the account * Change the account password by broadcasting `update_account` ``` from beem import Hive from beemgraphenebase.account import PrivateKey, PasswordKey import argparse from prettytable import PrettyTable import sys import getpass if __name__ == &quot;__main__&quot;: parser = argparse.ArgumentParser(description=&quot;Derives a new password from a coldcard WIF&quot;) parser.add_argument('wiffile', type=str, nargs='?', help='colcard wif key file to read.') parser.add_argument('account', type=str, nargs='?', help='account name.') args = parser.parse_args() wiffile = args.wiffile account = args.account next_var = &quot;&quot; wif = &quot;&quot; path = &quot;&quot; with open(wiffile) as fp: for line in fp: if line.strip() == &quot;&quot;: continue if line.strip() == &quot;WIF (privkey):&quot;: next_var = &quot;wif&quot; continue elif &quot;Path Used&quot; in line.strip(): next_var = &quot;path&quot; continue if next_var == &quot;wif&quot;: wif = line.strip() elif next_var == &quot;path&quot;: path = line next_var = &quot;&quot; wif = PrivateKey(wif) pk = PasswordKey(&quot;&quot;, str(wif), role=&quot;&quot;) password = 'P' + str(pk.get_private()) owner_key = PasswordKey(account, password, role=&quot;owner&quot;) owner_pubkey = format(owner_key.get_public_key(), &quot;STM&quot;) active_key = PasswordKey(account, password, role=&quot;active&quot;) active_pubkey = format(active_key.get_public_key(), &quot;STM&quot;) posting_key = PasswordKey(account, password, role=&quot;posting&quot;) posting_pubkey = format(posting_key.get_public_key(), &quot;STM&quot;) memo_key = PasswordKey(account, password, role=&quot;memo&quot;) memo_pubkey = format(memo_key.get_public_key(), &quot;STM&quot;) t = PrettyTable([&quot;Key&quot;, &quot;Value&quot;]) t.align = &quot;l&quot; t.add_row([&quot;Account&quot;, account]) t.add_row([&quot;Path&quot;, path]) t.add_row([&quot;New owner pubkey&quot;, owner_pubkey]) t.add_row([&quot;New active pubkey&quot;, active_pubkey]) t.add_row([&quot;New posting pubkey&quot;, posting_pubkey]) t.add_row([&quot;New memo pubkey&quot;, memo_pubkey]) print(t) ret = input(&quot;Broadcast update_account with new keys? [y/n]&quot;) if ret in [&quot;y&quot;, &quot;yes&quot;]: owner_key = getpass.getpass(prompt=&quot;current owner key:&quot;) hive = Hive(keys=[owner_key]) tx = hive.update_account(account, owner_key=owner_pubkey, active_key=active_pubkey, posting_key=posting_pubkey, memo_key=memo_pubkey) print(tx) ret = input(&quot;Show private keys? [y/n]&quot;) if ret in [&quot;y&quot;, &quot;yes&quot;]: t = PrettyTable([&quot;Key&quot;, &quot;Value&quot;]) t.align = &quot;l&quot; t.add_row([&quot;active privkey&quot;, str(active_key.get_private_key())]) t.add_row([&quot;posting privkey&quot;, str(posting_key.get_private_key())]) t.add_row([&quot;memo privkey&quot;, str(memo_key.get_private_key())]) print(t) ret = input(&quot;Show owner key and password? [y/n]&quot;) if ret in [&quot;y&quot;, &quot;yes&quot;]: t = PrettyTable([&quot;Key&quot;, &quot;Value&quot;]) t.align = &quot;l&quot; t.add_row([&quot;owner privkey&quot;, str(owner_key.get_private_key())]) t.add_row([&quot;Password&quot;, str(password)]) print(t) del owner_key del memo_key del posting_key del active_key del password ``` This needs to be stored as py file (e.g. new_password.py) and can then be called: ``` python3 new_password.py F:\drv-wif-idx0.txt holger80 ``` where `F:\drv-wif-idx0.txt` is the path to the exported WIF file. Deleting the WIF text file on the sdcard needs to be done by hand (remember to store the used index number). I'm currently adding this also to beempy, the CLI tool in beem. There is also a second way in creating a new password from a seed using hardware wallet (signing a message), which I'm investigating right now. ___ *If you like what I do, consider casting a vote for me as witness on [Hivesigner](https://hivesigner.com/sign/account-witness-vote?witness=holger80&amp;amp;approve=1) or on [PeakD](https://peakd.com/witnesses)*&amp;lt;/div&amp;gt; See: How to use a coldcard MK3 to derive your new account password from a 24 word seed by @holger80</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://images.hive.blog/DQmWagwVQs2GsJFQMMFpQCbLFSWxKS5jmDK5WYsfNAC6tkq/New%20Password" /><media:content medium="image" url="https://images.hive.blog/DQmWagwVQs2GsJFQMMFpQCbLFSWxKS5jmDK5WYsfNAC6tkq/New%20Password" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Roadmap for Hive-related work by BlockTrades in the next 6 months</title><link href="https://hivedocs.info/news/core/development/2020/12/02/roadmap-for-hive-related-work-by-blocktrades-in-the-next-6-months.html" rel="alternate" type="text/html" title="Roadmap for Hive-related work by BlockTrades in the next 6 months" /><published>2020-12-02T15:36:21-08:00</published><updated>2020-12-02T15:36:21-08:00</updated><id>https://hivedocs.info/news/core/development/2020/12/02/roadmap-for-hive-related-work-by-blocktrades-in-the-next-6-months</id><content type="html" xml:base="https://hivedocs.info/news/core/development/2020/12/02/roadmap-for-hive-related-work-by-blocktrades-in-the-next-6-months.html">&lt;div id=&quot;content-blocktrades-roadmap-for-hive-related-work-by-blocktrades-in-the-next-6-months&quot;&gt;The BlockTrades team is planning a lot of future work to the Hive ecosystem. This posts details some of the changes we’re planning so far. 
 
 I want to apologize in advance, as this is still a somewhat raw dump of my thoughts about sometimes complicated issues. This means that some of the topics are written for everyone, but other topics contain fairly technical details that will likely be difficult to grasp at first reading (and maybe subsequent ones). As we get closer to implementation of some of these ideas, I’ll try to elaborate more on individual ideas from this post in later posts (if someone else hasn’t taken on that challenge in the meantime).
 
@@ -1274,143 +1519,4 @@ I’ve refunded the overage of Hive from HBD→Hive conversions to the hive.fund
   See: &lt;a href=&quot;https://hive.blog/hive-139531/@blocktrades/update-on-blocktrades-hive-work-nov-16th&quot;&gt;Update on BlockTrades Hive Work (Nov 16th)&lt;/a&gt;
   by
   &lt;a href=&quot;https://hive.blog/@blocktrades&quot;&gt;@blocktrades&lt;/a&gt;
-&lt;/p&gt;</content><author><name>blocktrades</name></author><category term="news" /><category term="core" /><category term="development" /><summary type="html">Last week we continued work on post HF24 optimizations. Below is a summary of the work done last week and our plans for the upcoming week. # Hived work (blockchain node software) We completed changes to the get_block_api plugin to speedup performance for the get_block API call. The old implementation used an overly pessimistic mutex locking scheme that severely degraded potential performance under loading. We’ve also added a new API call to fetch a consecutive set of blocks in one disk read operation. https://gitlab.syncad.com/hive/hive/-/merge_requests/149 Unfortunately, due to delays related to several hash computations (including one associated with getting the signee key of the block) and conversion of the binary block data to fc::variants and later to json, these API calls are still too slow for the needs of hivemind initial sync. To overcome this problem, we’re now creating a hived plugin that can directly write the needed data into hivemind’s database during hive reindexing and normal block reception. Most of the data being provided by get_block_api is of no interest to hivemind, so using this API to get the data was unnecessarily wasting CPU, in addition to slowing down hivemind. I expect that using the plugin approach will lead to significant speedup in the initial sync time for hivemind (my guess now is 2x at least) and it should also reduce normal hivemind live-sync write time. ## Hived status We’ve tagged a version v1.24.7 which contains the new `get_block_range(starting_block_num, count)` API call as well as the fix to make the legacy get_account_history API use 0-based operation index like the get_account_history_rocksdb plugin does. v1.24.7 is a recommended upgrade for API node operators, but it doesn’t contain changes needed by witness nodes or exchanges. It doesn’t require a reindex from the previous v1.24.6, as it is strictly contains API-related changes. # Hivemind (2nd layer microservice for social media applications) Most of our Hive devs continued to working on hivemind last week. Below are some of the merge requests incorporated into the develop branch of the hivemind repo: performance optimizations: https://gitlab.syncad.com/hive/hivemind/-/merge_requests/365 https://gitlab.syncad.com/hive/hivemind/-/merge_requests/366 https://gitlab.syncad.com/hive/hivemind/-/merge_requests/373 https://gitlab.syncad.com/hive/hivemind/-/merge_requests/367 various bug fixes: https://gitlab.syncad.com/hive/hivemind/-/merge_requests/354 https://gitlab.syncad.com/hive/hivemind/-/merge_requests/362 https://gitlab.syncad.com/hive/hivemind/-/merge_requests/371 https://gitlab.syncad.com/hive/hivemind/-/merge_requests/364 https://gitlab.syncad.com/hive/hivemind/-/merge_requests/337 https://gitlab.syncad.com/hive/hivemind/-/merge_requests/370 https://gitlab.syncad.com/hive/hivemind/-/merge_requests/382 new tests: https://gitlab.syncad.com/hive/hivemind/-/merge_requests/351 test system improvement: https://gitlab.syncad.com/hive/hivemind/-/merge_requests/376 https://gitlab.syncad.com/hive/hivemind/-/merge_requests/374 https://gitlab.syncad.com/hive/hivemind/-/merge_requests/375 # Condenser + Condenser wallet (open-source code for **hive.blog**) The bug editing comments was fixed: https://gitlab.syncad.com/hive/condenser/-/merge_requests/151 Fix for wallet proposals page where non-burn proposals were being displayed as burn proposals: https://gitlab.syncad.com/hive/wallet/-/merge_requests/75 We’re also testing and fixing bugs in the UI for creating decentralized lists: https://gitlab.syncad.com/hive/condenser/-/merge_requests/155 https://gitlab.syncad.com/hive/condenser/-/merge_requests/156 # Nearing completion of airdrop proposal re-payment I’ve refunded the overage of Hive from HBD→Hive conversions to the hive.fund account (when I converted some of the HBD to Hive, there was a slight overage of Hive due to the unpredictable amount that the conversion will yield). Once the proposal completes, I will compute and refund the HBD overage back to the hive.fund account as well. # What’s the plan for next week? * Finish hivemind and condenser muting changes. We’ve partially completed an additional change to condenser to allow a condenser operator to specify a “default observer” when a user isn’t logged in. This allows the condenser web site operator to specify their own initial list of spammers to be muted (for example, to protect their SEO results) that will function prior to a user’s login. For example, we’ve using the @hive.blog account as the default observer for the hive.blog site. * Enable reputation calculation code. * Continue creating hivemind tests. * We’re prioritizing the speedup of hivemind full sync via a hived plugin as the slow sync time has a big impact on the speed of hivemind CI (which sets an upper limit on how fast we can validate changes). * Still hoping to get out a post with a comprehensive list of planned changes for HF25 and for 2nd layer improvements soon (although the hived plugin for dumping directly to PostgreSQL is one of the planned major 2nd layer improvements: it’s just getting fast-tracked because it impacts our current work a lot). See: Update on BlockTrades Hive Work (Nov 16th) by @blocktrades</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://hivedocs.info/assets/images/favicon.png" /><media:content medium="image" url="https://hivedocs.info/assets/images/favicon.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">HiveSQL is free again - Thank you for your support!</title><link href="https://hivedocs.info/news/sql/database/2020/11/12/hivesql-free.html" rel="alternate" type="text/html" title="HiveSQL is free again - Thank you for your support!" /><published>2020-11-12T08:30:00-08:00</published><updated>2020-11-12T08:30:00-08:00</updated><id>https://hivedocs.info/news/sql/database/2020/11/12/hivesql-free</id><content type="html" xml:base="https://hivedocs.info/news/sql/database/2020/11/12/hivesql-free.html">&lt;div id=&quot;content-arcange-hivesql-free&quot;&gt;![](https://i.imgur.com/h4Ez40w.png)
-
-A few days ago, I introduced a [proposal](https://peakd.com/me/proposals/138) to make HiveSQL free to use again. The aim of the proposal is to enable as many developers and users as possible to benefit from this valuable tool and develop applications and services for our ecosystem.
-
-Today, thanks to your amazing support, I'm happy to announce that HiveSQL is free again!
-
-This means that anyone with a registered HiveSQL account will now have access to all the blockchain data and will be able to issue SQL queries for free.
-
-## How to register your HiveSQL account?
-
-For obvious security reasons, before being able to access the HiveSQL database, you will have to create a HiveSQL account. The activation process is very simple:
-
-1. Transfer **0.01 SBD** to @hivesql (no memo required)
-
-2. As soon as @hivesql receives your transfer, your activation will be processed
-
-3. A few seconds later, you will receive a micro-transfer back from @hivesql.
-
-![](https://i.imgur.com/9yQYdUL.png)
-
-The @hivesql transfer memo contains your new credentials and is therefore encrypted.
-There are two easy ways to see its content;
-
-1. if you use **peakd.com**, click on the small green lock 
-![](https://i.imgur.com/uugVmTH.png)
-
-2. if you have **Keychain** installed, open it and click on the History button&lt;br /&gt;
-![](https://i.imgur.com/7OerE4l.png)&lt;br /&gt;
-![](https://i.imgur.com/jQtQGgl.png)
-
-The memo contains the following information:
-
-* the  hostname to connect to the HiveSQL server.
-* your personal login
-* your password
-
-## What's next
-
-Now that the proposal is funded, I will finally be able to tackle the many improvement projects that I wanted to implement. There is a lot of work ahead, among them the HiveSQL.io website update and the creation of decent documentation and tutorials.
-
-I would also like to partially review the design of the database to further improve its performance. I also want to add tables that can be useful and avoid redundant queries.
-
-I also have lots of other ideas, but one thing at a time... let's first consolidate the basics.
-
-## Support
-
-If you have any questions, remarks or suggestions, support for HiveSQL is provided on the [HiveSQL Discord Channel](https://discord.gg/kyEFDfT) only.
-
-**Support the Proposal**
-
-Things keep moving in life, so additional support for the proposal is still welcome.
-
-* [Vote for this proposal on Peakd.com](https://peakd.com/me/proposals/138)
-* [Vote for this Proposal on Hive.blog](https://wallet.hive.blog/proposals/138)
-* [Vote for this Proposal using HiveSigner](https://hivesigner.com/sign/update_proposal_votes?proposal_ids=%5B%22138%22%5D&amp;amp;approve=true)
-
-Thank you to all who supported the proposal and made HiveSQL free again!
-
----
-&lt;center&gt;
-
-### Check out my apps and services
-&lt;a href=&quot;/hive/@hive.engage/stay-connected-with-your-hive-audience-and-catch-attention&quot;&gt;&lt;img src=&quot;https://i.imgur.com/GiNJqlm.png&quot; /&gt;&lt;/a&gt;&lt;a href=&quot;/@hivebuzz&quot;&gt;&lt;img src=&quot;https://i.imgur.com/B4UTun2.png&quot; /&gt;&lt;/a&gt;&lt;a href=&quot;/@hivesql&quot;&gt;&lt;img src=&quot;https://i.imgur.com/EPN8RW6.png&quot; /&gt;&lt;/a&gt;&lt;a href=&quot;/hive/@arcange/introducing-hive-account-recovery&quot;&gt;&lt;img src=&quot;https://i.imgur.com/6TWeW7V.png&quot; /&gt;&lt;/a&gt;&lt;a href=&quot;/@hive.autoclaim&quot;&gt;&lt;img src=&quot;https://i.imgur.com/ih2pEOw.png&quot; /&gt;&lt;/a&gt;&lt;/center&gt;
-&lt;center&gt;
-
-### [Vote for me as a witness ![](https://i.imgur.com/2bi4SnT.png)](https://hivesigner.com/sign/account-witness-vote?witness=arcange&amp;amp;approve=1)
-&amp;lt;/div&amp;gt;
-&lt;script crossorigin=&quot;anonymous&quot; integrity=&quot;sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=&quot; src=&quot;https://code.jquery.com/jquery-3.5.1.slim.min.js&quot;&gt;&lt;/script&gt;
-&lt;script src=&quot;https://unpkg.com/steem-content-renderer&quot;&gt;&lt;/script&gt;
-&lt;script&gt;
-  $(document).ready(function() {
-    try {
-      const renderer = new SteemContentRenderer.DefaultRenderer({
-        baseUrl: &quot;https://hive.blog/&quot;,
-        breaks: true,
-        skipSanitization: false,
-        allowInsecureScriptTags: false,
-        addNofollowToLinks: true,
-        doNotShowImages: false,
-        ipfsPrefix: &quot;&quot;,
-        assetsWidth: 640,
-        assetsHeight: 480,
-        imageProxyFn: (url) =&gt; url,
-        usertagUrlFn: (account) =&gt; &quot;/@arcange&quot;,
-        hashtagUrlFn: (hashtag) =&gt; &quot;/hivesql-free&quot;,
-        isLinkSafeFn: (url) =&gt; true,
-      });
-      
-      const inputElem = $('#content-arcange-hivesql-free').html();
-      const outputElem = $('#content-arcange-hivesql-free');
-      const output = renderer.render(inputElem);
-      
-      outputElem.html(output);
-    } catch(e) {
-      console.log(e);
-    }
-  });
-&lt;/script&gt;
-&lt;style&gt;
-  #content-arcange-hivesql-free {
-    padding: 0 3rem;
-    color: #444444;
-    font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif;
-    font-size: 16px;
-    line-height: 1.8;
-    text-shadow: 0 1px 0 #ffffff;
-    padding: 0.5rem;
-  }
-  #content-arcange-hivesql-free code {
-    background: white;
-  }
-  #content-arcange-hivesql-free a {
-    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
-  }
-  #content-arcange-hivesql-free a:hover {
-    border-bottom: 0;
-  }
-  #content-arcange-hivesql-free h1 {
-    font-size: 2.2em;
-  }
-  #content-arcange-hivesql-free h2, h3, h4, h5 {
-    margin-bottom: 0;
-  }
-  #content-arcange-hivesql-free header small {
-    color: #999;
-    font-size: 50%;
-  }
-  #content-arcange-hivesql-free img {
-    max-width: 100%;
-  }
-&lt;/style&gt;
-
-&lt;hr /&gt;
-&lt;p&gt;
-  See: &lt;a href=&quot;https://peakd.com/hive-139531/@arcange/hivesql-free&quot;&gt;HiveSQL is free again - Thank you for your support!&lt;/a&gt;
-  by
-  &lt;a href=&quot;https://hive.blog/@arcange&quot;&gt;@arcange&lt;/a&gt;
-&lt;/p&gt;
-
-&lt;/center&gt;&lt;/div&gt;</content><author><name>arcange</name></author><category term="news" /><category term="sql" /><category term="database" /><summary type="html">![](https://i.imgur.com/h4Ez40w.png) A few days ago, I introduced a [proposal](https://peakd.com/me/proposals/138) to make HiveSQL free to use again. The aim of the proposal is to enable as many developers and users as possible to benefit from this valuable tool and develop applications and services for our ecosystem. Today, thanks to your amazing support, I'm happy to announce that HiveSQL is free again! This means that anyone with a registered HiveSQL account will now have access to all the blockchain data and will be able to issue SQL queries for free. ## How to register your HiveSQL account? For obvious security reasons, before being able to access the HiveSQL database, you will have to create a HiveSQL account. The activation process is very simple: 1. Transfer **0.01 SBD** to @hivesql (no memo required) 2. As soon as @hivesql receives your transfer, your activation will be processed 3. A few seconds later, you will receive a micro-transfer back from @hivesql. ![](https://i.imgur.com/9yQYdUL.png) The @hivesql transfer memo contains your new credentials and is therefore encrypted. There are two easy ways to see its content; 1. if you use **peakd.com**, click on the small green lock ![](https://i.imgur.com/uugVmTH.png) 2. if you have **Keychain** installed, open it and click on the History button ![](https://i.imgur.com/7OerE4l.png) ![](https://i.imgur.com/jQtQGgl.png) The memo contains the following information: * the hostname to connect to the HiveSQL server. * your personal login * your password ## What's next Now that the proposal is funded, I will finally be able to tackle the many improvement projects that I wanted to implement. There is a lot of work ahead, among them the HiveSQL.io website update and the creation of decent documentation and tutorials. I would also like to partially review the design of the database to further improve its performance. I also want to add tables that can be useful and avoid redundant queries. I also have lots of other ideas, but one thing at a time... let's first consolidate the basics. ## Support If you have any questions, remarks or suggestions, support for HiveSQL is provided on the [HiveSQL Discord Channel](https://discord.gg/kyEFDfT) only. **Support the Proposal** Things keep moving in life, so additional support for the proposal is still welcome. * [Vote for this proposal on Peakd.com](https://peakd.com/me/proposals/138) * [Vote for this Proposal on Hive.blog](https://wallet.hive.blog/proposals/138) * [Vote for this Proposal using HiveSigner](https://hivesigner.com/sign/update_proposal_votes?proposal_ids=%5B%22138%22%5D&amp;amp;approve=true) Thank you to all who supported the proposal and made HiveSQL free again! --- ### Check out my apps and services ### [Vote for me as a witness ![](https://i.imgur.com/2bi4SnT.png)](https://hivesigner.com/sign/account-witness-vote?witness=arcange&amp;amp;approve=1) &amp;lt;/div&amp;gt; See: HiveSQL is free again - Thank you for your support! by @arcange</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://i.imgur.com/h4Ez40w.png" /><media:content medium="image" url="https://i.imgur.com/h4Ez40w.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>
+&lt;/p&gt;</content><author><name>blocktrades</name></author><category term="news" /><category term="core" /><category term="development" /><summary type="html">Last week we continued work on post HF24 optimizations. Below is a summary of the work done last week and our plans for the upcoming week. # Hived work (blockchain node software) We completed changes to the get_block_api plugin to speedup performance for the get_block API call. The old implementation used an overly pessimistic mutex locking scheme that severely degraded potential performance under loading. We’ve also added a new API call to fetch a consecutive set of blocks in one disk read operation. https://gitlab.syncad.com/hive/hive/-/merge_requests/149 Unfortunately, due to delays related to several hash computations (including one associated with getting the signee key of the block) and conversion of the binary block data to fc::variants and later to json, these API calls are still too slow for the needs of hivemind initial sync. To overcome this problem, we’re now creating a hived plugin that can directly write the needed data into hivemind’s database during hive reindexing and normal block reception. Most of the data being provided by get_block_api is of no interest to hivemind, so using this API to get the data was unnecessarily wasting CPU, in addition to slowing down hivemind. I expect that using the plugin approach will lead to significant speedup in the initial sync time for hivemind (my guess now is 2x at least) and it should also reduce normal hivemind live-sync write time. ## Hived status We’ve tagged a version v1.24.7 which contains the new `get_block_range(starting_block_num, count)` API call as well as the fix to make the legacy get_account_history API use 0-based operation index like the get_account_history_rocksdb plugin does. v1.24.7 is a recommended upgrade for API node operators, but it doesn’t contain changes needed by witness nodes or exchanges. It doesn’t require a reindex from the previous v1.24.6, as it is strictly contains API-related changes. # Hivemind (2nd layer microservice for social media applications) Most of our Hive devs continued to working on hivemind last week. Below are some of the merge requests incorporated into the develop branch of the hivemind repo: performance optimizations: https://gitlab.syncad.com/hive/hivemind/-/merge_requests/365 https://gitlab.syncad.com/hive/hivemind/-/merge_requests/366 https://gitlab.syncad.com/hive/hivemind/-/merge_requests/373 https://gitlab.syncad.com/hive/hivemind/-/merge_requests/367 various bug fixes: https://gitlab.syncad.com/hive/hivemind/-/merge_requests/354 https://gitlab.syncad.com/hive/hivemind/-/merge_requests/362 https://gitlab.syncad.com/hive/hivemind/-/merge_requests/371 https://gitlab.syncad.com/hive/hivemind/-/merge_requests/364 https://gitlab.syncad.com/hive/hivemind/-/merge_requests/337 https://gitlab.syncad.com/hive/hivemind/-/merge_requests/370 https://gitlab.syncad.com/hive/hivemind/-/merge_requests/382 new tests: https://gitlab.syncad.com/hive/hivemind/-/merge_requests/351 test system improvement: https://gitlab.syncad.com/hive/hivemind/-/merge_requests/376 https://gitlab.syncad.com/hive/hivemind/-/merge_requests/374 https://gitlab.syncad.com/hive/hivemind/-/merge_requests/375 # Condenser + Condenser wallet (open-source code for **hive.blog**) The bug editing comments was fixed: https://gitlab.syncad.com/hive/condenser/-/merge_requests/151 Fix for wallet proposals page where non-burn proposals were being displayed as burn proposals: https://gitlab.syncad.com/hive/wallet/-/merge_requests/75 We’re also testing and fixing bugs in the UI for creating decentralized lists: https://gitlab.syncad.com/hive/condenser/-/merge_requests/155 https://gitlab.syncad.com/hive/condenser/-/merge_requests/156 # Nearing completion of airdrop proposal re-payment I’ve refunded the overage of Hive from HBD→Hive conversions to the hive.fund account (when I converted some of the HBD to Hive, there was a slight overage of Hive due to the unpredictable amount that the conversion will yield). Once the proposal completes, I will compute and refund the HBD overage back to the hive.fund account as well. # What’s the plan for next week? * Finish hivemind and condenser muting changes. We’ve partially completed an additional change to condenser to allow a condenser operator to specify a “default observer” when a user isn’t logged in. This allows the condenser web site operator to specify their own initial list of spammers to be muted (for example, to protect their SEO results) that will function prior to a user’s login. For example, we’ve using the @hive.blog account as the default observer for the hive.blog site. * Enable reputation calculation code. * Continue creating hivemind tests. * We’re prioritizing the speedup of hivemind full sync via a hived plugin as the slow sync time has a big impact on the speed of hivemind CI (which sets an upper limit on how fast we can validate changes). * Still hoping to get out a post with a comprehensive list of planned changes for HF25 and for 2nd layer improvements soon (although the hived plugin for dumping directly to PostgreSQL is one of the planned major 2nd layer improvements: it’s just getting fast-tracked because it impacts our current work a lot). See: Update on BlockTrades Hive Work (Nov 16th) by @blocktrades</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://hivedocs.info/assets/images/favicon.png" /><media:content medium="image" url="https://hivedocs.info/assets/images/favicon.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>
