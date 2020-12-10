@@ -1,4 +1,139 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="https://hivedocs.info/feed.xml" rel="self" type="application/atom+xml" /><link href="https://hivedocs.info/" rel="alternate" type="text/html" /><updated>2020-12-09T12:54:14-08:00</updated><id>https://hivedocs.info/feed.xml</id><title type="html">Hive Chain Documentation</title><subtitle>Your resource for various levels of Hive Documentation.</subtitle><author><name>site curated by: @inertia</name></author><entry><title type="html">How to use a coldcard MK3 to derive your new account password from a 24 word seed</title><link href="https://hivedocs.info/news/python/wallet/2020/12/05/how-to-use-a-coldcard-mk3-to-derive-your-new-account-password-from-a-24-word-seed.html" rel="alternate" type="text/html" title="How to use a coldcard MK3 to derive your new account password from a 24 word seed" /><published>2020-12-05T15:10:18-08:00</published><updated>2020-12-05T15:10:18-08:00</updated><id>https://hivedocs.info/news/python/wallet/2020/12/05/how-to-use-a-coldcard-mk3-to-derive-your-new-account-password-from-a-24-word-seed</id><content type="html" xml:base="https://hivedocs.info/news/python/wallet/2020/12/05/how-to-use-a-coldcard-mk3-to-derive-your-new-account-password-from-a-24-word-seed.html">&lt;div id=&quot;content-holger80-how-to-use-a-coldcard-mk3-to-derive-your-new-account-password-from-a-24-word-seed&quot;&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="https://hivedocs.info/feed.xml" rel="self" type="application/atom+xml" /><link href="https://hivedocs.info/" rel="alternate" type="text/html" /><updated>2020-12-09T20:34:31-08:00</updated><id>https://hivedocs.info/feed.xml</id><title type="html">Hive Chain Documentation</title><subtitle>Your resource for various levels of Hive Documentation.</subtitle><author><name>site curated by: @inertia</name></author><entry><title type="html">Updated on BlockTrades Hive work (as of Dec 9th 2020)</title><link href="https://hivedocs.info/news/core/development/2020/12/09/updated-on-blocktrades-hive-work-as-of-dec-9th-2020.html" rel="alternate" type="text/html" title="Updated on BlockTrades Hive work (as of Dec 9th 2020)" /><published>2020-12-09T16:47:18-08:00</published><updated>2020-12-09T16:47:18-08:00</updated><id>https://hivedocs.info/news/core/development/2020/12/09/updated-on-blocktrades-hive-work-as-of-dec-9th-2020</id><content type="html" xml:base="https://hivedocs.info/news/core/development/2020/12/09/updated-on-blocktrades-hive-work-as-of-dec-9th-2020.html">&lt;div id=&quot;content-blocktrades-updated-on-blocktrades-hive-work-as-of-dec-9th-2020&quot;&gt;I decided to skip last week’s progress report, since I wanted to keep the focus on our roadmap post. In the meantime, we’ve continued to make good progress over past two weeks. Below is a summary of the work done over this period:
+
+# Hived work (blockchain node software)
+
+As mentioned previously, we’re currently creating a hived plugin that can directly write the needed data into hivemind’s database during hive reindexing and normal block reception. Most of the data being provided by get_block_api is of no interest to hivemind, so using this API to get the data is unnecessarily wasting cpu, in addition to slowing down hivemind. I expect that using the plugin approach will lead to significant speedup in the initial sync time for hivemind (my guess now is 2x at least) and it should also reduce normal hivemind live-sync write time. Work is ongoing here:
+https://gitlab.syncad.com/hive/hive/-/commits/km_live_postgres_dump/
+
+We made a change to hived so that proposals aren’t automatically removed after they expire:
+https://gitlab.syncad.com/hive/hive/-/merge_requests/154
+This allows the API to report on proposals after they have ended.
+
+We used memory-mapped IO to speed up rebuild of the block_log.index file from the block log. It’s now over 3x faster on a fast nvme drive (and the speedup is even better on a magnetic drive).
+https://gitlab.syncad.com/hive/hive/-/merge_requests/156
+
+
+# Hivemind (2nd layer microservice for social media applications)
+
+Most of our Hive devs continued to working on hivemind last week. Below are some of the merge requests incorporated into the develop branch of the hivemind repo:
+
+various bug fixes and optimization work:
+https://gitlab.syncad.com/hive/hivemind/-/merge_requests/410
+https://gitlab.syncad.com/hive/hivemind/-/merge_requests/405
+https://gitlab.syncad.com/hive/hivemind/-/merge_requests/413
+https://gitlab.syncad.com/hive/hivemind/-/merge_requests/416
+https://gitlab.syncad.com/hive/hivemind/-/merge_requests/400
+https://gitlab.syncad.com/hive/hivemind/-/merge_requests/418
+https://gitlab.syncad.com/hive/hivemind/-/merge_requests/424
+https://gitlab.syncad.com/hive/hivemind/-/merge_requests/426
+https://gitlab.syncad.com/hive/hivemind/-/merge_requests/411
+https://gitlab.syncad.com/hive/hivemind/-/merge_requests/428
+
+enable decentralized muting:
+https://gitlab.syncad.com/hive/hivemind/-/merge_requests/407
+https://gitlab.syncad.com/hive/hivemind/-/merge_requests/421
+https://gitlab.syncad.com/hive/hivemind/-/merge_requests/422
+
+new tests:
+https://gitlab.syncad.com/hive/hivemind/-/merge_requests/415
+
+
+test system improvement:
+https://gitlab.syncad.com/hive/hivemind/-/merge_requests/380
+
+We also ran a full sync test on hivemind (4 day long test currently), which allowed us to catch and fix a few more bugs.
+
+We are currently during real-world testing the [head of develop branch]( https://gitlab.syncad.com/hive/hivemind/-/commit/7872ef7e4d3642c61606fb6302f16452f6aa1b60) on api.hive.blog.
+
+# Support for decentralized lists/muting in condenser (https://hive.blog)
+
+We made several fixes and improvements to the UI based on feedback from beta-testers:
+https://gitlab.syncad.com/hive/condenser/-/merge_requests/165
+https://gitlab.syncad.com/hive/condenser/-/merge_requests/166
+
+# What’s the plan for next week?
+
+* Finish hivemind and condenser decentralized list changes (likely done tomorrow)
+* Continue creating hivemind tests (long term task).
+* Automate running of hived/hivemind full sync tests and run it once a week.
+* Continue work on speedup of hivemind full sync via hived plugin as the slow sync time has a big impact on the speed of hivemind CI (which sets an upper limit on how fast we can validate changes).
+* As a stopgap to the above, we’re also trying to speedup the current full sync code by making more concurrent API calls to hived from hive sync (we’ll probably be able to get a 2x speedup this way, in other words, bringing the full sync time down to 2 days on a server with sufficient cores to handle the additional hived load).
+* Make an official hivemind release to master branch and create a hivemind snapshot so that API node operators can update their nodes quickly. After all API nodes have updated, we can deploy the new changes to condenser for decentralized lists and decentralized muting.&lt;/div&gt;
+&lt;script crossorigin=&quot;anonymous&quot; integrity=&quot;sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=&quot; src=&quot;https://code.jquery.com/jquery-3.5.1.slim.min.js&quot;&gt;&lt;/script&gt;
+
+&lt;script src=&quot;https://unpkg.com/steem-content-renderer&quot;&gt;&lt;/script&gt;
+
+&lt;script&gt;
+  $(document).ready(function() {
+    try {
+      const renderer = new SteemContentRenderer.DefaultRenderer({
+        baseUrl: &quot;https://hive.blog/&quot;,
+        breaks: true,
+        skipSanitization: false,
+        allowInsecureScriptTags: false,
+        addNofollowToLinks: true,
+        doNotShowImages: false,
+        ipfsPrefix: &quot;&quot;,
+        assetsWidth: 640,
+        assetsHeight: 480,
+        imageProxyFn: (url) =&gt; url,
+        usertagUrlFn: (account) =&gt; &quot;/@blocktrades&quot;,
+        hashtagUrlFn: (hashtag) =&gt; &quot;/updated-on-blocktrades-hive-work-as-of-dec-9th-2020&quot;,
+        isLinkSafeFn: (url) =&gt; true,
+      });
+      
+      const inputElem = $('#content-blocktrades-updated-on-blocktrades-hive-work-as-of-dec-9th-2020').html();
+      const outputElem = $('#content-blocktrades-updated-on-blocktrades-hive-work-as-of-dec-9th-2020');
+      const output = renderer.render(inputElem);
+      
+      outputElem.html(output);
+    } catch(e) {
+      console.log(e);
+    }
+  });
+&lt;/script&gt;
+
+&lt;style&gt;
+  #content-blocktrades-updated-on-blocktrades-hive-work-as-of-dec-9th-2020 {
+    padding: 0 3rem;
+    color: #444444;
+    font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.8;
+    text-shadow: 0 1px 0 #ffffff;
+    padding: 0.5rem;
+  }
+  #content-blocktrades-updated-on-blocktrades-hive-work-as-of-dec-9th-2020 code {
+    background: white;
+  }
+  #content-blocktrades-updated-on-blocktrades-hive-work-as-of-dec-9th-2020 a {
+    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
+  }
+  #content-blocktrades-updated-on-blocktrades-hive-work-as-of-dec-9th-2020 a:hover {
+    border-bottom: 0;
+  }
+  #content-blocktrades-updated-on-blocktrades-hive-work-as-of-dec-9th-2020 h1 {
+    font-size: 2.2em;
+  }
+  #content-blocktrades-updated-on-blocktrades-hive-work-as-of-dec-9th-2020 h2, h3, h4, h5 {
+    margin-bottom: 0;
+  }
+  #content-blocktrades-updated-on-blocktrades-hive-work-as-of-dec-9th-2020 header small {
+    color: #999;
+    font-size: 50%;
+  }
+  #content-blocktrades-updated-on-blocktrades-hive-work-as-of-dec-9th-2020 img {
+    max-width: 100%;
+  }
+&lt;/style&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;
+  See: &lt;a href=&quot;https://hive.blog/hive-139531/@blocktrades/updated-on-blocktrades-hive-work-as-of-dec-9th-2020&quot;&gt;Updated on BlockTrades Hive work (as of Dec 9th 2020)&lt;/a&gt;
+  by
+  &lt;a href=&quot;https://hive.blog/@blocktrades&quot;&gt;@blocktrades&lt;/a&gt;
+&lt;/p&gt;</content><author><name>blocktrades</name></author><category term="news" /><category term="core" /><category term="development" /><summary type="html">I decided to skip last week’s progress report, since I wanted to keep the focus on our roadmap post. In the meantime, we’ve continued to make good progress over past two weeks. Below is a summary of the work done over this period: # Hived work (blockchain node software) As mentioned previously, we’re currently creating a hived plugin that can directly write the needed data into hivemind’s database during hive reindexing and normal block reception. Most of the data being provided by get_block_api is of no interest to hivemind, so using this API to get the data is unnecessarily wasting cpu, in addition to slowing down hivemind. I expect that using the plugin approach will lead to significant speedup in the initial sync time for hivemind (my guess now is 2x at least) and it should also reduce normal hivemind live-sync write time. Work is ongoing here: https://gitlab.syncad.com/hive/hive/-/commits/km_live_postgres_dump/ We made a change to hived so that proposals aren’t automatically removed after they expire: https://gitlab.syncad.com/hive/hive/-/merge_requests/154 This allows the API to report on proposals after they have ended. We used memory-mapped IO to speed up rebuild of the block_log.index file from the block log. It’s now over 3x faster on a fast nvme drive (and the speedup is even better on a magnetic drive). https://gitlab.syncad.com/hive/hive/-/merge_requests/156 # Hivemind (2nd layer microservice for social media applications) Most of our Hive devs continued to working on hivemind last week. Below are some of the merge requests incorporated into the develop branch of the hivemind repo: various bug fixes and optimization work: https://gitlab.syncad.com/hive/hivemind/-/merge_requests/410 https://gitlab.syncad.com/hive/hivemind/-/merge_requests/405 https://gitlab.syncad.com/hive/hivemind/-/merge_requests/413 https://gitlab.syncad.com/hive/hivemind/-/merge_requests/416 https://gitlab.syncad.com/hive/hivemind/-/merge_requests/400 https://gitlab.syncad.com/hive/hivemind/-/merge_requests/418 https://gitlab.syncad.com/hive/hivemind/-/merge_requests/424 https://gitlab.syncad.com/hive/hivemind/-/merge_requests/426 https://gitlab.syncad.com/hive/hivemind/-/merge_requests/411 https://gitlab.syncad.com/hive/hivemind/-/merge_requests/428 enable decentralized muting: https://gitlab.syncad.com/hive/hivemind/-/merge_requests/407 https://gitlab.syncad.com/hive/hivemind/-/merge_requests/421 https://gitlab.syncad.com/hive/hivemind/-/merge_requests/422 new tests: https://gitlab.syncad.com/hive/hivemind/-/merge_requests/415 test system improvement: https://gitlab.syncad.com/hive/hivemind/-/merge_requests/380 We also ran a full sync test on hivemind (4 day long test currently), which allowed us to catch and fix a few more bugs. We are currently during real-world testing the [head of develop branch]( https://gitlab.syncad.com/hive/hivemind/-/commit/7872ef7e4d3642c61606fb6302f16452f6aa1b60) on api.hive.blog. # Support for decentralized lists/muting in condenser (https://hive.blog) We made several fixes and improvements to the UI based on feedback from beta-testers: https://gitlab.syncad.com/hive/condenser/-/merge_requests/165 https://gitlab.syncad.com/hive/condenser/-/merge_requests/166 # What’s the plan for next week? * Finish hivemind and condenser decentralized list changes (likely done tomorrow) * Continue creating hivemind tests (long term task). * Automate running of hived/hivemind full sync tests and run it once a week. * Continue work on speedup of hivemind full sync via hived plugin as the slow sync time has a big impact on the speed of hivemind CI (which sets an upper limit on how fast we can validate changes). * As a stopgap to the above, we’re also trying to speedup the current full sync code by making more concurrent API calls to hived from hive sync (we’ll probably be able to get a 2x speedup this way, in other words, bringing the full sync time down to 2 days on a server with sufficient cores to handle the additional hived load). * Make an official hivemind release to master branch and create a hivemind snapshot so that API node operators can update their nodes quickly. After all API nodes have updated, we can deploy the new changes to condenser for decentralized lists and decentralized muting. See: Updated on BlockTrades Hive work (as of Dec 9th 2020) by @blocktrades</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://hivedocs.info/assets/images/favicon.png" /><media:content medium="image" url="https://hivedocs.info/assets/images/favicon.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">How to use a coldcard MK3 to derive your new account password from a 24 word seed</title><link href="https://hivedocs.info/news/python/wallet/2020/12/05/how-to-use-a-coldcard-mk3-to-derive-your-new-account-password-from-a-24-word-seed.html" rel="alternate" type="text/html" title="How to use a coldcard MK3 to derive your new account password from a 24 word seed" /><published>2020-12-05T15:10:18-08:00</published><updated>2020-12-05T15:10:18-08:00</updated><id>https://hivedocs.info/news/python/wallet/2020/12/05/how-to-use-a-coldcard-mk3-to-derive-your-new-account-password-from-a-24-word-seed</id><content type="html" xml:base="https://hivedocs.info/news/python/wallet/2020/12/05/how-to-use-a-coldcard-mk3-to-derive-your-new-account-password-from-a-24-word-seed.html">&lt;div id=&quot;content-holger80-how-to-use-a-coldcard-mk3-to-derive-your-new-account-password-from-a-24-word-seed&quot;&gt;
 Each hive account has four keys which can be used to sign broadcast operations. As the key name says (owner key, active key, posting key), they have different use cases. Normally, a single password is used to derive these four keys from it. This has the advantage that only one passphrase needs to be securely stored.
 
 I can change my account keys by generating a new password:
@@ -1377,146 +1512,4 @@ If you have any comments or requests, please create an issue on GitLab too. You 
   &lt;a href=&quot;https://hive.blog/@arcange&quot;&gt;@arcange&lt;/a&gt;
 &lt;/p&gt;
 
-&lt;/center&gt;&lt;/div&gt;</content><author><name>arcange</name></author><category term="news" /><category term="dotnet" /><summary type="html">![](https://i.imgur.com/uBDjiIT.png) Today I want to introduce you to a new Microsoft .NET library for Hive developers. ### Why a .NET library? While languages like Python or JavaScript have become very popular for web development, there are also developers out there who are unfamiliar with them. Some developers oriented towards Microsoft languages like VB.NET or C # may be frustrated at having to move away from their preferred programming language and tools like Microsoft Visual Studio. That's why I've created easy-to-use .NET classes, exposing almost all the APIs of hived and cli_wallet, and allowing .NET developers to play with any API node. The class library is available for both VB.NET and C# languages. I also provide a &quot;COM library&quot; (aka .dll) so you will also be able to use it directly in your favorite COM-enabled Windows application like Word or Excel, ... even if you don't have Microsoft Visual Studio to develop and compile applications. ### Code example The library is really easy to use. Here a simple VB.NET code example that read the information from an account and stream the last 100 blocks from the blockchain: ``` Dim oHC As HttpClient = New HttpClient() Using oHive As New CHived(oHC,&quot;https://api.hive.blog&quot;) Debug.Print(ohive.get_config.ToString) Debug.Print(ohive.get_account_count.ToString) oHive.get_account(&quot;arcange&quot;) Debug.Print(oAccount.ToString) Dim oBlock As JObject Dim oTrans As JObject Dim lLastBlockID As Long lLastBlockID = oHive.get_dynamic_global_properties().Item(&quot;last_irreversible_block_num&quot;) For lBlockID As Long = lLastBlockID - 100 To lLastBlockID oBlock = ohive.get_block(lBlockID) If Not oBlock.Item(&quot;transactions&quot;) Is Nothing Then Debug.Print(String.Format(&quot;Block {0} {1} contains {2} transactions&quot;, oBlock.Item(&quot;block_num&quot;), oBlock.Item(&quot;timestamp&quot;).ToObject(Of DateTime), oBlock.Item(&quot;transactions&quot;).Count)) End If Next End Using ``` Here another example showing how one interacts with its wallet: ``` Dim oHC As HttpClient = New HttpClient() Using oWallet As New hiveAPI.ChiveWallet(oHC,&quot;http://my.wallet.node&quot;) If oWallet.is_locked Then oWallet.unlock(&quot;mysuperwalletpassword&quot;) End If If oWallet.list_my_accounts.Count = 0 Then oWallet.import_key(&quot;MY_PRIVATE_POST_KEY&quot;) End If For Each oAccount In oWallet.list_my_accounts Debug.Print(oAccount.Item(&quot;name&quot;)) Next ' Lets vote on a post ... oWallet.vote(&quot;arcange&quot;, &quot;hiveio&quot;, &quot;announcing-the-launch-of-hive-blockchain&quot;) oWallet.lock() End Using ``` ### Open source The libraries are open source and can be found on [GitLab](https://gitlab.syncad.com/hive/hive-net). If you have any comments or requests, please create an issue on GitLab too. You can also contact me on [Discord](https://discordapp.com/channels/@me/237480770933882881) or [Telegram](https://t.me/the_arcange) --- ### Check out my apps and services ### [Vote for me as a witness ![](https://i.imgur.com/2bi4SnT.png)](https://hivesigner.com/sign/account-witness-vote?witness=arcange&amp;amp;approve=1)&amp;lt;/div&amp;gt; See: Introducing Hive libraries for Microsoft .NET by @arcange</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://i.imgur.com/uBDjiIT.png" /><media:content medium="image" url="https://i.imgur.com/uBDjiIT.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Update on BlockTrades Hive Work (Nov 16th)</title><link href="https://hivedocs.info/news/core/development/2020/11/16/update-on-blocktrades-hive-work-nov-16th.html" rel="alternate" type="text/html" title="Update on BlockTrades Hive Work (Nov 16th)" /><published>2020-11-16T14:31:33-08:00</published><updated>2020-11-16T14:31:33-08:00</updated><id>https://hivedocs.info/news/core/development/2020/11/16/update-on-blocktrades-hive-work-nov-16th</id><content type="html" xml:base="https://hivedocs.info/news/core/development/2020/11/16/update-on-blocktrades-hive-work-nov-16th.html">&lt;div id=&quot;content-blocktrades-update-on-blocktrades-hive-work-nov-16th&quot;&gt;Last week we continued work on post HF24 optimizations. Below is a summary of the work done last week and our plans for the upcoming week.
-
-# Hived work (blockchain node software)
-
-We completed changes to the get_block_api plugin to speedup performance for the get_block API call. The old implementation used an overly pessimistic mutex locking scheme that severely degraded potential performance under loading. We’ve also added a new API call to fetch a consecutive set of blocks in one disk read operation.
-https://gitlab.syncad.com/hive/hive/-/merge_requests/149
-
-Unfortunately, due to delays related to several hash computations (including one associated with getting the signee key of the block) and conversion of the binary block data to fc::variants and later to json, these API calls are still too slow for the needs of hivemind initial sync. 
-
-To overcome this problem, we’re now creating a hived plugin that can directly write the needed data into hivemind’s database during hive reindexing and normal block reception. Most of the data being provided by get_block_api is of no interest to hivemind, so using this API to get the data was unnecessarily wasting CPU, in addition to slowing down hivemind. I expect that using the plugin approach will lead to significant speedup in the initial sync time for hivemind (my guess now is 2x at least) and it should also reduce normal hivemind live-sync write time.
-
-## Hived status
-
-We’ve tagged a version v1.24.7 which contains the new `get_block_range(starting_block_num, count)` API call as well as the fix to make the legacy get_account_history API use 0-based operation index like the get_account_history_rocksdb plugin does.
-
-v1.24.7 is a recommended upgrade for API node operators, but it doesn’t contain changes needed by witness nodes or exchanges. It doesn’t require a reindex from the previous v1.24.6, as it is strictly contains API-related changes.
-
-# Hivemind (2nd layer microservice for social media applications)
-
-Most of our Hive devs continued to working on hivemind last week. Below are some of the merge requests incorporated into the develop branch of the hivemind repo:
-
-performance optimizations:
-https://gitlab.syncad.com/hive/hivemind/-/merge_requests/365
-https://gitlab.syncad.com/hive/hivemind/-/merge_requests/366
-https://gitlab.syncad.com/hive/hivemind/-/merge_requests/373
-https://gitlab.syncad.com/hive/hivemind/-/merge_requests/367
-
-various bug fixes:
-https://gitlab.syncad.com/hive/hivemind/-/merge_requests/354
-https://gitlab.syncad.com/hive/hivemind/-/merge_requests/362
-https://gitlab.syncad.com/hive/hivemind/-/merge_requests/371
-https://gitlab.syncad.com/hive/hivemind/-/merge_requests/364
-https://gitlab.syncad.com/hive/hivemind/-/merge_requests/337
-https://gitlab.syncad.com/hive/hivemind/-/merge_requests/370
-https://gitlab.syncad.com/hive/hivemind/-/merge_requests/382
-
-new tests:
-https://gitlab.syncad.com/hive/hivemind/-/merge_requests/351
-
-test system improvement:
-https://gitlab.syncad.com/hive/hivemind/-/merge_requests/376
-https://gitlab.syncad.com/hive/hivemind/-/merge_requests/374
-https://gitlab.syncad.com/hive/hivemind/-/merge_requests/375
-
-
-# Condenser + Condenser wallet (open-source code for **hive.blog**)
-
-The bug editing comments was fixed:
-https://gitlab.syncad.com/hive/condenser/-/merge_requests/151
-
-Fix for wallet proposals page where non-burn proposals were being displayed as burn proposals:
-https://gitlab.syncad.com/hive/wallet/-/merge_requests/75
-
-We’re also testing and fixing bugs in the UI for creating decentralized lists:
-https://gitlab.syncad.com/hive/condenser/-/merge_requests/155
-https://gitlab.syncad.com/hive/condenser/-/merge_requests/156
-
-# Nearing completion of airdrop proposal re-payment
-
-I’ve refunded the overage of Hive from HBD→Hive conversions to the hive.fund account (when I converted some of the HBD to Hive, there was a slight overage of Hive due to the unpredictable amount that the conversion will yield). Once the proposal completes, I will compute and refund the HBD overage back to the hive.fund account as well.
-
-# What’s the plan for next week?
-
-* Finish hivemind and condenser muting changes. We’ve partially completed an additional change to condenser to allow a condenser operator to specify a “default observer” when a user isn’t logged in. This allows the condenser web site operator to specify their own initial list of spammers to be muted (for example, to protect their SEO results) that will function prior to a user’s login. For example, we’ve using the @hive.blog account as the default observer for the hive.blog site.
-* Enable reputation calculation code.
-* Continue creating hivemind tests.
-* We’re prioritizing the speedup of hivemind full sync via a hived plugin as the slow sync time has a big impact on the speed of hivemind CI (which sets an upper limit on how fast we can validate changes).
-* Still hoping to get out a post with a comprehensive list of planned changes for HF25 and for 2nd layer improvements soon (although the hived plugin for dumping directly to PostgreSQL is one of the planned major 2nd layer improvements: it’s just getting fast-tracked because it impacts our current work a lot).&lt;/div&gt;
-&lt;script crossorigin=&quot;anonymous&quot; integrity=&quot;sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=&quot; src=&quot;https://code.jquery.com/jquery-3.5.1.slim.min.js&quot;&gt;&lt;/script&gt;
-
-&lt;script src=&quot;https://unpkg.com/steem-content-renderer&quot;&gt;&lt;/script&gt;
-
-&lt;script&gt;
-  $(document).ready(function() {
-    try {
-      const renderer = new SteemContentRenderer.DefaultRenderer({
-        baseUrl: &quot;https://hive.blog/&quot;,
-        breaks: true,
-        skipSanitization: false,
-        allowInsecureScriptTags: false,
-        addNofollowToLinks: true,
-        doNotShowImages: false,
-        ipfsPrefix: &quot;&quot;,
-        assetsWidth: 640,
-        assetsHeight: 480,
-        imageProxyFn: (url) =&gt; url,
-        usertagUrlFn: (account) =&gt; &quot;/@blocktrades&quot;,
-        hashtagUrlFn: (hashtag) =&gt; &quot;/update-on-blocktrades-hive-work-nov-16th&quot;,
-        isLinkSafeFn: (url) =&gt; true,
-      });
-      
-      const inputElem = $('#content-blocktrades-update-on-blocktrades-hive-work-nov-16th').html();
-      const outputElem = $('#content-blocktrades-update-on-blocktrades-hive-work-nov-16th');
-      const output = renderer.render(inputElem);
-      
-      outputElem.html(output);
-    } catch(e) {
-      console.log(e);
-    }
-  });
-&lt;/script&gt;
-
-&lt;style&gt;
-  #content-blocktrades-update-on-blocktrades-hive-work-nov-16th {
-    padding: 0 3rem;
-    color: #444444;
-    font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif;
-    font-size: 16px;
-    line-height: 1.8;
-    text-shadow: 0 1px 0 #ffffff;
-    padding: 0.5rem;
-  }
-  #content-blocktrades-update-on-blocktrades-hive-work-nov-16th code {
-    background: white;
-  }
-  #content-blocktrades-update-on-blocktrades-hive-work-nov-16th a {
-    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
-  }
-  #content-blocktrades-update-on-blocktrades-hive-work-nov-16th a:hover {
-    border-bottom: 0;
-  }
-  #content-blocktrades-update-on-blocktrades-hive-work-nov-16th h1 {
-    font-size: 2.2em;
-  }
-  #content-blocktrades-update-on-blocktrades-hive-work-nov-16th h2, h3, h4, h5 {
-    margin-bottom: 0;
-  }
-  #content-blocktrades-update-on-blocktrades-hive-work-nov-16th header small {
-    color: #999;
-    font-size: 50%;
-  }
-  #content-blocktrades-update-on-blocktrades-hive-work-nov-16th img {
-    max-width: 100%;
-  }
-&lt;/style&gt;
-
-&lt;hr /&gt;
-
-&lt;p&gt;
-  See: &lt;a href=&quot;https://hive.blog/hive-139531/@blocktrades/update-on-blocktrades-hive-work-nov-16th&quot;&gt;Update on BlockTrades Hive Work (Nov 16th)&lt;/a&gt;
-  by
-  &lt;a href=&quot;https://hive.blog/@blocktrades&quot;&gt;@blocktrades&lt;/a&gt;
-&lt;/p&gt;</content><author><name>blocktrades</name></author><category term="news" /><category term="core" /><category term="development" /><summary type="html">Last week we continued work on post HF24 optimizations. Below is a summary of the work done last week and our plans for the upcoming week. # Hived work (blockchain node software) We completed changes to the get_block_api plugin to speedup performance for the get_block API call. The old implementation used an overly pessimistic mutex locking scheme that severely degraded potential performance under loading. We’ve also added a new API call to fetch a consecutive set of blocks in one disk read operation. https://gitlab.syncad.com/hive/hive/-/merge_requests/149 Unfortunately, due to delays related to several hash computations (including one associated with getting the signee key of the block) and conversion of the binary block data to fc::variants and later to json, these API calls are still too slow for the needs of hivemind initial sync. To overcome this problem, we’re now creating a hived plugin that can directly write the needed data into hivemind’s database during hive reindexing and normal block reception. Most of the data being provided by get_block_api is of no interest to hivemind, so using this API to get the data was unnecessarily wasting CPU, in addition to slowing down hivemind. I expect that using the plugin approach will lead to significant speedup in the initial sync time for hivemind (my guess now is 2x at least) and it should also reduce normal hivemind live-sync write time. ## Hived status We’ve tagged a version v1.24.7 which contains the new `get_block_range(starting_block_num, count)` API call as well as the fix to make the legacy get_account_history API use 0-based operation index like the get_account_history_rocksdb plugin does. v1.24.7 is a recommended upgrade for API node operators, but it doesn’t contain changes needed by witness nodes or exchanges. It doesn’t require a reindex from the previous v1.24.6, as it is strictly contains API-related changes. # Hivemind (2nd layer microservice for social media applications) Most of our Hive devs continued to working on hivemind last week. Below are some of the merge requests incorporated into the develop branch of the hivemind repo: performance optimizations: https://gitlab.syncad.com/hive/hivemind/-/merge_requests/365 https://gitlab.syncad.com/hive/hivemind/-/merge_requests/366 https://gitlab.syncad.com/hive/hivemind/-/merge_requests/373 https://gitlab.syncad.com/hive/hivemind/-/merge_requests/367 various bug fixes: https://gitlab.syncad.com/hive/hivemind/-/merge_requests/354 https://gitlab.syncad.com/hive/hivemind/-/merge_requests/362 https://gitlab.syncad.com/hive/hivemind/-/merge_requests/371 https://gitlab.syncad.com/hive/hivemind/-/merge_requests/364 https://gitlab.syncad.com/hive/hivemind/-/merge_requests/337 https://gitlab.syncad.com/hive/hivemind/-/merge_requests/370 https://gitlab.syncad.com/hive/hivemind/-/merge_requests/382 new tests: https://gitlab.syncad.com/hive/hivemind/-/merge_requests/351 test system improvement: https://gitlab.syncad.com/hive/hivemind/-/merge_requests/376 https://gitlab.syncad.com/hive/hivemind/-/merge_requests/374 https://gitlab.syncad.com/hive/hivemind/-/merge_requests/375 # Condenser + Condenser wallet (open-source code for **hive.blog**) The bug editing comments was fixed: https://gitlab.syncad.com/hive/condenser/-/merge_requests/151 Fix for wallet proposals page where non-burn proposals were being displayed as burn proposals: https://gitlab.syncad.com/hive/wallet/-/merge_requests/75 We’re also testing and fixing bugs in the UI for creating decentralized lists: https://gitlab.syncad.com/hive/condenser/-/merge_requests/155 https://gitlab.syncad.com/hive/condenser/-/merge_requests/156 # Nearing completion of airdrop proposal re-payment I’ve refunded the overage of Hive from HBD→Hive conversions to the hive.fund account (when I converted some of the HBD to Hive, there was a slight overage of Hive due to the unpredictable amount that the conversion will yield). Once the proposal completes, I will compute and refund the HBD overage back to the hive.fund account as well. # What’s the plan for next week? * Finish hivemind and condenser muting changes. We’ve partially completed an additional change to condenser to allow a condenser operator to specify a “default observer” when a user isn’t logged in. This allows the condenser web site operator to specify their own initial list of spammers to be muted (for example, to protect their SEO results) that will function prior to a user’s login. For example, we’ve using the @hive.blog account as the default observer for the hive.blog site. * Enable reputation calculation code. * Continue creating hivemind tests. * We’re prioritizing the speedup of hivemind full sync via a hived plugin as the slow sync time has a big impact on the speed of hivemind CI (which sets an upper limit on how fast we can validate changes). * Still hoping to get out a post with a comprehensive list of planned changes for HF25 and for 2nd layer improvements soon (although the hived plugin for dumping directly to PostgreSQL is one of the planned major 2nd layer improvements: it’s just getting fast-tracked because it impacts our current work a lot). See: Update on BlockTrades Hive Work (Nov 16th) by @blocktrades</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://hivedocs.info/assets/images/favicon.png" /><media:content medium="image" url="https://hivedocs.info/assets/images/favicon.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>
+&lt;/center&gt;&lt;/div&gt;</content><author><name>arcange</name></author><category term="news" /><category term="dotnet" /><summary type="html">![](https://i.imgur.com/uBDjiIT.png) Today I want to introduce you to a new Microsoft .NET library for Hive developers. ### Why a .NET library? While languages like Python or JavaScript have become very popular for web development, there are also developers out there who are unfamiliar with them. Some developers oriented towards Microsoft languages like VB.NET or C # may be frustrated at having to move away from their preferred programming language and tools like Microsoft Visual Studio. That's why I've created easy-to-use .NET classes, exposing almost all the APIs of hived and cli_wallet, and allowing .NET developers to play with any API node. The class library is available for both VB.NET and C# languages. I also provide a &quot;COM library&quot; (aka .dll) so you will also be able to use it directly in your favorite COM-enabled Windows application like Word or Excel, ... even if you don't have Microsoft Visual Studio to develop and compile applications. ### Code example The library is really easy to use. Here a simple VB.NET code example that read the information from an account and stream the last 100 blocks from the blockchain: ``` Dim oHC As HttpClient = New HttpClient() Using oHive As New CHived(oHC,&quot;https://api.hive.blog&quot;) Debug.Print(ohive.get_config.ToString) Debug.Print(ohive.get_account_count.ToString) oHive.get_account(&quot;arcange&quot;) Debug.Print(oAccount.ToString) Dim oBlock As JObject Dim oTrans As JObject Dim lLastBlockID As Long lLastBlockID = oHive.get_dynamic_global_properties().Item(&quot;last_irreversible_block_num&quot;) For lBlockID As Long = lLastBlockID - 100 To lLastBlockID oBlock = ohive.get_block(lBlockID) If Not oBlock.Item(&quot;transactions&quot;) Is Nothing Then Debug.Print(String.Format(&quot;Block {0} {1} contains {2} transactions&quot;, oBlock.Item(&quot;block_num&quot;), oBlock.Item(&quot;timestamp&quot;).ToObject(Of DateTime), oBlock.Item(&quot;transactions&quot;).Count)) End If Next End Using ``` Here another example showing how one interacts with its wallet: ``` Dim oHC As HttpClient = New HttpClient() Using oWallet As New hiveAPI.ChiveWallet(oHC,&quot;http://my.wallet.node&quot;) If oWallet.is_locked Then oWallet.unlock(&quot;mysuperwalletpassword&quot;) End If If oWallet.list_my_accounts.Count = 0 Then oWallet.import_key(&quot;MY_PRIVATE_POST_KEY&quot;) End If For Each oAccount In oWallet.list_my_accounts Debug.Print(oAccount.Item(&quot;name&quot;)) Next ' Lets vote on a post ... oWallet.vote(&quot;arcange&quot;, &quot;hiveio&quot;, &quot;announcing-the-launch-of-hive-blockchain&quot;) oWallet.lock() End Using ``` ### Open source The libraries are open source and can be found on [GitLab](https://gitlab.syncad.com/hive/hive-net). If you have any comments or requests, please create an issue on GitLab too. You can also contact me on [Discord](https://discordapp.com/channels/@me/237480770933882881) or [Telegram](https://t.me/the_arcange) --- ### Check out my apps and services ### [Vote for me as a witness ![](https://i.imgur.com/2bi4SnT.png)](https://hivesigner.com/sign/account-witness-vote?witness=arcange&amp;amp;approve=1)&amp;lt;/div&amp;gt; See: Introducing Hive libraries for Microsoft .NET by @arcange</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://i.imgur.com/uBDjiIT.png" /><media:content medium="image" url="https://i.imgur.com/uBDjiIT.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>
