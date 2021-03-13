@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>5th update on BlockTrades’ Hive development progress | Hive Chain Documentation</title>
+<meta name="generator" content="Jekyll v4.1.1" />
+<meta property="og:title" content="5th update on BlockTrades’ Hive development progress" />
+<meta name="author" content="blocktrades" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Lately our blockchain work has focused on the SQL account history plugin that injects operations, transactions, and block data into a PostgresSQL database (for use by modular hivemind apps such as wallets, games, etc)." />
+<meta property="og:description" content="Lately our blockchain work has focused on the SQL account history plugin that injects operations, transactions, and block data into a PostgresSQL database (for use by modular hivemind apps such as wallets, games, etc)." />
+<link rel="canonical" href="https://hive.blog/hive-139531/@blocktrades/5th-update-on-blocktrades-hive-development-progress" />
+<meta property="og:url" content="https://hive.blog/hive-139531/@blocktrades/5th-update-on-blocktrades-hive-development-progress" />
+<meta property="og:site_name" content="Hive Chain Documentation" />
+<meta property="og:image" content="https://hivedocs.info/assets/images/favicon.png" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2021-02-19T16:04:00-08:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="https://hivedocs.info/assets/images/favicon.png" />
+<meta property="twitter:title" content="5th update on BlockTrades’ Hive development progress" />
+<script type="application/ld+json">
+{"description":"Lately our blockchain work has focused on the SQL account history plugin that injects operations, transactions, and block data into a PostgresSQL database (for use by modular hivemind apps such as wallets, games, etc).","image":"https://hivedocs.info/assets/images/favicon.png","headline":"5th update on BlockTrades’ Hive development progress","dateModified":"2021-02-19T16:04:00-08:00","datePublished":"2021-02-19T16:04:00-08:00","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://hive.blog/hive-139531/@blocktrades/5th-update-on-blocktrades-hive-development-progress"},"url":"https://hive.blog/hive-139531/@blocktrades/5th-update-on-blocktrades-hive-development-progress","author":{"@type":"Person","name":"blocktrades"},"@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://hivedocs.info/feed.xml" title="Hive Chain Documentation" /><script>
+if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNotTrack === "yes" || navigator.msDoNotTrack === "1")) {
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-161692811-1', 'auto');
+  ga('send', 'pageview');
+}
+</script>
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/turbolinks/5.2.0/turbolinks.js" integrity="sha256-iM4Yzi/zLj/IshPWMC1IluRxTtRjMqjPGd97TZ9yYpU=" crossorigin="anonymous"></script>
+  <script src='https://unpkg.com/steem-content-renderer'></script>
+  <script>
+    (function () {
+      if (Turbolinks.supported) {
+        Turbolinks.setProgressBarDelay(500);
+      }
+    })();
+  </script>
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Cousine|Inconsolata" rel="stylesheet">
+  <link rel="shortcut icon" type="image/png" href="/assets/images/favicon.png">
+</head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Hive Chain Documentation</a>
+
+      <nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/news/">News</a><a class="page-link" href="/howto/">How To</a><a class="page-link" href="/links/">Useful Links</a><!-- HTML elements for search -->
+          <input type="text" id="search-input" placeholder="Search" />
+          
+          <ul id="results-container"></ul>
+
+          <script src="/assets/javascript/search.js"></script>
+          <script>
+            var sjs = SimpleJekyllSearch({
+              searchInput: document.getElementById('search-input'),
+              resultsContainer: document.getElementById('results-container'),
+              json: '/search.json'
+            })
+          </script>
+          <!-- <form style="float: right;" class="form-inline" method="get" action="http://www.google.com/search">
+            <input type="hidden" name="sitesearch" value="hivedocs.info" />
+            <input type="text" name="q" maxlength="255" placeholder="Search" />
+          </form> -->
+          
+          
+          <a href="#" onclick="try { $('#topics-container').slideToggle(); } catch { document.getElementById('topics-container').style.display = 'block'; }; return false;">Topics &#187;</a>
+          
+          <ul id="topics-container" style="display: none;"><li><a class="page-link" href="/core-development/"><nobr>Core Development</nobr></a></li><li><a class="page-link" href="/dapps/"><nobr>Dapps</nobr></a></li><li><a class="page-link" href="/docker/"><nobr>Docker</nobr></a></li><li><a class="page-link" href="/hardfork/"><nobr>Hardfork</nobr></a></li><li><a class="page-link" href="/hivemind/"><nobr>Hivemind</nobr></a></li><li><a class="page-link" href="/javascript/"><nobr>Javascript</nobr></a></li><li><a class="page-link" href="/multisig/"><nobr>Multisig</nobr></a></li><li><a class="page-link" href="/python/"><nobr>Python</nobr></a></li><li><a class="page-link" href="/ruby/"><nobr>Ruby</nobr></a></li><li><a class="page-link" href="/testnet/"><nobr>Testnet</nobr></a></li><li><a class="page-link" href="/tools/"><nobr>Tools</nobr></a></li></ul>
+        </div>
+      </nav>
+  </div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">5th update on BlockTrades&#39; Hive development progress</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2021-02-19T16:04:00-08:00" itemprop="datePublished">Feb 19, 2021
+      </time>• <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">
+          <a href="https://hive.blog/@blocktrades">blocktrades</a>
+        </span></span></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <div id="content-blocktrades-5th-update-on-blocktrades-hive-development-progress"># SQL account history plugin for modular hivemind
+
+Lately our blockchain work has focused on the SQL account history plugin that injects operations, transactions, and block data into a PostgresSQL database (for use by modular hivemind apps such as wallets, games, etc).
+
+We’ve been testing and fixing bugs related to this hived plugin and the associated hivemind sync. As mentioned last time, a replay of hived into hivemind takes 11 hours (as opposed to the 15 hours required by the rocksdb-based plugin, so we already have a decent win on replay time). 
+
+We ran a hivemind sync using this data and it completed in 46 hours (just under 2 days), but unfortunately we had a fail near the end of the sync (probably due to use of a different hived to supply some dynamic API data not yet provided by the plugin), so we still don’t have definitive data on the speed of a full hivemind sync using this method, but I wouldn’t be surprised if we cut the time in half for a full hivemind sync (i.e. from 4 days down to 2 days or even less) by the time we’re done. I say this because we’ve found that the hivemind sync using this method is currently CPU bound (with about 2/3 of CPU being used by the python-based hivemind indexer and 1/3 being used by postgres), so I think we will be able to reduce the 46 hours after we’ve profiled the python code (and maybe the SQL code as well). My best guess right now is that we're CPU bound due to some data transformation prior to writing the data to the database.
+
+# Performance results for SQL account history plugin
+
+We’ve run some performance benchmarks using the new SQL account history plugin (versus the rocksdb account history plugin) with excellent performance gains resulting:
+
+API call:  
+`{"jsonrpc":"2.0", "method":"account_history_api.get_ops_in_block", "params":{"block_num":2889020,"only_virtual":false}, "id":1}`
+ah-rocksdb: ranges from 26s to 64s
+ah-sql: 0.9s
+
+API call:
+`{"jsonrpc":"2.0", "method":"account_history_api.get_account_history", "params":{"account":"abit", "start":125000, "limit":1000}, "id":1}`
+ah-rocksdb: ranges from 0.3s to 1.2s
+ah-sql: 0.03s
+
+API call:
+`{"jsonrpc":"2.0", "method":"account_history_api.enum_virtual_ops", "params":{"block_range_begin": 4000000, "block_range_end": 4020000 }, "id":1} `
+ah-rocksdb: ranges from 36s to 45s
+ah-sql: 0.8s
+
+These gains are good enough that we should be able to eliminate the artificial 2000 operation lookback limit currently set on the get_account_history API call when filtering for specific operation types (assuming the node is configured to serve the data from the ah-sql plugin instead of the ah-rocksdb plugin, of course).
+
+# Progress on modular hivemind
+
+Now while the above sync and API response times represent substantial performance gains, that’s not the primary goal of this work. The primary goal is to support the creation of 2nd layer app development using “modular hivemind” deployments, allowing for the creation of unique hive-based apps that can scale to large numbers of users with real-time responsiveness.
+
+The first step in the development of the modular hivemind technology was to validate swapping to a model where we directly inject blockchain data into hivemind’s PostgresSQL database, and as we can see from the benchmark data above, this work is going well. We’ve proved it has better performance and we were also able to switch from “pulling” the data from hived to having hived push the data to us using the existing hivemind indexer code with minor modifications.
+
+The next step is a bit more challenging, design-wise: we plan to add support automatic handling of forks in the hivemind sync process. This will allow for modular hivemind apps to serve up data from the current headblock without any additional delay and cleanly revert whenever a micro-fork occurs (currently 2nd layer apps either have to accept a delay penalty or risk the chance for error if they don’t properly revert the state of their internal data in the case of a micro-fork). Modular hivemind application will gain a built-in micro-fork handler that automatically executes to undo the effects of blocks from the previous fork and replay blocks from the new fork in the case of a fork, eliminating the need for their developers to manually write code for fork handling. We’re currently looking into various algorithms for this fork handling logic and next we’ll be experimenting with some prototype implementations.
+
+# Hivemind-based account history API
+
+We also recently completed a python-based account history API that reuses the SQL queries that we developed for the hived SQL account history plugin (this could be used, for example, to reduce API loading on a hived instance). The performance of this API was roughly comparable to that of the ah-sql plugin, but preliminary performance tests show it a little slower (maybe 30% in some cases), probably due to more overhead during data conversions. Still this could be an acceptable tradeoff in some situations and we haven't done any tests in high load situations, where hivemind may perform better than hived.
+
+# Hivemind API (2nd layer microservice for social media apps)
+
+We fixed bugs and created new tests related to the follow code and decentralized lists and merged them to the develop branch (https://gitlab.syncad.com/hive/hivemind/-/merge_requests/396). 
+
+We also merged in a few more remaining optimizations to hivemind queries: https://gitlab.syncad.com/hive/hivemind/-/merge_requests/470
+
+And created some more tests for community API calls: https://gitlab.syncad.com/hive/hivemind/-/merge_requests/466
+
+# Condenser and wallet (https://hive.blog)
+
+We made one change to fix a bug related to decentralized lists:  https://gitlab.syncad.com/hive/condenser/-/merge_requests/209
+
+We completed a preliminary review of vision (ecency code base) versus condesner (hive.blog code base). In general the vision code looks more up-to-date in terms of web technologies and libraries used, and the code is cleaner overall, but the vision code currently relies on too much closed-source APIs to operate it easily as a white-labeled application yet. So before we begin contributing to this work, we’re awaiting changes from @good-karma team.
+
+# Near-term work plans and work in progress
+
+We’ll continue working on modular hivemind code, with an emphasis in the next cycle on design of micro-fork handling logic. We’ll also continue tests and optimization of SQL account history plugin and hivemind sync process.
+
+We began testing the current head of develop branch of hivemind (this contains follows and decentralized list fixes) on api.hive.blog today. If it performs well, we’ll merge it to master on Monday so that other API node operators can deploy it.
+
+I’ve also given some thought in the last week to ways to improve the upward side of the HBD peg (when HBD goes above $1 USD).  I have one idea that looks relatively simple to implement that could probably be fit into HF25. I’ll write more about it later in a separate post in the Hive Improvements community so that there can be some discussion about the economic considerations involved.</div>
+<script crossorigin="anonymous" integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=" src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+
+<script src="https://unpkg.com/steem-content-renderer"></script>
+
+<script>
+  $(document).ready(function() {
+    try {
+      const renderer = new SteemContentRenderer.DefaultRenderer({
+        baseUrl: "https://hive.blog/",
+        breaks: true,
+        skipSanitization: false,
+        allowInsecureScriptTags: false,
+        addNofollowToLinks: true,
+        doNotShowImages: false,
+        ipfsPrefix: "",
+        assetsWidth: 640,
+        assetsHeight: 480,
+        imageProxyFn: (url) => url,
+        usertagUrlFn: (account) => "/@blocktrades",
+        hashtagUrlFn: (hashtag) => "/5th-update-on-blocktrades-hive-development-progress",
+        isLinkSafeFn: (url) => true,
+      });
+      
+      const inputElem = $('#content-blocktrades-5th-update-on-blocktrades-hive-development-progress').html();
+      const outputElem = $('#content-blocktrades-5th-update-on-blocktrades-hive-development-progress');
+      const output = renderer.render(inputElem);
+      
+      outputElem.html(output);
+    } catch(e) {
+      console.log(e);
+    }
+  });
+</script>
+
+<style>
+  #content-blocktrades-5th-update-on-blocktrades-hive-development-progress {
+    padding: 0 3rem;
+    color: #444444;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.8;
+    text-shadow: 0 1px 0 #ffffff;
+    padding: 0.5rem;
+  }
+  #content-blocktrades-5th-update-on-blocktrades-hive-development-progress code {
+    background: white;
+  }
+  #content-blocktrades-5th-update-on-blocktrades-hive-development-progress a {
+    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
+  }
+  #content-blocktrades-5th-update-on-blocktrades-hive-development-progress a:hover {
+    border-bottom: 0;
+  }
+  #content-blocktrades-5th-update-on-blocktrades-hive-development-progress h1 {
+    font-size: 2.2em;
+  }
+  #content-blocktrades-5th-update-on-blocktrades-hive-development-progress h2, h3, h4, h5 {
+    margin-bottom: 0;
+  }
+  #content-blocktrades-5th-update-on-blocktrades-hive-development-progress header small {
+    color: #999;
+    font-size: 50%;
+  }
+  #content-blocktrades-5th-update-on-blocktrades-hive-development-progress img {
+    max-width: 100%;
+  }
+</style>
+
+<hr />
+
+<p>
+  See: <a href="https://hive.blog/hive-139531/@blocktrades/5th-update-on-blocktrades-hive-development-progress">5th update on BlockTrades' Hive development progress</a>
+  by
+  <a href="https://hive.blog/@blocktrades">@blocktrades</a>
+</p>
+
+
+  </div><a class="u-url" href="/news/core/development/2021/02/19/5th-update-on-blocktrades-hive-development-progress.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading"><a rel="author" href="/">Hive Chain Documentation</a></h2>
+    
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">site curated by: @inertia</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>Your resource for various levels of Hive Documentation.</p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+</body>
+
+</html>

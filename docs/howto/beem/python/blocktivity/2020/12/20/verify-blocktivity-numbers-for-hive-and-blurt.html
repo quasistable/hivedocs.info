@@ -20,7 +20,7 @@
 <meta property="twitter:image" content="https://images.hive.blog/DQmQeoNNWui7sVCdwHZWntJwaKRkzyzZymwKxFRvwuM1HPi/blocktivity%20on%2020.12.2020" />
 <meta property="twitter:title" content="Verify blocktivity numbers for Hive and Blurt" />
 <script type="application/ld+json">
-{"description":"@therealwolf was wondering on twitter on the high activity numbers on blocktivity.info for blurt …","datePublished":"2020-12-20T03:27:33-08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://hive.blog/hive-139531/@holger80/verify-blocktivity-numbers-for-hive-and-blurt"},"@type":"BlogPosting","url":"https://hive.blog/hive-139531/@holger80/verify-blocktivity-numbers-for-hive-and-blurt","image":"https://images.hive.blog/DQmQeoNNWui7sVCdwHZWntJwaKRkzyzZymwKxFRvwuM1HPi/blocktivity%20on%2020.12.2020","author":{"@type":"Person","name":"holger80"},"headline":"Verify blocktivity numbers for Hive and Blurt","dateModified":"2020-12-20T03:27:33-08:00","@context":"https://schema.org"}</script>
+{"description":"@therealwolf was wondering on twitter on the high activity numbers on blocktivity.info for blurt …","image":"https://images.hive.blog/DQmQeoNNWui7sVCdwHZWntJwaKRkzyzZymwKxFRvwuM1HPi/blocktivity%20on%2020.12.2020","headline":"Verify blocktivity numbers for Hive and Blurt","dateModified":"2020-12-20T03:27:33-08:00","datePublished":"2020-12-20T03:27:33-08:00","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://hive.blog/hive-139531/@holger80/verify-blocktivity-numbers-for-hive-and-blurt"},"url":"https://hive.blog/hive-139531/@holger80/verify-blocktivity-numbers-for-hive-and-blurt","author":{"@type":"Person","name":"holger80"},"@context":"https://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://hivedocs.info/feed.xml" title="Hive Chain Documentation" /><script>
 if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNotTrack === "yes" || navigator.msDoNotTrack === "1")) {
@@ -102,7 +102,232 @@ if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNo
   </header>
 
   <div class="post-content e-content" itemprop="articleBody">
+    <div id="content-holger80-verify-blocktivity-numbers-for-hive-and-blurt">
+@therealwolf was wondering on twitter on the high activity numbers on blocktivity.info for blurt:
+https://twitter.com/therealwolf42/status/1340374495899561986
+
+The stats can be seen here:
+
+![blocktivity on 20.12.2020](https://images.hive.blog/DQmQeoNNWui7sVCdwHZWntJwaKRkzyzZymwKxFRvwuM1HPi/blocktivity%20on%2020.12.2020)
+
+Lets validate them using [beem](https://github.com/holgern/beem).
+I added the script also to my beem  github: [blockactivity.py](https://github.com/holgern/beem/blob/master/examples/blockactivity.py).
+```
+import sys
+from datetime import datetime, timedelta
+import argparse
+from timeit import default_timer as timer
+import logging
+from beem.blockchain import Blockchain
+from beem.block import Block
+from beem import Hive, Blurt, Steem
+from beem.utils import parse_time
+from beem.nodelist import NodeList
+
+log = logging.getLogger(__name__)
+logging.basicConfig(level=logging.INFO)
+
+
+def parse_args(args=None):
+    d = 'Verify blocktivity by counting operations and trx for the last 24 hours.'
+    parser = argparse.ArgumentParser(description=d)
+    parser.add_argument('blockchain', type=str, nargs='?',
+                        default=sys.stdin,
+                        help='Blockchain (hive, blurt or steem)')
+    return parser.parse_args(args)
+
+
+def main(args=None):
     
+    args = parse_args(args)
+    blockchain = args.blockchain
+    
+    nodelist = NodeList()
+    
+    if blockchain == "hive" or blockchain is None:
+        max_batch_size = 50
+        threading = False
+        thread_num = 16
+        block_debug = 1000
+        nodes = nodelist.get_hive_nodes()
+        blk_inst = Hive(node=nodes, num_retries=3, num_retries_call=3, timeout=30)
+    elif blockchain == "blurt":
+        max_batch_size = None
+        threading = False
+        thread_num = 8
+        block_debug = 20
+        nodes = ["https://api.blurt.blog", "https://rpc.blurtworld.com", "https://rpc.blurtworld.com"]
+        blk_inst = Blurt(node=nodes, num_retries=3, num_retries_call=3, timeout=30)
+    elif blockchain == "steem":
+        max_batch_size = 50
+        threading = False
+        thread_num = 16
+        block_debug = 1000
+        nodes = nodelist.get_steem_nodes()
+        blk_inst = Steem(node=nodes, num_retries=3, num_retries_call=3, timeout=30)
+    else:
+        raise Exception("Wrong parameter, can be hive, blurt or steem")
+    print(blk_inst)
+    block_count = 0
+    total_ops = 0
+    total_trx = 0
+    blocksperday = 20 * 60 * 24
+    
+    blockchain = Blockchain(blockchain_instance=blk_inst)
+    last_block_id = blockchain.get_current_block_num() - blocksperday
+
+    last_block = Block(last_block_id, blockchain_instance=blk_inst)
+
+    stopTime = last_block.time() + timedelta(seconds=60 * 60 * 24)
+
+    start = timer()
+    for entry in blockchain.blocks(start=last_block_id, max_batch_size=max_batch_size, threading=threading, thread_num=thread_num):
+        block_count += 1
+        if "block" in entry:
+            trxs = entry["block"]["transactions"]
+        else:
+            trxs = entry["transactions"]
+        for tx in trxs:
+            total_trx += 1
+            for op in tx["operations"]:
+                total_ops += 1
+        if "block" in entry:
+            block_time = parse_time(entry["block"]["timestamp"])
+        else:
+            block_time = entry["timestamp"]
+        ops_per_day = total_ops / block_count * blocksperday
+        if block_count % (block_debug) == 0:
+            print("%d blocks remaining... estimated ops per day: %.1f" % (blocksperday - block_count, ops_per_day))
+        if block_time &gt; stopTime:
+            break
+    duration = timer() - start
+    print("Received %.2f blocks/s." % (block_count / duration))
+    print("Bocks: %d, duration %.3f s" % (block_count, duration))
+    print("Operations per day: %d" % total_ops)
+    print("Trx per day: %d" % total_trx)
+
+if __name__ == '__main__':
+    sys.exit(main())
+
+```
+Just save the script as blocktivity.py and call it with the blockchain name (can be hive, steem or blurt).
+
+## Checking the blockchain activity
+I started the script in three terminals to check the activity on hive, steem and blurt:
+```
+python3 blocktivity.py hive
+python3 blocktivity.py steem
+python3 blocktivity.py blurt
+```
+
+## Results
+The following table shows the obtained:
+
+|   | Hive  | Steem | Blurt |
+|---|---| --- | --- |
+| Blocks  |  28756 | 28466 | 28634 |
+| Duration | 128.855  |  117.712 | 8016.021 |
+| Blocks/s | 223.17  |  241.83   |  3.57  |
+| Trx | 883929 | 195892 | 6942 |
+| Ops | 894856 | 200968 | 7461 |
+| Ratio of Trx to Bitcion Trx | 0.98 | 0.221 | 0.008 |
+
+### Hive
+It seems that the activity shown at https://blocktivity.info/ counted every operation twice or it sums up the activity for 48 hours.
+
+The block count reaches 99.84% of the maximum block count 28800.
+
+### Steem
+The block count reaches 98.84% of the maximum block count 28800.
+
+### Blurt
+The speed for receiving blocks from the API is really slow, it took 62 times longer as on hive. 
+
+The shown activity numbers are completely wrong. 549405 operations are reached in around 74 days and not in 24 hours.
+
+The block count reaches 99.42% of the maximum block count 28800.
+
+It seems that the bug was already found and will be fixed soon:
+https://twitter.com/eastmaels/status/1340477277788753920
+___
+
+*If you like what I do, consider casting a vote for me as witness on [Hivesigner](https://hivesigner.com/sign/account-witness-vote?witness=holger80&amp;approve=1) or on [PeakD](https://peakd.com/witnesses)*</div>
+<script crossorigin="anonymous" integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=" src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+
+<script src="https://unpkg.com/steem-content-renderer"></script>
+
+<script>
+  $(document).ready(function() {
+    try {
+      const renderer = new SteemContentRenderer.DefaultRenderer({
+        baseUrl: "https://hive.blog/",
+        breaks: true,
+        skipSanitization: false,
+        allowInsecureScriptTags: false,
+        addNofollowToLinks: true,
+        doNotShowImages: false,
+        ipfsPrefix: "",
+        assetsWidth: 640,
+        assetsHeight: 480,
+        imageProxyFn: (url) => url,
+        usertagUrlFn: (account) => "/@holger80",
+        hashtagUrlFn: (hashtag) => "/verify-blocktivity-numbers-for-hive-and-blurt",
+        isLinkSafeFn: (url) => true,
+      });
+      
+      const inputElem = $('#content-holger80-verify-blocktivity-numbers-for-hive-and-blurt').html();
+      const outputElem = $('#content-holger80-verify-blocktivity-numbers-for-hive-and-blurt');
+      const output = renderer.render(inputElem);
+      
+      outputElem.html(output);
+    } catch(e) {
+      console.log(e);
+    }
+  });
+</script>
+
+<style>
+  #content-holger80-verify-blocktivity-numbers-for-hive-and-blurt {
+    padding: 0 3rem;
+    color: #444444;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.8;
+    text-shadow: 0 1px 0 #ffffff;
+    padding: 0.5rem;
+  }
+  #content-holger80-verify-blocktivity-numbers-for-hive-and-blurt code {
+    background: white;
+  }
+  #content-holger80-verify-blocktivity-numbers-for-hive-and-blurt a {
+    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
+  }
+  #content-holger80-verify-blocktivity-numbers-for-hive-and-blurt a:hover {
+    border-bottom: 0;
+  }
+  #content-holger80-verify-blocktivity-numbers-for-hive-and-blurt h1 {
+    font-size: 2.2em;
+  }
+  #content-holger80-verify-blocktivity-numbers-for-hive-and-blurt h2, h3, h4, h5 {
+    margin-bottom: 0;
+  }
+  #content-holger80-verify-blocktivity-numbers-for-hive-and-blurt header small {
+    color: #999;
+    font-size: 50%;
+  }
+  #content-holger80-verify-blocktivity-numbers-for-hive-and-blurt img {
+    max-width: 100%;
+  }
+</style>
+
+<hr />
+
+<p>
+  See: <a href="https://hive.blog/hive-139531/@holger80/verify-blocktivity-numbers-for-hive-and-blurt">Verify blocktivity numbers for Hive and Blurt</a>
+  by
+  <a href="https://hive.blog/@holger80">@holger80</a>
+</p>
+
 
   </div><a class="u-url" href="/howto/beem/python/blocktivity/2020/12/20/verify-blocktivity-numbers-for-hive-and-blurt.html" hidden></a>
 </article>

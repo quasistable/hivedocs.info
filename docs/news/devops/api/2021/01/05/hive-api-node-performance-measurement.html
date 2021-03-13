@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>Hive API node performance measurement | Hive Chain Documentation</title>
+<meta name="generator" content="Jekyll v4.1.1" />
+<meta property="og:title" content="Hive API node performance measurement" />
+<meta name="author" content="blocktrades" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="This post describes the Jussi Traffic Analyzer software that we created to measure the performance of our production Hivemind node and some of the results we’ve recently obtained from it." />
+<meta property="og:description" content="This post describes the Jussi Traffic Analyzer software that we created to measure the performance of our production Hivemind node and some of the results we’ve recently obtained from it." />
+<link rel="canonical" href="https://hive.blog/hive-139531/@blocktrades/hive-api-node-performance-measurement" />
+<meta property="og:url" content="https://hive.blog/hive-139531/@blocktrades/hive-api-node-performance-measurement" />
+<meta property="og:site_name" content="Hive Chain Documentation" />
+<meta property="og:image" content="https://images.hive.blog/DQmQqDTqhD8tasfS5KaXX4qQU15CWSt5W4nBoNPgB3JUx6D/image.png" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2021-01-05T17:42:33-08:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="https://images.hive.blog/DQmQqDTqhD8tasfS5KaXX4qQU15CWSt5W4nBoNPgB3JUx6D/image.png" />
+<meta property="twitter:title" content="Hive API node performance measurement" />
+<script type="application/ld+json">
+{"description":"This post describes the Jussi Traffic Analyzer software that we created to measure the performance of our production Hivemind node and some of the results we’ve recently obtained from it.","image":"https://images.hive.blog/DQmQqDTqhD8tasfS5KaXX4qQU15CWSt5W4nBoNPgB3JUx6D/image.png","headline":"Hive API node performance measurement","dateModified":"2021-01-05T17:42:33-08:00","datePublished":"2021-01-05T17:42:33-08:00","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://hive.blog/hive-139531/@blocktrades/hive-api-node-performance-measurement"},"url":"https://hive.blog/hive-139531/@blocktrades/hive-api-node-performance-measurement","author":{"@type":"Person","name":"blocktrades"},"@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://hivedocs.info/feed.xml" title="Hive Chain Documentation" /><script>
+if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNotTrack === "yes" || navigator.msDoNotTrack === "1")) {
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-161692811-1', 'auto');
+  ga('send', 'pageview');
+}
+</script>
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/turbolinks/5.2.0/turbolinks.js" integrity="sha256-iM4Yzi/zLj/IshPWMC1IluRxTtRjMqjPGd97TZ9yYpU=" crossorigin="anonymous"></script>
+  <script src='https://unpkg.com/steem-content-renderer'></script>
+  <script>
+    (function () {
+      if (Turbolinks.supported) {
+        Turbolinks.setProgressBarDelay(500);
+      }
+    })();
+  </script>
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Cousine|Inconsolata" rel="stylesheet">
+  <link rel="shortcut icon" type="image/png" href="/assets/images/favicon.png">
+</head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Hive Chain Documentation</a>
+
+      <nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/news/">News</a><a class="page-link" href="/howto/">How To</a><a class="page-link" href="/links/">Useful Links</a><!-- HTML elements for search -->
+          <input type="text" id="search-input" placeholder="Search" />
+          
+          <ul id="results-container"></ul>
+
+          <script src="/assets/javascript/search.js"></script>
+          <script>
+            var sjs = SimpleJekyllSearch({
+              searchInput: document.getElementById('search-input'),
+              resultsContainer: document.getElementById('results-container'),
+              json: '/search.json'
+            })
+          </script>
+          <!-- <form style="float: right;" class="form-inline" method="get" action="http://www.google.com/search">
+            <input type="hidden" name="sitesearch" value="hivedocs.info" />
+            <input type="text" name="q" maxlength="255" placeholder="Search" />
+          </form> -->
+          
+          
+          <a href="#" onclick="try { $('#topics-container').slideToggle(); } catch { document.getElementById('topics-container').style.display = 'block'; }; return false;">Topics &#187;</a>
+          
+          <ul id="topics-container" style="display: none;"><li><a class="page-link" href="/core-development/"><nobr>Core Development</nobr></a></li><li><a class="page-link" href="/dapps/"><nobr>Dapps</nobr></a></li><li><a class="page-link" href="/docker/"><nobr>Docker</nobr></a></li><li><a class="page-link" href="/hardfork/"><nobr>Hardfork</nobr></a></li><li><a class="page-link" href="/hivemind/"><nobr>Hivemind</nobr></a></li><li><a class="page-link" href="/javascript/"><nobr>Javascript</nobr></a></li><li><a class="page-link" href="/multisig/"><nobr>Multisig</nobr></a></li><li><a class="page-link" href="/python/"><nobr>Python</nobr></a></li><li><a class="page-link" href="/ruby/"><nobr>Ruby</nobr></a></li><li><a class="page-link" href="/testnet/"><nobr>Testnet</nobr></a></li><li><a class="page-link" href="/tools/"><nobr>Tools</nobr></a></li></ul>
+        </div>
+      </nav>
+  </div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Hive API node performance measurement</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2021-01-05T17:42:33-08:00" itemprop="datePublished">Jan 5, 2021
+      </time>• <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">
+          <a href="https://hive.blog/@blocktrades">blocktrades</a>
+        </span></span></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <div id="content-blocktrades-hive-api-node-performance-measurement">This post describes the [Jussi Traffic Analyzer](https://gitlab.syncad.com/hive/jussi-traffic-analyzer)  software that we created to measure the performance of our production Hivemind node and some of the results we’ve recently obtained from it.
+
+The intended audience is mostly Hive apps developers and API node operators, but if you're like me and sometimes you like to read something very techy even though it's hard to understand (I used to do this with Scientific America articles when I was kid), feel free to enjoy as well.
+
+It’s important to note that this tool analyzes Jussi log files, so it’s not really useful for measuring third party API nodes (unless the node operator is willing to provide you with their logs, which is probably doubtful).
+
+The tool generates two reports over any specified period of the log files:
+
+* `analysis.csv` which contains statistics on the different API calls
+* `slow_calls.txt` which contains actual calls that exceeded a specified time to complete (for example &gt; 2 seconds)
+
+# Overview of API call statistics file (analysis.csv)
+
+The data in slow_calls.txt is self-explantory, so I’ll spend most of the time in this post discussing the format of the analysis.csv file. 
+
+Each row in the analysis file represents a specific type of API call (the first columns, there's actually 3 columns, although I only show one in the screenshot to keep it readable, identify what this API call is). 
+
+One thing to keep in mind, however, is that a single type of API call can result in quite different SQL queries inside hivemind, depending on the parameters passed to the call, so there’s still a lot of data being “averaged” together in this report. For example, the time required to make a call to get_ranked_posts can vary a lot depending on whether you’re asking for ranked by trending, hot, etc. Nonetheless, I think this data can still be quite useful for obtaining some intuitive feeling for the times required by various calls. 
+
+Here’s a screenshot of a sample analysis file (I’ll make the raw data file available in the mattermost Hive dev channel later today). This data was taken today from our production node over a two hour period, running with our latest hivemind optimizations. Note that this screenshot doesn’t show all the columns in the raw data file, I’ve selected ones of particular interest to discuss in this post.
+
+* Hits is the number of jussi cache hits. Cache hits are generally low, because parameter values vary a lot and also because many of the responses to API calls change quickly (votes, in particular, can change the results for many API calls). So this data is mostly useful for optimization work when you're able to change the API itself.
+* *AvgTime* is the average time of all the API calls of this type.
+* *SlowestTime* is the slowest time recorded during the analysis period for this API call.
+* *Total#Calls* is the total number of calls to this API node of this type of API call during the analysis period.
+* *Slow(1s+)* is the total number of calls to this API node of this type of API call during the analysis period that take 1 second or more to complete.
+* *AvgSlow* is the average time of such slow calls (so it will always be greater than 1s).
+* *Slow%* is the percentage of the total calls of this type that take more than 1 second to complete.
+* *TotalTime* is the total time consumed by adding up all the calls made for this API call. For example, if there were 100 calls and each one takes .1 s, then this value would be 10s.
+
+
+![image.png](https://images.hive.blog/DQmQqDTqhD8tasfS5KaXX4qQU15CWSt5W4nBoNPgB3JUx6D/image.png)
+
+# Some notes about using these metrics
+
+I use *TotalTime* to measure the overall loading impact of a particular type of API call on the server, although there are some exceptions to this rule, such as broadcast_transaction_synchronous, which has to wait for a block to complete so that the transaction can be included in a block, but doesn’t consume CPU while waiting. This is the single most important metric for determining how well a node can scale to handle more traffic.
+
+I use *SlowestTime*, *Slow*, *Slow%* to investigate potential quality of service problems that might affect user experience (users don’t generally like to wait long to see results).
+
+*AverageFast* is useful for knowing what you can normally expect from an API call when you exclude “outlier” calls that access “unusual” data (for example it would exclude timing data from a post with many thousands of comments). So this is a very useful metric for apps developers.
+
+# Notes on the sample data
+
+After generating the two reports with the Jussi Traffic Analyzer, I import the analysis file into LibreOffice Calc or a similar spreadsheet program to analyze the data, then use AutoFilter so that I can sort on different columns. 
+
+In the screenshot shown, I’ve sorted by *AvgFast* time, and we can see that the API call that takes the longest time on average in all cases and in the “fast” case is `get_block_range`. This API call is served by hived, not hivemind, and you can see that it takes considerably more time than the average API call (the average “fast” time is .753s and the average time overall is 2.4s!). 
+
+One of the objectives of our work with the hived plugin that will feed data directly to a Postgres database is to speedup this time by having hivemind, rather than hived, serve this API call in the future (and not coincidentally, reduce the loading caused by hivemind sync time, because currently hivemind makes this call to obtain sync data from hived).
+
+# Using pghero to supplement analysis of node performance
+
+In addition to the Jussi Traffic Analyzer, I also use pghero, an open-source web-based profiling tool for Postgres databases,  to directly analyze the impact of various queries within hivemind’s database.
+
+Pghero is particularly useful in isolating problematic SQL queries when a given hivemind API call is implemented using multiple SQL queries (either serially or by branching between possible query choices, which is quite common).
+
+However, pghero can only report on times spent in database processing, so the Jussi Traffic Analysis  tool is still very important for measuring overall performance, including the time spent by the python-based `hivemind server` process that communicates with hivemind’s database. And it can also measure the performance of hived-based API calls, which pghero cannot, since the processing of hived API calls  doesn’t involve Postgres queries.</div>
+<script crossorigin="anonymous" integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=" src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+
+<script src="https://unpkg.com/steem-content-renderer"></script>
+
+<script>
+  $(document).ready(function() {
+    try {
+      const renderer = new SteemContentRenderer.DefaultRenderer({
+        baseUrl: "https://hive.blog/",
+        breaks: true,
+        skipSanitization: false,
+        allowInsecureScriptTags: false,
+        addNofollowToLinks: true,
+        doNotShowImages: false,
+        ipfsPrefix: "",
+        assetsWidth: 640,
+        assetsHeight: 480,
+        imageProxyFn: (url) => url,
+        usertagUrlFn: (account) => "/@blocktrades",
+        hashtagUrlFn: (hashtag) => "/hive-api-node-performance-measurement",
+        isLinkSafeFn: (url) => true,
+      });
+      
+      const inputElem = $('#content-blocktrades-hive-api-node-performance-measurement').html();
+      const outputElem = $('#content-blocktrades-hive-api-node-performance-measurement');
+      const output = renderer.render(inputElem);
+      
+      outputElem.html(output);
+    } catch(e) {
+      console.log(e);
+    }
+  });
+</script>
+
+<style>
+  #content-blocktrades-hive-api-node-performance-measurement {
+    padding: 0 3rem;
+    color: #444444;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.8;
+    text-shadow: 0 1px 0 #ffffff;
+    padding: 0.5rem;
+  }
+  #content-blocktrades-hive-api-node-performance-measurement code {
+    background: white;
+  }
+  #content-blocktrades-hive-api-node-performance-measurement a {
+    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
+  }
+  #content-blocktrades-hive-api-node-performance-measurement a:hover {
+    border-bottom: 0;
+  }
+  #content-blocktrades-hive-api-node-performance-measurement h1 {
+    font-size: 2.2em;
+  }
+  #content-blocktrades-hive-api-node-performance-measurement h2, h3, h4, h5 {
+    margin-bottom: 0;
+  }
+  #content-blocktrades-hive-api-node-performance-measurement header small {
+    color: #999;
+    font-size: 50%;
+  }
+  #content-blocktrades-hive-api-node-performance-measurement img {
+    max-width: 100%;
+  }
+</style>
+
+<hr />
+
+<p>
+  See: <a href="https://hive.blog/hive-139531/@blocktrades/hive-api-node-performance-measurement">Hive API node performance measurement</a>
+  by
+  <a href="https://hive.blog/@blocktrades">@blocktrades</a>
+</p>
+
+
+  </div><a class="u-url" href="/news/devops/api/2021/01/05/hive-api-node-performance-measurement.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading"><a rel="author" href="/">Hive Chain Documentation</a></h2>
+    
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">site curated by: @inertia</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>Your resource for various levels of Hive Documentation.</p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+</body>
+
+</html>
