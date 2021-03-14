@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>Making a Decentralized Game on Hive - Tic Tac Toe - Part 1 | Hive Chain Documentation</title>
+<meta name="generator" content="Jekyll v4.1.1" />
+<meta property="og:title" content="Making a Decentralized Game on Hive - Tic Tac Toe - Part 1" />
+<meta name="author" content="mahdiyari" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="We will develop a decentralized game by the end of this series. The goal is to make learning development on Hive blockchain easier by using a simple game as the training project." />
+<meta property="og:description" content="We will develop a decentralized game by the end of this series. The goal is to make learning development on Hive blockchain easier by using a simple game as the training project." />
+<link rel="canonical" href="https://hive.blog/hive-139531/@mahdiyari/making-a-decentralized-game-on-hive-tic-tac-toe-part-1" />
+<meta property="og:url" content="https://hive.blog/hive-139531/@mahdiyari/making-a-decentralized-game-on-hive-tic-tac-toe-part-1" />
+<meta property="og:site_name" content="Hive Chain Documentation" />
+<meta property="og:image" content="https://images.hive.blog/DQmYne66xZ9RBsrUwF9N76S5XnjJGyzEgBPbbsZRnNAHUzx/tic-tac-toe.png" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2021-03-13T12:04:06-08:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="https://images.hive.blog/DQmYne66xZ9RBsrUwF9N76S5XnjJGyzEgBPbbsZRnNAHUzx/tic-tac-toe.png" />
+<meta property="twitter:title" content="Making a Decentralized Game on Hive - Tic Tac Toe - Part 1" />
+<script type="application/ld+json">
+{"description":"We will develop a decentralized game by the end of this series. The goal is to make learning development on Hive blockchain easier by using a simple game as the training project.","datePublished":"2021-03-13T12:04:06-08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://hive.blog/hive-139531/@mahdiyari/making-a-decentralized-game-on-hive-tic-tac-toe-part-1"},"@type":"BlogPosting","url":"https://hive.blog/hive-139531/@mahdiyari/making-a-decentralized-game-on-hive-tic-tac-toe-part-1","image":"https://images.hive.blog/DQmYne66xZ9RBsrUwF9N76S5XnjJGyzEgBPbbsZRnNAHUzx/tic-tac-toe.png","author":{"@type":"Person","name":"mahdiyari"},"headline":"Making a Decentralized Game on Hive - Tic Tac Toe - Part 1","dateModified":"2021-03-13T12:04:06-08:00","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://hivedocs.info/feed.xml" title="Hive Chain Documentation" /><script>
+if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNotTrack === "yes" || navigator.msDoNotTrack === "1")) {
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-161692811-1', 'auto');
+  ga('send', 'pageview');
+}
+</script>
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/turbolinks/5.2.0/turbolinks.js" integrity="sha256-iM4Yzi/zLj/IshPWMC1IluRxTtRjMqjPGd97TZ9yYpU=" crossorigin="anonymous"></script>
+  <script src='https://unpkg.com/steem-content-renderer'></script>
+  <script>
+    (function () {
+      if (Turbolinks.supported) {
+        Turbolinks.setProgressBarDelay(500);
+      }
+    })();
+  </script>
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Cousine|Inconsolata" rel="stylesheet">
+  <link rel="shortcut icon" type="image/png" href="/assets/images/favicon.png">
+</head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Hive Chain Documentation</a>
+
+      <nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/news/">News</a><a class="page-link" href="/howto/">How To</a><a class="page-link" href="/links/">Useful Links</a><!-- HTML elements for search -->
+          <input type="text" id="search-input" placeholder="Search" />
+          
+          <ul id="results-container"></ul>
+
+          <script src="/assets/javascript/search.js"></script>
+          <script>
+            var sjs = SimpleJekyllSearch({
+              searchInput: document.getElementById('search-input'),
+              resultsContainer: document.getElementById('results-container'),
+              json: '/search.json'
+            })
+          </script>
+          <!-- <form style="float: right;" class="form-inline" method="get" action="http://www.google.com/search">
+            <input type="hidden" name="sitesearch" value="hivedocs.info" />
+            <input type="text" name="q" maxlength="255" placeholder="Search" />
+          </form> -->
+          
+          
+          <a href="#" onclick="try { $('#topics-container').slideToggle(); } catch { document.getElementById('topics-container').style.display = 'block'; }; return false;">Topics &#187;</a>
+          
+          <ul id="topics-container" style="display: none;"><li><a class="page-link" href="/core-development/"><nobr>Core Development</nobr></a></li><li><a class="page-link" href="/dapps/"><nobr>Dapps</nobr></a></li><li><a class="page-link" href="/docker/"><nobr>Docker</nobr></a></li><li><a class="page-link" href="/hardfork/"><nobr>Hardfork</nobr></a></li><li><a class="page-link" href="/hivemind/"><nobr>Hivemind</nobr></a></li><li><a class="page-link" href="/javascript/"><nobr>Javascript</nobr></a></li><li><a class="page-link" href="/multisig/"><nobr>Multisig</nobr></a></li><li><a class="page-link" href="/python/"><nobr>Python</nobr></a></li><li><a class="page-link" href="/ruby/"><nobr>Ruby</nobr></a></li><li><a class="page-link" href="/testnet/"><nobr>Testnet</nobr></a></li><li><a class="page-link" href="/tools/"><nobr>Tools</nobr></a></li></ul>
+        </div>
+      </nav>
+  </div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Making a Decentralized Game on Hive - Tic Tac Toe - Part 1</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2021-03-13T12:04:06-08:00" itemprop="datePublished">Mar 13, 2021
+      </time>• <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">
+          <a href="https://hive.blog/@mahdiyari">mahdiyari</a>
+        </span></span></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <div id="content-mahdiyari-making-a-decentralized-game-on-hive-tic-tac-toe-part-1"><center>![tic-tac-toe.png](https://images.hive.blog/DQmYne66xZ9RBsrUwF9N76S5XnjJGyzEgBPbbsZRnNAHUzx/tic-tac-toe.png)</center>
+We will develop a decentralized game by the end of this series. The goal is to make learning development on Hive blockchain easier by using a simple game as the training project.
+
+## Target audience
+Of course, it's not for everybody. I will try to keep it simple as possible for people with less experience with development. But some degree of understanding code is necessary to learn something. I will explain anything related to the Hive blockchain that we use.
+
+You can find the links for the final result of this part at the end of this post.
+
+## Why "tic-tac-toe"?
+It's a simple multiplayer game and it covers most of the topics needed for a bigger decentralized game or application. Most people are already familiar with this game and it's easier to code and its rules are simple.
+
+## Development
+We will use Javascript for the game because it's simple enough so most people understand easily. The front-end will be pure HTML. Also, I think MySQL is a good fit as the database. The game needs a database to keep track of games and players. MySQL docker can be set up in a few minutes.
+
+The decentralized game will work without depending on one central software. The game will talk only to the blockchain and there is no central database. It doesn't need a private entity to hold players' data. Anyone can run an interface for the game.
+
+(We have a database but it's not a central private database and it can be synced through blockchain. Anyone should be able to run an instance of the game and the game will get the same exact database by reading data from the blockchain. It's like hivemind, the database that holds and serves most of the data on Hive.)
+
+## Tools I'm using
+- Visual Studio Code
+- Nodejs
+- MySQL docker setup
+- Chrome browser
+
+I didn't plan anything beforehand so I don't know how many posts it will take. I will list the things that come to my mind right now.
+
+## Planning
+- Front-end
+  - Make a login method on the client-side
+  - Display available games list
+  - Create/Request to join a game
+  - Design the game visuals and controls
+- Back-end
+  - Stream the blockchain and listen for custom_json operations
+  - Define custom_json operations
+  - Game mechanics
+  - API to communicate with front-end
+  - Replay/resync method to update the database on newly deployed game clients
+
+The above list may or may not change. Anyway, let's start with the front-end and add a login method.
+***
+## Part 1: Front-end - Login method
+I think the HTML part doesn't need any explanation. Page title, description, bootstrap navbar, and a login link. Added `css/style.css` and `js/app.js` too. When the user clicks on the "login" link, a modal with the login form will appear. It will then fire `login()` function on submit.
+
+`index.html`:
+```
+&lt;!DOCTYPE html&gt;
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="A decentralized game on hive blockchain" />
+  <title>Tic-Tac-Toe on Hive blockchain</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous" />
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js" integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/hive-tx/dist/hive-tx.min.js"></script>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+
+<body>
+  <nav class="navbar navbar-expand navbar-dark bg-dark">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">Tic-Tac-Toe</a>
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#login-modal" id="login-button">
+            Login
+          </a>
+        <li class="nav-item dropdown" id="logout-menu" style="display: none;">
+          <a class="nav-link dropdown-toggle" href="#" id="username-button" role="button" data-bs-toggle="dropdown" aria-expanded="false"></a>
+          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="username-button">
+            <li><a class="dropdown-item" href="#" onclick="logout()">Logout</a></li>
+          </ul>
+        </li>
+        </li>
+      </ul>
+    </div>
+  </nav>
+  <div class="modal fade" id="login-modal" tabindex="-1" aria-labelledby="login-modal-title" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="login-modal-title">Login</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form onsubmit="login(); return false">
+            <div class="mb-3">
+              <label for="username" class="form-label">Username:</label>
+              <div class="input-group mb-3">
+                <span class="input-group-text">@</span>
+                <input type="text" class="form-control" placeholder="username" aria-label="username" id="username" required="" />
+              </div>
+              <div class="form-text">Your Hive username. Lowercase.</div>
+            </div>
+            <div class="mb-3">
+              <label for="posting-key" class="form-label">Posting key:</label>
+              <input type="password" class="form-control" id="posting-key" placeholder="Private posting key" required="" />
+              <div class="form-text">Your key will never leave your browser.</div>
+            </div>
+            <p id="login-error"></p>
+            <button type="submit" class="btn btn-primary" id="login-form-btn">Login</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="js/app.js"></script>
+</body>
+
+</html>
+``` 
+***
+### Styles
+`css/style.css`:
+```
+.navbar-nav {
+  margin-right: 30px;
+}
+.navbar-brand {
+  margin-left: 30px;
+}
+#login-error {
+  color: #e31337;
+  display: none;
+}
+```
+***
+## Javascript
+`js/app.js`
+An object for user data.
+```
+const userData = {
+  authorized: false,
+  username: '',
+  key: ''
+}
+```
+Let's define the login function. It will verify the posting key and username then keep the data in localStorage. We use the [hive-tx](https://github.com/mahdiyari/hive-tx-js) library for converting keys.
+
+```
+const login = async () =&gt; {
+  const loginModal = bootstrap.Modal.getInstance(
+    document.getElementById('login-modal')
+  )
+  const loginButtonForm = document.getElementById('login-form-btn')
+  loginButtonForm.setAttribute('disabled', 'true')
+  const loginError = document.getElementById('login-error')
+  loginError.style.display = 'none'
+  const username = document.getElementById('username').value
+  const key = document.getElementById('posting-key').value
+  const validate = await validatePostingKey(username, key)
+  if (validate.result === 0) {
+    loginError.innerHTML = validate.error
+    loginError.style.display = 'block'
+    loginButtonForm.removeAttribute('disabled')
+    return
+  }
+  userData.authorized = true
+  userData.username = username
+  userData.key = key
+  window.localStorage.setItem('userData', JSON.stringify(userData))
+  loginButtonForm.removeAttribute('disabled')
+  updateState()
+  loginModal.hide()
+}
+```
+As you can see there are 2 more functions used inside the login function. The first one is `validatePostingKey()`. It's a post for itself.
+Let me explain it. First, we make a call to the Hive RPC API node by using hive-tx library and get the account information including the public posting key. Then we convert the user's private posting key to the public key and compare the two values. If the two values are equal then the user-provided private key is correct and we can authorize the user. There are also other ways to achieve the same result like signing a message with the private key and validating that signature with the public key.
+
+```
+const validatePostingKey = async (username, privateKey) =&gt; {
+  const accounts = await hiveTx.call('condenser_api.get_accounts', [[username]])
+  if (
+    !accounts ||
+    !accounts.result ||
+    !Array.isArray(accounts.result) ||
+    accounts.result.length &lt; 1
+  ) {
+    return { result: 0, error: 'Network error or wrong username' }
+  }
+  try {
+    const account = accounts.result[0]
+    const publicWif = account.posting.key_auths[0][0] || ''
+    const generatedPublicKey = hiveTx.PrivateKey.from(privateKey)
+      .createPublic()
+      .toString()
+
+    if (generatedPublicKey !== publicWif) {
+      return { result: 0, error: 'Wrong key' }
+    }
+    return { result: 1 }
+  } catch (e) {
+    return { result: 0, error: 'Wrong key or network error' }
+  }
+}
+```
+updateState() is used to update the HTML interface after user login and logout.
+```
+const updateState = () =&gt; {
+  const loginButton = document.getElementById('login-button')
+  const logoutMenu = document.getElementById('logout-menu')
+  const usernameButton = document.getElementById('username-button')
+  if (userData.authorized &amp;&amp; userData.username &amp;&amp; userData.key) {
+    loginButton.style.display = 'none'
+    logoutMenu.style.display = 'block'
+    usernameButton.innerHTML = '@' + userData.username
+  } else {
+    loginButton.style.display = 'block'
+    logoutMenu.style.display = 'none'
+  }
+}
+```
+And it's time for the logout function.
+```
+const logout = () =&gt; {
+  userData.authorized = false
+  userData.username = ''
+  userData.key = ''
+  window.localStorage.removeItem('userData')
+  updateState()
+}
+```
+We need to check localStorage on the page reload and log in the user if the key is in the localStorage.
+```
+const checkState = () =&gt; {
+  const localData = window.localStorage.getItem('userData')
+  let data
+  if (!localData) {
+    return
+  }
+  try {
+    data = JSON.parse(localData)
+  } catch (e) {
+    data = userData
+  }
+  if (data.authorized &amp;&amp; data.username &amp;&amp; data.key) {
+    userData.authorized = true
+    userData.username = data.username
+    userData.key = data.key
+    updateState()
+  }
+}
+checkState()
+```
+Now we have a working login and logout system. It keeps user data in localStorage which stays on the browser only.
+What we have done so far is just the front-end. Our game needs a back-end server to provide the game data. We will stream blocks on the back-end and process game data then serve it through API. Our front-end will broadcast transactions which will update the back-end. In other words, the back-end is only serving the data it receives through the blockchain. We could stream the blocks on the client-side (browser) but it's not efficient and it is just unnecessary bandwidth waste.
+***
+You can see the running app on https://tic-tac-toe.mahdiyari.info/
+The final code is on GitLab https://gitlab.com/mahdiyari/decentralized-game-on-hive
+
+In the next part, we will set up our back-end server and database. Now that I think about it, MySQL might be an overkill for this project. Anyway, let's stick to it for now.
+
+I want to get feedback from the community before continuing further. Help me with your comments and let me know what you think about this project. How can I improve it? Should I explain everything from the basics? I greatly appreciate your feedback.
+
+Thanks for reading.</div>
+<script crossorigin="anonymous" integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=" src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+
+<script src="https://unpkg.com/steem-content-renderer"></script>
+
+<script>
+  $(document).ready(function() {
+    try {
+      const renderer = new SteemContentRenderer.DefaultRenderer({
+        baseUrl: "https://hive.blog/",
+        breaks: true,
+        skipSanitization: false,
+        allowInsecureScriptTags: false,
+        addNofollowToLinks: true,
+        doNotShowImages: false,
+        ipfsPrefix: "",
+        assetsWidth: 640,
+        assetsHeight: 480,
+        imageProxyFn: (url) => url,
+        usertagUrlFn: (account) => "/@mahdiyari",
+        hashtagUrlFn: (hashtag) => "/making-a-decentralized-game-on-hive-tic-tac-toe-part-1",
+        isLinkSafeFn: (url) => true,
+      });
+      
+      const inputElem = $('#content-mahdiyari-making-a-decentralized-game-on-hive-tic-tac-toe-part-1').html();
+      const outputElem = $('#content-mahdiyari-making-a-decentralized-game-on-hive-tic-tac-toe-part-1');
+      const output = renderer.render(inputElem);
+      
+      outputElem.html(output);
+    } catch(e) {
+      console.log(e);
+    }
+  });
+</script>
+
+<style>
+  #content-mahdiyari-making-a-decentralized-game-on-hive-tic-tac-toe-part-1 {
+    padding: 0 3rem;
+    color: #444444;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.8;
+    text-shadow: 0 1px 0 #ffffff;
+    padding: 0.5rem;
+  }
+  #content-mahdiyari-making-a-decentralized-game-on-hive-tic-tac-toe-part-1 code {
+    background: white;
+  }
+  #content-mahdiyari-making-a-decentralized-game-on-hive-tic-tac-toe-part-1 a {
+    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
+  }
+  #content-mahdiyari-making-a-decentralized-game-on-hive-tic-tac-toe-part-1 a:hover {
+    border-bottom: 0;
+  }
+  #content-mahdiyari-making-a-decentralized-game-on-hive-tic-tac-toe-part-1 h1 {
+    font-size: 2.2em;
+  }
+  #content-mahdiyari-making-a-decentralized-game-on-hive-tic-tac-toe-part-1 h2, h3, h4, h5 {
+    margin-bottom: 0;
+  }
+  #content-mahdiyari-making-a-decentralized-game-on-hive-tic-tac-toe-part-1 header small {
+    color: #999;
+    font-size: 50%;
+  }
+  #content-mahdiyari-making-a-decentralized-game-on-hive-tic-tac-toe-part-1 img {
+    max-width: 100%;
+  }
+</style>
+
+<hr />
+
+<p>
+  See: <a href="https://hive.blog/hive-139531/@mahdiyari/making-a-decentralized-game-on-hive-tic-tac-toe-part-1">Making a Decentralized Game on Hive - Tic Tac Toe - Part 1</a>
+  by
+  <a href="https://hive.blog/@mahdiyari">@mahdiyari</a>
+</p>
+
+
+  </div><a class="u-url" href="/howto/nodejs/2021/03/13/making-a-decentralized-game-on-hive-tic-tac-toe-part-1.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading"><a rel="author" href="/">Hive Chain Documentation</a></h2>
+    
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">site curated by: @inertia</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>Your resource for various levels of Hive Documentation.</p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+</body>
+
+</html>

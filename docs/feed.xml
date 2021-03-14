@@ -1,4 +1,337 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="https://hivedocs.info/feed.xml" rel="self" type="application/atom+xml" /><link href="https://hivedocs.info/" rel="alternate" type="text/html" /><updated>2021-03-13T11:55:05-08:00</updated><id>https://hivedocs.info/feed.xml</id><title type="html">Hive Chain Documentation</title><subtitle>Your resource for various levels of Hive Documentation.</subtitle><author><name>site curated by: @inertia</name></author><entry><title type="html">7th update of 2021 on BlockTrades work on Hive software</title><link href="https://hivedocs.info/news/core/development/2021/03/11/7th-update-of-2021-on-blocktrades-work-on-hive-software.html" rel="alternate" type="text/html" title="7th update of 2021 on BlockTrades work on Hive software" /><published>2021-03-11T12:25:42-08:00</published><updated>2021-03-11T12:25:42-08:00</updated><id>https://hivedocs.info/news/core/development/2021/03/11/7th-update-of-2021-on-blocktrades-work-on-hive-software</id><content type="html" xml:base="https://hivedocs.info/news/core/development/2021/03/11/7th-update-of-2021-on-blocktrades-work-on-hive-software.html">&lt;div id=&quot;content-blocktrades-7th-update-of-2021-on-blocktrades-work-on-hive-software&quot;&gt;Below is a brief list of Hive-related programming issues worked on by BlockTrades team during last week or so:
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="https://hivedocs.info/feed.xml" rel="self" type="application/atom+xml" /><link href="https://hivedocs.info/" rel="alternate" type="text/html" /><updated>2021-03-13T20:08:40-08:00</updated><id>https://hivedocs.info/feed.xml</id><title type="html">Hive Chain Documentation</title><subtitle>Your resource for various levels of Hive Documentation.</subtitle><author><name>site curated by: @inertia</name></author><entry><title type="html">Making a Decentralized Game on Hive - Tic Tac Toe - Part 1</title><link href="https://hivedocs.info/howto/nodejs/2021/03/13/making-a-decentralized-game-on-hive-tic-tac-toe-part-1.html" rel="alternate" type="text/html" title="Making a Decentralized Game on Hive - Tic Tac Toe - Part 1" /><published>2021-03-13T12:04:06-08:00</published><updated>2021-03-13T12:04:06-08:00</updated><id>https://hivedocs.info/howto/nodejs/2021/03/13/making-a-decentralized-game-on-hive-tic-tac-toe-part-1</id><content type="html" xml:base="https://hivedocs.info/howto/nodejs/2021/03/13/making-a-decentralized-game-on-hive-tic-tac-toe-part-1.html">&lt;div id=&quot;content-mahdiyari-making-a-decentralized-game-on-hive-tic-tac-toe-part-1&quot;&gt;&lt;center&gt;![tic-tac-toe.png](https://images.hive.blog/DQmYne66xZ9RBsrUwF9N76S5XnjJGyzEgBPbbsZRnNAHUzx/tic-tac-toe.png)&lt;/center&gt;
+We will develop a decentralized game by the end of this series. The goal is to make learning development on Hive blockchain easier by using a simple game as the training project.
+
+## Target audience
+Of course, it's not for everybody. I will try to keep it simple as possible for people with less experience with development. But some degree of understanding code is necessary to learn something. I will explain anything related to the Hive blockchain that we use.
+
+You can find the links for the final result of this part at the end of this post.
+
+## Why &quot;tic-tac-toe&quot;?
+It's a simple multiplayer game and it covers most of the topics needed for a bigger decentralized game or application. Most people are already familiar with this game and it's easier to code and its rules are simple.
+
+## Development
+We will use Javascript for the game because it's simple enough so most people understand easily. The front-end will be pure HTML. Also, I think MySQL is a good fit as the database. The game needs a database to keep track of games and players. MySQL docker can be set up in a few minutes.
+
+The decentralized game will work without depending on one central software. The game will talk only to the blockchain and there is no central database. It doesn't need a private entity to hold players' data. Anyone can run an interface for the game.
+
+(We have a database but it's not a central private database and it can be synced through blockchain. Anyone should be able to run an instance of the game and the game will get the same exact database by reading data from the blockchain. It's like hivemind, the database that holds and serves most of the data on Hive.)
+
+## Tools I'm using
+- Visual Studio Code
+- Nodejs
+- MySQL docker setup
+- Chrome browser
+
+I didn't plan anything beforehand so I don't know how many posts it will take. I will list the things that come to my mind right now.
+
+## Planning
+- Front-end
+  - Make a login method on the client-side
+  - Display available games list
+  - Create/Request to join a game
+  - Design the game visuals and controls
+- Back-end
+  - Stream the blockchain and listen for custom_json operations
+  - Define custom_json operations
+  - Game mechanics
+  - API to communicate with front-end
+  - Replay/resync method to update the database on newly deployed game clients
+
+The above list may or may not change. Anyway, let's start with the front-end and add a login method.
+***
+## Part 1: Front-end - Login method
+I think the HTML part doesn't need any explanation. Page title, description, bootstrap navbar, and a login link. Added `css/style.css` and `js/app.js` too. When the user clicks on the &quot;login&quot; link, a modal with the login form will appear. It will then fire `login()` function on submit.
+
+`index.html`:
+```
+&amp;lt;!DOCTYPE html&amp;gt;
+&lt;html lang=&quot;en&quot;&gt;
+
+&lt;head&gt;
+  &lt;meta charset=&quot;UTF-8&quot; /&gt;
+  &lt;meta http-equiv=&quot;X-UA-Compatible&quot; content=&quot;IE=edge&quot; /&gt;
+  &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot; /&gt;
+  &lt;meta name=&quot;description&quot; content=&quot;A decentralized game on hive blockchain&quot; /&gt;
+  &lt;title&gt;Tic-Tac-Toe on Hive blockchain&lt;/title&gt;
+  &lt;link href=&quot;https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css&quot; rel=&quot;stylesheet&quot; integrity=&quot;sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl&quot; crossorigin=&quot;anonymous&quot; /&gt;
+  &lt;script src=&quot;https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js&quot; integrity=&quot;sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0&quot; crossorigin=&quot;anonymous&quot;&gt;&lt;/script&gt;
+  &lt;script src=&quot;https://cdn.jsdelivr.net/npm/hive-tx/dist/hive-tx.min.js&quot;&gt;&lt;/script&gt;
+  &lt;link rel=&quot;stylesheet&quot; href=&quot;css/style.css&quot; /&gt;
+&lt;/head&gt;
+
+&lt;body&gt;
+  &lt;nav class=&quot;navbar navbar-expand navbar-dark bg-dark&quot;&gt;
+    &lt;div class=&quot;container-fluid&quot;&gt;
+      &lt;a class=&quot;navbar-brand&quot; href=&quot;#&quot;&gt;Tic-Tac-Toe&lt;/a&gt;
+      &lt;ul class=&quot;navbar-nav&quot;&gt;
+        &lt;li class=&quot;nav-item&quot;&gt;
+          &lt;a class=&quot;nav-link&quot; href=&quot;#&quot; data-bs-toggle=&quot;modal&quot; data-bs-target=&quot;#login-modal&quot; id=&quot;login-button&quot;&gt;
+            Login
+          &lt;/a&gt;
+        &lt;li class=&quot;nav-item dropdown&quot; id=&quot;logout-menu&quot; style=&quot;display: none;&quot;&gt;
+          &lt;a class=&quot;nav-link dropdown-toggle&quot; href=&quot;#&quot; id=&quot;username-button&quot; role=&quot;button&quot; data-bs-toggle=&quot;dropdown&quot; aria-expanded=&quot;false&quot;&gt;&lt;/a&gt;
+          &lt;ul class=&quot;dropdown-menu dropdown-menu-end&quot; aria-labelledby=&quot;username-button&quot;&gt;
+            &lt;li&gt;&lt;a class=&quot;dropdown-item&quot; href=&quot;#&quot; onclick=&quot;logout()&quot;&gt;Logout&lt;/a&gt;&lt;/li&gt;
+          &lt;/ul&gt;
+        &lt;/li&gt;
+        &lt;/li&gt;
+      &lt;/ul&gt;
+    &lt;/div&gt;
+  &lt;/nav&gt;
+  &lt;div class=&quot;modal fade&quot; id=&quot;login-modal&quot; tabindex=&quot;-1&quot; aria-labelledby=&quot;login-modal-title&quot; aria-hidden=&quot;true&quot;&gt;
+    &lt;div class=&quot;modal-dialog&quot;&gt;
+      &lt;div class=&quot;modal-content&quot;&gt;
+        &lt;div class=&quot;modal-header&quot;&gt;
+          &lt;h5 class=&quot;modal-title&quot; id=&quot;login-modal-title&quot;&gt;Login&lt;/h5&gt;
+          &lt;button type=&quot;button&quot; class=&quot;btn-close&quot; data-bs-dismiss=&quot;modal&quot; aria-label=&quot;Close&quot;&gt;&lt;/button&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;modal-body&quot;&gt;
+          &lt;form onsubmit=&quot;login(); return false&quot;&gt;
+            &lt;div class=&quot;mb-3&quot;&gt;
+              &lt;label for=&quot;username&quot; class=&quot;form-label&quot;&gt;Username:&lt;/label&gt;
+              &lt;div class=&quot;input-group mb-3&quot;&gt;
+                &lt;span class=&quot;input-group-text&quot;&gt;@&lt;/span&gt;
+                &lt;input type=&quot;text&quot; class=&quot;form-control&quot; placeholder=&quot;username&quot; aria-label=&quot;username&quot; id=&quot;username&quot; required=&quot;&quot; /&gt;
+              &lt;/div&gt;
+              &lt;div class=&quot;form-text&quot;&gt;Your Hive username. Lowercase.&lt;/div&gt;
+            &lt;/div&gt;
+            &lt;div class=&quot;mb-3&quot;&gt;
+              &lt;label for=&quot;posting-key&quot; class=&quot;form-label&quot;&gt;Posting key:&lt;/label&gt;
+              &lt;input type=&quot;password&quot; class=&quot;form-control&quot; id=&quot;posting-key&quot; placeholder=&quot;Private posting key&quot; required=&quot;&quot; /&gt;
+              &lt;div class=&quot;form-text&quot;&gt;Your key will never leave your browser.&lt;/div&gt;
+            &lt;/div&gt;
+            &lt;p id=&quot;login-error&quot;&gt;&lt;/p&gt;
+            &lt;button type=&quot;submit&quot; class=&quot;btn btn-primary&quot; id=&quot;login-form-btn&quot;&gt;Login&lt;/button&gt;
+            &lt;button type=&quot;button&quot; class=&quot;btn btn-secondary&quot; data-bs-dismiss=&quot;modal&quot;&gt;Close&lt;/button&gt;
+          &lt;/form&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+  &lt;script src=&quot;js/app.js&quot;&gt;&lt;/script&gt;
+&lt;/body&gt;
+
+&lt;/html&gt;
+``` 
+***
+### Styles
+`css/style.css`:
+```
+.navbar-nav {
+  margin-right: 30px;
+}
+.navbar-brand {
+  margin-left: 30px;
+}
+#login-error {
+  color: #e31337;
+  display: none;
+}
+```
+***
+## Javascript
+`js/app.js`
+An object for user data.
+```
+const userData = {
+  authorized: false,
+  username: '',
+  key: ''
+}
+```
+Let's define the login function. It will verify the posting key and username then keep the data in localStorage. We use the [hive-tx](https://github.com/mahdiyari/hive-tx-js) library for converting keys.
+
+```
+const login = async () =&amp;gt; {
+  const loginModal = bootstrap.Modal.getInstance(
+    document.getElementById('login-modal')
+  )
+  const loginButtonForm = document.getElementById('login-form-btn')
+  loginButtonForm.setAttribute('disabled', 'true')
+  const loginError = document.getElementById('login-error')
+  loginError.style.display = 'none'
+  const username = document.getElementById('username').value
+  const key = document.getElementById('posting-key').value
+  const validate = await validatePostingKey(username, key)
+  if (validate.result === 0) {
+    loginError.innerHTML = validate.error
+    loginError.style.display = 'block'
+    loginButtonForm.removeAttribute('disabled')
+    return
+  }
+  userData.authorized = true
+  userData.username = username
+  userData.key = key
+  window.localStorage.setItem('userData', JSON.stringify(userData))
+  loginButtonForm.removeAttribute('disabled')
+  updateState()
+  loginModal.hide()
+}
+```
+As you can see there are 2 more functions used inside the login function. The first one is `validatePostingKey()`. It's a post for itself.
+Let me explain it. First, we make a call to the Hive RPC API node by using hive-tx library and get the account information including the public posting key. Then we convert the user's private posting key to the public key and compare the two values. If the two values are equal then the user-provided private key is correct and we can authorize the user. There are also other ways to achieve the same result like signing a message with the private key and validating that signature with the public key.
+
+```
+const validatePostingKey = async (username, privateKey) =&amp;gt; {
+  const accounts = await hiveTx.call('condenser_api.get_accounts', [[username]])
+  if (
+    !accounts ||
+    !accounts.result ||
+    !Array.isArray(accounts.result) ||
+    accounts.result.length &amp;lt; 1
+  ) {
+    return { result: 0, error: 'Network error or wrong username' }
+  }
+  try {
+    const account = accounts.result[0]
+    const publicWif = account.posting.key_auths[0][0] || ''
+    const generatedPublicKey = hiveTx.PrivateKey.from(privateKey)
+      .createPublic()
+      .toString()
+
+    if (generatedPublicKey !== publicWif) {
+      return { result: 0, error: 'Wrong key' }
+    }
+    return { result: 1 }
+  } catch (e) {
+    return { result: 0, error: 'Wrong key or network error' }
+  }
+}
+```
+updateState() is used to update the HTML interface after user login and logout.
+```
+const updateState = () =&amp;gt; {
+  const loginButton = document.getElementById('login-button')
+  const logoutMenu = document.getElementById('logout-menu')
+  const usernameButton = document.getElementById('username-button')
+  if (userData.authorized &amp;amp;&amp;amp; userData.username &amp;amp;&amp;amp; userData.key) {
+    loginButton.style.display = 'none'
+    logoutMenu.style.display = 'block'
+    usernameButton.innerHTML = '@' + userData.username
+  } else {
+    loginButton.style.display = 'block'
+    logoutMenu.style.display = 'none'
+  }
+}
+```
+And it's time for the logout function.
+```
+const logout = () =&amp;gt; {
+  userData.authorized = false
+  userData.username = ''
+  userData.key = ''
+  window.localStorage.removeItem('userData')
+  updateState()
+}
+```
+We need to check localStorage on the page reload and log in the user if the key is in the localStorage.
+```
+const checkState = () =&amp;gt; {
+  const localData = window.localStorage.getItem('userData')
+  let data
+  if (!localData) {
+    return
+  }
+  try {
+    data = JSON.parse(localData)
+  } catch (e) {
+    data = userData
+  }
+  if (data.authorized &amp;amp;&amp;amp; data.username &amp;amp;&amp;amp; data.key) {
+    userData.authorized = true
+    userData.username = data.username
+    userData.key = data.key
+    updateState()
+  }
+}
+checkState()
+```
+Now we have a working login and logout system. It keeps user data in localStorage which stays on the browser only.
+What we have done so far is just the front-end. Our game needs a back-end server to provide the game data. We will stream blocks on the back-end and process game data then serve it through API. Our front-end will broadcast transactions which will update the back-end. In other words, the back-end is only serving the data it receives through the blockchain. We could stream the blocks on the client-side (browser) but it's not efficient and it is just unnecessary bandwidth waste.
+***
+You can see the running app on https://tic-tac-toe.mahdiyari.info/
+The final code is on GitLab https://gitlab.com/mahdiyari/decentralized-game-on-hive
+
+In the next part, we will set up our back-end server and database. Now that I think about it, MySQL might be an overkill for this project. Anyway, let's stick to it for now.
+
+I want to get feedback from the community before continuing further. Help me with your comments and let me know what you think about this project. How can I improve it? Should I explain everything from the basics? I greatly appreciate your feedback.
+
+Thanks for reading.&lt;/div&gt;
+&lt;script crossorigin=&quot;anonymous&quot; integrity=&quot;sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=&quot; src=&quot;https://code.jquery.com/jquery-3.5.1.slim.min.js&quot;&gt;&lt;/script&gt;
+
+&lt;script src=&quot;https://unpkg.com/steem-content-renderer&quot;&gt;&lt;/script&gt;
+
+&lt;script&gt;
+  $(document).ready(function() {
+    try {
+      const renderer = new SteemContentRenderer.DefaultRenderer({
+        baseUrl: &quot;https://hive.blog/&quot;,
+        breaks: true,
+        skipSanitization: false,
+        allowInsecureScriptTags: false,
+        addNofollowToLinks: true,
+        doNotShowImages: false,
+        ipfsPrefix: &quot;&quot;,
+        assetsWidth: 640,
+        assetsHeight: 480,
+        imageProxyFn: (url) =&gt; url,
+        usertagUrlFn: (account) =&gt; &quot;/@mahdiyari&quot;,
+        hashtagUrlFn: (hashtag) =&gt; &quot;/making-a-decentralized-game-on-hive-tic-tac-toe-part-1&quot;,
+        isLinkSafeFn: (url) =&gt; true,
+      });
+      
+      const inputElem = $('#content-mahdiyari-making-a-decentralized-game-on-hive-tic-tac-toe-part-1').html();
+      const outputElem = $('#content-mahdiyari-making-a-decentralized-game-on-hive-tic-tac-toe-part-1');
+      const output = renderer.render(inputElem);
+      
+      outputElem.html(output);
+    } catch(e) {
+      console.log(e);
+    }
+  });
+&lt;/script&gt;
+
+&lt;style&gt;
+  #content-mahdiyari-making-a-decentralized-game-on-hive-tic-tac-toe-part-1 {
+    padding: 0 3rem;
+    color: #444444;
+    font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.8;
+    text-shadow: 0 1px 0 #ffffff;
+    padding: 0.5rem;
+  }
+  #content-mahdiyari-making-a-decentralized-game-on-hive-tic-tac-toe-part-1 code {
+    background: white;
+  }
+  #content-mahdiyari-making-a-decentralized-game-on-hive-tic-tac-toe-part-1 a {
+    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
+  }
+  #content-mahdiyari-making-a-decentralized-game-on-hive-tic-tac-toe-part-1 a:hover {
+    border-bottom: 0;
+  }
+  #content-mahdiyari-making-a-decentralized-game-on-hive-tic-tac-toe-part-1 h1 {
+    font-size: 2.2em;
+  }
+  #content-mahdiyari-making-a-decentralized-game-on-hive-tic-tac-toe-part-1 h2, h3, h4, h5 {
+    margin-bottom: 0;
+  }
+  #content-mahdiyari-making-a-decentralized-game-on-hive-tic-tac-toe-part-1 header small {
+    color: #999;
+    font-size: 50%;
+  }
+  #content-mahdiyari-making-a-decentralized-game-on-hive-tic-tac-toe-part-1 img {
+    max-width: 100%;
+  }
+&lt;/style&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;
+  See: &lt;a href=&quot;https://hive.blog/hive-139531/@mahdiyari/making-a-decentralized-game-on-hive-tic-tac-toe-part-1&quot;&gt;Making a Decentralized Game on Hive - Tic Tac Toe - Part 1&lt;/a&gt;
+  by
+  &lt;a href=&quot;https://hive.blog/@mahdiyari&quot;&gt;@mahdiyari&lt;/a&gt;
+&lt;/p&gt;</content><author><name>mahdiyari</name></author><category term="howto" /><category term="nodejs" /><summary type="html">![tic-tac-toe.png](https://images.hive.blog/DQmYne66xZ9RBsrUwF9N76S5XnjJGyzEgBPbbsZRnNAHUzx/tic-tac-toe.png) We will develop a decentralized game by the end of this series. The goal is to make learning development on Hive blockchain easier by using a simple game as the training project. ## Target audience Of course, it's not for everybody. I will try to keep it simple as possible for people with less experience with development. But some degree of understanding code is necessary to learn something. I will explain anything related to the Hive blockchain that we use. You can find the links for the final result of this part at the end of this post. ## Why &quot;tic-tac-toe&quot;? It's a simple multiplayer game and it covers most of the topics needed for a bigger decentralized game or application. Most people are already familiar with this game and it's easier to code and its rules are simple. ## Development We will use Javascript for the game because it's simple enough so most people understand easily. The front-end will be pure HTML. Also, I think MySQL is a good fit as the database. The game needs a database to keep track of games and players. MySQL docker can be set up in a few minutes. The decentralized game will work without depending on one central software. The game will talk only to the blockchain and there is no central database. It doesn't need a private entity to hold players' data. Anyone can run an interface for the game. (We have a database but it's not a central private database and it can be synced through blockchain. Anyone should be able to run an instance of the game and the game will get the same exact database by reading data from the blockchain. It's like hivemind, the database that holds and serves most of the data on Hive.) ## Tools I'm using - Visual Studio Code - Nodejs - MySQL docker setup - Chrome browser I didn't plan anything beforehand so I don't know how many posts it will take. I will list the things that come to my mind right now. ## Planning - Front-end - Make a login method on the client-side - Display available games list - Create/Request to join a game - Design the game visuals and controls - Back-end - Stream the blockchain and listen for custom_json operations - Define custom_json operations - Game mechanics - API to communicate with front-end - Replay/resync method to update the database on newly deployed game clients The above list may or may not change. Anyway, let's start with the front-end and add a login method. *** ## Part 1: Front-end - Login method I think the HTML part doesn't need any explanation. Page title, description, bootstrap navbar, and a login link. Added `css/style.css` and `js/app.js` too. When the user clicks on the &quot;login&quot; link, a modal with the login form will appear. It will then fire `login()` function on submit. `index.html`: ``` &amp;lt;!DOCTYPE html&amp;gt; Tic-Tac-Toe on Hive blockchain Tic-Tac-Toe Login Logout Login Username: @ Your Hive username. Lowercase. Posting key: Your key will never leave your browser. Login Close ``` *** ### Styles `css/style.css`: ``` .navbar-nav { margin-right: 30px; } .navbar-brand { margin-left: 30px; } #login-error { color: #e31337; display: none; } ``` *** ## Javascript `js/app.js` An object for user data. ``` const userData = { authorized: false, username: '', key: '' } ``` Let's define the login function. It will verify the posting key and username then keep the data in localStorage. We use the [hive-tx](https://github.com/mahdiyari/hive-tx-js) library for converting keys. ``` const login = async () =&amp;gt; { const loginModal = bootstrap.Modal.getInstance( document.getElementById('login-modal') ) const loginButtonForm = document.getElementById('login-form-btn') loginButtonForm.setAttribute('disabled', 'true') const loginError = document.getElementById('login-error') loginError.style.display = 'none' const username = document.getElementById('username').value const key = document.getElementById('posting-key').value const validate = await validatePostingKey(username, key) if (validate.result === 0) { loginError.innerHTML = validate.error loginError.style.display = 'block' loginButtonForm.removeAttribute('disabled') return } userData.authorized = true userData.username = username userData.key = key window.localStorage.setItem('userData', JSON.stringify(userData)) loginButtonForm.removeAttribute('disabled') updateState() loginModal.hide() } ``` As you can see there are 2 more functions used inside the login function. The first one is `validatePostingKey()`. It's a post for itself. Let me explain it. First, we make a call to the Hive RPC API node by using hive-tx library and get the account information including the public posting key. Then we convert the user's private posting key to the public key and compare the two values. If the two values are equal then the user-provided private key is correct and we can authorize the user. There are also other ways to achieve the same result like signing a message with the private key and validating that signature with the public key. ``` const validatePostingKey = async (username, privateKey) =&amp;gt; { const accounts = await hiveTx.call('condenser_api.get_accounts', [[username]]) if ( !accounts || !accounts.result || !Array.isArray(accounts.result) || accounts.result.length &amp;lt; 1 ) { return { result: 0, error: 'Network error or wrong username' } } try { const account = accounts.result[0] const publicWif = account.posting.key_auths[0][0] || '' const generatedPublicKey = hiveTx.PrivateKey.from(privateKey) .createPublic() .toString() if (generatedPublicKey !== publicWif) { return { result: 0, error: 'Wrong key' } } return { result: 1 } } catch (e) { return { result: 0, error: 'Wrong key or network error' } } } ``` updateState() is used to update the HTML interface after user login and logout. ``` const updateState = () =&amp;gt; { const loginButton = document.getElementById('login-button') const logoutMenu = document.getElementById('logout-menu') const usernameButton = document.getElementById('username-button') if (userData.authorized &amp;amp;&amp;amp; userData.username &amp;amp;&amp;amp; userData.key) { loginButton.style.display = 'none' logoutMenu.style.display = 'block' usernameButton.innerHTML = '@' + userData.username } else { loginButton.style.display = 'block' logoutMenu.style.display = 'none' } } ``` And it's time for the logout function. ``` const logout = () =&amp;gt; { userData.authorized = false userData.username = '' userData.key = '' window.localStorage.removeItem('userData') updateState() } ``` We need to check localStorage on the page reload and log in the user if the key is in the localStorage. ``` const checkState = () =&amp;gt; { const localData = window.localStorage.getItem('userData') let data if (!localData) { return } try { data = JSON.parse(localData) } catch (e) { data = userData } if (data.authorized &amp;amp;&amp;amp; data.username &amp;amp;&amp;amp; data.key) { userData.authorized = true userData.username = data.username userData.key = data.key updateState() } } checkState() ``` Now we have a working login and logout system. It keeps user data in localStorage which stays on the browser only. What we have done so far is just the front-end. Our game needs a back-end server to provide the game data. We will stream blocks on the back-end and process game data then serve it through API. Our front-end will broadcast transactions which will update the back-end. In other words, the back-end is only serving the data it receives through the blockchain. We could stream the blocks on the client-side (browser) but it's not efficient and it is just unnecessary bandwidth waste. *** You can see the running app on https://tic-tac-toe.mahdiyari.info/ The final code is on GitLab https://gitlab.com/mahdiyari/decentralized-game-on-hive In the next part, we will set up our back-end server and database. Now that I think about it, MySQL might be an overkill for this project. Anyway, let's stick to it for now. I want to get feedback from the community before continuing further. Help me with your comments and let me know what you think about this project. How can I improve it? Should I explain everything from the basics? I greatly appreciate your feedback. Thanks for reading. See: Making a Decentralized Game on Hive - Tic Tac Toe - Part 1 by @mahdiyari</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://images.hive.blog/DQmYne66xZ9RBsrUwF9N76S5XnjJGyzEgBPbbsZRnNAHUzx/tic-tac-toe.png" /><media:content medium="image" url="https://images.hive.blog/DQmYne66xZ9RBsrUwF9N76S5XnjJGyzEgBPbbsZRnNAHUzx/tic-tac-toe.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">7th update of 2021 on BlockTrades work on Hive software</title><link href="https://hivedocs.info/news/core/development/2021/03/11/7th-update-of-2021-on-blocktrades-work-on-hive-software.html" rel="alternate" type="text/html" title="7th update of 2021 on BlockTrades work on Hive software" /><published>2021-03-11T12:25:42-08:00</published><updated>2021-03-11T12:25:42-08:00</updated><id>https://hivedocs.info/news/core/development/2021/03/11/7th-update-of-2021-on-blocktrades-work-on-hive-software</id><content type="html" xml:base="https://hivedocs.info/news/core/development/2021/03/11/7th-update-of-2021-on-blocktrades-work-on-hive-software.html">&lt;div id=&quot;content-blocktrades-7th-update-of-2021-on-blocktrades-work-on-hive-software&quot;&gt;Below is a brief list of Hive-related programming issues worked on by BlockTrades team during last week or so:
 
 # Hived work (blockchain node software)
 
@@ -1151,138 +1484,4 @@ On Hive, Witnesses are playing the important role of providing a performant and 
   See: &lt;a href=&quot;https://hive.blog/hive-139531/@quochuy/my-new-contributions-to-the-hive-condenser-and-wallet-apps&quot;&gt;My new contributions to the Hive Condenser and Wallet apps.&lt;/a&gt;
   by
   &lt;a href=&quot;https://hive.blog/@quochuy&quot;&gt;@quochuy&lt;/a&gt;
-&lt;/p&gt;</content><author><name>quochuy</name></author><category term="news" /><category term="nodejs" /><category term="condenser" /><summary type="html">## Context I have been involved (voluntarily) with the development of the Condenser &amp;amp; Wallet apps (that are powering https://hive.blog and https://wallet.hive.blog) for quite a while now. There are other great frontends to Hive out there such as https://peakd.com and https://ecency.com but I have always been more or less faithful with the Condenser. This is a regular report on my new contributions. Some of the new work below might still be in test and not yet deployed. ## Delegation revoke bug fix @ausbitbank raised this wallet issue where clicking on the `revoke` button on the delegation list on the wallet won't do anything. There was a typo in the code which was causing the feature fail to retrieve username of the delegator. Merge request: https://gitlab.syncad.com/hive/wallet/-/merge_requests/95 ## Redirect some URLS from Condenser to Wallet. Another @ausbitbank request. The Condenser used to handle the `transfers` and `witnesses` pages, however, for security reasons, the Condenser was split into a second app, the Wallet. This new request was to redirect the URLs from the condenser to the wallet instead of erroring. Merge request: https://gitlab.syncad.com/hive/condenser/-/merge_requests/207 ## Alternate post author: @themarkymark requested porting feature implemented on @peakd to the Condenser. Once this feature is deployed, you will be able to create a new post and specify the username of an author if it is different from the account you are using to submit the post. ![Alternate post author](https://images.hive.blog/DQmf2gw6tVD8jL4h5n5NhMj4VeEUBfm5Md3MpUTEDioE7nj/Screen%20Shot%202021-02-17%20at%202.38.47%20pm.jpg) Merge request: https://gitlab.syncad.com/hive/condenser/-/merge_requests/208 --- **Vote for my witness** [![Support @quochuy Witness.jpg](https://images.hive.blog/DQmecYTZemY8SwU6rrg7awhpNRBsehUp7ivk9RGyZsUUpVw/quochuy-hive-witness.jpg)](https://hivesigner.com/sign/account-witness-vote?witness=quochuy&amp;amp;approve=1) On Hive, Witnesses are playing the important role of providing a performant and safe network for all of us. You have the power to choose 30 trusty witnesses to package transactions and sign the blocks that will go in the Hive blockchain. [Vote for me via HiveSigner](https://hivesigner.com/sign/account-witness-vote?witness=quochuy&amp;amp;approve=1) to support my work for the community. See: My new contributions to the Hive Condenser and Wallet apps. by @quochuy</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://images.hive.blog/DQmf2gw6tVD8jL4h5n5NhMj4VeEUBfm5Md3MpUTEDioE7nj/Screen%20Shot%202021-02-17%20at%202.38.47%20pm.jpg" /><media:content medium="image" url="https://images.hive.blog/DQmf2gw6tVD8jL4h5n5NhMj4VeEUBfm5Md3MpUTEDioE7nj/Screen%20Shot%202021-02-17%20at%202.38.47%20pm.jpg" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">4th update of 2021 on our Hive software work</title><link href="https://hivedocs.info/news/core/development/2021/02/06/4th-update-of-2021-on-our-hive-software-work.html" rel="alternate" type="text/html" title="4th update of 2021 on our Hive software work" /><published>2021-02-06T14:45:39-08:00</published><updated>2021-02-06T14:45:39-08:00</updated><id>https://hivedocs.info/news/core/development/2021/02/06/4th-update-of-2021-on-our-hive-software-work</id><content type="html" xml:base="https://hivedocs.info/news/core/development/2021/02/06/4th-update-of-2021-on-our-hive-software-work.html">&lt;div id=&quot;content-blocktrades-4th-update-of-2021-on-our-hive-software-work&quot;&gt;# Hived work (blockchain node software)
-
-Lately our blockchain work has focused on the hived plugin that injects operations, transactions, and block data into a PostgresSQL database (for use by modular hivemind apps such as wallets, games, etc). We’ve made solid progress since my last report on the this plugin.
-
-We’ve never had a really great name for this plugin, but we may end up calling it the “SQL account history plugin” since it can, as a side benefit, effectively replace the rocksdb-based account history plugin. This is because this week we added API calls to the hived plugin so it that can serve up this postgres-stored data the same way that the rocksdb account history plugin does. In other words, a hived node operator can make use of this plugin even if they don’t operate a hivemind node, they just need to spin up a postgres database (although I still expect performance advantages for adding hivemind to the mix, as I discuss further below).
-
-Performance was one of the primary drivers for this work, and performance results so far have been as good as I anticipated (but surprising to some of our more pessimistic devs). All API performance tests done so far show it to be equal or better in performance to the existing rocksdb plugin. 
-
-The new plugin should really shine when it comes to operation history requests where filtering based on operation type is desirable (previously performance issues forced us to place limits on what a single API call of this type could request, and I hope we’ll be able to eliminate this limitation).
-
-I believe we will be able to achieve even better results when we implement the account history API on hivemind itself rather than via hived, where I think serialization issues still slow down the results quite a lot on large data requests. For larger result queries, I think we could easily reduce response latency by 4x or more and these new calls should also be less costly in terms of CPU loading.
-
-Both the hived-based API and the hivemind-based API will employ the same SQL queries, so we’ll be able to re-use much of this week’s work on the hived plugin when implementing account history API support inside hivemind.
-
-## Some benchmark results from the SQL account history plugin
-
-A full reindex of hived for 49 million blocks while running the SQL account history plugin took around 11 hours (as opposed to 15 hours for the rocksdb-based account history plugin). While this performance is already fairly impressive, there’s a reasonable chance we can still improve on this, with the absolute lower bound being the time required by a consensus-only replay (6 hours). 
-
-It’s also important to note that while we’re comparing the re-index time to that of the old account history plugin as an example benchmark, one of primary goal for this work is to speedup the reindex time of hivemind (and other modular hivemind variants), which currently takes too long (~4 days).
-
-So an even more interesting benchmark will be to compare how much faster hivemind reindexing will be using the SQL account history plugin. In the past week we completed the work in hivemind to swap away from pulling the hived data directly from hived to using the data pushed by the hived plugin, so we’ll be performing a full hivemind re-index on a Postgres database that has been pre-populated with 49M blocks worth of operations. It’s hard to predict exactly how long this new re-index process will take yet, but I’m very optimistic about the results.
-
-The SQL account history plugin currently generates 967GB of storage when we run the 49M block reindex. This is more than 2x the size of rocksdb-based storage, but the data is being stored in more desirable forms that can be served up faster during API calls, and with much less CPU loading. This is also a bit of an unfair comparison, as we’re including data here on the SQL account history plugin side that previously had to also be stored in the hivemind database. 
-
-We still don’t know what the final size of hivemind will be with this new data introduced, other than the upper cap at the current block height should be around 1.5TB. I expect to have an initial answer on this in the coming week after we complete the full hivemind sync test.
-
-## Other work on hived
-
-* We have one dev assigned to working on incorporating the accounting virtual ops code from the BlockTrades version of the hived code. That work will likely be completed in the coming week.
-
-* We performed a preliminary review of the current state of the SMT code. Unfortunately, we found that the code was far from in a complete state (not only is much of it untested, there’s a fair amount that hasn’t yet been implemented). We have a partially complete report on the state of the C++ code for SMTs, if there’s any developers that would like to review it.
-
-* We’re creating a new wallet_bridge_api_plugin to reduce future headaches associated with upgrading the command-line interface wallet when we make updates to hived’s API.
-
-# Hivemind (2nd layer microservice for social media apps)
-
-As mentioned above, we completed the work for enabling a hivemind sync operation to be performed from injected operations data instead of pulling the data from hived. We’re currently running functional and performance tests on this code.
-
-We made another improvement to the speed of the hivemind initial sync process (we added threading support to the post initial sync process, just before “live sync” begins), but we had to fight our way through a few errors that this created along the way.
-
-We also fixed a constraint problem that could occur when upgrading an existing hivemind database to use the latest code.
-
-We’re currently fixing bugs related to the follow code and decentralized lists. A big part of this work is creating a comprehensive set of tests for both the old and new features. I expect we will complete that work this week. Next we will merge the current development branch of hivemind into the master branch and make an official Hivemind release for deployment by Hive API node operators (these are the node operators that serve up Hive data to the frontend applications).
-
-
-There’s a known issue with testing system when it comes to measuring the performance of individual API calls, but we expect to fix it in the upcoming week. We’ve temporarily disabled the performance measurement code in the meantime to avoid false positive test fails.
-
-# Condenser and wallet (https://hive.blog)
-
-We completed testing and deployed new versions of hive.blog and the web wallet with the latest changes from our team and @quochuy.
-
-I’ve also assigned a couple of UI devs to compare/contrast the current state and functionality of the code bases for ecency and hive.blog. 
-
-# Near-term work plans and work in progress
-
-On the hived side, we will continue to work on the governance changes discussed in our six-month roadmap post. With regards to the modular hivemind plugin, we have a few ideas we plan to try to further speedup the re-indexing process.
-
-On hivemind side, we’ll continue work on tests and documentation and preparing the next release of hivemind after the follows code passes all the new tests.
-
-We’ll also be continuing our work on modular hivemind. So far, I’m very pleased with our progress on this project and I’m optimistic about its use as a foundation for a smart-contract platform and other 2nd layer apps.&lt;/div&gt;
-&lt;script crossorigin=&quot;anonymous&quot; integrity=&quot;sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=&quot; src=&quot;https://code.jquery.com/jquery-3.5.1.slim.min.js&quot;&gt;&lt;/script&gt;
-
-&lt;script src=&quot;https://unpkg.com/steem-content-renderer&quot;&gt;&lt;/script&gt;
-
-&lt;script&gt;
-  $(document).ready(function() {
-    try {
-      const renderer = new SteemContentRenderer.DefaultRenderer({
-        baseUrl: &quot;https://hive.blog/&quot;,
-        breaks: true,
-        skipSanitization: false,
-        allowInsecureScriptTags: false,
-        addNofollowToLinks: true,
-        doNotShowImages: false,
-        ipfsPrefix: &quot;&quot;,
-        assetsWidth: 640,
-        assetsHeight: 480,
-        imageProxyFn: (url) =&gt; url,
-        usertagUrlFn: (account) =&gt; &quot;/@blocktrades&quot;,
-        hashtagUrlFn: (hashtag) =&gt; &quot;/4th-update-of-2021-on-our-hive-software-work&quot;,
-        isLinkSafeFn: (url) =&gt; true,
-      });
-      
-      const inputElem = $('#content-blocktrades-4th-update-of-2021-on-our-hive-software-work').html();
-      const outputElem = $('#content-blocktrades-4th-update-of-2021-on-our-hive-software-work');
-      const output = renderer.render(inputElem);
-      
-      outputElem.html(output);
-    } catch(e) {
-      console.log(e);
-    }
-  });
-&lt;/script&gt;
-
-&lt;style&gt;
-  #content-blocktrades-4th-update-of-2021-on-our-hive-software-work {
-    padding: 0 3rem;
-    color: #444444;
-    font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif;
-    font-size: 16px;
-    line-height: 1.8;
-    text-shadow: 0 1px 0 #ffffff;
-    padding: 0.5rem;
-  }
-  #content-blocktrades-4th-update-of-2021-on-our-hive-software-work code {
-    background: white;
-  }
-  #content-blocktrades-4th-update-of-2021-on-our-hive-software-work a {
-    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
-  }
-  #content-blocktrades-4th-update-of-2021-on-our-hive-software-work a:hover {
-    border-bottom: 0;
-  }
-  #content-blocktrades-4th-update-of-2021-on-our-hive-software-work h1 {
-    font-size: 2.2em;
-  }
-  #content-blocktrades-4th-update-of-2021-on-our-hive-software-work h2, h3, h4, h5 {
-    margin-bottom: 0;
-  }
-  #content-blocktrades-4th-update-of-2021-on-our-hive-software-work header small {
-    color: #999;
-    font-size: 50%;
-  }
-  #content-blocktrades-4th-update-of-2021-on-our-hive-software-work img {
-    max-width: 100%;
-  }
-&lt;/style&gt;
-
-&lt;hr /&gt;
-
-&lt;p&gt;
-  See: &lt;a href=&quot;https://hive.blog/hive/@blocktrades/4th-update-of-2021-on-our-hive-software-work&quot;&gt;4th update of 2021 on our Hive software work&lt;/a&gt;
-  by
-  &lt;a href=&quot;https://hive.blog/@blocktrades&quot;&gt;@blocktrades&lt;/a&gt;
-&lt;/p&gt;</content><author><name>blocktrades</name></author><category term="news" /><category term="core" /><category term="development" /><summary type="html"># Hived work (blockchain node software) Lately our blockchain work has focused on the hived plugin that injects operations, transactions, and block data into a PostgresSQL database (for use by modular hivemind apps such as wallets, games, etc). We’ve made solid progress since my last report on the this plugin. We’ve never had a really great name for this plugin, but we may end up calling it the “SQL account history plugin” since it can, as a side benefit, effectively replace the rocksdb-based account history plugin. This is because this week we added API calls to the hived plugin so it that can serve up this postgres-stored data the same way that the rocksdb account history plugin does. In other words, a hived node operator can make use of this plugin even if they don’t operate a hivemind node, they just need to spin up a postgres database (although I still expect performance advantages for adding hivemind to the mix, as I discuss further below). Performance was one of the primary drivers for this work, and performance results so far have been as good as I anticipated (but surprising to some of our more pessimistic devs). All API performance tests done so far show it to be equal or better in performance to the existing rocksdb plugin. The new plugin should really shine when it comes to operation history requests where filtering based on operation type is desirable (previously performance issues forced us to place limits on what a single API call of this type could request, and I hope we’ll be able to eliminate this limitation). I believe we will be able to achieve even better results when we implement the account history API on hivemind itself rather than via hived, where I think serialization issues still slow down the results quite a lot on large data requests. For larger result queries, I think we could easily reduce response latency by 4x or more and these new calls should also be less costly in terms of CPU loading. Both the hived-based API and the hivemind-based API will employ the same SQL queries, so we’ll be able to re-use much of this week’s work on the hived plugin when implementing account history API support inside hivemind. ## Some benchmark results from the SQL account history plugin A full reindex of hived for 49 million blocks while running the SQL account history plugin took around 11 hours (as opposed to 15 hours for the rocksdb-based account history plugin). While this performance is already fairly impressive, there’s a reasonable chance we can still improve on this, with the absolute lower bound being the time required by a consensus-only replay (6 hours). It’s also important to note that while we’re comparing the re-index time to that of the old account history plugin as an example benchmark, one of primary goal for this work is to speedup the reindex time of hivemind (and other modular hivemind variants), which currently takes too long (~4 days). So an even more interesting benchmark will be to compare how much faster hivemind reindexing will be using the SQL account history plugin. In the past week we completed the work in hivemind to swap away from pulling the hived data directly from hived to using the data pushed by the hived plugin, so we’ll be performing a full hivemind re-index on a Postgres database that has been pre-populated with 49M blocks worth of operations. It’s hard to predict exactly how long this new re-index process will take yet, but I’m very optimistic about the results. The SQL account history plugin currently generates 967GB of storage when we run the 49M block reindex. This is more than 2x the size of rocksdb-based storage, but the data is being stored in more desirable forms that can be served up faster during API calls, and with much less CPU loading. This is also a bit of an unfair comparison, as we’re including data here on the SQL account history plugin side that previously had to also be stored in the hivemind database. We still don’t know what the final size of hivemind will be with this new data introduced, other than the upper cap at the current block height should be around 1.5TB. I expect to have an initial answer on this in the coming week after we complete the full hivemind sync test. ## Other work on hived * We have one dev assigned to working on incorporating the accounting virtual ops code from the BlockTrades version of the hived code. That work will likely be completed in the coming week. * We performed a preliminary review of the current state of the SMT code. Unfortunately, we found that the code was far from in a complete state (not only is much of it untested, there’s a fair amount that hasn’t yet been implemented). We have a partially complete report on the state of the C++ code for SMTs, if there’s any developers that would like to review it. * We’re creating a new wallet_bridge_api_plugin to reduce future headaches associated with upgrading the command-line interface wallet when we make updates to hived’s API. # Hivemind (2nd layer microservice for social media apps) As mentioned above, we completed the work for enabling a hivemind sync operation to be performed from injected operations data instead of pulling the data from hived. We’re currently running functional and performance tests on this code. We made another improvement to the speed of the hivemind initial sync process (we added threading support to the post initial sync process, just before “live sync” begins), but we had to fight our way through a few errors that this created along the way. We also fixed a constraint problem that could occur when upgrading an existing hivemind database to use the latest code. We’re currently fixing bugs related to the follow code and decentralized lists. A big part of this work is creating a comprehensive set of tests for both the old and new features. I expect we will complete that work this week. Next we will merge the current development branch of hivemind into the master branch and make an official Hivemind release for deployment by Hive API node operators (these are the node operators that serve up Hive data to the frontend applications). There’s a known issue with testing system when it comes to measuring the performance of individual API calls, but we expect to fix it in the upcoming week. We’ve temporarily disabled the performance measurement code in the meantime to avoid false positive test fails. # Condenser and wallet (https://hive.blog) We completed testing and deployed new versions of hive.blog and the web wallet with the latest changes from our team and @quochuy. I’ve also assigned a couple of UI devs to compare/contrast the current state and functionality of the code bases for ecency and hive.blog. # Near-term work plans and work in progress On the hived side, we will continue to work on the governance changes discussed in our six-month roadmap post. With regards to the modular hivemind plugin, we have a few ideas we plan to try to further speedup the re-indexing process. On hivemind side, we’ll continue work on tests and documentation and preparing the next release of hivemind after the follows code passes all the new tests. We’ll also be continuing our work on modular hivemind. So far, I’m very pleased with our progress on this project and I’m optimistic about its use as a foundation for a smart-contract platform and other 2nd layer apps. See: 4th update of 2021 on our Hive software work by @blocktrades</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://hivedocs.info/assets/images/favicon.png" /><media:content medium="image" url="https://hivedocs.info/assets/images/favicon.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>
+&lt;/p&gt;</content><author><name>quochuy</name></author><category term="news" /><category term="nodejs" /><category term="condenser" /><summary type="html">## Context I have been involved (voluntarily) with the development of the Condenser &amp;amp; Wallet apps (that are powering https://hive.blog and https://wallet.hive.blog) for quite a while now. There are other great frontends to Hive out there such as https://peakd.com and https://ecency.com but I have always been more or less faithful with the Condenser. This is a regular report on my new contributions. Some of the new work below might still be in test and not yet deployed. ## Delegation revoke bug fix @ausbitbank raised this wallet issue where clicking on the `revoke` button on the delegation list on the wallet won't do anything. There was a typo in the code which was causing the feature fail to retrieve username of the delegator. Merge request: https://gitlab.syncad.com/hive/wallet/-/merge_requests/95 ## Redirect some URLS from Condenser to Wallet. Another @ausbitbank request. The Condenser used to handle the `transfers` and `witnesses` pages, however, for security reasons, the Condenser was split into a second app, the Wallet. This new request was to redirect the URLs from the condenser to the wallet instead of erroring. Merge request: https://gitlab.syncad.com/hive/condenser/-/merge_requests/207 ## Alternate post author: @themarkymark requested porting feature implemented on @peakd to the Condenser. Once this feature is deployed, you will be able to create a new post and specify the username of an author if it is different from the account you are using to submit the post. ![Alternate post author](https://images.hive.blog/DQmf2gw6tVD8jL4h5n5NhMj4VeEUBfm5Md3MpUTEDioE7nj/Screen%20Shot%202021-02-17%20at%202.38.47%20pm.jpg) Merge request: https://gitlab.syncad.com/hive/condenser/-/merge_requests/208 --- **Vote for my witness** [![Support @quochuy Witness.jpg](https://images.hive.blog/DQmecYTZemY8SwU6rrg7awhpNRBsehUp7ivk9RGyZsUUpVw/quochuy-hive-witness.jpg)](https://hivesigner.com/sign/account-witness-vote?witness=quochuy&amp;amp;approve=1) On Hive, Witnesses are playing the important role of providing a performant and safe network for all of us. You have the power to choose 30 trusty witnesses to package transactions and sign the blocks that will go in the Hive blockchain. [Vote for me via HiveSigner](https://hivesigner.com/sign/account-witness-vote?witness=quochuy&amp;amp;approve=1) to support my work for the community. See: My new contributions to the Hive Condenser and Wallet apps. by @quochuy</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://images.hive.blog/DQmf2gw6tVD8jL4h5n5NhMj4VeEUBfm5Md3MpUTEDioE7nj/Screen%20Shot%202021-02-17%20at%202.38.47%20pm.jpg" /><media:content medium="image" url="https://images.hive.blog/DQmf2gw6tVD8jL4h5n5NhMj4VeEUBfm5Md3MpUTEDioE7nj/Screen%20Shot%202021-02-17%20at%202.38.47%20pm.jpg" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>

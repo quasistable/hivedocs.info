@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>Core Development on Hive | Hive Chain Documentation</title>
+<meta name="generator" content="Jekyll v4.1.1" />
+<meta property="og:title" content="Core Development on Hive" />
+<meta name="author" content="hiveio" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Reference post explaining Hive core code, core development meetings and how to explore and take part" />
+<meta property="og:description" content="Reference post explaining Hive core code, core development meetings and how to explore and take part" />
+<link rel="canonical" href="https://peakd.com/hiveblockchain/@hiveio/core-development-on-hive" />
+<meta property="og:url" content="https://peakd.com/hiveblockchain/@hiveio/core-development-on-hive" />
+<meta property="og:site_name" content="Hive Chain Documentation" />
+<meta property="og:image" content="https://files.peakd.com/file/peakd-hive/hiveio/kpH1Uf0Q-hive1.gif" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2020-04-20T10:05:57-07:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="https://files.peakd.com/file/peakd-hive/hiveio/kpH1Uf0Q-hive1.gif" />
+<meta property="twitter:title" content="Core Development on Hive" />
+<script type="application/ld+json">
+{"description":"Reference post explaining Hive core code, core development meetings and how to explore and take part","datePublished":"2020-04-20T10:05:57-07:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://peakd.com/hiveblockchain/@hiveio/core-development-on-hive"},"@type":"BlogPosting","url":"https://peakd.com/hiveblockchain/@hiveio/core-development-on-hive","image":"https://files.peakd.com/file/peakd-hive/hiveio/kpH1Uf0Q-hive1.gif","author":{"@type":"Person","name":"hiveio"},"headline":"Core Development on Hive","dateModified":"2020-04-20T10:05:57-07:00","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://hivedocs.info/feed.xml" title="Hive Chain Documentation" /><script>
+if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNotTrack === "yes" || navigator.msDoNotTrack === "1")) {
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-161692811-1', 'auto');
+  ga('send', 'pageview');
+}
+</script>
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/turbolinks/5.2.0/turbolinks.js" integrity="sha256-iM4Yzi/zLj/IshPWMC1IluRxTtRjMqjPGd97TZ9yYpU=" crossorigin="anonymous"></script>
+  <script src='https://unpkg.com/steem-content-renderer'></script>
+  <script>
+    (function () {
+      if (Turbolinks.supported) {
+        Turbolinks.setProgressBarDelay(500);
+      }
+    })();
+  </script>
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Cousine|Inconsolata" rel="stylesheet">
+  <link rel="shortcut icon" type="image/png" href="/assets/images/favicon.png">
+</head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Hive Chain Documentation</a>
+
+      <nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/news/">News</a><a class="page-link" href="/howto/">How To</a><a class="page-link" href="/links/">Useful Links</a><!-- HTML elements for search -->
+          <input type="text" id="search-input" placeholder="Search" />
+          
+          <ul id="results-container"></ul>
+
+          <script src="/assets/javascript/search.js"></script>
+          <script>
+            var sjs = SimpleJekyllSearch({
+              searchInput: document.getElementById('search-input'),
+              resultsContainer: document.getElementById('results-container'),
+              json: '/search.json'
+            })
+          </script>
+          <!-- <form style="float: right;" class="form-inline" method="get" action="http://www.google.com/search">
+            <input type="hidden" name="sitesearch" value="hivedocs.info" />
+            <input type="text" name="q" maxlength="255" placeholder="Search" />
+          </form> -->
+          
+          
+          <a href="#" onclick="try { $('#topics-container').slideToggle(); } catch { document.getElementById('topics-container').style.display = 'block'; }; return false;">Topics &#187;</a>
+          
+          <ul id="topics-container" style="display: none;"><li><a class="page-link" href="/core-development/"><nobr>Core Development</nobr></a></li><li><a class="page-link" href="/dapps/"><nobr>Dapps</nobr></a></li><li><a class="page-link" href="/docker/"><nobr>Docker</nobr></a></li><li><a class="page-link" href="/hardfork/"><nobr>Hardfork</nobr></a></li><li><a class="page-link" href="/hivemind/"><nobr>Hivemind</nobr></a></li><li><a class="page-link" href="/javascript/"><nobr>Javascript</nobr></a></li><li><a class="page-link" href="/multisig/"><nobr>Multisig</nobr></a></li><li><a class="page-link" href="/python/"><nobr>Python</nobr></a></li><li><a class="page-link" href="/ruby/"><nobr>Ruby</nobr></a></li><li><a class="page-link" href="/testnet/"><nobr>Testnet</nobr></a></li><li><a class="page-link" href="/tools/"><nobr>Tools</nobr></a></li></ul>
+        </div>
+      </nav>
+  </div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Core Development on Hive</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2020-04-20T10:05:57-07:00" itemprop="datePublished">Apr 20, 2020
+      </time>• <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">
+          <a href="https://hive.blog/@hiveio">hiveio</a>
+        </span></span></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <div id="content-hiveio-core-development-on-hive">![#hivedevelopers ... a delightful digital asset, provided by community member @psos / @doze](https://files.peakd.com/file/peakd-hive/hiveio/kpH1Uf0Q-hive1.gif)
+
+### Hive powers crypto, people, and projects. The ecosystem being built on the blockchain is growing but the biggest opportunities are still ahead of us! At the heart of Hive, the core code is what makes everything possible.
+
+Decentralized contributions to base blockchain and core code is a big challenge that also creates the greatest opportunities for the Hive ecosystem. There are a lot of questions around this, so here is a handy reference for things like, "what's core development? How can I get involved? Where does all of this happen?"
+
+## Not all development is core development.
+*Developers* can be a catch-all term for any people who write code. There are developers who work on front end interfaces, back end structures and databases, mobile app specialists, website designers, software engineers, and even people who are learning about how to run blockchain nodes and write scripts... developers are everywhere! 
+
+#### When it comes to the Hive blockchain, core development consists of the base layer code, and the main libraries and services which can then be used to build projects based on the data and capabilities of the ledger. For example:
+
+- the Hive blockchain code itself, which is the software that witness, RPC, and seed nodes run
+- Hivemind, a database of social features that helps make Hive data more easily usable
+- Jussi, a caching layer that helps make calls to the blockchain faster and easier
+- the public image hosting infrastructure that front ends use
+- libraries, which help developers interact with the blockchain using different programming languages
+	- Python libraries like hive-python and beem, or JS libraries like hive-js and dhive 
+- GitLab pipelines, which manage workflow and facilitate deployment of changes, fixes, and new code between all contributers
+- testnet management and deployment tools like Tinman
+<br />
+
+This is far from a complete list but it's an example of the kinds of things that make up Hive's core development. This base layer is what makes the blockchain run and is a solid foundation for building other things. Developers of third party dApps, interfaces, games, etc. build their projects on top of Hive but the work that they're doing is separate from this core code. Yes, they're also developing... but on another important branch of the ecosystem. Core development and third party development go hand in hand: the blockchain was made to power web 3.0! Hive was built to be used and needs other developers to be inspired to build with the tools available. 
+
+## Where can I find all this? How can I get involved?
+
+The core code and the repository is open source, which means anyone can use or contribute to it! This allows many people to all work on the problems that they're most interested in and best suited to. By bringing together brains from all around the world to discuss, collaborate, and contribute, Hive has the ability to iterate and improve in a decentralized way. You might be a coder who wants to help work on this base code; you could be a developer wanting to create a project on Hive; you might be an end user who wants to follow and join in discussion of issues. There's also the chance that you're not super interested in the behind-the-scenes stuff and only want to check in to get infrequent updates now and again - in which case @HiveIO will have you covered! You don't have to be involved or interested in this stuff if you don't want to be.
+
+### The public repository is located at https://gitlab.syncad.com/hive.
+
+If you have bug reports, fixes, requests, or would like to take a look at public discussion, you can browse or search the GitLab to see if the issue you're looking for already exists. In the left hand menu, you will see "Issues". These are topics open for whatever part of the project you are looking at. In the picture below, the issues for Hive (the core blockchain code) are shown. There is a breadcrumb trail at the top of the page to help you remember where you are in the repository.
+
+![Where to find GitLab issues](https://files.peakd.com/file/peakd-hive/hiveio/2MJe8qN0-image.png)
+
+The most important thing to do is to take a look around first, and to read through the issues to make sure you're not duplicating your request or bug report. This will help keep things quick and neat! If your issue already exists, add a comment or an emoji to show your support for this feature. If it doesn’t, then feel free to create a new issue! 
+
+***Please remember:*** add as many elements as you can about your bug report/idea/feature request. A good rule of thumb is that a developer should not need to contact you to begin working, so try to include everything pertinent in a concise, accurate way. Feel free to use all the tools at your disposal: pictures, code snippets, or a hive blog post with discussion all being good examples. Finally, add a label to the issue. Use only **one** that best describes it: bug, discussion, enhancement, documentation, suggestion.
+
+## Coordinating decentralized blockchain development is a lot of work. 
+
+To this end, there will be bi-weekly Core Development meetings. Most people ***do not have to participate:*** they are a good way for the developers who are doing the heavy lifting to get on the same page and talk some things out via voice. To keep the meetings usable and functional, only people who are working on core code will attend. There won't be a comment/public text discussion during these meetings. 
+
+**These meetings are public, and will be live streamed for anyone to watch at the Hive YouTube channel available here:** https://www.youtube.com/channel/UCwM89V7NzVIHizgWT3GxhwA
+You can subscribe to this channel if you'd like notifications of the streams and to listen in. If you can't listen to the live meetings, the recordings will also be saved so you can come back to them. This account will be posting notes summarizing each of the core meetings, along with the next future meeting date.
+
+#### Finally, if you find all of this terribly dry (it's okay if you do!) there is no obligation.
+
+This post is a reference to help you understand and navigate some of the more intimidating parts of building a blockchain. As we go forward, we won't be as focused on this topic here on the blog. Choose the parts of Hive that interest you the most and make them yours! 🐝</div>
+<script crossorigin="anonymous" integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=" src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+
+<script src="https://unpkg.com/steem-content-renderer"></script>
+
+<script>
+  $(document).ready(function() {
+    try {
+      const renderer = new SteemContentRenderer.DefaultRenderer({
+        baseUrl: "https://hive.blog/",
+        breaks: true,
+        skipSanitization: false,
+        allowInsecureScriptTags: false,
+        addNofollowToLinks: true,
+        doNotShowImages: false,
+        ipfsPrefix: "",
+        assetsWidth: 640,
+        assetsHeight: 480,
+        imageProxyFn: (url) => url,
+        usertagUrlFn: (account) => "/@hiveio",
+        hashtagUrlFn: (hashtag) => "/core-development-on-hive",
+        isLinkSafeFn: (url) => true,
+      });
+      
+      const inputElem = $('#content-hiveio-core-development-on-hive').html();
+      const outputElem = $('#content-hiveio-core-development-on-hive');
+      const output = renderer.render(inputElem);
+      
+      outputElem.html(output);
+    } catch(e) {
+      console.log(e);
+    }
+  });
+</script>
+
+<style>
+  #content-hiveio-core-development-on-hive {
+    padding: 0 3rem;
+    color: #444444;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.8;
+    text-shadow: 0 1px 0 #ffffff;
+    padding: 0.5rem;
+  }
+  #content-hiveio-core-development-on-hive code {
+    background: white;
+  }
+  #content-hiveio-core-development-on-hive a {
+    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
+  }
+  #content-hiveio-core-development-on-hive a:hover {
+    border-bottom: 0;
+  }
+  #content-hiveio-core-development-on-hive h1 {
+    font-size: 2.2em;
+  }
+  #content-hiveio-core-development-on-hive h2, h3, h4, h5 {
+    margin-bottom: 0;
+  }
+  #content-hiveio-core-development-on-hive header small {
+    color: #999;
+    font-size: 50%;
+  }
+  #content-hiveio-core-development-on-hive img {
+    max-width: 100%;
+  }
+</style>
+
+<hr />
+
+<p>
+  See: <a href="https://peakd.com/hiveblockchain/@hiveio/core-development-on-hive">Core Development on Hive</a>
+  by
+  <a href="https://hive.blog/@hiveio">@hiveio</a>
+</p>
+
+
+  </div><a class="u-url" href="/news/core/development/2020/04/20/core-development-on-hive.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading"><a rel="author" href="/">Hive Chain Documentation</a></h2>
+    
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">site curated by: @inertia</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>Your resource for various levels of Hive Documentation.</p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+</body>
+
+</html>
