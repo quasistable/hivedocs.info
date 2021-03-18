@@ -27,12 +27,8 @@
     return false;
   };
   const retrievePhishingLinks = () => {
-    fetch(
-      IS_DEBUG
-           // cors-anywhere temporarily in use due to CSP restrictions for Github Pages
-        ? 'https://cors-anywhere.herokuapp.com/https://spaminator.me/api/p/domains.json'
-        : 'https://spaminator.me/api/p/domains.json',
-      { headers: { Accept: 'application/json', 'x-requested-with': 'https://spaminator.me' } },
+    fetch('https://spaminator.me/api/p/domains.json',
+      { mode: 'no-cors', headers: { Accept: 'application/json', 'x-requested-with': 'https://spaminator.me' } }
     )
       .then(res => res.json())
       .then((data) => {
