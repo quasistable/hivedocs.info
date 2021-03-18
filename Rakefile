@@ -13,6 +13,9 @@ namespace :assets do
   task :pull do
     # See: https://hive.blog/hive-139531/@keys-defender/phishing-on-hive-no-more-solution-for-all-frontends
     `curl -o assets/javascript/universal-bridge-against-phishing.js https://raw.githubusercontent.com/keys-defender/hive/master/scripts/universal-bridge-against-phishing.js`
+    
+    # Mainly fetched to monitor.  Usually we request a live version (no-cors).
+    `curl -o spaminator-domains.json https://spaminator.me/api/p/domains.json`
   end
 end
 
