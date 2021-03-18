@@ -8,6 +8,14 @@ require 'hive'
 require 'open-uri'
 #require 'html-proofer'
 
+namespace :assets do
+  desc 'Update static assets'
+  task :pull do
+    # See: https://hive.blog/hive-139531/@keys-defender/phishing-on-hive-no-more-solution-for-all-frontends
+    `curl -o assets/javascript/universal-bridge-against-phishing.js https://raw.githubusercontent.com/keys-defender/hive/master/scripts/universal-bridge-against-phishing.js`
+  end
+end
+
 desc 'Grab a post.'
 task :grab, :url do |t, args|
   url = args[:url] || abort('Url required.')
