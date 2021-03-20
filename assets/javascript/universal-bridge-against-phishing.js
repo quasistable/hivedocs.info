@@ -14,7 +14,7 @@
     MIN_WAIT_BLACKLIST: 5 * 60 * 1000,
     PERIODIC_UPDATE_BLACKLIST: 15 * 60 * 1000,
     PAGE_LOAD_DELAY: 1 * 1000,
-    HISTORY_CHECK_INTERVAL: 15 * 1000,
+    HISTORY_CHECK_INTERVAL: 5 * 1000,
   };
 
   // RETRIEVE AND STORE SPAMINATOR BLACKLIST
@@ -27,8 +27,8 @@
     return false;
   };
   const retrievePhishingLinks = () => {
-    fetch('https://spaminator.me/api/p/domains.json',
-      { mode: 'no-cors', headers: { Accept: 'application/json', 'x-requested-with': 'https://spaminator.me' } }
+    fetch('/spaminator-domains.json',
+      { headers: { Accept: 'application/json', 'x-requested-with': 'https://spaminator.me' } }
     )
       .then(res => res.json())
       .then((data) => {
@@ -42,7 +42,7 @@
       })
       .catch((err) => {
         log.error('Unable to fetch spaminator\'s list of known phishing domains', err);
-        IS_DEBUG && window.grantCorsToken({ force: true });
+        IS_DEBUG && window.grantCorsToken && window.grantCorsToken({ force: true });
       });
   };
   // Ecency, peakd, etc are not SPA. Do not load blacklist on every page refresh.
@@ -61,11 +61,20 @@
   // Periodically fetch the updated list of known phishing domains
   setInterval(conditionallyUpdatePhishList, CONSTS.PERIODIC_UPDATE_BLACKLIST);
   
-  // Some JS breaks on hive.blog with these overrides. Used for fallbacks.
-  const isSupportedSite = () => window.location.hostname !== 'hive.blog';
+  // Some JS breaks on hive.blog doing a history override. Using this to detect when to use a fallback.
+  const supportsAllOverrides = () => {
+    // ReactJs
+    if (!!window.React || !!document.querySelector('[data-reactroot], [data-reactid]'))
+      return false;
+    // JQuery
+    if(!!window.jQuery)
+      return false;
+    // All others
+    return true;
+  };
 
   // Fetch updated domains list on page view change (if not recently fetched)
-  if (isSupportedSite()) {
+  if (supportsAllOverrides()) {
     const pushState = history.pushState;
     history.pushState = (...args) => { // <<< global override
       log.debug('History change (ps), checking age of blacklist');
@@ -195,7 +204,7 @@
     const originalGetAttribute = element.getAttribute.bind(element);
     // Override element "src" or "href" attribute getter and setter
     // Note: hive.blog uses definePropety too, cannot use
-    if (isSupportedSite()) {
+    if (supportsAllOverrides()) {
       Object.defineProperties(element, {
         [attributeToMutate]: {
           get: () => {
