@@ -35,8 +35,7 @@ if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNo
 }
 </script>
   
-<script src="/assets/javascript/universal-bridge-against-phishing.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/turbolinks/5.2.0/turbolinks.js" integrity="sha256-iM4Yzi/zLj/IshPWMC1IluRxTtRjMqjPGd97TZ9yYpU=" crossorigin="anonymous"></script>
   <script src='https://unpkg.com/steem-content-renderer'></script>
   <script>
@@ -46,6 +45,7 @@ if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNo
       }
     })();
   </script>
+  <script src="/assets/javascript/universal-bridge-against-phishing.js"></script>
   <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css?family=Cousine|Inconsolata" rel="stylesheet">
   <link rel="shortcut icon" type="image/png" href="/assets/images/favicon.png">
@@ -159,7 +159,7 @@ I believe that blocking phishing campaigns in an unified way in all frontends is
 <br />
 
 <h5>What does my script do?</h5>
-It uses the natvie APIs offered by all browsers in order to immediately block phishing links and images in all Hive frontends as soon as they are discovered and published into the blacklist.
+It uses the native APIs offered by all browsers in order to immediately block phishing links and images in all Hive frontends as soon as they are discovered and published into the blacklist.
 
 - Any known phishing <b><u>link</u></b> in the UI will be red and strikethrough-ed. Furthermore if you click on a known phishing link you'll see an alert telling you that it's phishing and it won't allow you to navigate to the phishing domain from the Hive frontend.
 
@@ -177,7 +177,6 @@ Integrating this script is very **straightforward**. In order to integrate it, s
 Your *index.html* :
 
 ```<!DOCTYPE html>
-<html>
   <head>
     // ADD THIS ONE LINE WITH MY SCRIPT vvv
     <script src="https://keys-defender.github.io/hive/scripts/universal-bridge-against-phishing.js"> 
@@ -191,7 +190,7 @@ Your *index.html* :
 
 This should be enough for your tests. Some intial recommendations though:
 - Keep an eye on <u>CORS</u> issues. If a request is failing because of CORS, use https://cors-anywhere.herokuapp.com for your tests (it's already there commented out in my script).
-- Update your <u>Content Security Policy</u> if necessary to allow your webiste to load my script from Github and to allow the request to @spaminator's api to go through.
+- Update your <u>Content Security Policy</u> if necessary to allow your website to load my script from Github and to allow the request to @spaminator's api to go through.
 - It is highly recommended that you host your own version of this script for your <u>production</u> website. It is clearly not a good idea to rely on my github as it's a single point of failure. For example, what if my github account gets compromised? If all Hive frontends point to my script they would all be affected!
 
 <br>
@@ -259,7 +258,7 @@ https://files.peakd.com/file/peakd-hive/keys-defender/23sUEimLkGd2bAm2yHiGdP4gme
 <h5>MORE STUFF..</h5>
 
 <b>Not supported by my universal script:</b>
-- <u>*window.location*</u> (*window.location.replace(url)*, assignments to *window.location.href*, ..)
+- <u>*window.location*</u> (*window.location.replace(url)* and assignments to *window.location.href*)
 The *window.location* object is immutable therefore if you use that approach to open external lilnks, please consider switching to *window.open* so that my script will protect your user base from known phishing domains.
 
 <br>
@@ -270,11 +269,11 @@ The *window.location* object is immutable therefore if you use that approach to 
 Instead of just using a list of links, I use an array of objects and each object has the following properties:
 -- *"regex"*: used to match a known phishing domain
 -- *"fullLink"*: full link to the homepage of the phishing site
--- *"threatType"*: PHISHING or COMPROMISED_DOMAIN. I used the latter in the past when I found a critical vulnerability in a Hive website until it got patched. This attribute is currently used in @keys-defender auto-[replies to phishing comments](https://hive.blog/hive-193552/@keys-defender/antiphish-keys-defender-bot-1615674771037).
+-- *"threatType"*: PHISHING or COMPROMISED_DOMAIN. I used the latter in the past when I found a critical vulnerability in a Hive website and only until it got patched. This attribute is also used in @keys-defender auto-[replies to phishing comments](https://hive.blog/hive-193552/@keys-defender/antiphish-keys-defender-bot-1615674771037) to categorize threats.
 -- *"infoBlog"*: link to article that warns against the phishing campaing in progress. This is already in @keys-defender auto-replies and if none is provided it defaults to an intro post.
 &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; If we had multiple blacklists and they all shared this interface (eg. using a <u>swagger</u> file) it would be easy to merge them and use them to block phishing campaigns in their early stages. The warnings displayed to the users would be more accurate as well.
-- Add a warning to all Hive frontends for all <u>comments containing links left by known compromised accounts</u>. This should be easy to add re-using the global overrides already added in my script and @spaminator's api dedicated for this purpose.
-- Display a proper message on the UI instead of just an alert (probably not important, the UX in my opinion is not super important in this edge case). Hive frontends maintainers can <u>adjust the messaging</u> as they see fit though. My alerts are more of a Proof of Concept after all.
+- Add a warning to all Hive frontends for all <u>comments containing links left by known compromised accounts</u>. This should be easy to add re-using the global overrides already added in my script and @spaminator's [api dedicated for this purpose](https://spaminator.me/api/bl/hacked.json).
+- Display a proper message on the UI instead of just an alert (probably not important, a fancy UX in my opinion is not necessary for this edge case). Hive frontends maintainers can <u>adjust the messaging</u> as they see fit though. My alerts are more of a Proof of Concept after all.
 
 <br>
 
@@ -284,13 +283,13 @@ Instead of just using a list of links, I use an array of objects and each object
 
 - No <u>load testing</u> was performed on @spaminator API. If all Hive frontends start using their API it may become an issue. @spaminator team to chim in on this.
 The requests from my script are already throttled significantly on the client side and a local cache is used as well.
-- Proper server-side <u>caching</u> on @spaminator API. Eg. *Cache-Control* response header set to 5 mins? Cloudfront (AWS) / Varnish / Redis? 
-- Scaling. How scalable is @spaminator API. Would they incur in prohibitive <u>cost</u> if too many requests were to be sent daily? Do they have a defense mechanism in place for <u>DDOS</u> attacks? (This is not a deal breaker since all users will have a cached version of the blacklist)
+- Proper server-side <u>caching</u> on @spaminator API. Eg. *Cache-Control* response header set to 5 mins? Cloudfront (AWS) caching / Varnish / Redis? 
+- Scaling. How scalable is @spaminator API? Would they incur in prohibitive <u>cost</u> if too many requests were to be sent daily? Do they have a defense mechanism in place for <u>DDOS</u> attacks? This is not a deal breaker since all users will have a cached version of the blacklist, but an attacker could try and take advantage of this for a new phishing campaign.
 
 <br>
 
 **Notes for devs that try my script:**
-- To turn ON verbose <u>logging</u> set `IS_DEBUG` to true
+- To turn OFF verbose <u>logging</u> and remove the cors-anywhere proxy, set `IS_DEBUG` to false.
 - @spaminator's list of blacklisted domains lives at https://spaminator.me/api/p/domains.json. This list of known phishing domains targeting Hive is stored in the <u>localstorage</u> as well. If the API is down (eg. DDOS-ed) the Frontends will still block known phishing domains.
 
 ![image.png](https://files.peakd.com/file/peakd-hive/keys-defender/23t7FQnUT6RM6QZhZk8zrA5A3QNzAsaTq8TvqRBAxMYdYjrW6vaNou1N3DmM6XqBtkA9i.png)
@@ -298,12 +297,13 @@ The requests from my script are already throttled significantly on the client si
 - The list of <u>global overrides</u> added in my script is: *document.createElement, element.setAttribute and getAttribute, history.pushState, XMLHttpRequestClass, window.fetch, window.open*.
 - The DOM <u>elements sanitized</u> by my script are: *iframe, script, img, a*. Other potential candidates that would be easy to cover: *input, audio, embed, source, track, video, link*.
 - When the document is fully rendered all the risky elements (anchors, images, etc) are <u>checked again</u> if they weren't already. Eg. comments fetched after the page is fully loaded.
-- In order to <u>reduce the load</u> on @spaminator's servers, the API is queried again only every 15 minutes if the user is idle on a page. If the user navigates to a different subpath of a Single Page Application (eg. https://hive.blog) (would not cause a page refresh) the api is queried only if at least 5 mins passed from the last query.
-The same applies for non-SPA (eg. Leofinance, Peakd). The cached list of phishing domains gets used if less than 5 minutes passed from the last request.
+- In order to <u>reduce the load</u> on @spaminator's servers, if the user is idle on a page the API is queried again only every 15 minutes. If the user navigates to a different subpath of a Single Page Application (eg. https://hive.blog) (would not cause a page refresh) the api is queried only if at least 5 mins passed from the last query.
+The same applies for non-SPA (eg. Leofinance, Peakd). A new API request to fetch the updated list of domains is sent only if more than 5 minutes passed from the last request.
+<sub> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Example of phishing domains fetch on history change</sub>
 ![image.png](https://files.peakd.com/file/peakd-hive/keys-defender/23s9VYpXhV672UiRiZoZJ3hFwFyJe1tymtJfcP392Y4PFdpZDR8j8p3t18KQniG8XCUBW.png)
 
 - Metrics - I added some timers and I noticed no significant <u>performance impact</u> validating all risky elements against the list of known phishing domains.
-- The script is already <u>resilient</u> to API 500 responses (eg. DDOS-ed). We could periodically rotate to different APIs or fetch multiple ones at the same time.
+- The script is already <u>resilient</u> to API 500 responses (eg. DDOS-ed). We could also periodically rotate to different APIs or fetch multiple ones at the same time.
 
 - Here is a link to my script transpiled with <u>BabelJS</u> for older browsers and minified to save some milliseconds in the load time: https://keys-defender.github.io/scripts/universal-bridge-against-phishing.min.js
 
@@ -325,8 +325,8 @@ To reiterate, before using this script in production it is highly recommended th
 **Are you bored with your day and willing to read more?**
 
 If you're not tired of hearing me rumble about this stuff in your head, here is some more stuff to read..
-Why did I decide to work on this solution?
-There were some discussion ongoing in Discord and Slack about how to timely react to phishing campaigns that recently plagued Hive. @guiltyparties and @pfunk claimed that our best shot would be to block dangerous links directly in the Hive frontends. 
+<u>Why</u> did I decide to work on this solution?
+There were some discussion ongoing on Discord and Slack about how to timely react to phishing campaigns that recently plagued Hive. @guiltyparties and @pfunk claimed that our best shot would be to block dangerous links directly in the Hive frontends. 
 
 
 ![image.png](https://files.peakd.com/file/peakd-hive/keys-defender/23u6YmnLys8BronfhK6AJfxpTnBSQv5KHLV83McP9FXTm8UgTzZa3bPEHt66FAbgz8sdn.png)
@@ -338,9 +338,10 @@ This though required every single maintainer of the Hive condensers to implement
 The idea I already have had in mind for a while though was to use a single script, as an universal solution for most Hive frontend out there.
 
 I had already worked on something similar for a client of my employer. It was not for phishing, but the same logic applied. The platform I was working on used a custom scheme (eg. *somescheme://* instead of *https://*) and all relative protocol links added by third party scripts (eg. *"//www.googletagmanager.com"*) were defaulting to the custom scheme instead of using HTTPS.
-In that occasion I had to use some global overrides to add the https prefix to anything that was meant to go out to third parties. That ended up being handy for this solution on Hive too.
+In that occasion I had to use some global overrides to add the https prefix to anything that was meant to go out to third parties. That ended up being handy for this solution on Hive.
 
-When did I work on this Proof of Concept for Hive frontends, you ask? Late at night in the past few days while caring for my few-days-old newborn. I'm off work and getting bored so I decided to put my sleep deprivation at work and started writing some code for this purpose. I hope it will be useful and get used to effectively improve our Hive frontends.
+<u>When</u> did I work on this Proof of Concept for Hive frontends, you ask?
+Late at night in the past few days while caring for my few-days-old newborn. I'm off work and getting bored so I decided to put my sleep deprivation at work and started writing some code for this purpose. I hope it will be useful and get used to effectively improve our Hive frontends and discourage scammers.
 <br>
 
 -----
@@ -350,7 +351,7 @@ When did I work on this Proof of Concept for Hive frontends, you ask? Late at ni
 Take care,
 @keys-defender (@gaottantacinque)
 
-<sub><i>Please don't forget to upvote and reblog. Donations are welcome as well, those damn diapers aren't cheap! &nbsp; =P</i></sub>
+<sub><i>Please don't forget to upvote and reblog. Donations are welcome as well, those damn diapers aren't free! &nbsp; =P</i></sub>
 </div>
 <script crossorigin='anonymous' integrity='sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=' src='https://code.jquery.com/jquery-3.5.1.slim.min.js'></script>
 <script src="https://unpkg.com/steem-content-renderer"></script>
