@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta property="og:image" content="/assets/images/sticker.png" /><!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>How To Set Up A Hive Witness Using HIAB At Version 1.24.4 | Hive Chain Documentation</title>
+<meta name="generator" content="Jekyll v4.1.1" />
+<meta property="og:title" content="How To Set Up A Hive Witness Using HIAB At Version 1.24.4" />
+<meta name="author" content="rishi556" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Because @someguy123 hasn’t written a post about using HIAB I decided to do it, mainly because I use it and always end up referring to discord chats on how to set it up." />
+<meta property="og:description" content="Because @someguy123 hasn’t written a post about using HIAB I decided to do it, mainly because I use it and always end up referring to discord chats on how to set it up." />
+<link rel="canonical" href="https://peakd.com/hive-139531/@rishi556/how-to-set-up-a-hive-witness-using-hiab-at-version-1-24-4" />
+<meta property="og:url" content="https://peakd.com/hive-139531/@rishi556/how-to-set-up-a-hive-witness-using-hiab-at-version-1-24-4" />
+<meta property="og:site_name" content="Hive Chain Documentation" />
+<meta property="og:image" content="https://images.hive.blog/p/HuuaCwcKuiEjNgLb5Q7HbtUvB1HEHgck8hUkQMB4bFSJaxwFsYXGx7N9qtgEvLdGaoY?format=match&amp;mode=fit" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2020-11-08T07:11:18-08:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="https://images.hive.blog/p/HuuaCwcKuiEjNgLb5Q7HbtUvB1HEHgck8hUkQMB4bFSJaxwFsYXGx7N9qtgEvLdGaoY?format=match&amp;mode=fit" />
+<meta property="twitter:title" content="How To Set Up A Hive Witness Using HIAB At Version 1.24.4" />
+<script type="application/ld+json">
+{"description":"Because @someguy123 hasn’t written a post about using HIAB I decided to do it, mainly because I use it and always end up referring to discord chats on how to set it up.","image":"https://images.hive.blog/p/HuuaCwcKuiEjNgLb5Q7HbtUvB1HEHgck8hUkQMB4bFSJaxwFsYXGx7N9qtgEvLdGaoY?format=match&amp;mode=fit","headline":"How To Set Up A Hive Witness Using HIAB At Version 1.24.4","dateModified":"2020-11-08T07:11:18-08:00","datePublished":"2020-11-08T07:11:18-08:00","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://peakd.com/hive-139531/@rishi556/how-to-set-up-a-hive-witness-using-hiab-at-version-1-24-4"},"url":"https://peakd.com/hive-139531/@rishi556/how-to-set-up-a-hive-witness-using-hiab-at-version-1-24-4","author":{"@type":"Person","name":"rishi556"},"@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://hivedocs.info/feed.xml" title="Hive Chain Documentation" /><script>
+if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNotTrack === "yes" || navigator.msDoNotTrack === "1")) {
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-161692811-1', 'auto');
+  ga('send', 'pageview');
+}
+</script>
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/turbolinks/5.2.0/turbolinks.js" integrity="sha256-iM4Yzi/zLj/IshPWMC1IluRxTtRjMqjPGd97TZ9yYpU=" crossorigin="anonymous"></script>
+  <script src='https://unpkg.com/steem-content-renderer'></script>
+  <script>
+    (function () {
+      if (Turbolinks.supported) {
+        Turbolinks.setProgressBarDelay(500);
+      }
+    })();
+  </script>
+  <script src="/assets/javascript/universal-bridge-against-phishing.js"></script>
+  <script src="/assets/javascript/lazysizes.min.js" async=""></script>
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Cousine|Inconsolata" rel="stylesheet">
+  <link rel="shortcut icon" type="image/png" href="/assets/images/favicon.png">
+</head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Hive Chain Documentation</a>
+
+      <nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/news/">News</a><a class="page-link" href="/howto/">How To</a><a class="page-link" href="/links/">Useful Links</a><!-- HTML elements for search -->
+          <input type="text" id="search-input" placeholder="Search" />
+          
+          <ul id="results-container"></ul>
+
+          <script src="/assets/javascript/search.js"></script>
+          <script>
+            var sjs = SimpleJekyllSearch({
+              searchInput: document.getElementById('search-input'),
+              resultsContainer: document.getElementById('results-container'),
+              json: '/search.json'
+            })
+          </script>
+          <!-- <form style="float: right;" class="form-inline" method="get" action="http://www.google.com/search">
+            <input type="hidden" name="sitesearch" value="hivedocs.info" />
+            <input type="text" name="q" maxlength="255" placeholder="Search" />
+          </form> -->
+          
+          
+          <a href="#" onclick="try { $('#topics-container').slideToggle(); } catch { document.getElementById('topics-container').style.display = 'block'; }; return false;">Topics &#187;</a>
+          
+          <ul id="topics-container" style="display: none;"><li><a class="page-link" href="/account-recovery/"><nobr>Account Recovery</nobr></a></li><li><a class="page-link" href="/core-development/"><nobr>Core Development</nobr></a></li><li><a class="page-link" href="/dapps/"><nobr>Dapps</nobr></a></li><li><a class="page-link" href="/docker/"><nobr>Docker</nobr></a></li><li><a class="page-link" href="/hardfork/"><nobr>Hardfork</nobr></a></li><li><a class="page-link" href="/hivemind/"><nobr>Hivemind</nobr></a></li><li><a class="page-link" href="/javascript/"><nobr>Javascript</nobr></a></li><li><a class="page-link" href="/multisig/"><nobr>Multisig</nobr></a></li><li><a class="page-link" href="/python/"><nobr>Python</nobr></a></li><li><a class="page-link" href="/ruby/"><nobr>Ruby</nobr></a></li><li><a class="page-link" href="/testnet/"><nobr>Testnet</nobr></a></li><li><a class="page-link" href="/tools/"><nobr>Tools</nobr></a></li></ul>
+        </div>
+      </nav>
+  </div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">How To Set Up A Hive Witness Using HIAB At Version 1.24.4</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2020-11-08T07:11:18-08:00" itemprop="datePublished">Nov 8, 2020
+      </time>• <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">
+          <a href="https://hive.blog/@rishi556">rishi556</a>
+        </span></span></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <div id="content-rishi556-how-to-set-up-a-hive-witness-using-hiab-at-version-1-24-4"><center><img src="https://images.hive.blog/p/HuuaCwcKuiEjNgLb5Q7HbtUvB1HEHgck8hUkQMB4bFSJaxwFsYXGx7N9qtgEvLdGaoY?format=match&amp;mode=fit" />
+<sub>Used With Permission From @someguy123</sub></center>
+
+Because @someguy123 hasn't written a post about using HIAB I decided to do it, mainly because I use it and always end up referring to discord chats on how to set it up. Much easier to just have it all in one place, and what better place than the chain itself? Im just going over basic setup using snapshots but theres even more functionality(you can replay the server instead of using snapshot, or sync without a blocks_log file) which you can read about here: https://github.com/someguy123/hive-docker. 
+
+
+### Server
+
+First thing that you'll need is a server for this. Thanks to the efforts in HF 24, its become quite a bit easier to run I would recommend a<a href="https://privex.io?r=rishi556"> Privex</a> server for this because you can pay with Hive and HBD, but because we have a lot of witnesses already on Privex and its important to have our chain be distributed between different datacenter and providers, I would recommend that you find your own.
+
+I run my witness(@hextech) on a server with 16 gigs of RAM and 4 threads for the witness along with 400 GB(320 GB being used right now) on a NVME on Ubuntu 20. Higher ram usage is required during the snapshot import process(reaching about 15.3 GB used). 
+
+
+### Setting Up HIAB
+
+I like to update my server as the first thing to do as well as install git and screen.
+
+```
+sudo apt-get update -y
+sudo apt-get upgrade -y
+sudo apt-get install git -y
+sudo apt-get install screen -y
+```
+
+Then we clone the repo.
+
+```
+git clone https://github.com/someguy123/hive-docker.git
+```
+
+And then use it to install docker for you. This shouldn't take too long.
+
+```
+cd hive-docker
+./run.sh install_docker
+```
+
+We can then install the latest docker image for the witness with. It will grab whatever is the latest from dockerhub(https://hub.docker.com/r/someguy123/hive/tags).
+
+```
+./run.sh install
+```
+
+The next step is to download the block_log(somewhere around 300 GB around now) as well as the snapshot files. We are going to do this in a screen so we don't need to remain connected while this goes on. 
+
+```
+screen -S download
+export BC_HTTP_RAW="http://files.privex.io/hive/block_log" 
+export RSYNC_BASE="rsync://files.privex.io/hive"
+./run.sh fix_blocks
+```
+You'll be presented with a screen like this. For downloading the rest of blocks_log, you'll want to say yes (y). This will take a while, depending on the connection speed. The best thing to do is wait. 
+
+![Screen Shot 20201107 at 5.17.16 PM.png](https://files.peakd.com/file/peakd-hive/rishi556/NBjD9C5C-Screen20Shot202020-11-0720at205.17.1620PM.png)
+
+
+After that you'll be asked if you want to grab block_log.index as well. Say yes to that as well. 
+
+Then you'll get asked about snapshot, again say yes.
+
+Finally you'll be asked about shared_memory.bin, for that say no(n). 
+
+While those are downloading, you can move onto the next few steps, I'll let you know where you'll need those files to move on. 
+
+### CLI Wallet And Keys
+
+Now we are going to want to generate our witness signing keys. You can reuse some keys that you already use, but it's recommended to generate new ones just for signing blocks. To do that, we use the cli_wallet. 
+
+We'll be using the remote wallet as our local instance isn't ready yet.
+
+```
+./run.sh remote_wallet
+```
+
+You should get presented with something like this on a fresh install. If it says `locked` instead of `new` then you already have a wallet setup(you won't unless you are updating) and you can unlock it and skip the init step.
+
+![Screen Shot 20201107 at 5.25.29 PM.png](https://files.peakd.com/file/peakd-hive/rishi556/eSs2pI5W-Screen20Shot202020-11-0720at205.25.2920PM.png)
+
+You can type in `set_password ` to set your password. For example, if I wanted my password to be 123, I'd type in `set_password 123` Remember the password as you'll need this to unlock the wallet in the future. You'll want to unlock your wallet after that. Thats as simple as `unlock 123`. Replace 123 with the password you set. 
+
+Once you are unlocked you can use `suggest_brain_key` to get a public private keypair generated. You'll want to save that as you'll need it in the future. ![Screen Shot 20201107 at 5.29.09 PM.png](https://files.peakd.com/file/peakd-hive/rishi556/znrDztKe-Screen20Shot202020-11-0720at205.29.0920PM.png)
+
+You can exit the wallet by pressing control + D. If you ever forget your password, you can wipe the wallet clean and use a new password. A `wallet.json` file is generated and stored within the `data` directory. Just delete that and it'll start the wallet fresh again.
+
+### Config 
+
+Next we'll  need to modify the config file to work with our witness. Its located at `data/witness_node_data_dir/config.ini` directory. We'll want to modify that. 
+
+```
+nano data/witness_node_data_dir/config.ini
+```
+
+Most of the values there are already good. If you want to modify anything go ahead if you know what you are doing. 
+
+The place we want to modify is `witness = ` and `private-key = `. They are already commented out(line begins with `#`) so we can just go find them and delete the # at the start of the line. For the witness, you'll want to type in the username of the account that the witness will be running under. This value must go in quotes. The private key should be the private key that we generated from the cli wallet. This should not go in quotation marks. Use the image below as an example.
+
+
+![Screen Shot 20201107 at 5.42.17 PM.png](https://files.peakd.com/file/peakd-hive/rishi556/X9sITamf-Screen20Shot202020-11-0720at205.42.1720PM.png)
+
+
+### Starting Up
+
+Going on, you'll need to have all the files that we started downloaded earlier ready to go. If not, please finish downloading then continue. While you wait for this to download, some good things to do are write a post about you staring up your witness, voting @hextech for witness and thinking about how you can help benefit the hive ecosystem. 
+
+We are going to load in the snap that we got so that we don't need to replay. 
+```
+./run.sh load_snap privexsnap  
+```
+
+This does take some time, but nowhere near as long as it would take if we had to run a replay. You can monitor what step of the process this is at by using `./run.sh logs`.
+
+Once the snapshot loads in, it'll automatically start syncing up to live. You can check the sync progress using `./run.sh monitor`. It'll tell you how long it'll take to get synced up. Again this is a time to wait. You'll know that you are live when you see individual blocks being produced in `./run.sh logs`. That'll look like this:
+
+![Screen Shot 20201107 at 6.58.25 PM.png](https://files.peakd.com/file/peakd-hive/rishi556/dmpGRIr9-Screen20Shot202020-11-0720at206.58.2520PM.png)
+
+The block numbers will be going up by one. Nows the big time, time to enable as a witness.
+
+### Enabling Your Witness
+
+Let's enable the witness, you can do so using either the remote wallet or the local one. To use the local wallet, use `./run.sh wallet` and remote is `./run.sh remote_wallet`.
+
+```
+./run.sh wallet
+```
+
+
+Unlock the wallet with the password set before using `unlock 123` where 123 is the password. We'll want to import in your active key to sign the transaction that we'll be broadcasting. Find the private active_key using your preferred choice. If your private active key is 5KNrHHigj3PRurkm5moaV1XM3gWGrDZJJZCgPRL2FpBLjWy1obg you'd import it by typing in `import_key 5KNrHHigj3PRurkm5moaV1XM3gWGrDZJJZCgPRL2FpBLjWy1obg`
+
+Now we want to broadcast enabling the witness. Modify the following command to match what you want and type it into the wallet. Replace username with the name of your witness, the https://example.com part with the url you want to use for your witness and STM1111111111111111111111111111111114T1Anm with the public key generated for your private signing key when we first got into the wallet. Following that are your witness parameters, modify them to your liking, but these are the current standard ones being used by witnesses and so it's wise to follow along. 
+
+```
+update_witness "username" "https://example.com" "STM1111111111111111111111111111111114T1Anm" {"account_creation_fee":"3.000 HIVE","maximum_block_size":65536,"hbd_interest_rate":0} true
+```
+
+After that gets broadcast, you are up and running as a witness. You can check that you are enabled somewhere like https://peakd.com/me/witnesses. The green ball means that you are enabled. Your version will not report to the version that you are using until you sign your first block so don't worry if it says 0.0.0. Just get the word out there that you are being a witness and get more votes. 
+
+![Screen Shot 20201107 at 7.09.34 PM.png](https://files.peakd.com/file/peakd-hive/rishi556/kaXmX4Yp-Screen20Shot202020-11-0720at207.09.3420PM.png)
+
+I was following along on a fresh server and it took me 2 hours and 15 minutes to get to the point where I could broadcast the enable witness transaction. The latest updates and the work from someguy to make HIAB exist has made it a lot easier to be a witness.
+
+### Future &amp; Questions
+
+You'll want to setup a pricefeed and failover script as well. For pricefeed, I recommend someguy's hivefeed-js (can be found here https://github.com/someguy123/hivefeed-js) as well for failover script(watcher by therealwolf works https://github.com/therealwolf42/hive-witness-essentials/tree/master/essentials/watcher) 
+
+
+As time goes on, you'll need to update. The update process might involve a replay or it might not. Hard forks involve a replay and soft forks usually don't. You can get information and ask questions about that in the Privex discord which can be found at http://discord.privex.io/. The server requirements might increase as well and you might need to upgrade that. 
+
+
+
+<center>
+
+If you like what I do, feel free to vote for my witness https://vote.hive.uno/@hextech
+
+</center>
+</div>
+<script crossorigin="anonymous" integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=" src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+
+<script src="https://unpkg.com/steem-content-renderer"></script>
+
+<script>
+  $(document).ready(function() {
+    try {
+      const renderer = new SteemContentRenderer.DefaultRenderer({
+        baseUrl: "https://hive.blog/",
+        breaks: true,
+        skipSanitization: false,
+        allowInsecureScriptTags: false,
+        addNofollowToLinks: true,
+        doNotShowImages: false,
+        ipfsPrefix: "",
+        assetsWidth: 640,
+        assetsHeight: 480,
+        imageProxyFn: (url) => url,
+        usertagUrlFn: (account) => "/@rishi556",
+        hashtagUrlFn: (hashtag) => "/how-to-set-up-a-hive-witness-using-hiab-at-version-1-24-4",
+        isLinkSafeFn: (url) => true,
+      });
+      
+      const inputElem = $('#content-rishi556-how-to-set-up-a-hive-witness-using-hiab-at-version-1-24-4').html();
+      const outputElem = $('#content-rishi556-how-to-set-up-a-hive-witness-using-hiab-at-version-1-24-4');
+      const output = renderer.render(inputElem);
+      
+      outputElem.html(output);
+    } catch(e) {
+      console.log(e);
+    }
+  });
+</script>
+
+<style>
+  #content-rishi556-how-to-set-up-a-hive-witness-using-hiab-at-version-1-24-4 {
+    padding: 0 3rem;
+    color: #444444;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.8;
+    text-shadow: 0 1px 0 #ffffff;
+    padding: 0.5rem;
+  }
+  #content-rishi556-how-to-set-up-a-hive-witness-using-hiab-at-version-1-24-4 code {
+    background: white;
+  }
+  #content-rishi556-how-to-set-up-a-hive-witness-using-hiab-at-version-1-24-4 a {
+    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
+  }
+  #content-rishi556-how-to-set-up-a-hive-witness-using-hiab-at-version-1-24-4 a:hover {
+    border-bottom: 0;
+  }
+  #content-rishi556-how-to-set-up-a-hive-witness-using-hiab-at-version-1-24-4 h1 {
+    font-size: 2.2em;
+  }
+  #content-rishi556-how-to-set-up-a-hive-witness-using-hiab-at-version-1-24-4 h2, h3, h4, h5 {
+    margin-bottom: 0;
+  }
+  #content-rishi556-how-to-set-up-a-hive-witness-using-hiab-at-version-1-24-4 header small {
+    color: #999;
+    font-size: 50%;
+  }
+  #content-rishi556-how-to-set-up-a-hive-witness-using-hiab-at-version-1-24-4 img {
+    max-width: 100%;
+  }
+</style>
+
+<hr />
+
+<p>
+  See: <a href="https://peakd.com/hive-139531/@rishi556/how-to-set-up-a-hive-witness-using-hiab-at-version-1-24-4">How To Set Up A Hive Witness Using HIAB At Version 1.24.4</a>
+  by
+  <a href="https://hive.blog/@rishi556">@rishi556</a>
+</p>
+
+
+  </div><a class="u-url" href="/howto/witness/docker/node/2020/11/08/how-to-set-up-a-hive-witness-using-hiab-at-version-1-24-4.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading"><a rel="author" href="/">Hive Chain Documentation</a></h2>
+    
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">site curated by: @inertia</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>Your resource for various levels of Hive Documentation.</p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+</body>
+
+</html>
