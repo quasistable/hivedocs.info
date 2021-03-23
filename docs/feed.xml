@@ -1,4 +1,215 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="https://hivedocs.info/feed.xml" rel="self" type="application/atom+xml" /><link href="https://hivedocs.info/" rel="alternate" type="text/html" /><updated>2021-03-20T18:56:02-07:00</updated><id>https://hivedocs.info/feed.xml</id><title type="html">Hive Chain Documentation</title><subtitle>Your resource for various levels of Hive Documentation.</subtitle><author><name>site curated by: @inertia</name></author><entry><title type="html">Phishing on Hive? No more. Solution for all Frontends.</title><link href="https://hivedocs.info/news/devops/security/2021/03/17/phishing-on-hive-no-more-solution-for-all-frontends.html" rel="alternate" type="text/html" title="Phishing on Hive? No more. Solution for all Frontends." /><published>2021-03-17T00:06:09-07:00</published><updated>2021-03-17T00:06:09-07:00</updated><id>https://hivedocs.info/news/devops/security/2021/03/17/phishing-on-hive-no-more-solution-for-all-frontends</id><content type="html" xml:base="https://hivedocs.info/news/devops/security/2021/03/17/phishing-on-hive-no-more-solution-for-all-frontends.html">&lt;div id=&quot;content-keys-defender-phishing-on-hive-no-more-solution-for-all-frontends&quot;&gt;&lt;center&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="https://hivedocs.info/feed.xml" rel="self" type="application/atom+xml" /><link href="https://hivedocs.info/" rel="alternate" type="text/html" /><updated>2021-03-23T09:53:12-07:00</updated><id>https://hivedocs.info/feed.xml</id><title type="html">Hive Chain Documentation</title><subtitle>Your resource for various levels of Hive Documentation.</subtitle><author><name>site curated by: @inertia</name></author><entry><title type="html">Using Hive Blockchain Custom Json Operation with Python &amp;amp; Beem</title><link href="https://hivedocs.info/howto/beem/python/custom_json/2021/03/22/using-hive-blockchain-custom-json-operation-with-python-and-beem.html" rel="alternate" type="text/html" title="Using Hive Blockchain Custom Json Operation with Python &amp;amp; Beem" /><published>2021-03-22T20:43:24-07:00</published><updated>2021-03-22T20:43:24-07:00</updated><id>https://hivedocs.info/howto/beem/python/custom_json/2021/03/22/using-hive-blockchain-custom-json-operation-with-python-and-beem</id><content type="html" xml:base="https://hivedocs.info/howto/beem/python/custom_json/2021/03/22/using-hive-blockchain-custom-json-operation-with-python-and-beem.html">&lt;div id=&quot;content-geekgirl-using-hive-blockchain-custom-json-operation-with-python-and-beem&quot;&gt;
+&lt;center&gt;![hivewp20.png](https://images.hive.blog/DQmcXEvn33Sph3AMpajUr46mCxbM4GZFKYupgof5aaHQnZQ/hivewp20.png)Image by @doze&lt;/center&gt;
+
+One of Hive blockchain's powerful features is its custom_json operation. Normally, users don't even see and hear about this operations. However, this operation enables developers to store their game or web application data on the Hive blockchain. If you would like to know more about what is stored in Hive blocks and and curious about various Hive operations, feel free to read my [Exploring Hive Blocks](https://leofinance.io/@geekgirl/exploring-hive-blocks) post.
+
+In this post I would like to share how to broadcast custom_json operations to Hive blockchain, how to retrieve them afterwards using Beem module in Python. Beem is a python module created by @holger80, and makes is easy to connect to Hive blockchain and interact with it using python programming language.
+
+Custom_json is one of many operations of Hive. It allow developers to store game or applications data on Hive blockchain. Data is stored as text in Json format. Sine Json is a native JavaScript format and widely used in website and web applications, Hive makes it super easy to create Apps and Games that would like to use decentralized solutions.
+
+&lt;center&gt;**Broadcasting a Transaction to Hive Blockchain**&lt;/center&gt;
+
+Every Hive block has a size limit of 65536 bytes. Which means we can only store 65536 characters including all the properties in one block. I believe this is a parameters that witnesses can change if they wish to based on demand, infrastructure, scaling, etc. For now and foreseeable future this is the limitation every developer of apps and games should consider.
+
+Another limitation is each custom_json operation is limited to 8192 bytes or characters. However, it is possible to broadcast multiple operations within a transaction. We face another limitation there. We can only broadcast 5 operations within a transaction by the broadcasting account. 
+
+Before we get to the code, another thing to keep in mind is, once transaction is built and we broadcast it, the return value doesn't not give the block number where the transaction is stored. That is because when we broadcast with python we don't wait until the block is produced. A couple minutes after broadcasting the transaction the block is produced and available for us to retrieve the data stored. When we broadcast we get back values like `expiration`, `ref_block_num` and `ref_block_prefix`. Using these three values we can find our transaction and the block it is stored in. So that we don't search the entire blockchain form the beginning, I also decided to store the current block number before broadcasting. That way I can start searching for the transaction starting from that block number.
+
+Following is the code to broadcast custom_json operations:
+
+```
+from beem.transactionbuilder import TransactionBuilder
+from beembase.operations import Custom_json
+from beem import Hive
+from beem.blockchain import Blockchain 
+from beem.block import Block
+from helper import wif, name 
+from beem.nodelist import NodeList
+from pprint import pprint
+
+nodelist = NodeList()
+nodelist.update_nodes()
+nodes = nodelist.get_hive_nodes()
+
+hive = Hive(node=nodes, nobroadcast=False, keys={'posting': wif})
+blockchain = Blockchain(hive)
+current_block_num = blockchain.get_current_block_num()
+
+tx = TransactionBuilder(blockchain_instance=hive)
+
+for i in range(1,6):
+  txt = str(i) * 8100
+  data = {}
+  data['data'] = txt
+  cj = {
+      &quot;required_auths&quot;: [],
+      &quot;required_posting_auths&quot;: [name],
+      &quot;id&quot;: &quot;librarian&quot;,
+      &quot;json&quot;: data
+    }
+  tx.appendOps(Custom_json(cj))
+
+tx.appendWif(wif)
+signed_tx = tx.sign()
+broadcast_tx = tx.broadcast()
+
+print(current_block_num)
+print(broadcast_tx)
+```
+
+Main thing to pay attention to is the TransactionBuilder. It allows us to build a transaction before broadcasting then broadcast it. I stored Hive account name and keys in a separate python file named helper.py, and imported variables name and wif to sign the transaction. To broadcast a this transaction posting key was enough.
+
+We can add upto 5 operations in our transaction using .appendOps() method. Everything else should be self-explanatory. Feel free to ask in the comments if something doesn't make sense. I will be happy to explain each line.
+
+Now the last two print statements show the block number before the transaction was broadcasted, and return values after the broadcast happened. 
+
+Now we need to retrieve the data from Hive. We will use the printed or stored block number to start the search from and values returned when we broadcasted the transactions such as `expiration`,  `ref_block_num`, and `ref_block_prefix`. 
+
+```
+from beem import Hive
+from beem.block import Block
+from pprint import pprint
+from beem.blockchain import Blockchain
+from beem.nodelist import NodeList
+
+nodelist = NodeList()
+nodelist.update_nodes()
+nodes = nodelist.get_hive_nodes()
+hive = Hive(node=nodes)
+
+start_block_num = 52374262
+blockchain = Blockchain(hive)
+end_block_num = blockchain.get_current_block_num()
+
+exp = '2021-03-23T02:08:41'
+rbn = 10998
+rbp = 3231133325
+
+def get_data(start, end, exp, rbn, rbp):
+    ref = []
+    for num in range(start, end):
+        block = Block(block=num, blockchain_instance=hive)
+        b = block.json()
+        for i, tr in enumerate(b['transactions']):
+            if tr['expiration'] == exp and tr['ref_block_num'] == rbn and tr['ref_block_prefix'] == rbp:
+                print(i)
+                print(b['id'])
+                print(b['timestamp'])
+                print(tr['operations'])
+                print(b['transaction_ids'][i])
+                ref.append(b['id'])
+                ref.append(i)
+                return ref
+
+ref = get_data(start_block_num, end_block_num, exp, rbn, rbp)
+
+print('-----')
+print(ref)
+bb = Block(block=ref[0])
+bb = bb.json()
+bb = bb['transactions'][ref[1]]
+bb = bb['operations'][0]['value']['json']
+
+print(bb)
+
+```
+
+What the code above does is, it searches for the stored transaction with custom_json operations starting with the nearest known block numbers. Once found it displays the data we are searching for. It also provides the block number the transaction is stored at. 
+
+Now, we want to store this block number as reference for future use. Next time we need the same data, we can just get the block from the blockchain instead of iterating through multiple blocks and save us time.
+
+If we have the block number, then we can easily get everything stored in that block as following:
+
+```
+block_num = 52374284
+
+block = Block(block=block_num, blockchain_instance=hive)
+b = block.json()
+
+pprint(b)
+```
+
+One last thing I would like to share has to do with resource credits. I used an account with 1006 HP to test the codes above. The transaction above had 5 operations with 8100 characters each in size. It only took less than 1% of resource credits for this account to broadcast the transaction.
+
+I hope you find this post useful. Let me know your thoughts. Also, let me know if there are better ways of broadcasting transactions and retrieving data from Hive blockchain using python.
+
+
+Posted Using [LeoFinance &lt;sup&gt;Beta&lt;/sup&gt;](https://leofinance.io/@geekgirl/using-hive-blockchain-custom-json-operation-with-python-and-beem)&lt;/div&gt;
+&lt;script crossorigin=&quot;anonymous&quot; integrity=&quot;sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=&quot; src=&quot;https://code.jquery.com/jquery-3.5.1.slim.min.js&quot;&gt;&lt;/script&gt;
+
+&lt;script src=&quot;https://unpkg.com/steem-content-renderer&quot;&gt;&lt;/script&gt;
+
+&lt;script&gt;
+  $(document).ready(function() {
+    try {
+      const renderer = new SteemContentRenderer.DefaultRenderer({
+        baseUrl: &quot;https://hive.blog/&quot;,
+        breaks: true,
+        skipSanitization: false,
+        allowInsecureScriptTags: false,
+        addNofollowToLinks: true,
+        doNotShowImages: false,
+        ipfsPrefix: &quot;&quot;,
+        assetsWidth: 640,
+        assetsHeight: 480,
+        imageProxyFn: (url) =&gt; url,
+        usertagUrlFn: (account) =&gt; &quot;/@geekgirl&quot;,
+        hashtagUrlFn: (hashtag) =&gt; &quot;/using-hive-blockchain-custom-json-operation-with-python-and-beem&quot;,
+        isLinkSafeFn: (url) =&gt; true,
+      });
+      
+      const inputElem = $('#content-geekgirl-using-hive-blockchain-custom-json-operation-with-python-and-beem').html();
+      const outputElem = $('#content-geekgirl-using-hive-blockchain-custom-json-operation-with-python-and-beem');
+      const output = renderer.render(inputElem);
+      
+      outputElem.html(output);
+    } catch(e) {
+      console.log(e);
+    }
+  });
+&lt;/script&gt;
+
+&lt;style&gt;
+  #content-geekgirl-using-hive-blockchain-custom-json-operation-with-python-and-beem {
+    padding: 0 3rem;
+    color: #444444;
+    font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.8;
+    text-shadow: 0 1px 0 #ffffff;
+    padding: 0.5rem;
+  }
+  #content-geekgirl-using-hive-blockchain-custom-json-operation-with-python-and-beem code {
+    background: white;
+  }
+  #content-geekgirl-using-hive-blockchain-custom-json-operation-with-python-and-beem a {
+    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
+  }
+  #content-geekgirl-using-hive-blockchain-custom-json-operation-with-python-and-beem a:hover {
+    border-bottom: 0;
+  }
+  #content-geekgirl-using-hive-blockchain-custom-json-operation-with-python-and-beem h1 {
+    font-size: 2.2em;
+  }
+  #content-geekgirl-using-hive-blockchain-custom-json-operation-with-python-and-beem h2, h3, h4, h5 {
+    margin-bottom: 0;
+  }
+  #content-geekgirl-using-hive-blockchain-custom-json-operation-with-python-and-beem header small {
+    color: #999;
+    font-size: 50%;
+  }
+  #content-geekgirl-using-hive-blockchain-custom-json-operation-with-python-and-beem img {
+    max-width: 100%;
+  }
+&lt;/style&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;
+  See: &lt;a href=&quot;https://leofinance.io/@geekgirl/using-hive-blockchain-custom-json-operation-with-python-and-beem&quot;&gt;Using Hive Blockchain Custom Json Operation with Python &amp;amp; Beem&lt;/a&gt;
+  by
+  &lt;a href=&quot;https://hive.blog/@geekgirl&quot;&gt;@geekgirl&lt;/a&gt;
+&lt;/p&gt;</content><author><name>geekgirl</name></author><category term="howto" /><category term="beem" /><category term="python" /><category term="custom_json" /><summary type="html">![hivewp20.png](https://images.hive.blog/DQmcXEvn33Sph3AMpajUr46mCxbM4GZFKYupgof5aaHQnZQ/hivewp20.png)Image by @doze One of Hive blockchain's powerful features is its custom_json operation. Normally, users don't even see and hear about this operations. However, this operation enables developers to store their game or web application data on the Hive blockchain. If you would like to know more about what is stored in Hive blocks and and curious about various Hive operations, feel free to read my [Exploring Hive Blocks](https://leofinance.io/@geekgirl/exploring-hive-blocks) post. In this post I would like to share how to broadcast custom_json operations to Hive blockchain, how to retrieve them afterwards using Beem module in Python. Beem is a python module created by @holger80, and makes is easy to connect to Hive blockchain and interact with it using python programming language. Custom_json is one of many operations of Hive. It allow developers to store game or applications data on Hive blockchain. Data is stored as text in Json format. Sine Json is a native JavaScript format and widely used in website and web applications, Hive makes it super easy to create Apps and Games that would like to use decentralized solutions. **Broadcasting a Transaction to Hive Blockchain** Every Hive block has a size limit of 65536 bytes. Which means we can only store 65536 characters including all the properties in one block. I believe this is a parameters that witnesses can change if they wish to based on demand, infrastructure, scaling, etc. For now and foreseeable future this is the limitation every developer of apps and games should consider. Another limitation is each custom_json operation is limited to 8192 bytes or characters. However, it is possible to broadcast multiple operations within a transaction. We face another limitation there. We can only broadcast 5 operations within a transaction by the broadcasting account. Before we get to the code, another thing to keep in mind is, once transaction is built and we broadcast it, the return value doesn't not give the block number where the transaction is stored. That is because when we broadcast with python we don't wait until the block is produced. A couple minutes after broadcasting the transaction the block is produced and available for us to retrieve the data stored. When we broadcast we get back values like `expiration`, `ref_block_num` and `ref_block_prefix`. Using these three values we can find our transaction and the block it is stored in. So that we don't search the entire blockchain form the beginning, I also decided to store the current block number before broadcasting. That way I can start searching for the transaction starting from that block number. Following is the code to broadcast custom_json operations: ``` from beem.transactionbuilder import TransactionBuilder from beembase.operations import Custom_json from beem import Hive from beem.blockchain import Blockchain from beem.block import Block from helper import wif, name from beem.nodelist import NodeList from pprint import pprint nodelist = NodeList() nodelist.update_nodes() nodes = nodelist.get_hive_nodes() hive = Hive(node=nodes, nobroadcast=False, keys={'posting': wif}) blockchain = Blockchain(hive) current_block_num = blockchain.get_current_block_num() tx = TransactionBuilder(blockchain_instance=hive) for i in range(1,6): txt = str(i) * 8100 data = {} data['data'] = txt cj = { &quot;required_auths&quot;: [], &quot;required_posting_auths&quot;: [name], &quot;id&quot;: &quot;librarian&quot;, &quot;json&quot;: data } tx.appendOps(Custom_json(cj)) tx.appendWif(wif) signed_tx = tx.sign() broadcast_tx = tx.broadcast() print(current_block_num) print(broadcast_tx) ``` Main thing to pay attention to is the TransactionBuilder. It allows us to build a transaction before broadcasting then broadcast it. I stored Hive account name and keys in a separate python file named helper.py, and imported variables name and wif to sign the transaction. To broadcast a this transaction posting key was enough. We can add upto 5 operations in our transaction using .appendOps() method. Everything else should be self-explanatory. Feel free to ask in the comments if something doesn't make sense. I will be happy to explain each line. Now the last two print statements show the block number before the transaction was broadcasted, and return values after the broadcast happened. Now we need to retrieve the data from Hive. We will use the printed or stored block number to start the search from and values returned when we broadcasted the transactions such as `expiration`, `ref_block_num`, and `ref_block_prefix`. ``` from beem import Hive from beem.block import Block from pprint import pprint from beem.blockchain import Blockchain from beem.nodelist import NodeList nodelist = NodeList() nodelist.update_nodes() nodes = nodelist.get_hive_nodes() hive = Hive(node=nodes) start_block_num = 52374262 blockchain = Blockchain(hive) end_block_num = blockchain.get_current_block_num() exp = '2021-03-23T02:08:41' rbn = 10998 rbp = 3231133325 def get_data(start, end, exp, rbn, rbp): ref = [] for num in range(start, end): block = Block(block=num, blockchain_instance=hive) b = block.json() for i, tr in enumerate(b['transactions']): if tr['expiration'] == exp and tr['ref_block_num'] == rbn and tr['ref_block_prefix'] == rbp: print(i) print(b['id']) print(b['timestamp']) print(tr['operations']) print(b['transaction_ids'][i]) ref.append(b['id']) ref.append(i) return ref ref = get_data(start_block_num, end_block_num, exp, rbn, rbp) print('-----') print(ref) bb = Block(block=ref[0]) bb = bb.json() bb = bb['transactions'][ref[1]] bb = bb['operations'][0]['value']['json'] print(bb) ``` What the code above does is, it searches for the stored transaction with custom_json operations starting with the nearest known block numbers. Once found it displays the data we are searching for. It also provides the block number the transaction is stored at. Now, we want to store this block number as reference for future use. Next time we need the same data, we can just get the block from the blockchain instead of iterating through multiple blocks and save us time. If we have the block number, then we can easily get everything stored in that block as following: ``` block_num = 52374284 block = Block(block=block_num, blockchain_instance=hive) b = block.json() pprint(b) ``` One last thing I would like to share has to do with resource credits. I used an account with 1006 HP to test the codes above. The transaction above had 5 operations with 8100 characters each in size. It only took less than 1% of resource credits for this account to broadcast the transaction. I hope you find this post useful. Let me know your thoughts. Also, let me know if there are better ways of broadcasting transactions and retrieving data from Hive blockchain using python. Posted Using [LeoFinance Beta](https://leofinance.io/@geekgirl/using-hive-blockchain-custom-json-operation-with-python-and-beem) See: Using Hive Blockchain Custom Json Operation with Python &amp;amp; Beem by @geekgirl</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://images.hive.blog/DQmcXEvn33Sph3AMpajUr46mCxbM4GZFKYupgof5aaHQnZQ/hivewp20.png" /><media:content medium="image" url="https://images.hive.blog/DQmcXEvn33Sph3AMpajUr46mCxbM4GZFKYupgof5aaHQnZQ/hivewp20.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Phishing on Hive? No more. Solution for all Frontends.</title><link href="https://hivedocs.info/news/devops/security/2021/03/17/phishing-on-hive-no-more-solution-for-all-frontends.html" rel="alternate" type="text/html" title="Phishing on Hive? No more. Solution for all Frontends." /><published>2021-03-17T00:06:09-07:00</published><updated>2021-03-17T00:06:09-07:00</updated><id>https://hivedocs.info/news/devops/security/2021/03/17/phishing-on-hive-no-more-solution-for-all-frontends</id><content type="html" xml:base="https://hivedocs.info/news/devops/security/2021/03/17/phishing-on-hive-no-more-solution-for-all-frontends.html">&lt;div id=&quot;content-keys-defender-phishing-on-hive-no-more-solution-for-all-frontends&quot;&gt;&lt;center&gt;
 &lt;div&gt;
 &lt;h4&gt;One &amp;nbsp; &lt;i&gt;script&lt;/i&gt; &amp;nbsp; to rule them all..&lt;/h4&gt;
 
@@ -1896,104 +2107,4 @@ Follow me to be up to date with incoming development updates!
   &lt;a href=&quot;https://hive.blog/@engrave&quot;&gt;@engrave&lt;/a&gt;
 &lt;/p&gt;
 
-&lt;/SignedTransaction&gt;&lt;/div&gt;</content><author><name>engrave</name></author><category term="howto" /><category term="nano" /><category term="nodejs" /><category term="wallet" /><summary type="html">![Incoming HIVE Ledger wallet](https://files.peakd.com/file/peakd-hive/engrave/EowF9ezqJkPjHhLKMx9NjA82sqpuhKVddGJHDgbd5zyo9TsVhKtGc1714xmomVXPeLL) It's been a couple of months since @netuoso [published the initial version of the Hive Ledger App](https://hive.blog/hive-139531/@netuoso/hive-application-for-the-ledger-nano-s-x-hardware-wallet). In order to get official support from Ledger (i.e. the possibility to install it from Ledger Live), we need to meet several requirements. And I'm trying to fulfill them all so we could benefit from the hardware wallet support. # Code review First, we need to make sure that the application is stable and secure. I already made a preliminary review of the app and created a Pull Request with some fixes. The next step will be to review the code from a security perspective, following the guidelines provided by Ledger. This requires a bit more work and knowledge than validating transactions serialization etc, but we will get there. * https://github.com/netuoso/ledger-app-hive/pull/5/ # Javascript library To simplify communication with the ledger app, I created a JavaScript/Typescript library. It's really easy to use it with NodeJS. The library covers every functionality supported by the app. Example usage: ```typescript import Hive from '@engrave/ledger-app-hive'; import TransportNodeHid from '@ledgerhq/hw-transport-node-hid'; import Transport from '@ledgerhq/hw-transport'; ( async () =&amp;gt; { console.log('Unlock your ledger....'); const transport = await TransportNodeHid.create(); console.log(`Established connection with Ledger Nano S`); try { const hive = new Hive(transport); const {version, arbitraryData} = await hive.getAppConfiguration(); console.log(&quot;Current version:&quot;, version); console.log(&quot;Arbitary data enabled:&quot;, arbitraryData); const publicKey = await hive.getPublicKey(`48'/13'/0'/0'/0'`); console.log(&quot;Public key:&quot;, publicKey); } catch (e) { console.error(e); } finally { transport.close(); } })(); ``` ## API * [getAppConfiguration](#getappconfiguration) * [getPublicKey](#getpublickey) * [signTransaction](#signtransaction) ### getAppConfiguration Get current configuration for HIVE App installed on a Ledger. ```typescript async getAppConfiguration(): Promise&amp;lt;{version: string, arbitraryData: boolean}&amp;gt; ``` ### getPublicKey Retrieve public key from specified BIP32 path. You can set an additional parameter `confirm: boolean` which will ask the user to confirm the Public Key on his Ledger before returning it. ```typescript async getPublicKey(path: string, confirm?: boolean): Promise&amp;lt;{publicKey: string}&amp;gt; { ``` ### signTransaction Sign basic transactions with the specified key path. This method will return signed transactions (a transaction with additional `signatures` property). Please note that extensions are not yet supported for most transactions and operations (except `beneficiaries` for `comment_options`). ```typescript async signTransaction(tx: Transaction, path: string): Promise ``` Please be aware that the current implementation of the HIVE Ledger App does not support multisig. This could be also a cool feature and we might add it someday. For now, let's focus on publishing it. The library is open-source and available on Gitlab and NPM: * https://gitlab.com/engrave/ledger/ledger-app-hive # Ledger Companion App To prove that the application is working correctly, Ledger requires a sample Companion App. I prepared an initial design for a new wallet app and will start developing it soon. The plan is to make it as a wallet targeted at large stakeholders willing to invest in HIVE. It will be focused on governance (voting for witnesses and proposals) and the most significant chain news. ![It will be possible to create a new Hive account directly from app](https://files.peakd.com/file/peakd-hive/engrave/23wWk6s648pDWBsa1JoJunzjwiXRo9f49h5gbvBg2q65FmshLwjh7mpbHEcrqHRdQmJAg) ![Hive Ledger will display all significant parameters of your account](https://files.peakd.com/file/peakd-hive/engrave/23vsBhgnPDwTJcjG9YXJp5qfx6828bE9xVTzR6HsZW6XEskYJBs1bZoG99HkjsHBiau1W) ![It will be possible to vote on witnesses and perform other governance actions](https://files.peakd.com/file/peakd-hive/engrave/23wWnW3EENBacfW6UgsUncKqKVHKiQXRRNftBf1qpAp9GvXMJWu9x7ihqNU1wPktLyhdE) Follow me to be up to date with incoming development updates! *** **Click on the image to vote for @engrave witness:** [![banner_engrave 100.png](https://images.hive.blog/DQmUghvic5TCPPvVkB4iB7eXmgQ3RQ4L8jkVizvuCBW8RMT/banner_engrave%20100.png)](https://hivesigner.com/sign/account-witness-vote?witness=engrave&amp;amp;approve=1) &amp;lt;/div&amp;gt; See: JavaScript library for Ledger Nano S HIVE application by @engrave</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://files.peakd.com/file/peakd-hive/engrave/EowF9ezqJkPjHhLKMx9NjA82sqpuhKVddGJHDgbd5zyo9TsVhKtGc1714xmomVXPeLL" /><media:content medium="image" url="https://files.peakd.com/file/peakd-hive/engrave/EowF9ezqJkPjHhLKMx9NjA82sqpuhKVddGJHDgbd5zyo9TsVhKtGc1714xmomVXPeLL" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Hivesigner SDK rewritten in typescript</title><link href="https://hivedocs.info/news/nodejs/hivesigner/2021/02/27/hivesigner-sdk-rewritten-in-typescript.html" rel="alternate" type="text/html" title="Hivesigner SDK rewritten in typescript" /><published>2021-02-27T21:38:21-08:00</published><updated>2021-02-27T21:38:21-08:00</updated><id>https://hivedocs.info/news/nodejs/hivesigner/2021/02/27/hivesigner-sdk-rewritten-in-typescript</id><content type="html" xml:base="https://hivedocs.info/news/nodejs/hivesigner/2021/02/27/hivesigner-sdk-rewritten-in-typescript.html">&lt;div id=&quot;content-good-karma-hivesigner-sdk-rewritten-in-typescript&quot;&gt;Few days ago we have published new version of Hivesigner javascript SDK which is completely rewritten in Typescript with proper types, additional improvements on promises and written tests.
-
-![hivesigner-development-secure-way-to-sign-in-blockchain](https://images.ecency.com/p/Y2iXpRRkNSnseh3NuL6KUBitJTXrc5K2vbTzBseGEENcE)  
-
-Typescript implementation is clean and helps you to identify type of each parameters. If you are JS developer, you probably love this update because it helps you to write less buggy code. We have also written some tests to make sure each new update into library passes those tests. 
-
-As a part of this update to `hivesigner`, we made minor changes into `hive-uri` package as well, which removes dependencies to old dsteem library.
-
-New version of `hivesigner` package is x4 times smaller in size which means less addition to your website bundle, faster download for entire app in general. Shortly after release, we have made some improvements and better browser support, size x2 times smaller from legacy, still great. **Please note, however due to typescript change, you might have to check how you import library into your apps.**
-
-![hivesigner-package-size](https://images.ecency.com/DQmVHtnik5iTniaH5k2ivQKcFkKZNMQAWVLHrKY5QtNcrhw/image.png)
-
-Try new version `hivesigner@3.2.5` and let us know how it works on your apps. https://www.npmjs.com/package/hivesigner
-
-If you are using `hive-uri` in your apps, consider updating that library as well. https://www.npmjs.com/package/hive-uri
-
-Next in line is to optimise and finalise Hivesigner UI (website) changes and release update to website which will improve user experience.
-
-## Support Hivesigner  
- 
-- [Read details of Hivesigner proposal](https://ecency.com/hive/@good-karma/hivesigner-ongoing-development-and-improvement)  
- 
-&lt;center&gt;  
-[`Hivesigner proposal`](https://hivesigner.com/sign/update-proposal-votes?proposal_ids=%5B88%5D&amp;amp;approve=true) | [`Hivesearcher proposal`](https://hivesigner.com/sign/update-proposal-votes?proposal_ids=%5B114%5D&amp;amp;approve=true)  
-[![Vote for @good-karma as a witness](https://images.ecency.com/p/o1AJ9qDyyJNSpZWhUgGYc3MngFqoAN2qn9AiTn8UpLP6Qb5TL?format=match&amp;amp;mode=fit)](https://hivesigner.com/sign/account-witness-vote?witness=good-karma&amp;amp;approve=1)  
-&lt;/center&gt;&lt;/div&gt;
-&lt;script crossorigin=&quot;anonymous&quot; integrity=&quot;sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=&quot; src=&quot;https://code.jquery.com/jquery-3.5.1.slim.min.js&quot;&gt;&lt;/script&gt;
-
-&lt;script src=&quot;https://unpkg.com/steem-content-renderer&quot;&gt;&lt;/script&gt;
-
-&lt;script&gt;
-  $(document).ready(function() {
-    try {
-      const renderer = new SteemContentRenderer.DefaultRenderer({
-        baseUrl: &quot;https://hive.blog/&quot;,
-        breaks: true,
-        skipSanitization: false,
-        allowInsecureScriptTags: false,
-        addNofollowToLinks: true,
-        doNotShowImages: false,
-        ipfsPrefix: &quot;&quot;,
-        assetsWidth: 640,
-        assetsHeight: 480,
-        imageProxyFn: (url) =&gt; url,
-        usertagUrlFn: (account) =&gt; &quot;/@good-karma&quot;,
-        hashtagUrlFn: (hashtag) =&gt; &quot;/hivesigner-sdk-rewritten-in-typescript&quot;,
-        isLinkSafeFn: (url) =&gt; true,
-      });
-      
-      const inputElem = $('#content-good-karma-hivesigner-sdk-rewritten-in-typescript').html();
-      const outputElem = $('#content-good-karma-hivesigner-sdk-rewritten-in-typescript');
-      const output = renderer.render(inputElem);
-      
-      outputElem.html(output);
-    } catch(e) {
-      console.log(e);
-    }
-  });
-&lt;/script&gt;
-
-&lt;style&gt;
-  #content-good-karma-hivesigner-sdk-rewritten-in-typescript {
-    padding: 0 3rem;
-    color: #444444;
-    font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif;
-    font-size: 16px;
-    line-height: 1.8;
-    text-shadow: 0 1px 0 #ffffff;
-    padding: 0.5rem;
-  }
-  #content-good-karma-hivesigner-sdk-rewritten-in-typescript code {
-    background: white;
-  }
-  #content-good-karma-hivesigner-sdk-rewritten-in-typescript a {
-    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
-  }
-  #content-good-karma-hivesigner-sdk-rewritten-in-typescript a:hover {
-    border-bottom: 0;
-  }
-  #content-good-karma-hivesigner-sdk-rewritten-in-typescript h1 {
-    font-size: 2.2em;
-  }
-  #content-good-karma-hivesigner-sdk-rewritten-in-typescript h2, h3, h4, h5 {
-    margin-bottom: 0;
-  }
-  #content-good-karma-hivesigner-sdk-rewritten-in-typescript header small {
-    color: #999;
-    font-size: 50%;
-  }
-  #content-good-karma-hivesigner-sdk-rewritten-in-typescript img {
-    max-width: 100%;
-  }
-&lt;/style&gt;
-
-&lt;hr /&gt;
-
-&lt;p&gt;
-  See: &lt;a href=&quot;https://ecency.com/hive-139531/@good-karma/hivesigner-sdk-rewritten-in-typescript&quot;&gt;Hivesigner SDK rewritten in typescript&lt;/a&gt;
-  by
-  &lt;a href=&quot;https://hive.blog/@good-karma&quot;&gt;@good-karma&lt;/a&gt;
-&lt;/p&gt;</content><author><name>good-karma</name></author><category term="news" /><category term="nodejs" /><category term="hivesigner" /><summary type="html">Few days ago we have published new version of Hivesigner javascript SDK which is completely rewritten in Typescript with proper types, additional improvements on promises and written tests. ![hivesigner-development-secure-way-to-sign-in-blockchain](https://images.ecency.com/p/Y2iXpRRkNSnseh3NuL6KUBitJTXrc5K2vbTzBseGEENcE) Typescript implementation is clean and helps you to identify type of each parameters. If you are JS developer, you probably love this update because it helps you to write less buggy code. We have also written some tests to make sure each new update into library passes those tests. As a part of this update to `hivesigner`, we made minor changes into `hive-uri` package as well, which removes dependencies to old dsteem library. New version of `hivesigner` package is x4 times smaller in size which means less addition to your website bundle, faster download for entire app in general. Shortly after release, we have made some improvements and better browser support, size x2 times smaller from legacy, still great. **Please note, however due to typescript change, you might have to check how you import library into your apps.** ![hivesigner-package-size](https://images.ecency.com/DQmVHtnik5iTniaH5k2ivQKcFkKZNMQAWVLHrKY5QtNcrhw/image.png) Try new version `hivesigner@3.2.5` and let us know how it works on your apps. https://www.npmjs.com/package/hivesigner If you are using `hive-uri` in your apps, consider updating that library as well. https://www.npmjs.com/package/hive-uri Next in line is to optimise and finalise Hivesigner UI (website) changes and release update to website which will improve user experience. ## Support Hivesigner - [Read details of Hivesigner proposal](https://ecency.com/hive/@good-karma/hivesigner-ongoing-development-and-improvement) [`Hivesigner proposal`](https://hivesigner.com/sign/update-proposal-votes?proposal_ids=%5B88%5D&amp;amp;approve=true) | [`Hivesearcher proposal`](https://hivesigner.com/sign/update-proposal-votes?proposal_ids=%5B114%5D&amp;amp;approve=true) [![Vote for @good-karma as a witness](https://images.ecency.com/p/o1AJ9qDyyJNSpZWhUgGYc3MngFqoAN2qn9AiTn8UpLP6Qb5TL?format=match&amp;amp;mode=fit)](https://hivesigner.com/sign/account-witness-vote?witness=good-karma&amp;amp;approve=1) See: Hivesigner SDK rewritten in typescript by @good-karma</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://images.ecency.com/DQmVHtnik5iTniaH5k2ivQKcFkKZNMQAWVLHrKY5QtNcrhw/image.png" /><media:content medium="image" url="https://images.ecency.com/DQmVHtnik5iTniaH5k2ivQKcFkKZNMQAWVLHrKY5QtNcrhw/image.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>
+&lt;/SignedTransaction&gt;&lt;/div&gt;</content><author><name>engrave</name></author><category term="howto" /><category term="nano" /><category term="nodejs" /><category term="wallet" /><summary type="html">![Incoming HIVE Ledger wallet](https://files.peakd.com/file/peakd-hive/engrave/EowF9ezqJkPjHhLKMx9NjA82sqpuhKVddGJHDgbd5zyo9TsVhKtGc1714xmomVXPeLL) It's been a couple of months since @netuoso [published the initial version of the Hive Ledger App](https://hive.blog/hive-139531/@netuoso/hive-application-for-the-ledger-nano-s-x-hardware-wallet). In order to get official support from Ledger (i.e. the possibility to install it from Ledger Live), we need to meet several requirements. And I'm trying to fulfill them all so we could benefit from the hardware wallet support. # Code review First, we need to make sure that the application is stable and secure. I already made a preliminary review of the app and created a Pull Request with some fixes. The next step will be to review the code from a security perspective, following the guidelines provided by Ledger. This requires a bit more work and knowledge than validating transactions serialization etc, but we will get there. * https://github.com/netuoso/ledger-app-hive/pull/5/ # Javascript library To simplify communication with the ledger app, I created a JavaScript/Typescript library. It's really easy to use it with NodeJS. The library covers every functionality supported by the app. Example usage: ```typescript import Hive from '@engrave/ledger-app-hive'; import TransportNodeHid from '@ledgerhq/hw-transport-node-hid'; import Transport from '@ledgerhq/hw-transport'; ( async () =&amp;gt; { console.log('Unlock your ledger....'); const transport = await TransportNodeHid.create(); console.log(`Established connection with Ledger Nano S`); try { const hive = new Hive(transport); const {version, arbitraryData} = await hive.getAppConfiguration(); console.log(&quot;Current version:&quot;, version); console.log(&quot;Arbitary data enabled:&quot;, arbitraryData); const publicKey = await hive.getPublicKey(`48'/13'/0'/0'/0'`); console.log(&quot;Public key:&quot;, publicKey); } catch (e) { console.error(e); } finally { transport.close(); } })(); ``` ## API * [getAppConfiguration](#getappconfiguration) * [getPublicKey](#getpublickey) * [signTransaction](#signtransaction) ### getAppConfiguration Get current configuration for HIVE App installed on a Ledger. ```typescript async getAppConfiguration(): Promise&amp;lt;{version: string, arbitraryData: boolean}&amp;gt; ``` ### getPublicKey Retrieve public key from specified BIP32 path. You can set an additional parameter `confirm: boolean` which will ask the user to confirm the Public Key on his Ledger before returning it. ```typescript async getPublicKey(path: string, confirm?: boolean): Promise&amp;lt;{publicKey: string}&amp;gt; { ``` ### signTransaction Sign basic transactions with the specified key path. This method will return signed transactions (a transaction with additional `signatures` property). Please note that extensions are not yet supported for most transactions and operations (except `beneficiaries` for `comment_options`). ```typescript async signTransaction(tx: Transaction, path: string): Promise ``` Please be aware that the current implementation of the HIVE Ledger App does not support multisig. This could be also a cool feature and we might add it someday. For now, let's focus on publishing it. The library is open-source and available on Gitlab and NPM: * https://gitlab.com/engrave/ledger/ledger-app-hive # Ledger Companion App To prove that the application is working correctly, Ledger requires a sample Companion App. I prepared an initial design for a new wallet app and will start developing it soon. The plan is to make it as a wallet targeted at large stakeholders willing to invest in HIVE. It will be focused on governance (voting for witnesses and proposals) and the most significant chain news. ![It will be possible to create a new Hive account directly from app](https://files.peakd.com/file/peakd-hive/engrave/23wWk6s648pDWBsa1JoJunzjwiXRo9f49h5gbvBg2q65FmshLwjh7mpbHEcrqHRdQmJAg) ![Hive Ledger will display all significant parameters of your account](https://files.peakd.com/file/peakd-hive/engrave/23vsBhgnPDwTJcjG9YXJp5qfx6828bE9xVTzR6HsZW6XEskYJBs1bZoG99HkjsHBiau1W) ![It will be possible to vote on witnesses and perform other governance actions](https://files.peakd.com/file/peakd-hive/engrave/23wWnW3EENBacfW6UgsUncKqKVHKiQXRRNftBf1qpAp9GvXMJWu9x7ihqNU1wPktLyhdE) Follow me to be up to date with incoming development updates! *** **Click on the image to vote for @engrave witness:** [![banner_engrave 100.png](https://images.hive.blog/DQmUghvic5TCPPvVkB4iB7eXmgQ3RQ4L8jkVizvuCBW8RMT/banner_engrave%20100.png)](https://hivesigner.com/sign/account-witness-vote?witness=engrave&amp;amp;approve=1) &amp;lt;/div&amp;gt; See: JavaScript library for Ledger Nano S HIVE application by @engrave</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://files.peakd.com/file/peakd-hive/engrave/EowF9ezqJkPjHhLKMx9NjA82sqpuhKVddGJHDgbd5zyo9TsVhKtGc1714xmomVXPeLL" /><media:content medium="image" url="https://files.peakd.com/file/peakd-hive/engrave/EowF9ezqJkPjHhLKMx9NjA82sqpuhKVddGJHDgbd5zyo9TsVhKtGc1714xmomVXPeLL" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>
