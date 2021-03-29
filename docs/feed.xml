@@ -1,4 +1,267 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="https://hivedocs.info/feed.xml" rel="self" type="application/atom+xml" /><link href="https://hivedocs.info/" rel="alternate" type="text/html" /><updated>2021-03-29T12:43:48-07:00</updated><id>https://hivedocs.info/feed.xml</id><title type="html">Hive Chain Documentation</title><subtitle>Your resource for various levels of Hive Documentation.</subtitle><author><name>site curated by: @inertia</name></author><entry><title type="html">Changing your recovery account and recovering your account using python</title><link href="https://hivedocs.info/howto/beem/python/account/2021/03/29/changing-your-recovery-account-and-recovering-your-account-using-python.html" rel="alternate" type="text/html" title="Changing your recovery account and recovering your account using python" /><published>2021-03-29T12:39:09-07:00</published><updated>2021-03-29T12:39:09-07:00</updated><id>https://hivedocs.info/howto/beem/python/account/2021/03/29/changing-your-recovery-account-and-recovering-your-account-using-python</id><content type="html" xml:base="https://hivedocs.info/howto/beem/python/account/2021/03/29/changing-your-recovery-account-and-recovering-your-account-using-python.html"></content><author><name>primersion</name></author><category term="howto" /><category term="beem" /><category term="python" /><category term="account" /><summary type="html">![Python_logo_and_wordmark.svg.png](https://files.peakd.com/file/peakd-hive/primersion/23wqEdP3oZmPkLo8xVeU41o1fCWu7gRKCsyNCrsAm5u73bhH4nocYD6AZpwmZjPWk8gxC.png) With all of the recent scams and phishing websites here on HIVE the topic of recovery accounts has come up again. A lot of people still have there recovery account set to @steem or the account, which created their account e.g. @esteemapp or @blocktrades. Setting the recovery account to a HIVE account you trust is really important in case someone is taking over your account. Otherwise all your hardly earned HIVE will be lost and there is no way of recovering it. When choosing a recovery account it is important you choose someone you trust and someone, who can identify you. --- I myself use another account I created as my recovery account. The keys of the account are locked away and not easily accessible by an attacker. But this may not be the best solution for everyone. In particular I have set @recovery.hive as the recovery account for @primersion and @primersion as the recovery account for @recovery.hive. The only way an attacker would be able to steal all of my funds would be to gain access to the keys for both accounts and if this should happen, it is my own fault ;) --- Changing your recovery account is quite easy. You can use tools like the one created by @arcange [over here](https://tools.hivechain.app/recovery/) or the one created by @reazuliqbal you will find [over here](https://reazuliqbal.com/HiveAccountRecovery/) or change it directly on [peakd.com](https://peakd.com) under your Account Settings -&amp;gt; Keys &amp;amp; Permissions. Or you may use this small python script I wrote: ``` #!/usr/bin/python3 from beem import Hive from beem.nodelist import NodeList from beem.account import Account nodelist = NodeList() nodelist.update_nodes() nodes = nodelist.get_hive_nodes() account_name = input(&quot;Enter your account name: &quot;) owner_key = input(&quot;Enter your private owner key: &quot;) new_recovery_account = input(&quot;Enter new recovery account: &quot;) hive = Hive(node=nodes, keys=[owner_key]) account = Account(account_name, blockchain_instance=hive) account.change_recovery_account(new_recovery_account) print(&quot;Successfully changed recovery account&quot;) ``` You have to enter your account name and private owner key and the new recovery account and the script does the rest for you. Please be careful when using the script and when pasting your private owner key. --- In addition to that I wrote a small script for recovering your account (if you are using another of your accounts as a recovery account for your main account). The script is based on the information provided [here for Steem](https://developers.steem.io/tutorials-python/account_recovery) and was adapted for HIVE: ``` #!/usr/bin/python3 import beembase from beem.account import Account from beem import Hive from beem.transactionbuilder import TransactionBuilder from beemgraphenebase.account import PasswordKey from beembase.objects import Permission from beem.nodelist import NodeList # acquire hive node list nodelist = NodeList() nodelist.update_nodes() nodes = nodelist.get_hive_nodes() # capture user information username = input('account to be recovered: ') old_password = input('recent password for account: ') new_password = input('new password for account: ') recovery_account = input('account owner (recovery account): ') recovery_account_private_key = input('account owner private ACTIVE key: ') # create new account owner keys new_account_owner_private_key = PasswordKey(username, new_password, role='owner').get_private_key() new_account_owner_private_key_string = str(new_account_owner_private_key) new_account_owner_public_key = str(new_account_owner_private_key.pubkey) # create old account owner keys old_account_owner_private_key = PasswordKey(username, old_password, role='owner').get_private_key() old_account_owner_private_key_string = str(old_account_owner_private_key) old_account_owner_public_key = str(old_account_owner_private_key.pubkey) new_owner_authority = { &quot;key_auths&quot;: [ [new_account_owner_public_key, 1] ], &quot;account_auths&quot;: [], &quot;weight_threshold&quot;: 1 } # recovery request data object creation request_op_data = { 'account_to_recover': username, 'recovery_account': recovery_account, 'new_owner_authority': new_owner_authority, 'extensions': [] } # recovery request operation creation request_op = beembase.operations.Request_account_recovery(**request_op_data) print('request_op_data') print(request_op_data) # recovery request broadcast hive = Hive(node=nodes, keys=[recovery_account_private_key]) request_result = hive.finalizeOp(request_op, recovery_account, &quot;active&quot;) print('request_result') print(request_result) recent_owner_authority = { &quot;key_auths&quot;: [ [old_account_owner_public_key, 1] ], &quot;account_auths&quot;: [], &quot;weight_threshold&quot;: 1 } op_recover_account_data = { 'account_to_recover': username, 'new_owner_authority': new_owner_authority, 'recent_owner_authority': recent_owner_authority, 'extensions': [] } op_account_update_data = { &quot;account&quot;: username, &quot;active&quot;: { &quot;key_auths&quot;: [ [str(PasswordKey(username, new_password, role='active').get_private_key().pubkey), 1] ], &quot;account_auths&quot;: [], &quot;weight_threshold&quot;: 1 }, &quot;posting&quot;: { &quot;key_auths&quot;: [ [str(PasswordKey(username, new_password, role='posting').get_private_key().pubkey), 1] ], &quot;account_auths&quot;: [], &quot;weight_threshold&quot;: 1 }, &quot;memo_key&quot;: str(PasswordKey(username, new_password, role='memo').get_private_key().pubkey), &quot;json_metadata&quot;: &quot;&quot; } op_recover_account = beembase.operations.Recover_account(**op_recover_account_data) print('op_recover_account') print(op_recover_account) tb = TransactionBuilder(blockchain_instance=hive) tb.appendOps([op_recover_account]) tb.appendWif(str(old_account_owner_private_key)) tb.appendWif(str(new_account_owner_private_key)) tb.sign() result = tb.broadcast() print('result') print(result) op_account_update = beembase.operations.Account_update(**op_account_update_data) print('op_account_update') print(op_account_update) hive = Hive(node=nodes, keys=[new_account_owner_private_key]) tb = TransactionBuilder(blockchain_instance=hive) tb.appendOps([op_account_update]) tb.appendWif(str(new_account_owner_private_key)) tb.sign() result = tb.broadcast() print('result') print(result) ``` You will have to enter the account to be recovered, a recent password of the account and a new password for the account. For the actual recovery account you have to enter the account name and the private active key of the account. The remaining stuff like creating the account recovery request, recovering the account and updating the account data will be done by the script. --- ##### Please update your recovery account right now if you still have it set to @steem --- Which account are you using as your recovery account, someone you trust or just some well-known and trustworthy account? --- Like what I am doing - please support me by voting for my [HIVE](https://vote.hive.uno/?witness=primersion) / [Hive-Engine](https://votify.now.sh/primersion) witness. See: Changing your recovery account and recovering your account using python by @primersion</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://files.peakd.com/file/peakd-hive/primersion/23wqEdP3oZmPkLo8xVeU41o1fCWu7gRKCsyNCrsAm5u73bhH4nocYD6AZpwmZjPWk8gxC.png" /><media:content medium="image" url="https://files.peakd.com/file/peakd-hive/primersion/23wqEdP3oZmPkLo8xVeU41o1fCWu7gRKCsyNCrsAm5u73bhH4nocYD6AZpwmZjPWk8gxC.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Making a Decentralized Game on Hive - Part 3</title><link href="https://hivedocs.info/howto/nodejs/2021/03/28/making-a-decentralized-game-on-hive-part-3.html" rel="alternate" type="text/html" title="Making a Decentralized Game on Hive - Part 3" /><published>2021-03-28T13:31:39-07:00</published><updated>2021-03-28T13:31:39-07:00</updated><id>https://hivedocs.info/howto/nodejs/2021/03/28/making-a-decentralized-game-on-hive-part-3</id><content type="html" xml:base="https://hivedocs.info/howto/nodejs/2021/03/28/making-a-decentralized-game-on-hive-part-3.html">&lt;div id=&quot;content-mahdiyari-making-a-decentralized-game-on-hive-part-3&quot;&gt;&lt;center&gt;![coding-1853305_1280.jpg](https://images.hive.blog/DQmeBMvQ9RAne3j2qH1RrtDaWEyQ2bZo81ik3wsNXYGbp3E/coding-1853305_1280.jpg)&lt;/center&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="https://hivedocs.info/feed.xml" rel="self" type="application/atom+xml" /><link href="https://hivedocs.info/" rel="alternate" type="text/html" /><updated>2021-03-29T12:46:29-07:00</updated><id>https://hivedocs.info/feed.xml</id><title type="html">Hive Chain Documentation</title><subtitle>Your resource for various levels of Hive Documentation.</subtitle><author><name>site curated by: @inertia</name></author><entry><title type="html">Changing your recovery account and recovering your account using python</title><link href="https://hivedocs.info/howto/beem/python/account/2021/03/29/changing-your-recovery-account-and-recovering-your-account-using-python.html" rel="alternate" type="text/html" title="Changing your recovery account and recovering your account using python" /><published>2021-03-29T12:39:09-07:00</published><updated>2021-03-29T12:39:09-07:00</updated><id>https://hivedocs.info/howto/beem/python/account/2021/03/29/changing-your-recovery-account-and-recovering-your-account-using-python</id><content type="html" xml:base="https://hivedocs.info/howto/beem/python/account/2021/03/29/changing-your-recovery-account-and-recovering-your-account-using-python.html">&lt;div id=&quot;content-primersion-changing-your-recovery-account-and-recovering-your-account-using-python&quot;&gt;
+![Python_logo_and_wordmark.svg.png](https://files.peakd.com/file/peakd-hive/primersion/23wqEdP3oZmPkLo8xVeU41o1fCWu7gRKCsyNCrsAm5u73bhH4nocYD6AZpwmZjPWk8gxC.png)
+
+
+With all of the recent scams and phishing websites here on HIVE the topic of recovery accounts has come up again. A lot of people still have there recovery account set to @steem or the account, which created their account e.g. @esteemapp or @blocktrades.
+
+Setting the recovery account to a HIVE account you trust is really important in case someone is taking over your account. Otherwise all your hardly earned HIVE will be lost and there is no way of recovering it. When choosing a recovery account it is important you choose someone you trust and someone, who can identify you.
+
+---
+
+I myself use another account I created as my recovery account. The keys of the account are locked away and not easily accessible by an attacker. But this may not be the best solution for everyone. In particular I have set @recovery.hive as the recovery account for @primersion and @primersion as the recovery account for @recovery.hive.
+
+The only way an attacker would be able to steal all of my funds would be to gain access to the keys for both accounts and if this should happen, it is my own fault ;)
+
+---
+
+Changing your recovery account is quite easy. You can use tools like the one created by @arcange [over here](https://tools.hivechain.app/recovery/) or the one created by @reazuliqbal you will find [over here](https://reazuliqbal.com/HiveAccountRecovery/) or change it directly on [peakd.com](https://peakd.com) under your Account Settings -&amp;gt; Keys &amp;amp; Permissions. Or you may use this small python script I wrote:
+
+```
+#!/usr/bin/python3
+
+from beem import Hive
+from beem.nodelist import NodeList
+from beem.account import Account
+
+nodelist = NodeList()
+nodelist.update_nodes()
+nodes = nodelist.get_hive_nodes()
+
+account_name = input(&quot;Enter your account name: &quot;)
+owner_key = input(&quot;Enter your private owner key: &quot;)
+new_recovery_account = input(&quot;Enter new recovery account: &quot;)
+
+hive = Hive(node=nodes, keys=[owner_key])
+account = Account(account_name, blockchain_instance=hive)
+account.change_recovery_account(new_recovery_account)
+
+print(&quot;Successfully changed recovery account&quot;)
+```
+
+You have to enter your account name and private owner key and the new recovery account and the script does the rest for you. Please be careful when using the script and when pasting your private owner key.
+
+---
+
+In addition to that I wrote a small script for recovering your account (if you are using another of your accounts as a recovery account for your main account). The script is based on the information provided [here for Steem](https://developers.steem.io/tutorials-python/account_recovery) and was adapted for HIVE:
+
+```
+#!/usr/bin/python3
+
+import beembase
+from beem.account import Account
+from beem import Hive
+from beem.transactionbuilder import TransactionBuilder
+from beemgraphenebase.account import PasswordKey
+from beembase.objects import Permission
+from beem.nodelist import NodeList
+
+# acquire hive node list
+nodelist = NodeList()
+nodelist.update_nodes()
+nodes = nodelist.get_hive_nodes()
+
+# capture user information
+username = input('account to be recovered: ')
+old_password = input('recent password for account: ')
+new_password = input('new password for account: ')
+
+recovery_account = input('account owner (recovery account): ')
+recovery_account_private_key = input('account owner private ACTIVE key: ')
+
+# create new account owner keys
+new_account_owner_private_key = PasswordKey(username, new_password, role='owner').get_private_key()
+new_account_owner_private_key_string = str(new_account_owner_private_key)
+new_account_owner_public_key = str(new_account_owner_private_key.pubkey)
+
+# create old account owner keys
+old_account_owner_private_key = PasswordKey(username, old_password, role='owner').get_private_key()
+old_account_owner_private_key_string = str(old_account_owner_private_key)
+old_account_owner_public_key = str(old_account_owner_private_key.pubkey)
+
+new_owner_authority = {
+    &quot;key_auths&quot;: [
+        [new_account_owner_public_key, 1]
+    ],
+    &quot;account_auths&quot;: [],
+    &quot;weight_threshold&quot;: 1
+}
+
+# recovery request data object creation
+request_op_data = {
+    'account_to_recover': username,
+    'recovery_account': recovery_account,
+    'new_owner_authority': new_owner_authority,
+    'extensions': []
+}
+
+# recovery request operation creation
+request_op = beembase.operations.Request_account_recovery(**request_op_data)
+
+print('request_op_data')
+print(request_op_data)
+
+# recovery request broadcast
+hive = Hive(node=nodes, keys=[recovery_account_private_key])
+request_result = hive.finalizeOp(request_op, recovery_account, &quot;active&quot;)
+
+print('request_result')
+print(request_result)
+
+recent_owner_authority = {
+    &quot;key_auths&quot;: [
+        [old_account_owner_public_key, 1]
+    ],
+    &quot;account_auths&quot;: [],
+    &quot;weight_threshold&quot;: 1
+}
+
+op_recover_account_data = {
+    'account_to_recover': username,
+    'new_owner_authority': new_owner_authority,
+    'recent_owner_authority': recent_owner_authority,
+    'extensions': []
+}
+
+op_account_update_data = {
+    &quot;account&quot;: username,
+    &quot;active&quot;: {
+        &quot;key_auths&quot;: [
+            [str(PasswordKey(username, new_password, role='active').get_private_key().pubkey), 1]
+        ],
+        &quot;account_auths&quot;: [],
+        &quot;weight_threshold&quot;: 1
+    },
+    &quot;posting&quot;: {
+        &quot;key_auths&quot;: [
+            [str(PasswordKey(username, new_password, role='posting').get_private_key().pubkey), 1]
+        ],
+        &quot;account_auths&quot;: [],
+        &quot;weight_threshold&quot;: 1
+    },
+    &quot;memo_key&quot;: str(PasswordKey(username, new_password, role='memo').get_private_key().pubkey),
+    &quot;json_metadata&quot;: &quot;&quot;
+}
+
+op_recover_account = beembase.operations.Recover_account(**op_recover_account_data)
+
+print('op_recover_account')
+print(op_recover_account)
+
+tb = TransactionBuilder(blockchain_instance=hive)
+tb.appendOps([op_recover_account])
+tb.appendWif(str(old_account_owner_private_key))
+tb.appendWif(str(new_account_owner_private_key))
+tb.sign()
+
+result = tb.broadcast()
+print('result')
+print(result)
+
+op_account_update = beembase.operations.Account_update(**op_account_update_data)
+
+print('op_account_update')
+print(op_account_update)
+
+hive = Hive(node=nodes, keys=[new_account_owner_private_key])
+tb = TransactionBuilder(blockchain_instance=hive)
+tb.appendOps([op_account_update])
+tb.appendWif(str(new_account_owner_private_key))
+tb.sign()
+
+result = tb.broadcast()
+
+print('result')
+print(result)
+```
+
+You will have to enter the account to be recovered, a recent password of the account and a new password for the account. For the actual recovery account you have to enter the account name and the private active key of the account. The remaining stuff like creating the account recovery request, recovering the account and updating the account data will be done by the script.
+
+---
+
+##### Please update your recovery account right now if you still have it set to @steem
+
+---
+
+Which account are you using as your recovery account, someone you trust or just some well-known and trustworthy account?
+
+---
+
+Like what I am doing - please support me by voting for my [HIVE](https://vote.hive.uno/?witness=primersion) / [Hive-Engine](https://votify.now.sh/primersion) witness.&lt;/div&gt;
+&lt;script crossorigin=&quot;anonymous&quot; integrity=&quot;sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=&quot; src=&quot;https://code.jquery.com/jquery-3.5.1.slim.min.js&quot;&gt;&lt;/script&gt;
+
+&lt;script src=&quot;https://unpkg.com/steem-content-renderer&quot;&gt;&lt;/script&gt;
+
+&lt;script&gt;
+  $(document).ready(function() {
+    try {
+      const renderer = new SteemContentRenderer.DefaultRenderer({
+        baseUrl: &quot;https://hive.blog/&quot;,
+        breaks: true,
+        skipSanitization: false,
+        allowInsecureScriptTags: false,
+        addNofollowToLinks: true,
+        doNotShowImages: false,
+        ipfsPrefix: &quot;&quot;,
+        assetsWidth: 640,
+        assetsHeight: 480,
+        imageProxyFn: (url) =&gt; url,
+        usertagUrlFn: (account) =&gt; &quot;/@primersion&quot;,
+        hashtagUrlFn: (hashtag) =&gt; &quot;/changing-your-recovery-account-and-recovering-your-account-using-python&quot;,
+        isLinkSafeFn: (url) =&gt; true,
+      });
+      
+      const inputElem = $('#content-primersion-changing-your-recovery-account-and-recovering-your-account-using-python').html();
+      const outputElem = $('#content-primersion-changing-your-recovery-account-and-recovering-your-account-using-python');
+      const output = renderer.render(inputElem);
+      
+      outputElem.html(output);
+    } catch(e) {
+      console.log(e);
+    }
+  });
+&lt;/script&gt;
+
+&lt;style&gt;
+  #content-primersion-changing-your-recovery-account-and-recovering-your-account-using-python {
+    padding: 0 3rem;
+    color: #444444;
+    font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.8;
+    text-shadow: 0 1px 0 #ffffff;
+    padding: 0.5rem;
+  }
+  #content-primersion-changing-your-recovery-account-and-recovering-your-account-using-python code {
+    background: white;
+  }
+  #content-primersion-changing-your-recovery-account-and-recovering-your-account-using-python a {
+    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
+  }
+  #content-primersion-changing-your-recovery-account-and-recovering-your-account-using-python a:hover {
+    border-bottom: 0;
+  }
+  #content-primersion-changing-your-recovery-account-and-recovering-your-account-using-python h1 {
+    font-size: 2.2em;
+  }
+  #content-primersion-changing-your-recovery-account-and-recovering-your-account-using-python h2, h3, h4, h5 {
+    margin-bottom: 0;
+  }
+  #content-primersion-changing-your-recovery-account-and-recovering-your-account-using-python header small {
+    color: #999;
+    font-size: 50%;
+  }
+  #content-primersion-changing-your-recovery-account-and-recovering-your-account-using-python img {
+    max-width: 100%;
+  }
+&lt;/style&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;
+  See: &lt;a href=&quot;https://peakd.com/hive/@primersion/changing-your-recovery-account-and-recovering-your-account-using-python&quot;&gt;Changing your recovery account and recovering your account using python&lt;/a&gt;
+  by
+  &lt;a href=&quot;https://hive.blog/@primersion&quot;&gt;@primersion&lt;/a&gt;
+&lt;/p&gt;</content><author><name>primersion</name></author><category term="howto" /><category term="beem" /><category term="python" /><category term="account" /><summary type="html">![Python_logo_and_wordmark.svg.png](https://files.peakd.com/file/peakd-hive/primersion/23wqEdP3oZmPkLo8xVeU41o1fCWu7gRKCsyNCrsAm5u73bhH4nocYD6AZpwmZjPWk8gxC.png) With all of the recent scams and phishing websites here on HIVE the topic of recovery accounts has come up again. A lot of people still have there recovery account set to @steem or the account, which created their account e.g. @esteemapp or @blocktrades. Setting the recovery account to a HIVE account you trust is really important in case someone is taking over your account. Otherwise all your hardly earned HIVE will be lost and there is no way of recovering it. When choosing a recovery account it is important you choose someone you trust and someone, who can identify you. --- I myself use another account I created as my recovery account. The keys of the account are locked away and not easily accessible by an attacker. But this may not be the best solution for everyone. In particular I have set @recovery.hive as the recovery account for @primersion and @primersion as the recovery account for @recovery.hive. The only way an attacker would be able to steal all of my funds would be to gain access to the keys for both accounts and if this should happen, it is my own fault ;) --- Changing your recovery account is quite easy. You can use tools like the one created by @arcange [over here](https://tools.hivechain.app/recovery/) or the one created by @reazuliqbal you will find [over here](https://reazuliqbal.com/HiveAccountRecovery/) or change it directly on [peakd.com](https://peakd.com) under your Account Settings -&amp;gt; Keys &amp;amp; Permissions. Or you may use this small python script I wrote: ``` #!/usr/bin/python3 from beem import Hive from beem.nodelist import NodeList from beem.account import Account nodelist = NodeList() nodelist.update_nodes() nodes = nodelist.get_hive_nodes() account_name = input(&quot;Enter your account name: &quot;) owner_key = input(&quot;Enter your private owner key: &quot;) new_recovery_account = input(&quot;Enter new recovery account: &quot;) hive = Hive(node=nodes, keys=[owner_key]) account = Account(account_name, blockchain_instance=hive) account.change_recovery_account(new_recovery_account) print(&quot;Successfully changed recovery account&quot;) ``` You have to enter your account name and private owner key and the new recovery account and the script does the rest for you. Please be careful when using the script and when pasting your private owner key. --- In addition to that I wrote a small script for recovering your account (if you are using another of your accounts as a recovery account for your main account). The script is based on the information provided [here for Steem](https://developers.steem.io/tutorials-python/account_recovery) and was adapted for HIVE: ``` #!/usr/bin/python3 import beembase from beem.account import Account from beem import Hive from beem.transactionbuilder import TransactionBuilder from beemgraphenebase.account import PasswordKey from beembase.objects import Permission from beem.nodelist import NodeList # acquire hive node list nodelist = NodeList() nodelist.update_nodes() nodes = nodelist.get_hive_nodes() # capture user information username = input('account to be recovered: ') old_password = input('recent password for account: ') new_password = input('new password for account: ') recovery_account = input('account owner (recovery account): ') recovery_account_private_key = input('account owner private ACTIVE key: ') # create new account owner keys new_account_owner_private_key = PasswordKey(username, new_password, role='owner').get_private_key() new_account_owner_private_key_string = str(new_account_owner_private_key) new_account_owner_public_key = str(new_account_owner_private_key.pubkey) # create old account owner keys old_account_owner_private_key = PasswordKey(username, old_password, role='owner').get_private_key() old_account_owner_private_key_string = str(old_account_owner_private_key) old_account_owner_public_key = str(old_account_owner_private_key.pubkey) new_owner_authority = { &quot;key_auths&quot;: [ [new_account_owner_public_key, 1] ], &quot;account_auths&quot;: [], &quot;weight_threshold&quot;: 1 } # recovery request data object creation request_op_data = { 'account_to_recover': username, 'recovery_account': recovery_account, 'new_owner_authority': new_owner_authority, 'extensions': [] } # recovery request operation creation request_op = beembase.operations.Request_account_recovery(**request_op_data) print('request_op_data') print(request_op_data) # recovery request broadcast hive = Hive(node=nodes, keys=[recovery_account_private_key]) request_result = hive.finalizeOp(request_op, recovery_account, &quot;active&quot;) print('request_result') print(request_result) recent_owner_authority = { &quot;key_auths&quot;: [ [old_account_owner_public_key, 1] ], &quot;account_auths&quot;: [], &quot;weight_threshold&quot;: 1 } op_recover_account_data = { 'account_to_recover': username, 'new_owner_authority': new_owner_authority, 'recent_owner_authority': recent_owner_authority, 'extensions': [] } op_account_update_data = { &quot;account&quot;: username, &quot;active&quot;: { &quot;key_auths&quot;: [ [str(PasswordKey(username, new_password, role='active').get_private_key().pubkey), 1] ], &quot;account_auths&quot;: [], &quot;weight_threshold&quot;: 1 }, &quot;posting&quot;: { &quot;key_auths&quot;: [ [str(PasswordKey(username, new_password, role='posting').get_private_key().pubkey), 1] ], &quot;account_auths&quot;: [], &quot;weight_threshold&quot;: 1 }, &quot;memo_key&quot;: str(PasswordKey(username, new_password, role='memo').get_private_key().pubkey), &quot;json_metadata&quot;: &quot;&quot; } op_recover_account = beembase.operations.Recover_account(**op_recover_account_data) print('op_recover_account') print(op_recover_account) tb = TransactionBuilder(blockchain_instance=hive) tb.appendOps([op_recover_account]) tb.appendWif(str(old_account_owner_private_key)) tb.appendWif(str(new_account_owner_private_key)) tb.sign() result = tb.broadcast() print('result') print(result) op_account_update = beembase.operations.Account_update(**op_account_update_data) print('op_account_update') print(op_account_update) hive = Hive(node=nodes, keys=[new_account_owner_private_key]) tb = TransactionBuilder(blockchain_instance=hive) tb.appendOps([op_account_update]) tb.appendWif(str(new_account_owner_private_key)) tb.sign() result = tb.broadcast() print('result') print(result) ``` You will have to enter the account to be recovered, a recent password of the account and a new password for the account. For the actual recovery account you have to enter the account name and the private active key of the account. The remaining stuff like creating the account recovery request, recovering the account and updating the account data will be done by the script. --- ##### Please update your recovery account right now if you still have it set to @steem --- Which account are you using as your recovery account, someone you trust or just some well-known and trustworthy account? --- Like what I am doing - please support me by voting for my [HIVE](https://vote.hive.uno/?witness=primersion) / [Hive-Engine](https://votify.now.sh/primersion) witness. See: Changing your recovery account and recovering your account using python by @primersion</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://files.peakd.com/file/peakd-hive/primersion/23wqEdP3oZmPkLo8xVeU41o1fCWu7gRKCsyNCrsAm5u73bhH4nocYD6AZpwmZjPWk8gxC.png" /><media:content medium="image" url="https://files.peakd.com/file/peakd-hive/primersion/23wqEdP3oZmPkLo8xVeU41o1fCWu7gRKCsyNCrsAm5u73bhH4nocYD6AZpwmZjPWk8gxC.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Making a Decentralized Game on Hive - Part 3</title><link href="https://hivedocs.info/howto/nodejs/2021/03/28/making-a-decentralized-game-on-hive-part-3.html" rel="alternate" type="text/html" title="Making a Decentralized Game on Hive - Part 3" /><published>2021-03-28T13:31:39-07:00</published><updated>2021-03-28T13:31:39-07:00</updated><id>https://hivedocs.info/howto/nodejs/2021/03/28/making-a-decentralized-game-on-hive-part-3</id><content type="html" xml:base="https://hivedocs.info/howto/nodejs/2021/03/28/making-a-decentralized-game-on-hive-part-3.html">&lt;div id=&quot;content-mahdiyari-making-a-decentralized-game-on-hive-part-3&quot;&gt;&lt;center&gt;![coding-1853305_1280.jpg](https://images.hive.blog/DQmeBMvQ9RAne3j2qH1RrtDaWEyQ2bZo81ik3wsNXYGbp3E/coding-1853305_1280.jpg)&lt;/center&gt;
 
 This part took a little longer because it was actually time-consuming (also I took a little break). The process is getting harder so it might take a few days longer than expected for the coming parts but I will do my best.
 
