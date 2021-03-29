@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta property="og:image" content="/assets/images/sticker.png" /><!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>Making a Decentralized Game on Hive - Part 3 | Hive Chain Documentation</title>
+<meta name="generator" content="Jekyll v4.1.1" />
+<meta property="og:title" content="Making a Decentralized Game on Hive - Part 3" />
+<meta name="author" content="mahdiyari" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="In the previous parts, we made a simple front-end with login functionality and initialized our API and back-end application with streaming." />
+<meta property="og:description" content="In the previous parts, we made a simple front-end with login functionality and initialized our API and back-end application with streaming." />
+<link rel="canonical" href="https://hive.blog/hive-139531/@mahdiyari/making-a-decentralized-game-on-hive-part-3" />
+<meta property="og:url" content="https://hive.blog/hive-139531/@mahdiyari/making-a-decentralized-game-on-hive-part-3" />
+<meta property="og:site_name" content="Hive Chain Documentation" />
+<meta property="og:image" content="https://images.hive.blog/DQmeBMvQ9RAne3j2qH1RrtDaWEyQ2bZo81ik3wsNXYGbp3E/coding-1853305_1280.jpg" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2021-03-28T13:31:39-07:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="https://images.hive.blog/DQmeBMvQ9RAne3j2qH1RrtDaWEyQ2bZo81ik3wsNXYGbp3E/coding-1853305_1280.jpg" />
+<meta property="twitter:title" content="Making a Decentralized Game on Hive - Part 3" />
+<script type="application/ld+json">
+{"description":"In the previous parts, we made a simple front-end with login functionality and initialized our API and back-end application with streaming.","datePublished":"2021-03-28T13:31:39-07:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://hive.blog/hive-139531/@mahdiyari/making-a-decentralized-game-on-hive-part-3"},"@type":"BlogPosting","url":"https://hive.blog/hive-139531/@mahdiyari/making-a-decentralized-game-on-hive-part-3","image":"https://images.hive.blog/DQmeBMvQ9RAne3j2qH1RrtDaWEyQ2bZo81ik3wsNXYGbp3E/coding-1853305_1280.jpg","author":{"@type":"Person","name":"mahdiyari"},"headline":"Making a Decentralized Game on Hive - Part 3","dateModified":"2021-03-28T13:31:39-07:00","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://hivedocs.info/feed.xml" title="Hive Chain Documentation" /><script>
+if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNotTrack === "yes" || navigator.msDoNotTrack === "1")) {
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-161692811-1', 'auto');
+  ga('send', 'pageview');
+}
+</script>
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/turbolinks/5.2.0/turbolinks.js" integrity="sha256-iM4Yzi/zLj/IshPWMC1IluRxTtRjMqjPGd97TZ9yYpU=" crossorigin="anonymous"></script>
+  <script src='https://unpkg.com/steem-content-renderer'></script>
+  <script>
+    (function () {
+      if (Turbolinks.supported) {
+        Turbolinks.setProgressBarDelay(500);
+      }
+    })();
+  </script>
+  <script src="/assets/javascript/universal-bridge-against-phishing.js"></script>
+  <script src="/assets/javascript/lazysizes.min.js" async=""></script>
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Cousine|Inconsolata" rel="stylesheet">
+  <link rel="shortcut icon" type="image/png" href="/assets/images/favicon.png">
+</head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Hive Chain Documentation</a>
+
+      <nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/news/">News</a><a class="page-link" href="/howto/">How To</a><a class="page-link" href="/links/">Useful Links</a><!-- HTML elements for search -->
+          <input type="text" id="search-input" placeholder="Search" />
+          
+          <ul id="results-container"></ul>
+
+          <script src="/assets/javascript/search.js"></script>
+          <script>
+            var sjs = SimpleJekyllSearch({
+              searchInput: document.getElementById('search-input'),
+              resultsContainer: document.getElementById('results-container'),
+              json: '/search.json'
+            })
+          </script>
+          <!-- <form style="float: right;" class="form-inline" method="get" action="http://www.google.com/search">
+            <input type="hidden" name="sitesearch" value="hivedocs.info" />
+            <input type="text" name="q" maxlength="255" placeholder="Search" />
+          </form> -->
+          
+          
+          <a href="#" onclick="try { $('#topics-container').slideToggle(); } catch { document.getElementById('topics-container').style.display = 'block'; }; return false;">Topics &#187;</a>
+          
+          <ul id="topics-container" style="display: none;"><li><a class="page-link" href="/account-recovery/"><nobr>Account Recovery</nobr></a></li><li><a class="page-link" href="/core-development/"><nobr>Core Development</nobr></a></li><li><a class="page-link" href="/dapps/"><nobr>Dapps</nobr></a></li><li><a class="page-link" href="/docker/"><nobr>Docker</nobr></a></li><li><a class="page-link" href="/hardfork/"><nobr>Hardfork</nobr></a></li><li><a class="page-link" href="/hivemind/"><nobr>Hivemind</nobr></a></li><li><a class="page-link" href="/javascript/"><nobr>Javascript</nobr></a></li><li><a class="page-link" href="/multisig/"><nobr>Multisig</nobr></a></li><li><a class="page-link" href="/python/"><nobr>Python</nobr></a></li><li><a class="page-link" href="/ruby/"><nobr>Ruby</nobr></a></li><li><a class="page-link" href="/testnet/"><nobr>Testnet</nobr></a></li><li><a class="page-link" href="/tools/"><nobr>Tools</nobr></a></li></ul>
+        </div>
+      </nav>
+  </div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Making a Decentralized Game on Hive - Part 3</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2021-03-28T13:31:39-07:00" itemprop="datePublished">Mar 28, 2021
+      </time>• <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">
+          <a href="https://hive.blog/@mahdiyari">mahdiyari</a>
+        </span></span></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <div id="content-mahdiyari-making-a-decentralized-game-on-hive-part-3"><center>![coding-1853305_1280.jpg](https://images.hive.blog/DQmeBMvQ9RAne3j2qH1RrtDaWEyQ2bZo81ik3wsNXYGbp3E/coding-1853305_1280.jpg)</center>
+
+This part took a little longer because it was actually time-consuming (also I took a little break). The process is getting harder so it might take a few days longer than expected for the coming parts but I will do my best.
+
+In the previous parts, we made a simple front-end with login functionality and initialized our API and back-end application with streaming. ([Part1](https://hive.blog/hive-139531/@mahdiyari/making-a-decentralized-game-on-hive-tic-tac-toe-part-1) and [Part2](https://hive.blog/hive-139531/@mahdiyari/making-a-decentralized-game-on-hive-part-2))
+## MySQL Setup
+You can use apps like [AMPPS](https://www.ampps.com/) which comes with MySQL and other tools like PHPMyAdmin (one of the best MySQL management apps) or install MySQL directly. I have AMMPS on windows and use MySQL docker on Linux. 
+
+MySQL docker installation:
+```
+docker pull mysql/mysql-server:latest
+```
+I create a folder `/root/mysql-docker1` and put the MySQL config file there `my.cnf` and another folder `data` for holding the database files.
+Running on port `127.0.0.1:3306`:
+```
+docker run --name=mysql1 \
+--mount type=bind,src=/root/mysql-docker1/my.cnf,dst=/etc/my.cnf \
+--mount type=bind,src=/root/mysql-docker1/data,dst=/var/lib/mysql \
+-p 127.0.0.1:3306:3306 -d mysql/mysql-server:latest
+```
+There are different ways to tune your MySQL server based on your hardware which I'm not going to talk about. The following config is for medium-range hardware (32GB ram).
+`my.cnf`:
+```
+[mysqld]
+skip_name_resolve
+user=mysql
+default_authentication_plugin = mysql_native_password
+
+symbolic-links=0
+character_set_server=utf8mb4
+collation_server=utf8mb4_general_ci
+innodb_max_dirty_pages_pct = 90
+innodb_max_dirty_pages_pct_lwm = 10
+innodb_flush_neighbors = 0
+innodb_undo_log_truncate=off
+max_connect_errors = 1000000
+
+# InnoDB Settings
+innodb_file_per_table
+innodb_log_files_in_group       = 2
+innodb_open_files               = 4000
+default_storage_engine          = InnoDB
+innodb_buffer_pool_instances    = 8     # Use 1 instance per 1GB of InnoDB pool size
+innodb_buffer_pool_size         = 16G    # Use up to 70-80% of RAM
+innodb_flush_method             = O_DIRECT_NO_FSYNC
+innodb_log_buffer_size          = 64M
+innodb_log_file_size            = 10G
+innodb_stats_on_metadata        = 0
+
+# tune
+innodb_doublewrite= 1
+innodb_thread_concurrency       = 0
+innodb_flush_log_at_trx_commit  = 0
+innodb_lru_scan_depth           = 2048
+innodb_page_cleaners            = 4
+join_buffer_size                = 256K
+sort_buffer_size                = 256K
+innodb_use_native_aio           = 1
+innodb_stats_persistent         = 1
+
+innodb_adaptive_flushing        = 1
+innodb_read_io_threads          = 16
+innodb_write_io_threads         = 16
+innodb_io_capacity              = 1500
+innodb_io_capacity_max          = 2500
+innodb_purge_threads            = 4
+innodb_adaptive_hash_index      = 0
+max_prepared_stmt_count         = 1000000
+innodb_monitor_enable           = '%'
+performance_schema              = ON
+key_buffer_size = 512M
+# Connection Settings
+max_connections                 = 2000   # UPD
+back_log                        = 3000
+interactive_timeout             = 180
+wait_timeout                    = 10
+table_open_cache                = 200000 # UPD
+table_open_cache_instances      = 64
+open_files_limit                = 100000 # UPD
+```
+Note: restart MySQL server after updating the`my.cnf` file.
+
+MySQL password on AMMPS is `mysql` and on docker setup, I think you get the password from `docker logs mysql1`. Anyway, there are many documentations about MySQL already on the internet.
+
+Create a database `tictactoe`. It's easier with tools like PHPMyAdmin if you are using AMPPS. Or try HeidiSQL.
+Here is the SQL command for creating the database:
+```
+CREATE DATABASE `tictactoe`;
+```
+***
+## Development
+Let's create a config file for holding MySQL login information for our app. I will put this file as `config.example.js` in repository and you have to rename it manually.
+`config.js`:
+```
+const config = {
+  dbName: 'tictactoe',
+  dbUser: 'root',
+  dbPassword: 'password',
+  dbHost: '127.0.0.1',
+  dbPort: 3306
+}
+
+module.exports = config
+```
+***
+I have a personal code for MySQL connection pooling. It simply makes a custom async function just like the original connect function of [mysqljs](https://github.com/mysqljs/mysql) library but for pooling connections.
+`helpers/mysql.js`:
+```
+const mysql = require('mysql')
+const config = require('../config')
+const pool = mysql.createPool({
+  connectionLimit: 5,
+  host: config.dbHost,
+  port: config.dbPort,
+  user: config.dbUser,
+  password: config.dbPassword,
+  database: config.dbName,
+  charset: 'utf8mb4'
+})
+
+// Rewriting MySQL query method as a promise
+const con = {}
+con.query = async (query, val) =&gt; {
+  if (val) {
+    const qu = await new Promise((resolve, reject) =&gt; {
+      pool.query(query, val, (error, results) =&gt; {
+        if (error) reject(new Error(error))
+        resolve(results)
+      })
+    })
+    return qu
+  } else {
+    const qu = await new Promise((resolve, reject) =&gt; {
+      pool.query(query, (error, results) =&gt; {
+        if (error) reject(new Error(error))
+        resolve(results)
+      })
+    })
+    return qu
+  }
+}
+
+module.exports = con
+```
+It creates a pool of 5 connections which is more than enough for our game.
+And of course:
+```
+npm install mysql
+```
+***
+#### Initializing database
+We make a function to create necessary tables if they don't exist already.
+`helpers/initDatabase.js`:
+```
+const mysql = require('./mysql')
+
+/**
+ * id, game_id, player1, player2, starting_player, status, winner
+ */
+const tableGames =
+  'CREATE TABLE IF NOT EXISTS `tictactoe`.`games` ( `id` INT NOT NULL AUTO_INCREMENT , ' +
+  '`game_id` TINYTEXT NOT NULL , ' +
+  '`player1` TINYTEXT NOT NULL , `player2` TINYTEXT NULL DEFAULT NULL , ' +
+  '`starting_player` TINYTEXT NOT NULL , `status` TINYTEXT NULL , ' +
+  '`winner` TINYTEXT NULL DEFAULT NULL , PRIMARY KEY  (`id`)) ' +
+  'ENGINE = InnoDB CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;'
+
+/**
+ * id, game_id, player, col, row
+ */
+const tableMoves =
+  'CREATE TABLE IF NOT EXISTS `tictactoe`.`moves` ( `id` INT NOT NULL AUTO_INCREMENT , ' +
+  '`game_id` TINYTEXT NOT NULL , `player` TINYTEXT NOT NULL , ' +
+  '`col` INT(1) NOT NULL , `row` INT(1) NOT NULL , ' +
+  'PRIMARY KEY  (`id`)) ENGINE = InnoDB CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;'
+
+const tableRquests =
+  'CREATE TABLE IF NOT EXISTS `tictactoe`.`requests` ( `id` INT NOT NULL AUTO_INCREMENT , ' +
+  '`game_id` TINYTEXT NOT NULL , `player` TINYTEXT NOT NULL , `status` TINYTEXT NOT NULL , ' +
+  'PRIMARY KEY  (`id`)) ENGINE = InnoDB CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;'
+
+const initDatabase = async () =&gt; {
+  await mysql.query(tableGames)
+  await mysql.query(tableMoves)
+  await mysql.query(tableRquests)
+}
+
+module.exports = initDatabase
+```
+
+#### Created tables
+`games`
+<center>![tablesqlgames.png](https://images.hive.blog/DQmVCMyNZax6xd6kCc2VZijGjMa9Qbt8Myeev7jF8KmcqXe/image.png)</center>
+
+`moves`
+<center>![tablesqlmoves.png](https://images.hive.blog/DQmVwyDZg1N3KEteDgfA5NdMHeUkjpngHZEmizBXxhh3XPs/image.png)</center>
+
+`requests`
+<center>![image.png](https://images.hive.blog/DQmQLxfwKEfWSQ614vWb6qfUNVMSyiFgnKEh5nSWcKYFQQv/image.png)</center>
+***
+#### Updating main application
+Now we can complete the game methods in `index.js`:
+`createGame`
+```
+const createGame = async (data, user) =&gt; {
+  if (!data || !data.id || !data.starting_player) {
+    return
+  }
+  // validating
+  if (
+    data.id.length !== 20 ||
+    (data.starting_player !== 'first' &amp;&amp; data.starting_player !== 'second')
+  ) {
+    return
+  }
+  // Check already existing games
+  const duplicate = await mysql.query(
+    'SELECT `id` FROM `games` WHERE `game_id`= ?',
+    [data.id]
+  )
+  if (duplicate &amp;&amp; Array.isArray(duplicate) &amp;&amp; duplicate.length &gt; 0) {
+    return
+  }
+  // Add game to database
+  await mysql.query(
+    'INSERT INTO `games`(`game_id`, `player1`, `starting_player`, `status`) VALUES (?, ?, ?, ?)',
+    [data.id, user, data.starting_player, 'waiting']
+  )
+}
+```
+***
+`requestJoin`
+```
+const requestJoin = async (data, user) =&gt; {
+  if (!data || !data.id || !data.id.length !== 20) {
+    return
+  }
+  // Check game id in database
+  const game = await mysql.query(
+    'SELECT `player1` FROM `games` WHERE `game_id`= ? AND `status`= ?',
+    [data.id, 'waiting']
+  )
+  if (!game || !Array.isArray(game) || game.length &lt; 1) {
+    return
+  }
+  // Players can not play with themselves
+  if (game[0].player1 === user) {
+    return
+  }
+  // Check already open requests
+  const requests = await mysql.query(
+    'SELECT `id` FROM `requests` WHERE `game_id`= ? AND (`player`= ? OR `status`= ?)',
+    [data.id, user, 'accepted']
+  )
+  if (requests &amp;&amp; Array.isArray(requests) &amp;&amp; requests.length &gt; 0) {
+    return
+  }
+  // Request join game
+  await mysql.query(
+    'INSERT INTO `requests`(`game_id`, `player`, `status`) VALUES (?, ?, ?)',
+    [data.id, user, 'waiting']
+  )
+}
+```
+***
+`acceptRequest`
+```
+const acceptRequest = async (data, user) =&gt; {
+  if (!data || !data.id || !data.player || !data.id.length !== 20) {
+    return
+  }
+  // Validate game in database
+  const game = await mysql.query(
+    'SELECT `player1` FROM `games` WHERE `game_id`= ? AND `status`= ?',
+    [data.id, 'waiting']
+  )
+  if (!game || !Array.isArray(game) || game.length &lt; 1) {
+    return
+  }
+  const requests = await mysql.query(
+    'SELECT `id` FROM `requests` WHERE `game_id`= ? AND `player`= ? AND `status`= ?',
+    [data.id, data.player, 'waiting']
+  )
+  if (!requests || !Array.isArray(requests) || requests.length &lt; 1) {
+    return
+  }
+  // Accept the join request and update game status
+  await mysql.query(
+    'UPDATE `games` SET `player2`=?,`status`=? WHERE `game_id`=?',
+    [data.player, 'running', data.id]
+  )
+  await mysql.query(
+    'UPDATE `requests` SET `status`=? WHERE `game_id`=? AND `player`=?',
+    ['accepted', data.id, data.player]
+  )
+}
+```
+***
+Some updates to `processData`:
+```
+const processData = (jsonData, postingAuths) =&gt; {
+  try {
+    if (!jsonData) {
+      return
+    }
+    const data = JSON.parse(jsonData)
+    if (!data || !data.action || !data.app) {
+      return
+    }
+    if (
+      !postingAuths ||
+      !Array.isArray(postingAuths) ||
+      postingAuths.length &lt; 1
+    ) {
+      return
+    }
+    const user = postingAuths[0]
+    if (data.action === 'create_game') {
+      createGame(data, user)
+    } else if (data.action === 'request_join') {
+      requestJoin(data, user)
+    } else if (data.action === 'accept_request') {
+      acceptRequest(data, user)
+    } else if (data.action === 'play') {
+      play(data, user)
+    }
+  } catch (e) {
+    // error might be on JSON.parse and wrong json format
+    return null
+  }
+}
+```
+And streaming function:
+```
+try {
+  stream.streamBlockOperations((ops) =&gt; {
+    if (ops) {
+      const op = ops[0]
+      if (op &amp;&amp; op[0] === 'custom_json' &amp;&amp; op[1].id === 'tictactoe') {
+        processData(op[1].json, op[1].required_posting_auths)
+      }
+    }
+  })
+} catch (e) {
+  throw new Error(e)
+}
+```
+***
+I think it's enough for this part. Let's finish before I sleep on the keyboard.
+
+We set up the MySQL server and made a script to create 3 tables. Our back-end is now processing data into the database and 3 main functions are working as expected. Creating a game, Requesting to join a game, and accepting the requests.
+
+We have to create the front-end for these functions in the next part. I think the hard part is going to be the `play` function which holds the game rules.
+
+Upvote if you like and leave a comment. Make sure to follow me and share the post.
+
+Thanks for reading.
+***
+[GitLab](https://gitlab.com/mahdiyari/decentralized-game-on-hive)
+[Part1](https://hive.blog/hive-139531/@mahdiyari/making-a-decentralized-game-on-hive-tic-tac-toe-part-1)
+[Part2](https://hive.blog/hive-139531/@mahdiyari/making-a-decentralized-game-on-hive-part-2)
+***
+**Vote for my witness:**
+- https://wallet.hive.blog/~witnesses
+- https://peakd.com/witnesses
+- https://ecency.com/witnesses</div>
+<script crossorigin="anonymous" integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=" src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+
+<script src="https://unpkg.com/steem-content-renderer"></script>
+
+<script>
+  $(document).ready(function() {
+    try {
+      const renderer = new SteemContentRenderer.DefaultRenderer({
+        baseUrl: "https://hive.blog/",
+        breaks: true,
+        skipSanitization: false,
+        allowInsecureScriptTags: false,
+        addNofollowToLinks: true,
+        doNotShowImages: false,
+        ipfsPrefix: "",
+        assetsWidth: 640,
+        assetsHeight: 480,
+        imageProxyFn: (url) => url,
+        usertagUrlFn: (account) => "/@mahdiyari",
+        hashtagUrlFn: (hashtag) => "/making-a-decentralized-game-on-hive-part-3",
+        isLinkSafeFn: (url) => true,
+      });
+      
+      const inputElem = $('#content-mahdiyari-making-a-decentralized-game-on-hive-part-3').html();
+      const outputElem = $('#content-mahdiyari-making-a-decentralized-game-on-hive-part-3');
+      const output = renderer.render(inputElem);
+      
+      outputElem.html(output);
+    } catch(e) {
+      console.log(e);
+    }
+  });
+</script>
+
+<style>
+  #content-mahdiyari-making-a-decentralized-game-on-hive-part-3 {
+    padding: 0 3rem;
+    color: #444444;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.8;
+    text-shadow: 0 1px 0 #ffffff;
+    padding: 0.5rem;
+  }
+  #content-mahdiyari-making-a-decentralized-game-on-hive-part-3 code {
+    background: white;
+  }
+  #content-mahdiyari-making-a-decentralized-game-on-hive-part-3 a {
+    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
+  }
+  #content-mahdiyari-making-a-decentralized-game-on-hive-part-3 a:hover {
+    border-bottom: 0;
+  }
+  #content-mahdiyari-making-a-decentralized-game-on-hive-part-3 h1 {
+    font-size: 2.2em;
+  }
+  #content-mahdiyari-making-a-decentralized-game-on-hive-part-3 h2, h3, h4, h5 {
+    margin-bottom: 0;
+  }
+  #content-mahdiyari-making-a-decentralized-game-on-hive-part-3 header small {
+    color: #999;
+    font-size: 50%;
+  }
+  #content-mahdiyari-making-a-decentralized-game-on-hive-part-3 img {
+    max-width: 100%;
+  }
+</style>
+
+<hr />
+
+<p>
+  See: <a href="https://hive.blog/hive-139531/@mahdiyari/making-a-decentralized-game-on-hive-part-3">Making a Decentralized Game on Hive - Part 3</a>
+  by
+  <a href="https://hive.blog/@mahdiyari">@mahdiyari</a>
+</p>
+
+
+  </div><a class="u-url" href="/howto/nodejs/2021/03/28/making-a-decentralized-game-on-hive-part-3.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading"><a rel="author" href="/">Hive Chain Documentation</a></h2>
+    
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">site curated by: @inertia</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>Your resource for various levels of Hive Documentation.</p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+</body>
+
+</html>

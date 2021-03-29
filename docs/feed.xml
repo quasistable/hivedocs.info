@@ -1,4 +1,444 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="https://hivedocs.info/feed.xml" rel="self" type="application/atom+xml" /><link href="https://hivedocs.info/" rel="alternate" type="text/html" /><updated>2021-03-28T13:33:39-07:00</updated><id>https://hivedocs.info/feed.xml</id><title type="html">Hive Chain Documentation</title><subtitle>Your resource for various levels of Hive Documentation.</subtitle><author><name>site curated by: @inertia</name></author><entry><title type="html">Using Hive Blockchain Custom Json Operation with Python &amp;amp; Beem</title><link href="https://hivedocs.info/howto/beem/python/custom_json/2021/03/22/using-hive-blockchain-custom-json-operation-with-python-and-beem.html" rel="alternate" type="text/html" title="Using Hive Blockchain Custom Json Operation with Python &amp;amp; Beem" /><published>2021-03-22T20:43:24-07:00</published><updated>2021-03-22T20:43:24-07:00</updated><id>https://hivedocs.info/howto/beem/python/custom_json/2021/03/22/using-hive-blockchain-custom-json-operation-with-python-and-beem</id><content type="html" xml:base="https://hivedocs.info/howto/beem/python/custom_json/2021/03/22/using-hive-blockchain-custom-json-operation-with-python-and-beem.html">&lt;div id=&quot;content-geekgirl-using-hive-blockchain-custom-json-operation-with-python-and-beem&quot;&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="https://hivedocs.info/feed.xml" rel="self" type="application/atom+xml" /><link href="https://hivedocs.info/" rel="alternate" type="text/html" /><updated>2021-03-28T18:13:34-07:00</updated><id>https://hivedocs.info/feed.xml</id><title type="html">Hive Chain Documentation</title><subtitle>Your resource for various levels of Hive Documentation.</subtitle><author><name>site curated by: @inertia</name></author><entry><title type="html">Making a Decentralized Game on Hive - Part 3</title><link href="https://hivedocs.info/howto/nodejs/2021/03/28/making-a-decentralized-game-on-hive-part-3.html" rel="alternate" type="text/html" title="Making a Decentralized Game on Hive - Part 3" /><published>2021-03-28T13:31:39-07:00</published><updated>2021-03-28T13:31:39-07:00</updated><id>https://hivedocs.info/howto/nodejs/2021/03/28/making-a-decentralized-game-on-hive-part-3</id><content type="html" xml:base="https://hivedocs.info/howto/nodejs/2021/03/28/making-a-decentralized-game-on-hive-part-3.html">&lt;div id=&quot;content-mahdiyari-making-a-decentralized-game-on-hive-part-3&quot;&gt;&lt;center&gt;![coding-1853305_1280.jpg](https://images.hive.blog/DQmeBMvQ9RAne3j2qH1RrtDaWEyQ2bZo81ik3wsNXYGbp3E/coding-1853305_1280.jpg)&lt;/center&gt;
+
+This part took a little longer because it was actually time-consuming (also I took a little break). The process is getting harder so it might take a few days longer than expected for the coming parts but I will do my best.
+
+In the previous parts, we made a simple front-end with login functionality and initialized our API and back-end application with streaming. ([Part1](https://hive.blog/hive-139531/@mahdiyari/making-a-decentralized-game-on-hive-tic-tac-toe-part-1) and [Part2](https://hive.blog/hive-139531/@mahdiyari/making-a-decentralized-game-on-hive-part-2))
+## MySQL Setup
+You can use apps like [AMPPS](https://www.ampps.com/) which comes with MySQL and other tools like PHPMyAdmin (one of the best MySQL management apps) or install MySQL directly. I have AMMPS on windows and use MySQL docker on Linux. 
+
+MySQL docker installation:
+```
+docker pull mysql/mysql-server:latest
+```
+I create a folder `/root/mysql-docker1` and put the MySQL config file there `my.cnf` and another folder `data` for holding the database files.
+Running on port `127.0.0.1:3306`:
+```
+docker run --name=mysql1 \
+--mount type=bind,src=/root/mysql-docker1/my.cnf,dst=/etc/my.cnf \
+--mount type=bind,src=/root/mysql-docker1/data,dst=/var/lib/mysql \
+-p 127.0.0.1:3306:3306 -d mysql/mysql-server:latest
+```
+There are different ways to tune your MySQL server based on your hardware which I'm not going to talk about. The following config is for medium-range hardware (32GB ram).
+`my.cnf`:
+```
+[mysqld]
+skip_name_resolve
+user=mysql
+default_authentication_plugin = mysql_native_password
+
+symbolic-links=0
+character_set_server=utf8mb4
+collation_server=utf8mb4_general_ci
+innodb_max_dirty_pages_pct = 90
+innodb_max_dirty_pages_pct_lwm = 10
+innodb_flush_neighbors = 0
+innodb_undo_log_truncate=off
+max_connect_errors = 1000000
+
+# InnoDB Settings
+innodb_file_per_table
+innodb_log_files_in_group       = 2
+innodb_open_files               = 4000
+default_storage_engine          = InnoDB
+innodb_buffer_pool_instances    = 8     # Use 1 instance per 1GB of InnoDB pool size
+innodb_buffer_pool_size         = 16G    # Use up to 70-80% of RAM
+innodb_flush_method             = O_DIRECT_NO_FSYNC
+innodb_log_buffer_size          = 64M
+innodb_log_file_size            = 10G
+innodb_stats_on_metadata        = 0
+
+# tune
+innodb_doublewrite= 1
+innodb_thread_concurrency       = 0
+innodb_flush_log_at_trx_commit  = 0
+innodb_lru_scan_depth           = 2048
+innodb_page_cleaners            = 4
+join_buffer_size                = 256K
+sort_buffer_size                = 256K
+innodb_use_native_aio           = 1
+innodb_stats_persistent         = 1
+
+innodb_adaptive_flushing        = 1
+innodb_read_io_threads          = 16
+innodb_write_io_threads         = 16
+innodb_io_capacity              = 1500
+innodb_io_capacity_max          = 2500
+innodb_purge_threads            = 4
+innodb_adaptive_hash_index      = 0
+max_prepared_stmt_count         = 1000000
+innodb_monitor_enable           = '%'
+performance_schema              = ON
+key_buffer_size = 512M
+# Connection Settings
+max_connections                 = 2000   # UPD
+back_log                        = 3000
+interactive_timeout             = 180
+wait_timeout                    = 10
+table_open_cache                = 200000 # UPD
+table_open_cache_instances      = 64
+open_files_limit                = 100000 # UPD
+```
+Note: restart MySQL server after updating the`my.cnf` file.
+
+MySQL password on AMMPS is `mysql` and on docker setup, I think you get the password from `docker logs mysql1`. Anyway, there are many documentations about MySQL already on the internet.
+
+Create a database `tictactoe`. It's easier with tools like PHPMyAdmin if you are using AMPPS. Or try HeidiSQL.
+Here is the SQL command for creating the database:
+```
+CREATE DATABASE `tictactoe`;
+```
+***
+## Development
+Let's create a config file for holding MySQL login information for our app. I will put this file as `config.example.js` in repository and you have to rename it manually.
+`config.js`:
+```
+const config = {
+  dbName: 'tictactoe',
+  dbUser: 'root',
+  dbPassword: 'password',
+  dbHost: '127.0.0.1',
+  dbPort: 3306
+}
+
+module.exports = config
+```
+***
+I have a personal code for MySQL connection pooling. It simply makes a custom async function just like the original connect function of [mysqljs](https://github.com/mysqljs/mysql) library but for pooling connections.
+`helpers/mysql.js`:
+```
+const mysql = require('mysql')
+const config = require('../config')
+const pool = mysql.createPool({
+  connectionLimit: 5,
+  host: config.dbHost,
+  port: config.dbPort,
+  user: config.dbUser,
+  password: config.dbPassword,
+  database: config.dbName,
+  charset: 'utf8mb4'
+})
+
+// Rewriting MySQL query method as a promise
+const con = {}
+con.query = async (query, val) =&amp;gt; {
+  if (val) {
+    const qu = await new Promise((resolve, reject) =&amp;gt; {
+      pool.query(query, val, (error, results) =&amp;gt; {
+        if (error) reject(new Error(error))
+        resolve(results)
+      })
+    })
+    return qu
+  } else {
+    const qu = await new Promise((resolve, reject) =&amp;gt; {
+      pool.query(query, (error, results) =&amp;gt; {
+        if (error) reject(new Error(error))
+        resolve(results)
+      })
+    })
+    return qu
+  }
+}
+
+module.exports = con
+```
+It creates a pool of 5 connections which is more than enough for our game.
+And of course:
+```
+npm install mysql
+```
+***
+#### Initializing database
+We make a function to create necessary tables if they don't exist already.
+`helpers/initDatabase.js`:
+```
+const mysql = require('./mysql')
+
+/**
+ * id, game_id, player1, player2, starting_player, status, winner
+ */
+const tableGames =
+  'CREATE TABLE IF NOT EXISTS `tictactoe`.`games` ( `id` INT NOT NULL AUTO_INCREMENT , ' +
+  '`game_id` TINYTEXT NOT NULL , ' +
+  '`player1` TINYTEXT NOT NULL , `player2` TINYTEXT NULL DEFAULT NULL , ' +
+  '`starting_player` TINYTEXT NOT NULL , `status` TINYTEXT NULL , ' +
+  '`winner` TINYTEXT NULL DEFAULT NULL , PRIMARY KEY  (`id`)) ' +
+  'ENGINE = InnoDB CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;'
+
+/**
+ * id, game_id, player, col, row
+ */
+const tableMoves =
+  'CREATE TABLE IF NOT EXISTS `tictactoe`.`moves` ( `id` INT NOT NULL AUTO_INCREMENT , ' +
+  '`game_id` TINYTEXT NOT NULL , `player` TINYTEXT NOT NULL , ' +
+  '`col` INT(1) NOT NULL , `row` INT(1) NOT NULL , ' +
+  'PRIMARY KEY  (`id`)) ENGINE = InnoDB CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;'
+
+const tableRquests =
+  'CREATE TABLE IF NOT EXISTS `tictactoe`.`requests` ( `id` INT NOT NULL AUTO_INCREMENT , ' +
+  '`game_id` TINYTEXT NOT NULL , `player` TINYTEXT NOT NULL , `status` TINYTEXT NOT NULL , ' +
+  'PRIMARY KEY  (`id`)) ENGINE = InnoDB CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;'
+
+const initDatabase = async () =&amp;gt; {
+  await mysql.query(tableGames)
+  await mysql.query(tableMoves)
+  await mysql.query(tableRquests)
+}
+
+module.exports = initDatabase
+```
+
+#### Created tables
+`games`
+&lt;center&gt;![tablesqlgames.png](https://images.hive.blog/DQmVCMyNZax6xd6kCc2VZijGjMa9Qbt8Myeev7jF8KmcqXe/image.png)&lt;/center&gt;
+
+`moves`
+&lt;center&gt;![tablesqlmoves.png](https://images.hive.blog/DQmVwyDZg1N3KEteDgfA5NdMHeUkjpngHZEmizBXxhh3XPs/image.png)&lt;/center&gt;
+
+`requests`
+&lt;center&gt;![image.png](https://images.hive.blog/DQmQLxfwKEfWSQ614vWb6qfUNVMSyiFgnKEh5nSWcKYFQQv/image.png)&lt;/center&gt;
+***
+#### Updating main application
+Now we can complete the game methods in `index.js`:
+`createGame`
+```
+const createGame = async (data, user) =&amp;gt; {
+  if (!data || !data.id || !data.starting_player) {
+    return
+  }
+  // validating
+  if (
+    data.id.length !== 20 ||
+    (data.starting_player !== 'first' &amp;amp;&amp;amp; data.starting_player !== 'second')
+  ) {
+    return
+  }
+  // Check already existing games
+  const duplicate = await mysql.query(
+    'SELECT `id` FROM `games` WHERE `game_id`= ?',
+    [data.id]
+  )
+  if (duplicate &amp;amp;&amp;amp; Array.isArray(duplicate) &amp;amp;&amp;amp; duplicate.length &amp;gt; 0) {
+    return
+  }
+  // Add game to database
+  await mysql.query(
+    'INSERT INTO `games`(`game_id`, `player1`, `starting_player`, `status`) VALUES (?, ?, ?, ?)',
+    [data.id, user, data.starting_player, 'waiting']
+  )
+}
+```
+***
+`requestJoin`
+```
+const requestJoin = async (data, user) =&amp;gt; {
+  if (!data || !data.id || !data.id.length !== 20) {
+    return
+  }
+  // Check game id in database
+  const game = await mysql.query(
+    'SELECT `player1` FROM `games` WHERE `game_id`= ? AND `status`= ?',
+    [data.id, 'waiting']
+  )
+  if (!game || !Array.isArray(game) || game.length &amp;lt; 1) {
+    return
+  }
+  // Players can not play with themselves
+  if (game[0].player1 === user) {
+    return
+  }
+  // Check already open requests
+  const requests = await mysql.query(
+    'SELECT `id` FROM `requests` WHERE `game_id`= ? AND (`player`= ? OR `status`= ?)',
+    [data.id, user, 'accepted']
+  )
+  if (requests &amp;amp;&amp;amp; Array.isArray(requests) &amp;amp;&amp;amp; requests.length &amp;gt; 0) {
+    return
+  }
+  // Request join game
+  await mysql.query(
+    'INSERT INTO `requests`(`game_id`, `player`, `status`) VALUES (?, ?, ?)',
+    [data.id, user, 'waiting']
+  )
+}
+```
+***
+`acceptRequest`
+```
+const acceptRequest = async (data, user) =&amp;gt; {
+  if (!data || !data.id || !data.player || !data.id.length !== 20) {
+    return
+  }
+  // Validate game in database
+  const game = await mysql.query(
+    'SELECT `player1` FROM `games` WHERE `game_id`= ? AND `status`= ?',
+    [data.id, 'waiting']
+  )
+  if (!game || !Array.isArray(game) || game.length &amp;lt; 1) {
+    return
+  }
+  const requests = await mysql.query(
+    'SELECT `id` FROM `requests` WHERE `game_id`= ? AND `player`= ? AND `status`= ?',
+    [data.id, data.player, 'waiting']
+  )
+  if (!requests || !Array.isArray(requests) || requests.length &amp;lt; 1) {
+    return
+  }
+  // Accept the join request and update game status
+  await mysql.query(
+    'UPDATE `games` SET `player2`=?,`status`=? WHERE `game_id`=?',
+    [data.player, 'running', data.id]
+  )
+  await mysql.query(
+    'UPDATE `requests` SET `status`=? WHERE `game_id`=? AND `player`=?',
+    ['accepted', data.id, data.player]
+  )
+}
+```
+***
+Some updates to `processData`:
+```
+const processData = (jsonData, postingAuths) =&amp;gt; {
+  try {
+    if (!jsonData) {
+      return
+    }
+    const data = JSON.parse(jsonData)
+    if (!data || !data.action || !data.app) {
+      return
+    }
+    if (
+      !postingAuths ||
+      !Array.isArray(postingAuths) ||
+      postingAuths.length &amp;lt; 1
+    ) {
+      return
+    }
+    const user = postingAuths[0]
+    if (data.action === 'create_game') {
+      createGame(data, user)
+    } else if (data.action === 'request_join') {
+      requestJoin(data, user)
+    } else if (data.action === 'accept_request') {
+      acceptRequest(data, user)
+    } else if (data.action === 'play') {
+      play(data, user)
+    }
+  } catch (e) {
+    // error might be on JSON.parse and wrong json format
+    return null
+  }
+}
+```
+And streaming function:
+```
+try {
+  stream.streamBlockOperations((ops) =&amp;gt; {
+    if (ops) {
+      const op = ops[0]
+      if (op &amp;amp;&amp;amp; op[0] === 'custom_json' &amp;amp;&amp;amp; op[1].id === 'tictactoe') {
+        processData(op[1].json, op[1].required_posting_auths)
+      }
+    }
+  })
+} catch (e) {
+  throw new Error(e)
+}
+```
+***
+I think it's enough for this part. Let's finish before I sleep on the keyboard.
+
+We set up the MySQL server and made a script to create 3 tables. Our back-end is now processing data into the database and 3 main functions are working as expected. Creating a game, Requesting to join a game, and accepting the requests.
+
+We have to create the front-end for these functions in the next part. I think the hard part is going to be the `play` function which holds the game rules.
+
+Upvote if you like and leave a comment. Make sure to follow me and share the post.
+
+Thanks for reading.
+***
+[GitLab](https://gitlab.com/mahdiyari/decentralized-game-on-hive)
+[Part1](https://hive.blog/hive-139531/@mahdiyari/making-a-decentralized-game-on-hive-tic-tac-toe-part-1)
+[Part2](https://hive.blog/hive-139531/@mahdiyari/making-a-decentralized-game-on-hive-part-2)
+***
+**Vote for my witness:**
+- https://wallet.hive.blog/~witnesses
+- https://peakd.com/witnesses
+- https://ecency.com/witnesses&lt;/div&gt;
+&lt;script crossorigin=&quot;anonymous&quot; integrity=&quot;sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=&quot; src=&quot;https://code.jquery.com/jquery-3.5.1.slim.min.js&quot;&gt;&lt;/script&gt;
+
+&lt;script src=&quot;https://unpkg.com/steem-content-renderer&quot;&gt;&lt;/script&gt;
+
+&lt;script&gt;
+  $(document).ready(function() {
+    try {
+      const renderer = new SteemContentRenderer.DefaultRenderer({
+        baseUrl: &quot;https://hive.blog/&quot;,
+        breaks: true,
+        skipSanitization: false,
+        allowInsecureScriptTags: false,
+        addNofollowToLinks: true,
+        doNotShowImages: false,
+        ipfsPrefix: &quot;&quot;,
+        assetsWidth: 640,
+        assetsHeight: 480,
+        imageProxyFn: (url) =&gt; url,
+        usertagUrlFn: (account) =&gt; &quot;/@mahdiyari&quot;,
+        hashtagUrlFn: (hashtag) =&gt; &quot;/making-a-decentralized-game-on-hive-part-3&quot;,
+        isLinkSafeFn: (url) =&gt; true,
+      });
+      
+      const inputElem = $('#content-mahdiyari-making-a-decentralized-game-on-hive-part-3').html();
+      const outputElem = $('#content-mahdiyari-making-a-decentralized-game-on-hive-part-3');
+      const output = renderer.render(inputElem);
+      
+      outputElem.html(output);
+    } catch(e) {
+      console.log(e);
+    }
+  });
+&lt;/script&gt;
+
+&lt;style&gt;
+  #content-mahdiyari-making-a-decentralized-game-on-hive-part-3 {
+    padding: 0 3rem;
+    color: #444444;
+    font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.8;
+    text-shadow: 0 1px 0 #ffffff;
+    padding: 0.5rem;
+  }
+  #content-mahdiyari-making-a-decentralized-game-on-hive-part-3 code {
+    background: white;
+  }
+  #content-mahdiyari-making-a-decentralized-game-on-hive-part-3 a {
+    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
+  }
+  #content-mahdiyari-making-a-decentralized-game-on-hive-part-3 a:hover {
+    border-bottom: 0;
+  }
+  #content-mahdiyari-making-a-decentralized-game-on-hive-part-3 h1 {
+    font-size: 2.2em;
+  }
+  #content-mahdiyari-making-a-decentralized-game-on-hive-part-3 h2, h3, h4, h5 {
+    margin-bottom: 0;
+  }
+  #content-mahdiyari-making-a-decentralized-game-on-hive-part-3 header small {
+    color: #999;
+    font-size: 50%;
+  }
+  #content-mahdiyari-making-a-decentralized-game-on-hive-part-3 img {
+    max-width: 100%;
+  }
+&lt;/style&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;
+  See: &lt;a href=&quot;https://hive.blog/hive-139531/@mahdiyari/making-a-decentralized-game-on-hive-part-3&quot;&gt;Making a Decentralized Game on Hive - Part 3&lt;/a&gt;
+  by
+  &lt;a href=&quot;https://hive.blog/@mahdiyari&quot;&gt;@mahdiyari&lt;/a&gt;
+&lt;/p&gt;</content><author><name>mahdiyari</name></author><category term="howto" /><category term="nodejs" /><summary type="html">![coding-1853305_1280.jpg](https://images.hive.blog/DQmeBMvQ9RAne3j2qH1RrtDaWEyQ2bZo81ik3wsNXYGbp3E/coding-1853305_1280.jpg) This part took a little longer because it was actually time-consuming (also I took a little break). The process is getting harder so it might take a few days longer than expected for the coming parts but I will do my best. In the previous parts, we made a simple front-end with login functionality and initialized our API and back-end application with streaming. ([Part1](https://hive.blog/hive-139531/@mahdiyari/making-a-decentralized-game-on-hive-tic-tac-toe-part-1) and [Part2](https://hive.blog/hive-139531/@mahdiyari/making-a-decentralized-game-on-hive-part-2)) ## MySQL Setup You can use apps like [AMPPS](https://www.ampps.com/) which comes with MySQL and other tools like PHPMyAdmin (one of the best MySQL management apps) or install MySQL directly. I have AMMPS on windows and use MySQL docker on Linux. MySQL docker installation: ``` docker pull mysql/mysql-server:latest ``` I create a folder `/root/mysql-docker1` and put the MySQL config file there `my.cnf` and another folder `data` for holding the database files. Running on port `127.0.0.1:3306`: ``` docker run --name=mysql1 \ --mount type=bind,src=/root/mysql-docker1/my.cnf,dst=/etc/my.cnf \ --mount type=bind,src=/root/mysql-docker1/data,dst=/var/lib/mysql \ -p 127.0.0.1:3306:3306 -d mysql/mysql-server:latest ``` There are different ways to tune your MySQL server based on your hardware which I'm not going to talk about. The following config is for medium-range hardware (32GB ram). `my.cnf`: ``` [mysqld] skip_name_resolve user=mysql default_authentication_plugin = mysql_native_password symbolic-links=0 character_set_server=utf8mb4 collation_server=utf8mb4_general_ci innodb_max_dirty_pages_pct = 90 innodb_max_dirty_pages_pct_lwm = 10 innodb_flush_neighbors = 0 innodb_undo_log_truncate=off max_connect_errors = 1000000 # InnoDB Settings innodb_file_per_table innodb_log_files_in_group = 2 innodb_open_files = 4000 default_storage_engine = InnoDB innodb_buffer_pool_instances = 8 # Use 1 instance per 1GB of InnoDB pool size innodb_buffer_pool_size = 16G # Use up to 70-80% of RAM innodb_flush_method = O_DIRECT_NO_FSYNC innodb_log_buffer_size = 64M innodb_log_file_size = 10G innodb_stats_on_metadata = 0 # tune innodb_doublewrite= 1 innodb_thread_concurrency = 0 innodb_flush_log_at_trx_commit = 0 innodb_lru_scan_depth = 2048 innodb_page_cleaners = 4 join_buffer_size = 256K sort_buffer_size = 256K innodb_use_native_aio = 1 innodb_stats_persistent = 1 innodb_adaptive_flushing = 1 innodb_read_io_threads = 16 innodb_write_io_threads = 16 innodb_io_capacity = 1500 innodb_io_capacity_max = 2500 innodb_purge_threads = 4 innodb_adaptive_hash_index = 0 max_prepared_stmt_count = 1000000 innodb_monitor_enable = '%' performance_schema = ON key_buffer_size = 512M # Connection Settings max_connections = 2000 # UPD back_log = 3000 interactive_timeout = 180 wait_timeout = 10 table_open_cache = 200000 # UPD table_open_cache_instances = 64 open_files_limit = 100000 # UPD ``` Note: restart MySQL server after updating the`my.cnf` file. MySQL password on AMMPS is `mysql` and on docker setup, I think you get the password from `docker logs mysql1`. Anyway, there are many documentations about MySQL already on the internet. Create a database `tictactoe`. It's easier with tools like PHPMyAdmin if you are using AMPPS. Or try HeidiSQL. Here is the SQL command for creating the database: ``` CREATE DATABASE `tictactoe`; ``` *** ## Development Let's create a config file for holding MySQL login information for our app. I will put this file as `config.example.js` in repository and you have to rename it manually. `config.js`: ``` const config = { dbName: 'tictactoe', dbUser: 'root', dbPassword: 'password', dbHost: '127.0.0.1', dbPort: 3306 } module.exports = config ``` *** I have a personal code for MySQL connection pooling. It simply makes a custom async function just like the original connect function of [mysqljs](https://github.com/mysqljs/mysql) library but for pooling connections. `helpers/mysql.js`: ``` const mysql = require('mysql') const config = require('../config') const pool = mysql.createPool({ connectionLimit: 5, host: config.dbHost, port: config.dbPort, user: config.dbUser, password: config.dbPassword, database: config.dbName, charset: 'utf8mb4' }) // Rewriting MySQL query method as a promise const con = {} con.query = async (query, val) =&amp;gt; { if (val) { const qu = await new Promise((resolve, reject) =&amp;gt; { pool.query(query, val, (error, results) =&amp;gt; { if (error) reject(new Error(error)) resolve(results) }) }) return qu } else { const qu = await new Promise((resolve, reject) =&amp;gt; { pool.query(query, (error, results) =&amp;gt; { if (error) reject(new Error(error)) resolve(results) }) }) return qu } } module.exports = con ``` It creates a pool of 5 connections which is more than enough for our game. And of course: ``` npm install mysql ``` *** #### Initializing database We make a function to create necessary tables if they don't exist already. `helpers/initDatabase.js`: ``` const mysql = require('./mysql') /** * id, game_id, player1, player2, starting_player, status, winner */ const tableGames = 'CREATE TABLE IF NOT EXISTS `tictactoe`.`games` ( `id` INT NOT NULL AUTO_INCREMENT , ' + '`game_id` TINYTEXT NOT NULL , ' + '`player1` TINYTEXT NOT NULL , `player2` TINYTEXT NULL DEFAULT NULL , ' + '`starting_player` TINYTEXT NOT NULL , `status` TINYTEXT NULL , ' + '`winner` TINYTEXT NULL DEFAULT NULL , PRIMARY KEY (`id`)) ' + 'ENGINE = InnoDB CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;' /** * id, game_id, player, col, row */ const tableMoves = 'CREATE TABLE IF NOT EXISTS `tictactoe`.`moves` ( `id` INT NOT NULL AUTO_INCREMENT , ' + '`game_id` TINYTEXT NOT NULL , `player` TINYTEXT NOT NULL , ' + '`col` INT(1) NOT NULL , `row` INT(1) NOT NULL , ' + 'PRIMARY KEY (`id`)) ENGINE = InnoDB CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;' const tableRquests = 'CREATE TABLE IF NOT EXISTS `tictactoe`.`requests` ( `id` INT NOT NULL AUTO_INCREMENT , ' + '`game_id` TINYTEXT NOT NULL , `player` TINYTEXT NOT NULL , `status` TINYTEXT NOT NULL , ' + 'PRIMARY KEY (`id`)) ENGINE = InnoDB CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;' const initDatabase = async () =&amp;gt; { await mysql.query(tableGames) await mysql.query(tableMoves) await mysql.query(tableRquests) } module.exports = initDatabase ``` #### Created tables `games` ![tablesqlgames.png](https://images.hive.blog/DQmVCMyNZax6xd6kCc2VZijGjMa9Qbt8Myeev7jF8KmcqXe/image.png) `moves` ![tablesqlmoves.png](https://images.hive.blog/DQmVwyDZg1N3KEteDgfA5NdMHeUkjpngHZEmizBXxhh3XPs/image.png) `requests` ![image.png](https://images.hive.blog/DQmQLxfwKEfWSQ614vWb6qfUNVMSyiFgnKEh5nSWcKYFQQv/image.png) *** #### Updating main application Now we can complete the game methods in `index.js`: `createGame` ``` const createGame = async (data, user) =&amp;gt; { if (!data || !data.id || !data.starting_player) { return } // validating if ( data.id.length !== 20 || (data.starting_player !== 'first' &amp;amp;&amp;amp; data.starting_player !== 'second') ) { return } // Check already existing games const duplicate = await mysql.query( 'SELECT `id` FROM `games` WHERE `game_id`= ?', [data.id] ) if (duplicate &amp;amp;&amp;amp; Array.isArray(duplicate) &amp;amp;&amp;amp; duplicate.length &amp;gt; 0) { return } // Add game to database await mysql.query( 'INSERT INTO `games`(`game_id`, `player1`, `starting_player`, `status`) VALUES (?, ?, ?, ?)', [data.id, user, data.starting_player, 'waiting'] ) } ``` *** `requestJoin` ``` const requestJoin = async (data, user) =&amp;gt; { if (!data || !data.id || !data.id.length !== 20) { return } // Check game id in database const game = await mysql.query( 'SELECT `player1` FROM `games` WHERE `game_id`= ? AND `status`= ?', [data.id, 'waiting'] ) if (!game || !Array.isArray(game) || game.length &amp;lt; 1) { return } // Players can not play with themselves if (game[0].player1 === user) { return } // Check already open requests const requests = await mysql.query( 'SELECT `id` FROM `requests` WHERE `game_id`= ? AND (`player`= ? OR `status`= ?)', [data.id, user, 'accepted'] ) if (requests &amp;amp;&amp;amp; Array.isArray(requests) &amp;amp;&amp;amp; requests.length &amp;gt; 0) { return } // Request join game await mysql.query( 'INSERT INTO `requests`(`game_id`, `player`, `status`) VALUES (?, ?, ?)', [data.id, user, 'waiting'] ) } ``` *** `acceptRequest` ``` const acceptRequest = async (data, user) =&amp;gt; { if (!data || !data.id || !data.player || !data.id.length !== 20) { return } // Validate game in database const game = await mysql.query( 'SELECT `player1` FROM `games` WHERE `game_id`= ? AND `status`= ?', [data.id, 'waiting'] ) if (!game || !Array.isArray(game) || game.length &amp;lt; 1) { return } const requests = await mysql.query( 'SELECT `id` FROM `requests` WHERE `game_id`= ? AND `player`= ? AND `status`= ?', [data.id, data.player, 'waiting'] ) if (!requests || !Array.isArray(requests) || requests.length &amp;lt; 1) { return } // Accept the join request and update game status await mysql.query( 'UPDATE `games` SET `player2`=?,`status`=? WHERE `game_id`=?', [data.player, 'running', data.id] ) await mysql.query( 'UPDATE `requests` SET `status`=? WHERE `game_id`=? AND `player`=?', ['accepted', data.id, data.player] ) } ``` *** Some updates to `processData`: ``` const processData = (jsonData, postingAuths) =&amp;gt; { try { if (!jsonData) { return } const data = JSON.parse(jsonData) if (!data || !data.action || !data.app) { return } if ( !postingAuths || !Array.isArray(postingAuths) || postingAuths.length &amp;lt; 1 ) { return } const user = postingAuths[0] if (data.action === 'create_game') { createGame(data, user) } else if (data.action === 'request_join') { requestJoin(data, user) } else if (data.action === 'accept_request') { acceptRequest(data, user) } else if (data.action === 'play') { play(data, user) } } catch (e) { // error might be on JSON.parse and wrong json format return null } } ``` And streaming function: ``` try { stream.streamBlockOperations((ops) =&amp;gt; { if (ops) { const op = ops[0] if (op &amp;amp;&amp;amp; op[0] === 'custom_json' &amp;amp;&amp;amp; op[1].id === 'tictactoe') { processData(op[1].json, op[1].required_posting_auths) } } }) } catch (e) { throw new Error(e) } ``` *** I think it's enough for this part. Let's finish before I sleep on the keyboard. We set up the MySQL server and made a script to create 3 tables. Our back-end is now processing data into the database and 3 main functions are working as expected. Creating a game, Requesting to join a game, and accepting the requests. We have to create the front-end for these functions in the next part. I think the hard part is going to be the `play` function which holds the game rules. Upvote if you like and leave a comment. Make sure to follow me and share the post. Thanks for reading. *** [GitLab](https://gitlab.com/mahdiyari/decentralized-game-on-hive) [Part1](https://hive.blog/hive-139531/@mahdiyari/making-a-decentralized-game-on-hive-tic-tac-toe-part-1) [Part2](https://hive.blog/hive-139531/@mahdiyari/making-a-decentralized-game-on-hive-part-2) *** **Vote for my witness:** - https://wallet.hive.blog/~witnesses - https://peakd.com/witnesses - https://ecency.com/witnesses See: Making a Decentralized Game on Hive - Part 3 by @mahdiyari</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://images.hive.blog/DQmeBMvQ9RAne3j2qH1RrtDaWEyQ2bZo81ik3wsNXYGbp3E/coding-1853305_1280.jpg" /><media:content medium="image" url="https://images.hive.blog/DQmeBMvQ9RAne3j2qH1RrtDaWEyQ2bZo81ik3wsNXYGbp3E/coding-1853305_1280.jpg" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Using Hive Blockchain Custom Json Operation with Python &amp;amp; Beem</title><link href="https://hivedocs.info/howto/beem/python/custom_json/2021/03/22/using-hive-blockchain-custom-json-operation-with-python-and-beem.html" rel="alternate" type="text/html" title="Using Hive Blockchain Custom Json Operation with Python &amp;amp; Beem" /><published>2021-03-22T20:43:24-07:00</published><updated>2021-03-22T20:43:24-07:00</updated><id>https://hivedocs.info/howto/beem/python/custom_json/2021/03/22/using-hive-blockchain-custom-json-operation-with-python-and-beem</id><content type="html" xml:base="https://hivedocs.info/howto/beem/python/custom_json/2021/03/22/using-hive-blockchain-custom-json-operation-with-python-and-beem.html">&lt;div id=&quot;content-geekgirl-using-hive-blockchain-custom-json-operation-with-python-and-beem&quot;&gt;
 &lt;center&gt;![hivewp20.png](https://images.hive.blog/DQmcXEvn33Sph3AMpajUr46mCxbM4GZFKYupgof5aaHQnZQ/hivewp20.png)Image by @doze&lt;/center&gt;
 
 One of Hive blockchain's powerful features is its custom_json operation. Normally, users don't even see and hear about this operations. However, this operation enables developers to store their game or web application data on the Hive blockchain. If you would like to know more about what is stored in Hive blocks and and curious about various Hive operations, feel free to read my [Exploring Hive Blocks](https://leofinance.io/@geekgirl/exploring-hive-blocks) post.
@@ -1929,182 +2369,4 @@ By running them concurrently, I believe we can reduce the overall time to nearly
   See: &lt;a href=&quot;https://hive.blog/hive-139531/@blocktrades/6th-update-of-2021-on-blocktrades-work-on-hive-software&quot;&gt;6th update of 2021 on BlockTrades work on Hive software&lt;/a&gt;
   by
   &lt;a href=&quot;https://hive.blog/@blocktrades&quot;&gt;@blocktrades&lt;/a&gt;
-&lt;/p&gt;</content><author><name>blocktrades</name></author><category term="news" /><category term="core" /><category term="development" /><summary type="html"># Hived work (blockchain node software) ## SQL account history plugin In the last week or so, we continued our work on the SQL account history plugin. Don’t be confused by the name of this plugin: while it can and will function as a very fast replacement for the rocksdb account history plugin, its primary purpose is to lay the foundation for “modular hivemind” (an application framework for 2nd layer applications). We added support for resuming a hived replay configured with the SQL account history plugin. This support is also necessary for enabling the use of this plugin when operated in conjunction with a hivemind running in “live sync” mode. The SQL account history plugin also now populates the database with block and transaction signatures needed for get_block api calls. Finally, we added code to drop/restore the SQL indexes associated with the account history data to enable faster hived replays (this can be useful, for example, if no hivemind sync is happening at the same time). ## Other work on hived We reviewed recent changes in the hived code, which resulted in some code fixes and code reformats and new unit tests. We also did some preliminary reviews of current merge requests for hived. # Modular Hivemind (2nd layer application framework) ## Syncing hivemind from SQL account history plugin databases Hivemind can now run an “initial sync” directly from the postgres data generated by the SQL account history plugin. We repeated the “initial sync” of hivemind that died near the end during our previous test (running for 49.58M blocks) and confirmed that it takes just under 46 hours (just under two days). For comparison, a hivemind sync using the old “pull” process with all our other recent optimizations still took 61.2 hours. The final database size for this test was: SQL account history-generated data (~1.1 TB) + hivemind sync-generated data (~0.5 TB) for a total size of 1.6 TB. ## Experimenting with Postgres extensions for fork handling One of the key challenges for modular hivemind is automated support of fork handling, to remove this burden from 2nd layer applications. Currently we’re experimenting with the use of C-based postgres extensions to help accomplish this task. ## Miscellaneous changes to hive sync We eliminated use of some SQL constructs in hivemind sync that obtained exclusive locks on tables and therefore prevented database dumps from being run concurrently with a hivemind sync. Without this change, a hivemind server operator would need to temporarily disable his hivemind server in order to make a database backup. ## Official hivemind release v1.24.2 We completed testing of the develop branch, then merged all our latest work on hivemind to the master branch, tagged it as v1.24.2. We notified all API node operators that they should upgrade to v1.24.2 as soon as practical, as it contains not only optimizations and the exclusive lock fix, but also various bugfixes related to hivemind indexing and API responses. # Condenser (https://hive.blog code base) We finished fixing condenser bugs related to the follows, mutes, and decentralized lists, and deployed a new version of hive.blog with the fixes. At this point, we’ve completed and tested all work on decentralized lists. # Plans for next week On hived side, we’ll continue working on changes for HF25 (vote expiration for governance changes, curation vote window changes, merge request review, etc). Depending on how much time we have, we may take a look at the HBD interest code, now that witnesses are experimenting with enabling HBD interest payments. I’ve also considered adding a mechanism for helping to maintain the HBD peg if we have time. I’ll write a post about it if we make enough progress on other fronts in the next week or so that it seems feasible to fit the enhanced pegging mechanism into HF25. For modular hivemind, we’ll continue to explore ways to automate fork-handling. On the optimization front, we’re experimenting with python profiling to see if we can further reduce the time for a hivemind initial sync from SQL account history data. For a visualization tool, we’re using kcachegrind. We also want to look at combining the process of replaying hived with the SQL account history plugin (which takes about 11 hours) while running a hivemind sync simultaneously (which takes 46 hours). Currently these process are running sequentially, which takes 11 + 46 = 57 hours. By running them concurrently, I believe we can reduce the overall time to nearly just the time of the hivemind sync (i.e. 46 hours currently). As a reminder, previously this process took 17 hours for a hived replay with rockdsb account history + about 96 hours for a hivemind sync, before we began optimizations of sync time. See: 6th update of 2021 on BlockTrades work on Hive software by @blocktrades</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://hivedocs.info/assets/images/favicon.png" /><media:content medium="image" url="https://hivedocs.info/assets/images/favicon.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">JavaScript library for Ledger Nano S HIVE application</title><link href="https://hivedocs.info/howto/nano/nodejs/wallet/2021/03/02/javascript-library-for-ledger-nano-s-hive-application.html" rel="alternate" type="text/html" title="JavaScript library for Ledger Nano S HIVE application" /><published>2021-03-02T11:17:12-08:00</published><updated>2021-03-02T11:17:12-08:00</updated><id>https://hivedocs.info/howto/nano/nodejs/wallet/2021/03/02/javascript-library-for-ledger-nano-s-hive-application</id><content type="html" xml:base="https://hivedocs.info/howto/nano/nodejs/wallet/2021/03/02/javascript-library-for-ledger-nano-s-hive-application.html">&lt;div id=&quot;content-engrave-javascript-library-for-ledger-nano-s-hive-application&quot;&gt;![Incoming HIVE Ledger wallet](https://files.peakd.com/file/peakd-hive/engrave/EowF9ezqJkPjHhLKMx9NjA82sqpuhKVddGJHDgbd5zyo9TsVhKtGc1714xmomVXPeLL)
-
-
-It's been a couple of months since @netuoso [published the initial version of the Hive Ledger App](https://hive.blog/hive-139531/@netuoso/hive-application-for-the-ledger-nano-s-x-hardware-wallet). In order to get official support from Ledger (i.e. the possibility to install it from Ledger Live), we need to meet several requirements. And I'm trying to fulfill them all so we could benefit from the hardware wallet support.
-
-# Code review
-
-First, we need to make sure that the application is stable and secure. I already made a preliminary review of the app and created a Pull Request with some fixes. The next step will be to review the code from a security perspective, following the guidelines provided by Ledger. This requires a bit more work and knowledge than validating transactions serialization etc, but we will get there.
-
- * https://github.com/netuoso/ledger-app-hive/pull/5/
-
-# Javascript library
-
-To simplify communication with the ledger app, I created a JavaScript/Typescript library. It's really easy to use it with NodeJS. The library covers every functionality supported by the app.
-
-Example usage:
-
-```typescript
-import Hive from '@engrave/ledger-app-hive';
-import TransportNodeHid from '@ledgerhq/hw-transport-node-hid';
-import Transport from '@ledgerhq/hw-transport';
-
-( async () =&amp;gt; {
-
-    console.log('Unlock your ledger....');
-    const transport = await TransportNodeHid.create();
-    console.log(`Established connection with Ledger Nano S`);
-
-    try {
-        const hive = new Hive(transport);
-        const {version, arbitraryData} = await hive.getAppConfiguration();
-        console.log(&quot;Current version:&quot;, version);
-        console.log(&quot;Arbitary data enabled:&quot;, arbitraryData);
-
-        const publicKey = await hive.getPublicKey(`48'/13'/0'/0'/0'`);
-        console.log(&quot;Public key:&quot;, publicKey);
-    } catch (e) {
-        console.error(e);
-    }
-    finally {
-        transport.close();
-    }
-
-})();
-```
-
-## API
-
- * [getAppConfiguration](#getappconfiguration)
- * [getPublicKey](#getpublickey)
- * [signTransaction](#signtransaction) 
-
-### getAppConfiguration
-
-Get current configuration for HIVE App installed on a Ledger.
-
-```typescript
-async getAppConfiguration(): Promise&amp;lt;{version: string, arbitraryData: boolean}&amp;gt;
-```
-
-### getPublicKey
-
-Retrieve public key from specified BIP32 path. You can set an additional parameter `confirm: boolean` which will ask the user to confirm the Public Key on his Ledger before returning it. 
-
-```typescript
-async getPublicKey(path: string, confirm?: boolean): Promise&amp;lt;{publicKey: string}&amp;gt; {
-```
-
-### signTransaction
-
-Sign basic transactions with the specified key path. This method will return signed transactions (a transaction with additional `signatures` property). Please note that extensions are not yet supported for most transactions and operations (except `beneficiaries` for `comment_options`). 
-
-```typescript
-async signTransaction(tx: Transaction, path: string): Promise&lt;SignedTransaction&gt;
-```
-
-Please be aware that the current implementation of the HIVE Ledger App does not support multisig. This could be also a cool feature and we might add it someday. For now, let's focus on publishing it.
-
-The library is open-source and available on Gitlab and NPM:
- * https://gitlab.com/engrave/ledger/ledger-app-hive
-
-# Ledger Companion App
-
-To prove that the application is working correctly, Ledger requires a sample Companion App. 
-
-I prepared an initial design for a new wallet app and will start developing it soon. The plan is to make it as a wallet targeted at large stakeholders willing to invest in HIVE. It will be focused on governance (voting for witnesses and proposals) and the most significant chain news.
-
-![It will be possible to create a new Hive account directly from app](https://files.peakd.com/file/peakd-hive/engrave/23wWk6s648pDWBsa1JoJunzjwiXRo9f49h5gbvBg2q65FmshLwjh7mpbHEcrqHRdQmJAg)
-
-![Hive Ledger will display all significant parameters of your account](https://files.peakd.com/file/peakd-hive/engrave/23vsBhgnPDwTJcjG9YXJp5qfx6828bE9xVTzR6HsZW6XEskYJBs1bZoG99HkjsHBiau1W)
-
-![It will be possible to vote on witnesses and perform other governance actions](https://files.peakd.com/file/peakd-hive/engrave/23wWnW3EENBacfW6UgsUncKqKVHKiQXRRNftBf1qpAp9GvXMJWu9x7ihqNU1wPktLyhdE)
-
-Follow me to be up to date with incoming development updates!
-
-***
-
-&lt;center&gt;
-
-**Click on the image to vote for @engrave witness:**
-
-[![banner_engrave 100.png](https://images.hive.blog/DQmUghvic5TCPPvVkB4iB7eXmgQ3RQ4L8jkVizvuCBW8RMT/banner_engrave%20100.png)](https://hivesigner.com/sign/account-witness-vote?witness=engrave&amp;amp;approve=1)
-
-
-&lt;/center&gt;
-&amp;lt;/div&amp;gt;
-&lt;script crossorigin=&quot;anonymous&quot; integrity=&quot;sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=&quot; src=&quot;https://code.jquery.com/jquery-3.5.1.slim.min.js&quot;&gt;&lt;/script&gt;
-&lt;script src=&quot;https://unpkg.com/steem-content-renderer&quot;&gt;&lt;/script&gt;
-&lt;script&gt;
-  $(document).ready(function() {
-    try {
-      const renderer = new SteemContentRenderer.DefaultRenderer({
-        baseUrl: &quot;https://hive.blog/&quot;,
-        breaks: true,
-        skipSanitization: false,
-        allowInsecureScriptTags: false,
-        addNofollowToLinks: true,
-        doNotShowImages: false,
-        ipfsPrefix: &quot;&quot;,
-        assetsWidth: 640,
-        assetsHeight: 480,
-        imageProxyFn: (url) =&gt; url,
-        usertagUrlFn: (account) =&gt; &quot;/@engrave&quot;,
-        hashtagUrlFn: (hashtag) =&gt; &quot;/javascript-library-for-ledger-nano-s-hive-application&quot;,
-        isLinkSafeFn: (url) =&gt; true,
-      });
-      
-      const inputElem = $('#content-engrave-javascript-library-for-ledger-nano-s-hive-application').html();
-      const outputElem = $('#content-engrave-javascript-library-for-ledger-nano-s-hive-application');
-      const output = renderer.render(inputElem);
-      
-      outputElem.html(output);
-    } catch(e) {
-      console.log(e);
-    }
-  });
-&lt;/script&gt;
-&lt;style&gt;
-  #content-engrave-javascript-library-for-ledger-nano-s-hive-application {
-    padding: 0 3rem;
-    color: #444444;
-    font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif;
-    font-size: 16px;
-    line-height: 1.8;
-    text-shadow: 0 1px 0 #ffffff;
-    padding: 0.5rem;
-  }
-  #content-engrave-javascript-library-for-ledger-nano-s-hive-application code {
-    background: white;
-  }
-  #content-engrave-javascript-library-for-ledger-nano-s-hive-application a {
-    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
-  }
-  #content-engrave-javascript-library-for-ledger-nano-s-hive-application a:hover {
-    border-bottom: 0;
-  }
-  #content-engrave-javascript-library-for-ledger-nano-s-hive-application h1 {
-    font-size: 2.2em;
-  }
-  #content-engrave-javascript-library-for-ledger-nano-s-hive-application h2, h3, h4, h5 {
-    margin-bottom: 0;
-  }
-  #content-engrave-javascript-library-for-ledger-nano-s-hive-application header small {
-    color: #999;
-    font-size: 50%;
-  }
-  #content-engrave-javascript-library-for-ledger-nano-s-hive-application img {
-    max-width: 100%;
-  }
-&lt;/style&gt;
-
-&lt;hr /&gt;
-&lt;p&gt;
-  See: &lt;a href=&quot;https://peakd.com/hive-139531/@engrave/javascript-library-for-ledger-nano-s-hive-application&quot;&gt;JavaScript library for Ledger Nano S HIVE application&lt;/a&gt;
-  by
-  &lt;a href=&quot;https://hive.blog/@engrave&quot;&gt;@engrave&lt;/a&gt;
-&lt;/p&gt;
-
-&lt;/SignedTransaction&gt;&lt;/div&gt;</content><author><name>engrave</name></author><category term="howto" /><category term="nano" /><category term="nodejs" /><category term="wallet" /><summary type="html">![Incoming HIVE Ledger wallet](https://files.peakd.com/file/peakd-hive/engrave/EowF9ezqJkPjHhLKMx9NjA82sqpuhKVddGJHDgbd5zyo9TsVhKtGc1714xmomVXPeLL) It's been a couple of months since @netuoso [published the initial version of the Hive Ledger App](https://hive.blog/hive-139531/@netuoso/hive-application-for-the-ledger-nano-s-x-hardware-wallet). In order to get official support from Ledger (i.e. the possibility to install it from Ledger Live), we need to meet several requirements. And I'm trying to fulfill them all so we could benefit from the hardware wallet support. # Code review First, we need to make sure that the application is stable and secure. I already made a preliminary review of the app and created a Pull Request with some fixes. The next step will be to review the code from a security perspective, following the guidelines provided by Ledger. This requires a bit more work and knowledge than validating transactions serialization etc, but we will get there. * https://github.com/netuoso/ledger-app-hive/pull/5/ # Javascript library To simplify communication with the ledger app, I created a JavaScript/Typescript library. It's really easy to use it with NodeJS. The library covers every functionality supported by the app. Example usage: ```typescript import Hive from '@engrave/ledger-app-hive'; import TransportNodeHid from '@ledgerhq/hw-transport-node-hid'; import Transport from '@ledgerhq/hw-transport'; ( async () =&amp;gt; { console.log('Unlock your ledger....'); const transport = await TransportNodeHid.create(); console.log(`Established connection with Ledger Nano S`); try { const hive = new Hive(transport); const {version, arbitraryData} = await hive.getAppConfiguration(); console.log(&quot;Current version:&quot;, version); console.log(&quot;Arbitary data enabled:&quot;, arbitraryData); const publicKey = await hive.getPublicKey(`48'/13'/0'/0'/0'`); console.log(&quot;Public key:&quot;, publicKey); } catch (e) { console.error(e); } finally { transport.close(); } })(); ``` ## API * [getAppConfiguration](#getappconfiguration) * [getPublicKey](#getpublickey) * [signTransaction](#signtransaction) ### getAppConfiguration Get current configuration for HIVE App installed on a Ledger. ```typescript async getAppConfiguration(): Promise&amp;lt;{version: string, arbitraryData: boolean}&amp;gt; ``` ### getPublicKey Retrieve public key from specified BIP32 path. You can set an additional parameter `confirm: boolean` which will ask the user to confirm the Public Key on his Ledger before returning it. ```typescript async getPublicKey(path: string, confirm?: boolean): Promise&amp;lt;{publicKey: string}&amp;gt; { ``` ### signTransaction Sign basic transactions with the specified key path. This method will return signed transactions (a transaction with additional `signatures` property). Please note that extensions are not yet supported for most transactions and operations (except `beneficiaries` for `comment_options`). ```typescript async signTransaction(tx: Transaction, path: string): Promise ``` Please be aware that the current implementation of the HIVE Ledger App does not support multisig. This could be also a cool feature and we might add it someday. For now, let's focus on publishing it. The library is open-source and available on Gitlab and NPM: * https://gitlab.com/engrave/ledger/ledger-app-hive # Ledger Companion App To prove that the application is working correctly, Ledger requires a sample Companion App. I prepared an initial design for a new wallet app and will start developing it soon. The plan is to make it as a wallet targeted at large stakeholders willing to invest in HIVE. It will be focused on governance (voting for witnesses and proposals) and the most significant chain news. ![It will be possible to create a new Hive account directly from app](https://files.peakd.com/file/peakd-hive/engrave/23wWk6s648pDWBsa1JoJunzjwiXRo9f49h5gbvBg2q65FmshLwjh7mpbHEcrqHRdQmJAg) ![Hive Ledger will display all significant parameters of your account](https://files.peakd.com/file/peakd-hive/engrave/23vsBhgnPDwTJcjG9YXJp5qfx6828bE9xVTzR6HsZW6XEskYJBs1bZoG99HkjsHBiau1W) ![It will be possible to vote on witnesses and perform other governance actions](https://files.peakd.com/file/peakd-hive/engrave/23wWnW3EENBacfW6UgsUncKqKVHKiQXRRNftBf1qpAp9GvXMJWu9x7ihqNU1wPktLyhdE) Follow me to be up to date with incoming development updates! *** **Click on the image to vote for @engrave witness:** [![banner_engrave 100.png](https://images.hive.blog/DQmUghvic5TCPPvVkB4iB7eXmgQ3RQ4L8jkVizvuCBW8RMT/banner_engrave%20100.png)](https://hivesigner.com/sign/account-witness-vote?witness=engrave&amp;amp;approve=1) &amp;lt;/div&amp;gt; See: JavaScript library for Ledger Nano S HIVE application by @engrave</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://files.peakd.com/file/peakd-hive/engrave/EowF9ezqJkPjHhLKMx9NjA82sqpuhKVddGJHDgbd5zyo9TsVhKtGc1714xmomVXPeLL" /><media:content medium="image" url="https://files.peakd.com/file/peakd-hive/engrave/EowF9ezqJkPjHhLKMx9NjA82sqpuhKVddGJHDgbd5zyo9TsVhKtGc1714xmomVXPeLL" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>
+&lt;/p&gt;</content><author><name>blocktrades</name></author><category term="news" /><category term="core" /><category term="development" /><summary type="html"># Hived work (blockchain node software) ## SQL account history plugin In the last week or so, we continued our work on the SQL account history plugin. Don’t be confused by the name of this plugin: while it can and will function as a very fast replacement for the rocksdb account history plugin, its primary purpose is to lay the foundation for “modular hivemind” (an application framework for 2nd layer applications). We added support for resuming a hived replay configured with the SQL account history plugin. This support is also necessary for enabling the use of this plugin when operated in conjunction with a hivemind running in “live sync” mode. The SQL account history plugin also now populates the database with block and transaction signatures needed for get_block api calls. Finally, we added code to drop/restore the SQL indexes associated with the account history data to enable faster hived replays (this can be useful, for example, if no hivemind sync is happening at the same time). ## Other work on hived We reviewed recent changes in the hived code, which resulted in some code fixes and code reformats and new unit tests. We also did some preliminary reviews of current merge requests for hived. # Modular Hivemind (2nd layer application framework) ## Syncing hivemind from SQL account history plugin databases Hivemind can now run an “initial sync” directly from the postgres data generated by the SQL account history plugin. We repeated the “initial sync” of hivemind that died near the end during our previous test (running for 49.58M blocks) and confirmed that it takes just under 46 hours (just under two days). For comparison, a hivemind sync using the old “pull” process with all our other recent optimizations still took 61.2 hours. The final database size for this test was: SQL account history-generated data (~1.1 TB) + hivemind sync-generated data (~0.5 TB) for a total size of 1.6 TB. ## Experimenting with Postgres extensions for fork handling One of the key challenges for modular hivemind is automated support of fork handling, to remove this burden from 2nd layer applications. Currently we’re experimenting with the use of C-based postgres extensions to help accomplish this task. ## Miscellaneous changes to hive sync We eliminated use of some SQL constructs in hivemind sync that obtained exclusive locks on tables and therefore prevented database dumps from being run concurrently with a hivemind sync. Without this change, a hivemind server operator would need to temporarily disable his hivemind server in order to make a database backup. ## Official hivemind release v1.24.2 We completed testing of the develop branch, then merged all our latest work on hivemind to the master branch, tagged it as v1.24.2. We notified all API node operators that they should upgrade to v1.24.2 as soon as practical, as it contains not only optimizations and the exclusive lock fix, but also various bugfixes related to hivemind indexing and API responses. # Condenser (https://hive.blog code base) We finished fixing condenser bugs related to the follows, mutes, and decentralized lists, and deployed a new version of hive.blog with the fixes. At this point, we’ve completed and tested all work on decentralized lists. # Plans for next week On hived side, we’ll continue working on changes for HF25 (vote expiration for governance changes, curation vote window changes, merge request review, etc). Depending on how much time we have, we may take a look at the HBD interest code, now that witnesses are experimenting with enabling HBD interest payments. I’ve also considered adding a mechanism for helping to maintain the HBD peg if we have time. I’ll write a post about it if we make enough progress on other fronts in the next week or so that it seems feasible to fit the enhanced pegging mechanism into HF25. For modular hivemind, we’ll continue to explore ways to automate fork-handling. On the optimization front, we’re experimenting with python profiling to see if we can further reduce the time for a hivemind initial sync from SQL account history data. For a visualization tool, we’re using kcachegrind. We also want to look at combining the process of replaying hived with the SQL account history plugin (which takes about 11 hours) while running a hivemind sync simultaneously (which takes 46 hours). Currently these process are running sequentially, which takes 11 + 46 = 57 hours. By running them concurrently, I believe we can reduce the overall time to nearly just the time of the hivemind sync (i.e. 46 hours currently). As a reminder, previously this process took 17 hours for a hived replay with rockdsb account history + about 96 hours for a hivemind sync, before we began optimizations of sync time. See: 6th update of 2021 on BlockTrades work on Hive software by @blocktrades</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://hivedocs.info/assets/images/favicon.png" /><media:content medium="image" url="https://hivedocs.info/assets/images/favicon.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>
