@@ -1,4 +1,460 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="https://hivedocs.info/feed.xml" rel="self" type="application/atom+xml" /><link href="https://hivedocs.info/" rel="alternate" type="text/html" /><updated>2021-03-30T08:34:59-07:00</updated><id>https://hivedocs.info/feed.xml</id><title type="html">Hive Chain Documentation</title><subtitle>Your resource for various levels of Hive Documentation.</subtitle><author><name>site curated by: @inertia</name></author><entry><title type="html">My new contributions to the Hive Condenser and Wallet apps.</title><link href="https://hivedocs.info/news/nodejs/condenser/2021/03/30/5ejnqa-my-new-contributions-to-the-hive-condenser-and-wallet-apps.html" rel="alternate" type="text/html" title="My new contributions to the Hive Condenser and Wallet apps." /><published>2021-03-30T04:14:36-07:00</published><updated>2021-03-30T04:14:36-07:00</updated><id>https://hivedocs.info/news/nodejs/condenser/2021/03/30/5ejnqa-my-new-contributions-to-the-hive-condenser-and-wallet-apps</id><content type="html" xml:base="https://hivedocs.info/news/nodejs/condenser/2021/03/30/5ejnqa-my-new-contributions-to-the-hive-condenser-and-wallet-apps.html">&lt;div id=&quot;content-quochuy-5ejnqa-my-new-contributions-to-the-hive-condenser-and-wallet-apps&quot;&gt;## Context
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="https://hivedocs.info/feed.xml" rel="self" type="application/atom+xml" /><link href="https://hivedocs.info/" rel="alternate" type="text/html" /><updated>2021-04-01T10:22:51-07:00</updated><id>https://hivedocs.info/feed.xml</id><title type="html">Hive Chain Documentation</title><subtitle>Your resource for various levels of Hive Documentation.</subtitle><author><name>site curated by: @inertia</name></author><entry><title type="html">Making a Decentralized Game on Hive - Part 4</title><link href="https://hivedocs.info/howto/nodejs/2021/04/01/making-a-decentralized-game-on-hive-part-4.html" rel="alternate" type="text/html" title="Making a Decentralized Game on Hive - Part 4" /><published>2021-04-01T10:09:48-07:00</published><updated>2021-04-01T10:09:48-07:00</updated><id>https://hivedocs.info/howto/nodejs/2021/04/01/making-a-decentralized-game-on-hive-part-4</id><content type="html" xml:base="https://hivedocs.info/howto/nodejs/2021/04/01/making-a-decentralized-game-on-hive-part-4.html">&lt;div id=&quot;content-mahdiyari-making-a-decentralized-game-on-hive-part-4&quot;&gt;&lt;center&gt;![coding-pixabay.jpg](https://images.hive.blog/DQmbqyPpfU2dpwYkn9GVJdMmJbfukkvZZ8Bwqk7epyswP9w/macbook-2617705_1280.jpg)&lt;/center&gt;
+In the [previous part](https://hive.blog/hive-139531/@mahdiyari/making-a-decentralized-game-on-hive-part-3), we made a back-end that is streaming blocks and detects 3 methods in custom_json. Create a game, request to join a game, and accept the request. We also set up a MySQL server with 3 tables for the methods.
+
+&lt;sub&gt;You can find the links to the other parts at the end of the post.&lt;/sub&gt;
+
+
+### API
+Let's start by implementing the API for retrieving the games list. Our API is public so it doesn't require user authentication. The API will just return the data synced from the blockchain.
+`api/games.js`:
+```
+const mysql = require('../helpers/mysql')
+const express = require('express')
+const router = express.Router()
+
+// Return all games on route /games
+router.get('/games', async (req, res) =&amp;gt; {
+  try {
+    // Get games data from Database
+    const games = await mysql.query(
+      'SELECT `game_id`, `player1`, `player2`, `starting_player`, `status`, `winner` FROM `games`'
+    )
+    // Check for expected result
+    if (!games || !Array.isArray(games) || games.length &amp;lt; 1) {
+      // WE return id: 1 for success and id: 0 for errors
+      return res.json({
+        id: 1,
+        games: []
+      })
+    }
+    // We return `games` as we receive from MySQL but it's not a good practice
+    // specially when you have critical data in the database
+    // You can return data one by one like `games: [{game_id: games.game_id, ...}]`
+    return res.json({
+      id: 1,
+      games
+    })
+  } catch (e) {
+    // Return error for unexpected errors like connection drops
+    res.json({
+      id: 0,
+      error: 'Unexpected error.'
+    })
+  }
+})
+
+module.exports = router
+```
+The comments are in the code itself for better understanding.
+Note: We use `try{} catch{}` wherever we can. It is always good to handle errors.
+
+We can test our API at this point to detect possible errors in the code.
+Include the following code in `api/server.js` just above the `port` and `host` constants.
+```
+const games = require('./games')
+app.use(games)
+```
+
+Run `node api/server.js`. We can see the console.log: `Application started on 127.0.0.1:2021`
+Let's open `127.0.0.1:2021/games` in the browser.
+
+&lt;center&gt;![image.png](https://images.hive.blog/DQmbTKVAbtUB6nDH8HWuvku8NuiZv3jovu94jtEMAEU1vSX/image.png)&lt;/center&gt;
+The API works as expected.
+
+But it's not done yet. This API returns ALL the games without a specific order. We should implement pagination and define an order for our list.
+
+Updated code `api/games.js`:
+```
+const mysql = require('../helpers/mysql')
+const express = require('express')
+const router = express.Router()
+
+router.get('/games/:page', async (req, res) =&amp;gt; {
+  try {
+    if (isNaN(req.params.page)) {
+      res.json({
+        id: 0,
+        error: 'Expected number.'
+      })
+    }
+    const page = Math.floor(req.params.page)
+    if (page &amp;lt; 1) {
+      res.json({
+        id: 0,
+        error: 'Expected &amp;gt; 0'
+      })
+    }
+    const offset = (page - 1) * 10
+    const games = await mysql.query(
+      'SELECT `game_id`, `player1`, `player2`, `starting_player`, `status`, `winner` FROM `games`' +
+        ' ORDER BY `id` DESC LIMIT 10 OFFSET ?',
+      [offset]
+    )
+    if (!games || !Array.isArray(games) || games.length &amp;lt; 1) {
+      return res.json({
+        id: 1,
+        games: []
+      })
+    }
+    return res.json({
+      id: 1,
+      games
+    })
+  } catch (e) {
+    res.json({
+      id: 0,
+      error: 'Unexpected error.'
+    })
+  }
+})
+
+module.exports = router
+```
+We used `id` to order our list and get the newly created games first. Each page returns up to 10 games. We can try `127.0.0.1:2021/games/1` for testing.
+***
+Let's set another API for requests. The code is almost similar but we return only requests for the specific game_id.
+`api/requests.js`:
+```
+const mysql = require('../helpers/mysql')
+const express = require('express')
+const router = express.Router()
+
+router.get('/requests/:id', async (req, res) =&amp;gt; {
+  try {
+    if (!req.params.id) {
+      res.json({
+        id: 0,
+        error: 'Expected game_id.'
+      })
+    }
+    // We are passing user input into the database
+    // You should be careful in such cases
+    // We use ? for parameters which escapes the characters
+    const requests = await mysql.query(
+      'SELECT `player`, `status` FROM `requests` WHERE `game_id`= ?',
+      [req.params.id]
+    )
+    if (!requests || !Array.isArray(requests) || requests.length &amp;lt; 1) {
+      return res.json({
+        id: 1,
+        requests: []
+      })
+    }
+    return res.json({
+      id: 1,
+      requests
+    })
+  } catch (e) {
+    res.json({
+      id: 0,
+      error: 'Unexpected error.'
+    })
+  }
+})
+
+module.exports = router
+```
+Note: `:id` in the above router represents a variable named id. So for example `http://127.0.0.1:2021/requests/mygameidhere` in this request, the `id` variable is `mygameidhere` which is accessible by `req.params.id`.
+***
+A similar code for the `moves` table. There wasn't a better name in my mind for this table.
+`api/moves.js`:
+```
+const mysql = require('../helpers/mysql')
+const express = require('express')
+const router = express.Router()
+
+router.get('/moves/:id', async (req, res) =&amp;gt; {
+  try {
+    if (!req.params.id) {
+      res.json({
+        id: 0,
+        error: 'Expected game_id.'
+      })
+    }
+    const moves = await mysql.query(
+      'SELECT `player`, `col`, `row` FROM `moves` WHERE `game_id`= ?',
+      [req.params.id]
+    )
+    if (!moves || !Array.isArray(moves) || moves.length &amp;lt; 1) {
+      return res.json({
+        id: 1,
+        moves: []
+      })
+    }
+    return res.json({
+      id: 1,
+      moves
+    })
+  } catch (e) {
+    res.json({
+      id: 0,
+      error: 'Unexpected error.'
+    })
+  }
+})
+
+module.exports = router
+```
+Now our 3 APIs are ready to be implemented on the front-end.
+***
+Here is the updated `api/server.js` after including the APIs:
+```
+const express = require('express')
+const bodyParser = require('body-parser')
+const hpp = require('hpp')
+const helmet = require('helmet')
+const app = express()
+
+// more info: www.npmjs.com/package/hpp
+app.use(hpp())
+app.use(helmet())
+
+// support json encoded bodies and encoded bodies
+app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({ extended: true }))
+
+app.use(function (req, res, next) {
+  res.header(
+    'Access-Control-Allow-Origin',
+    'http://localhost https://tic-tac-toe.mahdiyari.info/'
+  )
+  res.header('Access-Control-Allow-Credentials', true)
+  res.header(
+    'Access-Control-Allow-Headers',
+    'Origin, X-Requested-With, Content-Type, Accept, access_key'
+  )
+  next()
+})
+
+// APIs
+const games = require('./games')
+const requests = require('./requests')
+const moves = require('./moves')
+
+app.use(games)
+app.use(requests)
+app.use(moves)
+
+const port = process.env.PORT || 2021
+const host = process.env.HOST || '127.0.0.1'
+app.listen(port, host, () =&amp;gt; {
+  console.log(`Application started on ${host}:${port}`)
+})
+```
+***
+### Front-end
+I think using pure HTML is a mistake and I would prefer something like Angular for the web applications but that comes with its own learning process which can make this tutorial complex. So my recommendation is to learn something like Angular or Vue and live a happy life. Anyway, coding time.
+
+I'm not going to drop `index.html` here. It doesn't need much explanation and it's long. You can see it on the [GitLab repository](https://gitlab.com/mahdiyari/decentralized-game-on-hive/-/blob/master/front-end/index.html). I will just add some references here used in `app.js`.
+
+The table for listing the games and buttons for pagination.
+`index.html`:
+```
+&lt;div class=&quot;card-body&quot;&gt;
+  &lt;h5 class=&quot;card-title&quot; style=&quot;float: left;&quot;&gt;Games list&lt;/h5&gt;
+  &lt;span style=&quot;float: right;&quot;&gt;Auto updating every 5s&lt;/span&gt;
+  &lt;table class=&quot;table table-striped&quot;&gt;
+    &lt;thead&gt;
+      &lt;tr&gt;
+        &lt;th&gt;#&lt;/th&gt;
+        &lt;th&gt;Game ID&lt;/th&gt;
+        &lt;th&gt;Player 1&lt;/th&gt;
+        &lt;th&gt;Player 2&lt;/th&gt;
+        &lt;th&gt;Starting Player&lt;/th&gt;
+        &lt;th&gt;Status&lt;/th&gt;
+        &lt;th&gt;Winner&lt;/th&gt;
+        &lt;th&gt;Action&lt;/th&gt;
+      &lt;/tr&gt;
+    &lt;/thead&gt;
+    &lt;tbody id=&quot;games-table-body&quot;&gt;
+    &lt;/tbody&gt;
+  &lt;/table&gt;
+  &lt;nav aria-label=&quot;Page navigation example&quot;&gt;
+    &lt;ul class=&quot;pagination justify-content-center&quot;&gt;
+      &lt;li class=&quot;page-item disabled&quot; id=&quot;prev-btn&quot;&gt;
+        &lt;a class=&quot;page-link&quot; onclick=&quot;prevGamesPage()&quot;&gt;&amp;laquo;&lt;/a&gt;
+      &lt;/li&gt;
+      &lt;li class=&quot;page-item disabled&quot;&gt;
+        &lt;a class=&quot;page-link&quot; id=&quot;page-number&quot; tabindex=&quot;-1&quot;&gt; 1 &lt;/a&gt;
+      &lt;/li&gt;
+      &lt;li class=&quot;page-item&quot; id=&quot;next-btn&quot;&gt;
+        &lt;a class=&quot;page-link&quot; onclick=&quot;nextGamesPage()&quot;&gt;&amp;raquo;&lt;/a&gt;
+      &lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/nav&gt;
+&lt;/div&gt;
+```
+***
+We have to fill the table above. So let's implement some basic functions.
+`js/app.js`:
+```
+const baseAPI = 'http://127.0.0.1:2021'
+const APICall = async (api) =&amp;gt; {
+  return (await fetch(baseAPI + api)).json()
+}
+```
+For ease of use, we define a function for `GET` calls using `fetch` and a variable for our API address.
+***
+```
+const getGames = async (page = 1) =&amp;gt; {
+  const games = await APICall('/games/' + page)
+  return games.games
+}
+```
+This function basically gets the games from the API per page.
+***
+```
+const fillGamesTable = (data) =&amp;gt; {
+  const tbody = document.getElementById('games-table-body')
+  let temp = ''
+  for (let i = 0; i &amp;lt; data.length; i++) {
+    temp += `&lt;tr&gt;
+    &lt;td&gt;${(gamesPage - 1) * 10 + i + 1}&lt;/td&gt;
+    &lt;td&gt;${data[i].game_id}&lt;/td&gt;
+    &lt;td&gt;${data[i].player1}&lt;/td&gt;
+    &lt;td&gt;${data[i].player2}&lt;/td&gt;
+    &lt;td&gt;${data[i].starting_player}&lt;/td&gt;
+    &lt;td&gt;${data[i].status}&lt;/td&gt;
+    &lt;td&gt;${data[i].winner}&lt;/td&gt;
+    &lt;td&gt;&lt;/td&gt;
+    &lt;/tr&gt;`
+  }
+  if (data.length &amp;lt; 1) {
+    temp = 'No games.'
+  }
+  tbody.innerHTML = temp
+}
+```
+`fillGamesTable` takes the result from `getGames` function and fills the HTML table with data using a `for` loop.
+***
+```
+let gamesPage = 1
+const loadTheGames = async () =&amp;gt; {
+  const games = await getGames(gamesPage)
+  fillGamesTable(games)
+  if (games.length &amp;lt; 10) {
+    document.getElementById('next-btn').className = 'page-item disabled'
+  } else {
+    document.getElementById('next-btn').className = 'page-item'
+  }
+  if (gamesPage === 1) {
+    document.getElementById('prev-btn').className = 'page-item disabled'
+  } else {
+    document.getElementById('prev-btn').className = 'page-item'
+  }
+  document.getElementById('page-number').innerHTML = ` ${gamesPage} `
+}
+loadTheGames()
+setInterval(() =&amp;gt; loadTheGames(), 5000)
+```
+With this function, we call the two previously defined functions to do their job and update the pagination buttons and the page number every time we update the table data. Also, every 5 seconds, it gets new data from API and updates the table with new data so users don't have to reload the page for new data.
+***
+```
+const nextGamesPage = () =&amp;gt; {
+  gamesPage++
+  loadTheGames()
+}
+
+const prevGamesPage = () =&amp;gt; {
+  gamesPage--
+  loadTheGames()
+}
+```
+And two functions for changing pages. Simple as that.
+***
+The final result with dummy data looks like this on the browser:
+&lt;center&gt;![Capture.PNG](https://images.hive.blog/DQmcYZC1vixajRW4Ui5dHiSfTy5MYqEYZhXy2bd2ituz4Ar/Capture.PNG)&lt;/center&gt;
+***
+That's it for this part. I'm really happy with the results we are getting. I didn't plan anything beforehand and I'm coding as I'm writing the posts.
+
+Today we made 3 API calls and created the basic front-end which for now only shows the list of games that are submitted to the Hive blockchain. In the next part, we will implement the methods for creating and joining the games on the client side. We also probably need to create a game page where actual gaming happens.
+
+Thanks for reading. Make sure to follow me and share the post. Upvote if you like and leave a comment.
+***
+[GitLab](https://gitlab.com/mahdiyari/decentralized-game-on-hive)
+[Part 1](https://hive.blog/hive-139531/@mahdiyari/making-a-decentralized-game-on-hive-tic-tac-toe-part-1)
+[Part 2](https://hive.blog/hive-139531/@mahdiyari/making-a-decentralized-game-on-hive-part-2)
+[Part 3](https://hive.blog/hive-139531/@mahdiyari/making-a-decentralized-game-on-hive-part-3)
+***
+**Vote for my witness:**
+- https://wallet.hive.blog/~witnesses
+- https://peakd.com/witnesses
+- https://ecency.com/witnesses&lt;/div&gt;
+&lt;script crossorigin=&quot;anonymous&quot; integrity=&quot;sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=&quot; src=&quot;https://code.jquery.com/jquery-3.5.1.slim.min.js&quot;&gt;&lt;/script&gt;
+
+&lt;script src=&quot;https://unpkg.com/steem-content-renderer&quot;&gt;&lt;/script&gt;
+
+&lt;script&gt;
+  $(document).ready(function() {
+    try {
+      const renderer = new SteemContentRenderer.DefaultRenderer({
+        baseUrl: &quot;https://hive.blog/&quot;,
+        breaks: true,
+        skipSanitization: false,
+        allowInsecureScriptTags: false,
+        addNofollowToLinks: true,
+        doNotShowImages: false,
+        ipfsPrefix: &quot;&quot;,
+        assetsWidth: 640,
+        assetsHeight: 480,
+        imageProxyFn: (url) =&gt; url,
+        usertagUrlFn: (account) =&gt; &quot;/@mahdiyari&quot;,
+        hashtagUrlFn: (hashtag) =&gt; &quot;/making-a-decentralized-game-on-hive-part-4&quot;,
+        isLinkSafeFn: (url) =&gt; true,
+      });
+      
+      const inputElem = $('#content-mahdiyari-making-a-decentralized-game-on-hive-part-4').html();
+      const outputElem = $('#content-mahdiyari-making-a-decentralized-game-on-hive-part-4');
+      const output = renderer.render(inputElem);
+      
+      outputElem.html(output);
+    } catch(e) {
+      console.log(e);
+    }
+  });
+&lt;/script&gt;
+
+&lt;style&gt;
+  #content-mahdiyari-making-a-decentralized-game-on-hive-part-4 {
+    padding: 0 3rem;
+    color: #444444;
+    font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.8;
+    text-shadow: 0 1px 0 #ffffff;
+    padding: 0.5rem;
+  }
+  #content-mahdiyari-making-a-decentralized-game-on-hive-part-4 code {
+    background: white;
+  }
+  #content-mahdiyari-making-a-decentralized-game-on-hive-part-4 a {
+    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
+  }
+  #content-mahdiyari-making-a-decentralized-game-on-hive-part-4 a:hover {
+    border-bottom: 0;
+  }
+  #content-mahdiyari-making-a-decentralized-game-on-hive-part-4 h1 {
+    font-size: 2.2em;
+  }
+  #content-mahdiyari-making-a-decentralized-game-on-hive-part-4 h2, h3, h4, h5 {
+    margin-bottom: 0;
+  }
+  #content-mahdiyari-making-a-decentralized-game-on-hive-part-4 header small {
+    color: #999;
+    font-size: 50%;
+  }
+  #content-mahdiyari-making-a-decentralized-game-on-hive-part-4 img {
+    max-width: 100%;
+  }
+&lt;/style&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;
+  See: &lt;a href=&quot;https://hive.blog/hive-169321/@mahdiyari/making-a-decentralized-game-on-hive-part-4&quot;&gt;Making a Decentralized Game on Hive - Part 4&lt;/a&gt;
+  by
+  &lt;a href=&quot;https://hive.blog/@mahdiyari&quot;&gt;@mahdiyari&lt;/a&gt;
+&lt;/p&gt;</content><author><name>mahdiyari</name></author><category term="howto" /><category term="nodejs" /><summary type="html">![coding-pixabay.jpg](https://images.hive.blog/DQmbqyPpfU2dpwYkn9GVJdMmJbfukkvZZ8Bwqk7epyswP9w/macbook-2617705_1280.jpg) In the [previous part](https://hive.blog/hive-139531/@mahdiyari/making-a-decentralized-game-on-hive-part-3), we made a back-end that is streaming blocks and detects 3 methods in custom_json. Create a game, request to join a game, and accept the request. We also set up a MySQL server with 3 tables for the methods. You can find the links to the other parts at the end of the post. ### API Let's start by implementing the API for retrieving the games list. Our API is public so it doesn't require user authentication. The API will just return the data synced from the blockchain. `api/games.js`: ``` const mysql = require('../helpers/mysql') const express = require('express') const router = express.Router() // Return all games on route /games router.get('/games', async (req, res) =&amp;gt; { try { // Get games data from Database const games = await mysql.query( 'SELECT `game_id`, `player1`, `player2`, `starting_player`, `status`, `winner` FROM `games`' ) // Check for expected result if (!games || !Array.isArray(games) || games.length &amp;lt; 1) { // WE return id: 1 for success and id: 0 for errors return res.json({ id: 1, games: [] }) } // We return `games` as we receive from MySQL but it's not a good practice // specially when you have critical data in the database // You can return data one by one like `games: [{game_id: games.game_id, ...}]` return res.json({ id: 1, games }) } catch (e) { // Return error for unexpected errors like connection drops res.json({ id: 0, error: 'Unexpected error.' }) } }) module.exports = router ``` The comments are in the code itself for better understanding. Note: We use `try{} catch{}` wherever we can. It is always good to handle errors. We can test our API at this point to detect possible errors in the code. Include the following code in `api/server.js` just above the `port` and `host` constants. ``` const games = require('./games') app.use(games) ``` Run `node api/server.js`. We can see the console.log: `Application started on 127.0.0.1:2021` Let's open `127.0.0.1:2021/games` in the browser. ![image.png](https://images.hive.blog/DQmbTKVAbtUB6nDH8HWuvku8NuiZv3jovu94jtEMAEU1vSX/image.png) The API works as expected. But it's not done yet. This API returns ALL the games without a specific order. We should implement pagination and define an order for our list. Updated code `api/games.js`: ``` const mysql = require('../helpers/mysql') const express = require('express') const router = express.Router() router.get('/games/:page', async (req, res) =&amp;gt; { try { if (isNaN(req.params.page)) { res.json({ id: 0, error: 'Expected number.' }) } const page = Math.floor(req.params.page) if (page &amp;lt; 1) { res.json({ id: 0, error: 'Expected &amp;gt; 0' }) } const offset = (page - 1) * 10 const games = await mysql.query( 'SELECT `game_id`, `player1`, `player2`, `starting_player`, `status`, `winner` FROM `games`' + ' ORDER BY `id` DESC LIMIT 10 OFFSET ?', [offset] ) if (!games || !Array.isArray(games) || games.length &amp;lt; 1) { return res.json({ id: 1, games: [] }) } return res.json({ id: 1, games }) } catch (e) { res.json({ id: 0, error: 'Unexpected error.' }) } }) module.exports = router ``` We used `id` to order our list and get the newly created games first. Each page returns up to 10 games. We can try `127.0.0.1:2021/games/1` for testing. *** Let's set another API for requests. The code is almost similar but we return only requests for the specific game_id. `api/requests.js`: ``` const mysql = require('../helpers/mysql') const express = require('express') const router = express.Router() router.get('/requests/:id', async (req, res) =&amp;gt; { try { if (!req.params.id) { res.json({ id: 0, error: 'Expected game_id.' }) } // We are passing user input into the database // You should be careful in such cases // We use ? for parameters which escapes the characters const requests = await mysql.query( 'SELECT `player`, `status` FROM `requests` WHERE `game_id`= ?', [req.params.id] ) if (!requests || !Array.isArray(requests) || requests.length &amp;lt; 1) { return res.json({ id: 1, requests: [] }) } return res.json({ id: 1, requests }) } catch (e) { res.json({ id: 0, error: 'Unexpected error.' }) } }) module.exports = router ``` Note: `:id` in the above router represents a variable named id. So for example `http://127.0.0.1:2021/requests/mygameidhere` in this request, the `id` variable is `mygameidhere` which is accessible by `req.params.id`. *** A similar code for the `moves` table. There wasn't a better name in my mind for this table. `api/moves.js`: ``` const mysql = require('../helpers/mysql') const express = require('express') const router = express.Router() router.get('/moves/:id', async (req, res) =&amp;gt; { try { if (!req.params.id) { res.json({ id: 0, error: 'Expected game_id.' }) } const moves = await mysql.query( 'SELECT `player`, `col`, `row` FROM `moves` WHERE `game_id`= ?', [req.params.id] ) if (!moves || !Array.isArray(moves) || moves.length &amp;lt; 1) { return res.json({ id: 1, moves: [] }) } return res.json({ id: 1, moves }) } catch (e) { res.json({ id: 0, error: 'Unexpected error.' }) } }) module.exports = router ``` Now our 3 APIs are ready to be implemented on the front-end. *** Here is the updated `api/server.js` after including the APIs: ``` const express = require('express') const bodyParser = require('body-parser') const hpp = require('hpp') const helmet = require('helmet') const app = express() // more info: www.npmjs.com/package/hpp app.use(hpp()) app.use(helmet()) // support json encoded bodies and encoded bodies app.use(bodyParser.json()) app.use(bodyParser.urlencoded({ extended: true })) app.use(function (req, res, next) { res.header( 'Access-Control-Allow-Origin', 'http://localhost https://tic-tac-toe.mahdiyari.info/' ) res.header('Access-Control-Allow-Credentials', true) res.header( 'Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, access_key' ) next() }) // APIs const games = require('./games') const requests = require('./requests') const moves = require('./moves') app.use(games) app.use(requests) app.use(moves) const port = process.env.PORT || 2021 const host = process.env.HOST || '127.0.0.1' app.listen(port, host, () =&amp;gt; { console.log(`Application started on ${host}:${port}`) }) ``` *** ### Front-end I think using pure HTML is a mistake and I would prefer something like Angular for the web applications but that comes with its own learning process which can make this tutorial complex. So my recommendation is to learn something like Angular or Vue and live a happy life. Anyway, coding time. I'm not going to drop `index.html` here. It doesn't need much explanation and it's long. You can see it on the [GitLab repository](https://gitlab.com/mahdiyari/decentralized-game-on-hive/-/blob/master/front-end/index.html). I will just add some references here used in `app.js`. The table for listing the games and buttons for pagination. `index.html`: ``` Games list Auto updating every 5s # Game ID Player 1 Player 2 Starting Player Status Winner Action &amp;laquo; 1 &amp;raquo; ``` *** We have to fill the table above. So let's implement some basic functions. `js/app.js`: ``` const baseAPI = 'http://127.0.0.1:2021' const APICall = async (api) =&amp;gt; { return (await fetch(baseAPI + api)).json() } ``` For ease of use, we define a function for `GET` calls using `fetch` and a variable for our API address. *** ``` const getGames = async (page = 1) =&amp;gt; { const games = await APICall('/games/' + page) return games.games } ``` This function basically gets the games from the API per page. *** ``` const fillGamesTable = (data) =&amp;gt; { const tbody = document.getElementById('games-table-body') let temp = '' for (let i = 0; i &amp;lt; data.length; i++) { temp += ` ${(gamesPage - 1) * 10 + i + 1} ${data[i].game_id} ${data[i].player1} ${data[i].player2} ${data[i].starting_player} ${data[i].status} ${data[i].winner} ` } if (data.length &amp;lt; 1) { temp = 'No games.' } tbody.innerHTML = temp } ``` `fillGamesTable` takes the result from `getGames` function and fills the HTML table with data using a `for` loop. *** ``` let gamesPage = 1 const loadTheGames = async () =&amp;gt; { const games = await getGames(gamesPage) fillGamesTable(games) if (games.length &amp;lt; 10) { document.getElementById('next-btn').className = 'page-item disabled' } else { document.getElementById('next-btn').className = 'page-item' } if (gamesPage === 1) { document.getElementById('prev-btn').className = 'page-item disabled' } else { document.getElementById('prev-btn').className = 'page-item' } document.getElementById('page-number').innerHTML = ` ${gamesPage} ` } loadTheGames() setInterval(() =&amp;gt; loadTheGames(), 5000) ``` With this function, we call the two previously defined functions to do their job and update the pagination buttons and the page number every time we update the table data. Also, every 5 seconds, it gets new data from API and updates the table with new data so users don't have to reload the page for new data. *** ``` const nextGamesPage = () =&amp;gt; { gamesPage++ loadTheGames() } const prevGamesPage = () =&amp;gt; { gamesPage-- loadTheGames() } ``` And two functions for changing pages. Simple as that. *** The final result with dummy data looks like this on the browser: ![Capture.PNG](https://images.hive.blog/DQmcYZC1vixajRW4Ui5dHiSfTy5MYqEYZhXy2bd2ituz4Ar/Capture.PNG) *** That's it for this part. I'm really happy with the results we are getting. I didn't plan anything beforehand and I'm coding as I'm writing the posts. Today we made 3 API calls and created the basic front-end which for now only shows the list of games that are submitted to the Hive blockchain. In the next part, we will implement the methods for creating and joining the games on the client side. We also probably need to create a game page where actual gaming happens. Thanks for reading. Make sure to follow me and share the post. Upvote if you like and leave a comment. *** [GitLab](https://gitlab.com/mahdiyari/decentralized-game-on-hive) [Part 1](https://hive.blog/hive-139531/@mahdiyari/making-a-decentralized-game-on-hive-tic-tac-toe-part-1) [Part 2](https://hive.blog/hive-139531/@mahdiyari/making-a-decentralized-game-on-hive-part-2) [Part 3](https://hive.blog/hive-139531/@mahdiyari/making-a-decentralized-game-on-hive-part-3) *** **Vote for my witness:** - https://wallet.hive.blog/~witnesses - https://peakd.com/witnesses - https://ecency.com/witnesses See: Making a Decentralized Game on Hive - Part 4 by @mahdiyari</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://images.hive.blog/DQmbqyPpfU2dpwYkn9GVJdMmJbfukkvZZ8Bwqk7epyswP9w/macbook-2617705_1280.jpg" /><media:content medium="image" url="https://images.hive.blog/DQmbqyPpfU2dpwYkn9GVJdMmJbfukkvZZ8Bwqk7epyswP9w/macbook-2617705_1280.jpg" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">My new contributions to the Hive Condenser and Wallet apps.</title><link href="https://hivedocs.info/news/nodejs/condenser/2021/03/30/5ejnqa-my-new-contributions-to-the-hive-condenser-and-wallet-apps.html" rel="alternate" type="text/html" title="My new contributions to the Hive Condenser and Wallet apps." /><published>2021-03-30T04:14:36-07:00</published><updated>2021-03-30T04:14:36-07:00</updated><id>https://hivedocs.info/news/nodejs/condenser/2021/03/30/5ejnqa-my-new-contributions-to-the-hive-condenser-and-wallet-apps</id><content type="html" xml:base="https://hivedocs.info/news/nodejs/condenser/2021/03/30/5ejnqa-my-new-contributions-to-the-hive-condenser-and-wallet-apps.html">&lt;div id=&quot;content-quochuy-5ejnqa-my-new-contributions-to-the-hive-condenser-and-wallet-apps&quot;&gt;## Context
 I have been involved (voluntarily) with the development of the Condenser &amp;amp; Wallet apps (that are powering https://hive.blog and https://wallet.hive.blog) for quite a while now. There are other great frontends to Hive out there such as https://peakd.com and https://ecency.com but I have always been more or less faithful with the Condenser.
 
 This is a regular report on my new contributions.
@@ -2128,337 +2584,4 @@ See you around for the next dev meeting on march 29th :)
   See: &lt;a href=&quot;https://peakd.com/hive/@howo/hive-core-developer-meeting-19&quot;&gt;Hive core developer meeting #19&lt;/a&gt;
   by
   &lt;a href=&quot;https://hive.blog/@howo&quot;&gt;@howo&lt;/a&gt;
-&lt;/p&gt;</content><author><name>howo</name></author><category term="news" /><category term="core" /><category term="development" /><summary type="html">https://www.youtube.com/watch?v=UIRR5gFfVYk meeting tl;dr: ## Dev sync As usual listen to this one is better ## hived proposal payout maintenance time drifting fix in hf25 or not [hive!168](https://gitlab.syncad.com/hive/hive/-/merge_requests/168) Lots of discussion on this one that branched into two problems, one is the proposal time drift issue, the other is about the unit tests behaving strangely due to the skipping logic. The output of that point is that I will try to fix it for hf25 and see how the unit tests go, but if I see that it takes too much time, I'll skip it and we'll fix it for hf26. It's a minor issue. ## Incoming recurrent transfer api: hived or hivemind ? Broader discussion on should hivemind support recurrent transfers Incoming recurrent transfers will be done via hivemind, and yes hivemind will support them, we will do it after hf25 has shipped though. ## Update the beem used for unit tests in hived to one that is more up to date: Relatively short discussion, and since @holger80 implemented the hybrid transactions in the mainline github, we'll move towards using the version on github instead of gitlab. ## Hived split block log in chunks and be able to sync those independently There was lots of discussions on this in the dev channels. It's not the focus right now as hf25 is upon us, there was some discussions on using external tools instead of implementing it directly within hived. To be rediscussed. ## Hivemind Communities type 2/3 and account level mutes [hivemind#125](https://gitlab.syncad.com/hive/hivemind/-/issues/125) / [hivemind#145](https://gitlab.syncad.com/hive/hivemind/-/issues/145) Bt's team is building tests, we'll then then who takes this on, potentially bt's team as I'll be tied to hived ## Hivemind communities beneficiaries support [hivemind#149](https://gitlab.syncad.com/hive/hivemind/-/issues/149) +parameter naming: reward_share vs beneficiaries We also discussed changing the data type of the communities data from text to jsonb (https://gitlab.syncad.com/hive/hivemind/-/issues/153) Basically we'll use beneficiaries and the current implementations ideas are a bit early, we(I) are waiting for the changes to take place in communities type 2/3 + account level mutes to take place before taking this on. ## Hivemind Communities metadata (topics/tags) [hivemind#148](https://gitlab.syncad.com/hive/hivemind/-/issues/148) Yes why not, we'll add a new field to store a few &quot;communities tags&quot; and a new api to search for communities via said tags. The idea is to be able to tag a community like &quot;crypto nft games&quot; or &quot;sport tennis&quot; etc to make content discovery easier ## Adding more stats for communities A bit early to tell what we'll add but I'll definitely look into adding more stats and ways to sort communities with it. # Conclusion In the end lots of hivemind talks but those are mostly preliminary, our focus is hf25 we are tentatively(this is not an official date or anything, it's more like an &quot;ideally we would like it to be done by but might slip if needs be&quot;) looking at april 15 for locking the core code and build a testnet for hf25. This is when all the features for hf25 are set in stone and we stop adding new features to the core code. So all developments HAVE to be done by then. This is why I'll be mostly focusing on hive core for the next month to get all of my ongoing code merged and included in hf25. See you around for the next dev meeting on march 29th :) @howo See: Hive core developer meeting #19 by @howo</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://img.youtube.com/vi/UIRR5gFfVYk/0.jpg" /><media:content medium="image" url="https://img.youtube.com/vi/UIRR5gFfVYk/0.jpg" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Making a Decentralized Game on Hive - Tic Tac Toe - Part 1</title><link href="https://hivedocs.info/howto/nodejs/2021/03/13/making-a-decentralized-game-on-hive-tic-tac-toe-part-1.html" rel="alternate" type="text/html" title="Making a Decentralized Game on Hive - Tic Tac Toe - Part 1" /><published>2021-03-13T12:04:06-08:00</published><updated>2021-03-13T12:04:06-08:00</updated><id>https://hivedocs.info/howto/nodejs/2021/03/13/making-a-decentralized-game-on-hive-tic-tac-toe-part-1</id><content type="html" xml:base="https://hivedocs.info/howto/nodejs/2021/03/13/making-a-decentralized-game-on-hive-tic-tac-toe-part-1.html">&lt;div id=&quot;content-mahdiyari-making-a-decentralized-game-on-hive-tic-tac-toe-part-1&quot;&gt;&lt;center&gt;![tic-tac-toe.png](https://images.hive.blog/DQmYne66xZ9RBsrUwF9N76S5XnjJGyzEgBPbbsZRnNAHUzx/tic-tac-toe.png)&lt;/center&gt;
-We will develop a decentralized game by the end of this series. The goal is to make learning development on Hive blockchain easier by using a simple game as the training project.
-
-## Target audience
-Of course, it's not for everybody. I will try to keep it simple as possible for people with less experience with development. But some degree of understanding code is necessary to learn something. I will explain anything related to the Hive blockchain that we use.
-
-You can find the links for the final result of this part at the end of this post.
-
-## Why &quot;tic-tac-toe&quot;?
-It's a simple multiplayer game and it covers most of the topics needed for a bigger decentralized game or application. Most people are already familiar with this game and it's easier to code and its rules are simple.
-
-## Development
-We will use Javascript for the game because it's simple enough so most people understand easily. The front-end will be pure HTML. Also, I think MySQL is a good fit as the database. The game needs a database to keep track of games and players. MySQL docker can be set up in a few minutes.
-
-The decentralized game will work without depending on one central software. The game will talk only to the blockchain and there is no central database. It doesn't need a private entity to hold players' data. Anyone can run an interface for the game.
-
-(We have a database but it's not a central private database and it can be synced through blockchain. Anyone should be able to run an instance of the game and the game will get the same exact database by reading data from the blockchain. It's like hivemind, the database that holds and serves most of the data on Hive.)
-
-## Tools I'm using
-- Visual Studio Code
-- Nodejs
-- MySQL docker setup
-- Chrome browser
-
-I didn't plan anything beforehand so I don't know how many posts it will take. I will list the things that come to my mind right now.
-
-## Planning
-- Front-end
-  - Make a login method on the client-side
-  - Display available games list
-  - Create/Request to join a game
-  - Design the game visuals and controls
-- Back-end
-  - Stream the blockchain and listen for custom_json operations
-  - Define custom_json operations
-  - Game mechanics
-  - API to communicate with front-end
-  - Replay/resync method to update the database on newly deployed game clients
-
-The above list may or may not change. Anyway, let's start with the front-end and add a login method.
-***
-## Part 1: Front-end - Login method
-I think the HTML part doesn't need any explanation. Page title, description, bootstrap navbar, and a login link. Added `css/style.css` and `js/app.js` too. When the user clicks on the &quot;login&quot; link, a modal with the login form will appear. It will then fire `login()` function on submit.
-
-`index.html`:
-```
-&amp;lt;!DOCTYPE html&amp;gt;
-&lt;html lang=&quot;en&quot;&gt;
-
-&lt;head&gt;
-  &lt;meta charset=&quot;UTF-8&quot; /&gt;
-  &lt;meta http-equiv=&quot;X-UA-Compatible&quot; content=&quot;IE=edge&quot; /&gt;
-  &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot; /&gt;
-  &lt;meta name=&quot;description&quot; content=&quot;A decentralized game on hive blockchain&quot; /&gt;
-  &lt;title&gt;Tic-Tac-Toe on Hive blockchain&lt;/title&gt;
-  &lt;link href=&quot;https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css&quot; rel=&quot;stylesheet&quot; integrity=&quot;sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl&quot; crossorigin=&quot;anonymous&quot; /&gt;
-  &lt;script src=&quot;https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js&quot; integrity=&quot;sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0&quot; crossorigin=&quot;anonymous&quot;&gt;&lt;/script&gt;
-  &lt;script src=&quot;https://cdn.jsdelivr.net/npm/hive-tx/dist/hive-tx.min.js&quot;&gt;&lt;/script&gt;
-  &lt;link rel=&quot;stylesheet&quot; href=&quot;css/style.css&quot; /&gt;
-&lt;/head&gt;
-
-&lt;body&gt;
-  &lt;nav class=&quot;navbar navbar-expand navbar-dark bg-dark&quot;&gt;
-    &lt;div class=&quot;container-fluid&quot;&gt;
-      &lt;a class=&quot;navbar-brand&quot; href=&quot;#&quot;&gt;Tic-Tac-Toe&lt;/a&gt;
-      &lt;ul class=&quot;navbar-nav&quot;&gt;
-        &lt;li class=&quot;nav-item&quot;&gt;
-          &lt;a class=&quot;nav-link&quot; href=&quot;#&quot; data-bs-toggle=&quot;modal&quot; data-bs-target=&quot;#login-modal&quot; id=&quot;login-button&quot;&gt;
-            Login
-          &lt;/a&gt;
-        &lt;li class=&quot;nav-item dropdown&quot; id=&quot;logout-menu&quot; style=&quot;display: none;&quot;&gt;
-          &lt;a class=&quot;nav-link dropdown-toggle&quot; href=&quot;#&quot; id=&quot;username-button&quot; role=&quot;button&quot; data-bs-toggle=&quot;dropdown&quot; aria-expanded=&quot;false&quot;&gt;&lt;/a&gt;
-          &lt;ul class=&quot;dropdown-menu dropdown-menu-end&quot; aria-labelledby=&quot;username-button&quot;&gt;
-            &lt;li&gt;&lt;a class=&quot;dropdown-item&quot; href=&quot;#&quot; onclick=&quot;logout()&quot;&gt;Logout&lt;/a&gt;&lt;/li&gt;
-          &lt;/ul&gt;
-        &lt;/li&gt;
-        &lt;/li&gt;
-      &lt;/ul&gt;
-    &lt;/div&gt;
-  &lt;/nav&gt;
-  &lt;div class=&quot;modal fade&quot; id=&quot;login-modal&quot; tabindex=&quot;-1&quot; aria-labelledby=&quot;login-modal-title&quot; aria-hidden=&quot;true&quot;&gt;
-    &lt;div class=&quot;modal-dialog&quot;&gt;
-      &lt;div class=&quot;modal-content&quot;&gt;
-        &lt;div class=&quot;modal-header&quot;&gt;
-          &lt;h5 class=&quot;modal-title&quot; id=&quot;login-modal-title&quot;&gt;Login&lt;/h5&gt;
-          &lt;button type=&quot;button&quot; class=&quot;btn-close&quot; data-bs-dismiss=&quot;modal&quot; aria-label=&quot;Close&quot;&gt;&lt;/button&gt;
-        &lt;/div&gt;
-        &lt;div class=&quot;modal-body&quot;&gt;
-          &lt;form onsubmit=&quot;login(); return false&quot;&gt;
-            &lt;div class=&quot;mb-3&quot;&gt;
-              &lt;label for=&quot;username&quot; class=&quot;form-label&quot;&gt;Username:&lt;/label&gt;
-              &lt;div class=&quot;input-group mb-3&quot;&gt;
-                &lt;span class=&quot;input-group-text&quot;&gt;@&lt;/span&gt;
-                &lt;input type=&quot;text&quot; class=&quot;form-control&quot; placeholder=&quot;username&quot; aria-label=&quot;username&quot; id=&quot;username&quot; required=&quot;&quot; /&gt;
-              &lt;/div&gt;
-              &lt;div class=&quot;form-text&quot;&gt;Your Hive username. Lowercase.&lt;/div&gt;
-            &lt;/div&gt;
-            &lt;div class=&quot;mb-3&quot;&gt;
-              &lt;label for=&quot;posting-key&quot; class=&quot;form-label&quot;&gt;Posting key:&lt;/label&gt;
-              &lt;input type=&quot;password&quot; class=&quot;form-control&quot; id=&quot;posting-key&quot; placeholder=&quot;Private posting key&quot; required=&quot;&quot; /&gt;
-              &lt;div class=&quot;form-text&quot;&gt;Your key will never leave your browser.&lt;/div&gt;
-            &lt;/div&gt;
-            &lt;p id=&quot;login-error&quot;&gt;&lt;/p&gt;
-            &lt;button type=&quot;submit&quot; class=&quot;btn btn-primary&quot; id=&quot;login-form-btn&quot;&gt;Login&lt;/button&gt;
-            &lt;button type=&quot;button&quot; class=&quot;btn btn-secondary&quot; data-bs-dismiss=&quot;modal&quot;&gt;Close&lt;/button&gt;
-          &lt;/form&gt;
-        &lt;/div&gt;
-      &lt;/div&gt;
-    &lt;/div&gt;
-  &lt;/div&gt;
-  &lt;script src=&quot;js/app.js&quot;&gt;&lt;/script&gt;
-&lt;/body&gt;
-
-&lt;/html&gt;
-``` 
-***
-### Styles
-`css/style.css`:
-```
-.navbar-nav {
-  margin-right: 30px;
-}
-.navbar-brand {
-  margin-left: 30px;
-}
-#login-error {
-  color: #e31337;
-  display: none;
-}
-```
-***
-## Javascript
-`js/app.js`
-An object for user data.
-```
-const userData = {
-  authorized: false,
-  username: '',
-  key: ''
-}
-```
-Let's define the login function. It will verify the posting key and username then keep the data in localStorage. We use the [hive-tx](https://github.com/mahdiyari/hive-tx-js) library for converting keys.
-
-```
-const login = async () =&amp;gt; {
-  const loginModal = bootstrap.Modal.getInstance(
-    document.getElementById('login-modal')
-  )
-  const loginButtonForm = document.getElementById('login-form-btn')
-  loginButtonForm.setAttribute('disabled', 'true')
-  const loginError = document.getElementById('login-error')
-  loginError.style.display = 'none'
-  const username = document.getElementById('username').value
-  const key = document.getElementById('posting-key').value
-  const validate = await validatePostingKey(username, key)
-  if (validate.result === 0) {
-    loginError.innerHTML = validate.error
-    loginError.style.display = 'block'
-    loginButtonForm.removeAttribute('disabled')
-    return
-  }
-  userData.authorized = true
-  userData.username = username
-  userData.key = key
-  window.localStorage.setItem('userData', JSON.stringify(userData))
-  loginButtonForm.removeAttribute('disabled')
-  updateState()
-  loginModal.hide()
-}
-```
-As you can see there are 2 more functions used inside the login function. The first one is `validatePostingKey()`. It's a post for itself.
-Let me explain it. First, we make a call to the Hive RPC API node by using hive-tx library and get the account information including the public posting key. Then we convert the user's private posting key to the public key and compare the two values. If the two values are equal then the user-provided private key is correct and we can authorize the user. There are also other ways to achieve the same result like signing a message with the private key and validating that signature with the public key.
-
-```
-const validatePostingKey = async (username, privateKey) =&amp;gt; {
-  const accounts = await hiveTx.call('condenser_api.get_accounts', [[username]])
-  if (
-    !accounts ||
-    !accounts.result ||
-    !Array.isArray(accounts.result) ||
-    accounts.result.length &amp;lt; 1
-  ) {
-    return { result: 0, error: 'Network error or wrong username' }
-  }
-  try {
-    const account = accounts.result[0]
-    const publicWif = account.posting.key_auths[0][0] || ''
-    const generatedPublicKey = hiveTx.PrivateKey.from(privateKey)
-      .createPublic()
-      .toString()
-
-    if (generatedPublicKey !== publicWif) {
-      return { result: 0, error: 'Wrong key' }
-    }
-    return { result: 1 }
-  } catch (e) {
-    return { result: 0, error: 'Wrong key or network error' }
-  }
-}
-```
-updateState() is used to update the HTML interface after user login and logout.
-```
-const updateState = () =&amp;gt; {
-  const loginButton = document.getElementById('login-button')
-  const logoutMenu = document.getElementById('logout-menu')
-  const usernameButton = document.getElementById('username-button')
-  if (userData.authorized &amp;amp;&amp;amp; userData.username &amp;amp;&amp;amp; userData.key) {
-    loginButton.style.display = 'none'
-    logoutMenu.style.display = 'block'
-    usernameButton.innerHTML = '@' + userData.username
-  } else {
-    loginButton.style.display = 'block'
-    logoutMenu.style.display = 'none'
-  }
-}
-```
-And it's time for the logout function.
-```
-const logout = () =&amp;gt; {
-  userData.authorized = false
-  userData.username = ''
-  userData.key = ''
-  window.localStorage.removeItem('userData')
-  updateState()
-}
-```
-We need to check localStorage on the page reload and log in the user if the key is in the localStorage.
-```
-const checkState = () =&amp;gt; {
-  const localData = window.localStorage.getItem('userData')
-  let data
-  if (!localData) {
-    return
-  }
-  try {
-    data = JSON.parse(localData)
-  } catch (e) {
-    data = userData
-  }
-  if (data.authorized &amp;amp;&amp;amp; data.username &amp;amp;&amp;amp; data.key) {
-    userData.authorized = true
-    userData.username = data.username
-    userData.key = data.key
-    updateState()
-  }
-}
-checkState()
-```
-Now we have a working login and logout system. It keeps user data in localStorage which stays on the browser only.
-What we have done so far is just the front-end. Our game needs a back-end server to provide the game data. We will stream blocks on the back-end and process game data then serve it through API. Our front-end will broadcast transactions which will update the back-end. In other words, the back-end is only serving the data it receives through the blockchain. We could stream the blocks on the client-side (browser) but it's not efficient and it is just unnecessary bandwidth waste.
-***
-You can see the running app on https://tic-tac-toe.mahdiyari.info/
-The final code is on GitLab https://gitlab.com/mahdiyari/decentralized-game-on-hive
-
-In the next part, we will set up our back-end server and database. Now that I think about it, MySQL might be an overkill for this project. Anyway, let's stick to it for now.
-
-I want to get feedback from the community before continuing further. Help me with your comments and let me know what you think about this project. How can I improve it? Should I explain everything from the basics? I greatly appreciate your feedback.
-
-Thanks for reading.&lt;/div&gt;
-&lt;script crossorigin=&quot;anonymous&quot; integrity=&quot;sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=&quot; src=&quot;https://code.jquery.com/jquery-3.5.1.slim.min.js&quot;&gt;&lt;/script&gt;
-
-&lt;script src=&quot;https://unpkg.com/steem-content-renderer&quot;&gt;&lt;/script&gt;
-
-&lt;script&gt;
-  $(document).ready(function() {
-    try {
-      const renderer = new SteemContentRenderer.DefaultRenderer({
-        baseUrl: &quot;https://hive.blog/&quot;,
-        breaks: true,
-        skipSanitization: false,
-        allowInsecureScriptTags: false,
-        addNofollowToLinks: true,
-        doNotShowImages: false,
-        ipfsPrefix: &quot;&quot;,
-        assetsWidth: 640,
-        assetsHeight: 480,
-        imageProxyFn: (url) =&gt; url,
-        usertagUrlFn: (account) =&gt; &quot;/@mahdiyari&quot;,
-        hashtagUrlFn: (hashtag) =&gt; &quot;/making-a-decentralized-game-on-hive-tic-tac-toe-part-1&quot;,
-        isLinkSafeFn: (url) =&gt; true,
-      });
-      
-      const inputElem = $('#content-mahdiyari-making-a-decentralized-game-on-hive-tic-tac-toe-part-1').html();
-      const outputElem = $('#content-mahdiyari-making-a-decentralized-game-on-hive-tic-tac-toe-part-1');
-      const output = renderer.render(inputElem);
-      
-      outputElem.html(output);
-    } catch(e) {
-      console.log(e);
-    }
-  });
-&lt;/script&gt;
-
-&lt;style&gt;
-  #content-mahdiyari-making-a-decentralized-game-on-hive-tic-tac-toe-part-1 {
-    padding: 0 3rem;
-    color: #444444;
-    font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif;
-    font-size: 16px;
-    line-height: 1.8;
-    text-shadow: 0 1px 0 #ffffff;
-    padding: 0.5rem;
-  }
-  #content-mahdiyari-making-a-decentralized-game-on-hive-tic-tac-toe-part-1 code {
-    background: white;
-  }
-  #content-mahdiyari-making-a-decentralized-game-on-hive-tic-tac-toe-part-1 a {
-    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
-  }
-  #content-mahdiyari-making-a-decentralized-game-on-hive-tic-tac-toe-part-1 a:hover {
-    border-bottom: 0;
-  }
-  #content-mahdiyari-making-a-decentralized-game-on-hive-tic-tac-toe-part-1 h1 {
-    font-size: 2.2em;
-  }
-  #content-mahdiyari-making-a-decentralized-game-on-hive-tic-tac-toe-part-1 h2, h3, h4, h5 {
-    margin-bottom: 0;
-  }
-  #content-mahdiyari-making-a-decentralized-game-on-hive-tic-tac-toe-part-1 header small {
-    color: #999;
-    font-size: 50%;
-  }
-  #content-mahdiyari-making-a-decentralized-game-on-hive-tic-tac-toe-part-1 img {
-    max-width: 100%;
-  }
-&lt;/style&gt;
-
-&lt;hr /&gt;
-
-&lt;p&gt;
-  See: &lt;a href=&quot;https://hive.blog/hive-139531/@mahdiyari/making-a-decentralized-game-on-hive-tic-tac-toe-part-1&quot;&gt;Making a Decentralized Game on Hive - Tic Tac Toe - Part 1&lt;/a&gt;
-  by
-  &lt;a href=&quot;https://hive.blog/@mahdiyari&quot;&gt;@mahdiyari&lt;/a&gt;
-&lt;/p&gt;</content><author><name>mahdiyari</name></author><category term="howto" /><category term="nodejs" /><summary type="html">![tic-tac-toe.png](https://images.hive.blog/DQmYne66xZ9RBsrUwF9N76S5XnjJGyzEgBPbbsZRnNAHUzx/tic-tac-toe.png) We will develop a decentralized game by the end of this series. The goal is to make learning development on Hive blockchain easier by using a simple game as the training project. ## Target audience Of course, it's not for everybody. I will try to keep it simple as possible for people with less experience with development. But some degree of understanding code is necessary to learn something. I will explain anything related to the Hive blockchain that we use. You can find the links for the final result of this part at the end of this post. ## Why &quot;tic-tac-toe&quot;? It's a simple multiplayer game and it covers most of the topics needed for a bigger decentralized game or application. Most people are already familiar with this game and it's easier to code and its rules are simple. ## Development We will use Javascript for the game because it's simple enough so most people understand easily. The front-end will be pure HTML. Also, I think MySQL is a good fit as the database. The game needs a database to keep track of games and players. MySQL docker can be set up in a few minutes. The decentralized game will work without depending on one central software. The game will talk only to the blockchain and there is no central database. It doesn't need a private entity to hold players' data. Anyone can run an interface for the game. (We have a database but it's not a central private database and it can be synced through blockchain. Anyone should be able to run an instance of the game and the game will get the same exact database by reading data from the blockchain. It's like hivemind, the database that holds and serves most of the data on Hive.) ## Tools I'm using - Visual Studio Code - Nodejs - MySQL docker setup - Chrome browser I didn't plan anything beforehand so I don't know how many posts it will take. I will list the things that come to my mind right now. ## Planning - Front-end - Make a login method on the client-side - Display available games list - Create/Request to join a game - Design the game visuals and controls - Back-end - Stream the blockchain and listen for custom_json operations - Define custom_json operations - Game mechanics - API to communicate with front-end - Replay/resync method to update the database on newly deployed game clients The above list may or may not change. Anyway, let's start with the front-end and add a login method. *** ## Part 1: Front-end - Login method I think the HTML part doesn't need any explanation. Page title, description, bootstrap navbar, and a login link. Added `css/style.css` and `js/app.js` too. When the user clicks on the &quot;login&quot; link, a modal with the login form will appear. It will then fire `login()` function on submit. `index.html`: ``` &amp;lt;!DOCTYPE html&amp;gt; Tic-Tac-Toe on Hive blockchain Tic-Tac-Toe Login Logout Login Username: @ Your Hive username. Lowercase. Posting key: Your key will never leave your browser. Login Close ``` *** ### Styles `css/style.css`: ``` .navbar-nav { margin-right: 30px; } .navbar-brand { margin-left: 30px; } #login-error { color: #e31337; display: none; } ``` *** ## Javascript `js/app.js` An object for user data. ``` const userData = { authorized: false, username: '', key: '' } ``` Let's define the login function. It will verify the posting key and username then keep the data in localStorage. We use the [hive-tx](https://github.com/mahdiyari/hive-tx-js) library for converting keys. ``` const login = async () =&amp;gt; { const loginModal = bootstrap.Modal.getInstance( document.getElementById('login-modal') ) const loginButtonForm = document.getElementById('login-form-btn') loginButtonForm.setAttribute('disabled', 'true') const loginError = document.getElementById('login-error') loginError.style.display = 'none' const username = document.getElementById('username').value const key = document.getElementById('posting-key').value const validate = await validatePostingKey(username, key) if (validate.result === 0) { loginError.innerHTML = validate.error loginError.style.display = 'block' loginButtonForm.removeAttribute('disabled') return } userData.authorized = true userData.username = username userData.key = key window.localStorage.setItem('userData', JSON.stringify(userData)) loginButtonForm.removeAttribute('disabled') updateState() loginModal.hide() } ``` As you can see there are 2 more functions used inside the login function. The first one is `validatePostingKey()`. It's a post for itself. Let me explain it. First, we make a call to the Hive RPC API node by using hive-tx library and get the account information including the public posting key. Then we convert the user's private posting key to the public key and compare the two values. If the two values are equal then the user-provided private key is correct and we can authorize the user. There are also other ways to achieve the same result like signing a message with the private key and validating that signature with the public key. ``` const validatePostingKey = async (username, privateKey) =&amp;gt; { const accounts = await hiveTx.call('condenser_api.get_accounts', [[username]]) if ( !accounts || !accounts.result || !Array.isArray(accounts.result) || accounts.result.length &amp;lt; 1 ) { return { result: 0, error: 'Network error or wrong username' } } try { const account = accounts.result[0] const publicWif = account.posting.key_auths[0][0] || '' const generatedPublicKey = hiveTx.PrivateKey.from(privateKey) .createPublic() .toString() if (generatedPublicKey !== publicWif) { return { result: 0, error: 'Wrong key' } } return { result: 1 } } catch (e) { return { result: 0, error: 'Wrong key or network error' } } } ``` updateState() is used to update the HTML interface after user login and logout. ``` const updateState = () =&amp;gt; { const loginButton = document.getElementById('login-button') const logoutMenu = document.getElementById('logout-menu') const usernameButton = document.getElementById('username-button') if (userData.authorized &amp;amp;&amp;amp; userData.username &amp;amp;&amp;amp; userData.key) { loginButton.style.display = 'none' logoutMenu.style.display = 'block' usernameButton.innerHTML = '@' + userData.username } else { loginButton.style.display = 'block' logoutMenu.style.display = 'none' } } ``` And it's time for the logout function. ``` const logout = () =&amp;gt; { userData.authorized = false userData.username = '' userData.key = '' window.localStorage.removeItem('userData') updateState() } ``` We need to check localStorage on the page reload and log in the user if the key is in the localStorage. ``` const checkState = () =&amp;gt; { const localData = window.localStorage.getItem('userData') let data if (!localData) { return } try { data = JSON.parse(localData) } catch (e) { data = userData } if (data.authorized &amp;amp;&amp;amp; data.username &amp;amp;&amp;amp; data.key) { userData.authorized = true userData.username = data.username userData.key = data.key updateState() } } checkState() ``` Now we have a working login and logout system. It keeps user data in localStorage which stays on the browser only. What we have done so far is just the front-end. Our game needs a back-end server to provide the game data. We will stream blocks on the back-end and process game data then serve it through API. Our front-end will broadcast transactions which will update the back-end. In other words, the back-end is only serving the data it receives through the blockchain. We could stream the blocks on the client-side (browser) but it's not efficient and it is just unnecessary bandwidth waste. *** You can see the running app on https://tic-tac-toe.mahdiyari.info/ The final code is on GitLab https://gitlab.com/mahdiyari/decentralized-game-on-hive In the next part, we will set up our back-end server and database. Now that I think about it, MySQL might be an overkill for this project. Anyway, let's stick to it for now. I want to get feedback from the community before continuing further. Help me with your comments and let me know what you think about this project. How can I improve it? Should I explain everything from the basics? I greatly appreciate your feedback. Thanks for reading. See: Making a Decentralized Game on Hive - Tic Tac Toe - Part 1 by @mahdiyari</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://images.hive.blog/DQmYne66xZ9RBsrUwF9N76S5XnjJGyzEgBPbbsZRnNAHUzx/tic-tac-toe.png" /><media:content medium="image" url="https://images.hive.blog/DQmYne66xZ9RBsrUwF9N76S5XnjJGyzEgBPbbsZRnNAHUzx/tic-tac-toe.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>
+&lt;/p&gt;</content><author><name>howo</name></author><category term="news" /><category term="core" /><category term="development" /><summary type="html">https://www.youtube.com/watch?v=UIRR5gFfVYk meeting tl;dr: ## Dev sync As usual listen to this one is better ## hived proposal payout maintenance time drifting fix in hf25 or not [hive!168](https://gitlab.syncad.com/hive/hive/-/merge_requests/168) Lots of discussion on this one that branched into two problems, one is the proposal time drift issue, the other is about the unit tests behaving strangely due to the skipping logic. The output of that point is that I will try to fix it for hf25 and see how the unit tests go, but if I see that it takes too much time, I'll skip it and we'll fix it for hf26. It's a minor issue. ## Incoming recurrent transfer api: hived or hivemind ? Broader discussion on should hivemind support recurrent transfers Incoming recurrent transfers will be done via hivemind, and yes hivemind will support them, we will do it after hf25 has shipped though. ## Update the beem used for unit tests in hived to one that is more up to date: Relatively short discussion, and since @holger80 implemented the hybrid transactions in the mainline github, we'll move towards using the version on github instead of gitlab. ## Hived split block log in chunks and be able to sync those independently There was lots of discussions on this in the dev channels. It's not the focus right now as hf25 is upon us, there was some discussions on using external tools instead of implementing it directly within hived. To be rediscussed. ## Hivemind Communities type 2/3 and account level mutes [hivemind#125](https://gitlab.syncad.com/hive/hivemind/-/issues/125) / [hivemind#145](https://gitlab.syncad.com/hive/hivemind/-/issues/145) Bt's team is building tests, we'll then then who takes this on, potentially bt's team as I'll be tied to hived ## Hivemind communities beneficiaries support [hivemind#149](https://gitlab.syncad.com/hive/hivemind/-/issues/149) +parameter naming: reward_share vs beneficiaries We also discussed changing the data type of the communities data from text to jsonb (https://gitlab.syncad.com/hive/hivemind/-/issues/153) Basically we'll use beneficiaries and the current implementations ideas are a bit early, we(I) are waiting for the changes to take place in communities type 2/3 + account level mutes to take place before taking this on. ## Hivemind Communities metadata (topics/tags) [hivemind#148](https://gitlab.syncad.com/hive/hivemind/-/issues/148) Yes why not, we'll add a new field to store a few &quot;communities tags&quot; and a new api to search for communities via said tags. The idea is to be able to tag a community like &quot;crypto nft games&quot; or &quot;sport tennis&quot; etc to make content discovery easier ## Adding more stats for communities A bit early to tell what we'll add but I'll definitely look into adding more stats and ways to sort communities with it. # Conclusion In the end lots of hivemind talks but those are mostly preliminary, our focus is hf25 we are tentatively(this is not an official date or anything, it's more like an &quot;ideally we would like it to be done by but might slip if needs be&quot;) looking at april 15 for locking the core code and build a testnet for hf25. This is when all the features for hf25 are set in stone and we stop adding new features to the core code. So all developments HAVE to be done by then. This is why I'll be mostly focusing on hive core for the next month to get all of my ongoing code merged and included in hf25. See you around for the next dev meeting on march 29th :) @howo See: Hive core developer meeting #19 by @howo</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://img.youtube.com/vi/UIRR5gFfVYk/0.jpg" /><media:content medium="image" url="https://img.youtube.com/vi/UIRR5gFfVYk/0.jpg" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>

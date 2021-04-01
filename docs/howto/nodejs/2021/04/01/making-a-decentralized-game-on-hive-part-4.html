@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta property="og:image" content="/assets/images/sticker.png" /><!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>Making a Decentralized Game on Hive - Part 4 | Hive Chain Documentation</title>
+<meta name="generator" content="Jekyll v4.1.1" />
+<meta property="og:title" content="Making a Decentralized Game on Hive - Part 4" />
+<meta name="author" content="mahdiyari" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Let’s start by implementing the API for retrieving the games list. Our API is public so it doesn’t require user authentication. The API will just return the data synced from the blockchain." />
+<meta property="og:description" content="Let’s start by implementing the API for retrieving the games list. Our API is public so it doesn’t require user authentication. The API will just return the data synced from the blockchain." />
+<link rel="canonical" href="https://hive.blog/hive-169321/@mahdiyari/making-a-decentralized-game-on-hive-part-4" />
+<meta property="og:url" content="https://hive.blog/hive-169321/@mahdiyari/making-a-decentralized-game-on-hive-part-4" />
+<meta property="og:site_name" content="Hive Chain Documentation" />
+<meta property="og:image" content="https://images.hive.blog/DQmbqyPpfU2dpwYkn9GVJdMmJbfukkvZZ8Bwqk7epyswP9w/macbook-2617705_1280.jpg" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2021-04-01T10:09:48-07:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="https://images.hive.blog/DQmbqyPpfU2dpwYkn9GVJdMmJbfukkvZZ8Bwqk7epyswP9w/macbook-2617705_1280.jpg" />
+<meta property="twitter:title" content="Making a Decentralized Game on Hive - Part 4" />
+<script type="application/ld+json">
+{"mainEntityOfPage":{"@type":"WebPage","@id":"https://hive.blog/hive-169321/@mahdiyari/making-a-decentralized-game-on-hive-part-4"},"description":"Let’s start by implementing the API for retrieving the games list. Our API is public so it doesn’t require user authentication. The API will just return the data synced from the blockchain.","@type":"BlogPosting","image":"https://images.hive.blog/DQmbqyPpfU2dpwYkn9GVJdMmJbfukkvZZ8Bwqk7epyswP9w/macbook-2617705_1280.jpg","url":"https://hive.blog/hive-169321/@mahdiyari/making-a-decentralized-game-on-hive-part-4","headline":"Making a Decentralized Game on Hive - Part 4","dateModified":"2021-04-01T10:09:48-07:00","datePublished":"2021-04-01T10:09:48-07:00","author":{"@type":"Person","name":"mahdiyari"},"@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://hivedocs.info/feed.xml" title="Hive Chain Documentation" /><script>
+if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNotTrack === "yes" || navigator.msDoNotTrack === "1")) {
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-161692811-1', 'auto');
+  ga('send', 'pageview');
+}
+</script>
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/turbolinks/5.2.0/turbolinks.js" integrity="sha256-iM4Yzi/zLj/IshPWMC1IluRxTtRjMqjPGd97TZ9yYpU=" crossorigin="anonymous"></script>
+  <script src='https://unpkg.com/steem-content-renderer'></script>
+  <script>
+    (function () {
+      if (Turbolinks.supported) {
+        Turbolinks.setProgressBarDelay(500);
+      }
+    })();
+  </script>
+  <script src="/assets/javascript/universal-bridge-against-phishing.js"></script>
+  <script src="/assets/javascript/lazysizes.min.js" async=""></script>
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Cousine|Inconsolata" rel="stylesheet">
+  <link rel="shortcut icon" type="image/png" href="/assets/images/favicon.png">
+</head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Hive Chain Documentation</a>
+
+      <nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/news/">News</a><a class="page-link" href="/howto/">How To</a><a class="page-link" href="/links/">Useful Links</a><!-- HTML elements for search -->
+          <input type="text" id="search-input" placeholder="Search" />
+          
+          <ul id="results-container"></ul>
+
+          <script src="/assets/javascript/search.js"></script>
+          <script>
+            var sjs = SimpleJekyllSearch({
+              searchInput: document.getElementById('search-input'),
+              resultsContainer: document.getElementById('results-container'),
+              json: '/search.json'
+            })
+          </script>
+          <!-- <form style="float: right;" class="form-inline" method="get" action="http://www.google.com/search">
+            <input type="hidden" name="sitesearch" value="hivedocs.info" />
+            <input type="text" name="q" maxlength="255" placeholder="Search" />
+          </form> -->
+          
+          
+          <a href="#" onclick="try { $('#topics-container').slideToggle(); } catch { document.getElementById('topics-container').style.display = 'block'; }; return false;">Topics &#187;</a>
+          
+          <ul id="topics-container" style="display: none;"><li><a class="page-link" href="/account-recovery/"><nobr>Account Recovery</nobr></a></li><li><a class="page-link" href="/core-development/"><nobr>Core Development</nobr></a></li><li><a class="page-link" href="/dapps/"><nobr>Dapps</nobr></a></li><li><a class="page-link" href="/docker/"><nobr>Docker</nobr></a></li><li><a class="page-link" href="/hardfork/"><nobr>Hardfork</nobr></a></li><li><a class="page-link" href="/hivemind/"><nobr>Hivemind</nobr></a></li><li><a class="page-link" href="/javascript/"><nobr>Javascript</nobr></a></li><li><a class="page-link" href="/multisig/"><nobr>Multisig</nobr></a></li><li><a class="page-link" href="/python/"><nobr>Python</nobr></a></li><li><a class="page-link" href="/ruby/"><nobr>Ruby</nobr></a></li><li><a class="page-link" href="/testnet/"><nobr>Testnet</nobr></a></li><li><a class="page-link" href="/tools/"><nobr>Tools</nobr></a></li></ul>
+        </div>
+      </nav>
+  </div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Making a Decentralized Game on Hive - Part 4</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2021-04-01T10:09:48-07:00" itemprop="datePublished">Apr 1, 2021
+      </time>• <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">
+          <a href="https://hive.blog/@mahdiyari">mahdiyari</a>
+        </span></span></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <div id="content-mahdiyari-making-a-decentralized-game-on-hive-part-4"><center>![coding-pixabay.jpg](https://images.hive.blog/DQmbqyPpfU2dpwYkn9GVJdMmJbfukkvZZ8Bwqk7epyswP9w/macbook-2617705_1280.jpg)</center>
+In the [previous part](https://hive.blog/hive-139531/@mahdiyari/making-a-decentralized-game-on-hive-part-3), we made a back-end that is streaming blocks and detects 3 methods in custom_json. Create a game, request to join a game, and accept the request. We also set up a MySQL server with 3 tables for the methods.
+
+<sub>You can find the links to the other parts at the end of the post.</sub>
+
+
+### API
+Let's start by implementing the API for retrieving the games list. Our API is public so it doesn't require user authentication. The API will just return the data synced from the blockchain.
+`api/games.js`:
+```
+const mysql = require('../helpers/mysql')
+const express = require('express')
+const router = express.Router()
+
+// Return all games on route /games
+router.get('/games', async (req, res) =&gt; {
+  try {
+    // Get games data from Database
+    const games = await mysql.query(
+      'SELECT `game_id`, `player1`, `player2`, `starting_player`, `status`, `winner` FROM `games`'
+    )
+    // Check for expected result
+    if (!games || !Array.isArray(games) || games.length &lt; 1) {
+      // WE return id: 1 for success and id: 0 for errors
+      return res.json({
+        id: 1,
+        games: []
+      })
+    }
+    // We return `games` as we receive from MySQL but it's not a good practice
+    // specially when you have critical data in the database
+    // You can return data one by one like `games: [{game_id: games.game_id, ...}]`
+    return res.json({
+      id: 1,
+      games
+    })
+  } catch (e) {
+    // Return error for unexpected errors like connection drops
+    res.json({
+      id: 0,
+      error: 'Unexpected error.'
+    })
+  }
+})
+
+module.exports = router
+```
+The comments are in the code itself for better understanding.
+Note: We use `try{} catch{}` wherever we can. It is always good to handle errors.
+
+We can test our API at this point to detect possible errors in the code.
+Include the following code in `api/server.js` just above the `port` and `host` constants.
+```
+const games = require('./games')
+app.use(games)
+```
+
+Run `node api/server.js`. We can see the console.log: `Application started on 127.0.0.1:2021`
+Let's open `127.0.0.1:2021/games` in the browser.
+
+<center>![image.png](https://images.hive.blog/DQmbTKVAbtUB6nDH8HWuvku8NuiZv3jovu94jtEMAEU1vSX/image.png)</center>
+The API works as expected.
+
+But it's not done yet. This API returns ALL the games without a specific order. We should implement pagination and define an order for our list.
+
+Updated code `api/games.js`:
+```
+const mysql = require('../helpers/mysql')
+const express = require('express')
+const router = express.Router()
+
+router.get('/games/:page', async (req, res) =&gt; {
+  try {
+    if (isNaN(req.params.page)) {
+      res.json({
+        id: 0,
+        error: 'Expected number.'
+      })
+    }
+    const page = Math.floor(req.params.page)
+    if (page &lt; 1) {
+      res.json({
+        id: 0,
+        error: 'Expected &gt; 0'
+      })
+    }
+    const offset = (page - 1) * 10
+    const games = await mysql.query(
+      'SELECT `game_id`, `player1`, `player2`, `starting_player`, `status`, `winner` FROM `games`' +
+        ' ORDER BY `id` DESC LIMIT 10 OFFSET ?',
+      [offset]
+    )
+    if (!games || !Array.isArray(games) || games.length &lt; 1) {
+      return res.json({
+        id: 1,
+        games: []
+      })
+    }
+    return res.json({
+      id: 1,
+      games
+    })
+  } catch (e) {
+    res.json({
+      id: 0,
+      error: 'Unexpected error.'
+    })
+  }
+})
+
+module.exports = router
+```
+We used `id` to order our list and get the newly created games first. Each page returns up to 10 games. We can try `127.0.0.1:2021/games/1` for testing.
+***
+Let's set another API for requests. The code is almost similar but we return only requests for the specific game_id.
+`api/requests.js`:
+```
+const mysql = require('../helpers/mysql')
+const express = require('express')
+const router = express.Router()
+
+router.get('/requests/:id', async (req, res) =&gt; {
+  try {
+    if (!req.params.id) {
+      res.json({
+        id: 0,
+        error: 'Expected game_id.'
+      })
+    }
+    // We are passing user input into the database
+    // You should be careful in such cases
+    // We use ? for parameters which escapes the characters
+    const requests = await mysql.query(
+      'SELECT `player`, `status` FROM `requests` WHERE `game_id`= ?',
+      [req.params.id]
+    )
+    if (!requests || !Array.isArray(requests) || requests.length &lt; 1) {
+      return res.json({
+        id: 1,
+        requests: []
+      })
+    }
+    return res.json({
+      id: 1,
+      requests
+    })
+  } catch (e) {
+    res.json({
+      id: 0,
+      error: 'Unexpected error.'
+    })
+  }
+})
+
+module.exports = router
+```
+Note: `:id` in the above router represents a variable named id. So for example `http://127.0.0.1:2021/requests/mygameidhere` in this request, the `id` variable is `mygameidhere` which is accessible by `req.params.id`.
+***
+A similar code for the `moves` table. There wasn't a better name in my mind for this table.
+`api/moves.js`:
+```
+const mysql = require('../helpers/mysql')
+const express = require('express')
+const router = express.Router()
+
+router.get('/moves/:id', async (req, res) =&gt; {
+  try {
+    if (!req.params.id) {
+      res.json({
+        id: 0,
+        error: 'Expected game_id.'
+      })
+    }
+    const moves = await mysql.query(
+      'SELECT `player`, `col`, `row` FROM `moves` WHERE `game_id`= ?',
+      [req.params.id]
+    )
+    if (!moves || !Array.isArray(moves) || moves.length &lt; 1) {
+      return res.json({
+        id: 1,
+        moves: []
+      })
+    }
+    return res.json({
+      id: 1,
+      moves
+    })
+  } catch (e) {
+    res.json({
+      id: 0,
+      error: 'Unexpected error.'
+    })
+  }
+})
+
+module.exports = router
+```
+Now our 3 APIs are ready to be implemented on the front-end.
+***
+Here is the updated `api/server.js` after including the APIs:
+```
+const express = require('express')
+const bodyParser = require('body-parser')
+const hpp = require('hpp')
+const helmet = require('helmet')
+const app = express()
+
+// more info: www.npmjs.com/package/hpp
+app.use(hpp())
+app.use(helmet())
+
+// support json encoded bodies and encoded bodies
+app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({ extended: true }))
+
+app.use(function (req, res, next) {
+  res.header(
+    'Access-Control-Allow-Origin',
+    'http://localhost https://tic-tac-toe.mahdiyari.info/'
+  )
+  res.header('Access-Control-Allow-Credentials', true)
+  res.header(
+    'Access-Control-Allow-Headers',
+    'Origin, X-Requested-With, Content-Type, Accept, access_key'
+  )
+  next()
+})
+
+// APIs
+const games = require('./games')
+const requests = require('./requests')
+const moves = require('./moves')
+
+app.use(games)
+app.use(requests)
+app.use(moves)
+
+const port = process.env.PORT || 2021
+const host = process.env.HOST || '127.0.0.1'
+app.listen(port, host, () =&gt; {
+  console.log(`Application started on ${host}:${port}`)
+})
+```
+***
+### Front-end
+I think using pure HTML is a mistake and I would prefer something like Angular for the web applications but that comes with its own learning process which can make this tutorial complex. So my recommendation is to learn something like Angular or Vue and live a happy life. Anyway, coding time.
+
+I'm not going to drop `index.html` here. It doesn't need much explanation and it's long. You can see it on the [GitLab repository](https://gitlab.com/mahdiyari/decentralized-game-on-hive/-/blob/master/front-end/index.html). I will just add some references here used in `app.js`.
+
+The table for listing the games and buttons for pagination.
+`index.html`:
+```
+<div class="card-body">
+  <h5 class="card-title" style="float: left;">Games list</h5>
+  <span style="float: right;">Auto updating every 5s</span>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Game ID</th>
+        <th>Player 1</th>
+        <th>Player 2</th>
+        <th>Starting Player</th>
+        <th>Status</th>
+        <th>Winner</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody id="games-table-body">
+    </tbody>
+  </table>
+  <nav aria-label="Page navigation example">
+    <ul class="pagination justify-content-center">
+      <li class="page-item disabled" id="prev-btn">
+        <a class="page-link" onclick="prevGamesPage()">&laquo;</a>
+      </li>
+      <li class="page-item disabled">
+        <a class="page-link" id="page-number" tabindex="-1"> 1 </a>
+      </li>
+      <li class="page-item" id="next-btn">
+        <a class="page-link" onclick="nextGamesPage()">&raquo;</a>
+      </li>
+    </ul>
+  </nav>
+</div>
+```
+***
+We have to fill the table above. So let's implement some basic functions.
+`js/app.js`:
+```
+const baseAPI = 'http://127.0.0.1:2021'
+const APICall = async (api) =&gt; {
+  return (await fetch(baseAPI + api)).json()
+}
+```
+For ease of use, we define a function for `GET` calls using `fetch` and a variable for our API address.
+***
+```
+const getGames = async (page = 1) =&gt; {
+  const games = await APICall('/games/' + page)
+  return games.games
+}
+```
+This function basically gets the games from the API per page.
+***
+```
+const fillGamesTable = (data) =&gt; {
+  const tbody = document.getElementById('games-table-body')
+  let temp = ''
+  for (let i = 0; i &lt; data.length; i++) {
+    temp += `<tr>
+    <td>${(gamesPage - 1) * 10 + i + 1}</td>
+    <td>${data[i].game_id}</td>
+    <td>${data[i].player1}</td>
+    <td>${data[i].player2}</td>
+    <td>${data[i].starting_player}</td>
+    <td>${data[i].status}</td>
+    <td>${data[i].winner}</td>
+    <td></td>
+    </tr>`
+  }
+  if (data.length &lt; 1) {
+    temp = 'No games.'
+  }
+  tbody.innerHTML = temp
+}
+```
+`fillGamesTable` takes the result from `getGames` function and fills the HTML table with data using a `for` loop.
+***
+```
+let gamesPage = 1
+const loadTheGames = async () =&gt; {
+  const games = await getGames(gamesPage)
+  fillGamesTable(games)
+  if (games.length &lt; 10) {
+    document.getElementById('next-btn').className = 'page-item disabled'
+  } else {
+    document.getElementById('next-btn').className = 'page-item'
+  }
+  if (gamesPage === 1) {
+    document.getElementById('prev-btn').className = 'page-item disabled'
+  } else {
+    document.getElementById('prev-btn').className = 'page-item'
+  }
+  document.getElementById('page-number').innerHTML = ` ${gamesPage} `
+}
+loadTheGames()
+setInterval(() =&gt; loadTheGames(), 5000)
+```
+With this function, we call the two previously defined functions to do their job and update the pagination buttons and the page number every time we update the table data. Also, every 5 seconds, it gets new data from API and updates the table with new data so users don't have to reload the page for new data.
+***
+```
+const nextGamesPage = () =&gt; {
+  gamesPage++
+  loadTheGames()
+}
+
+const prevGamesPage = () =&gt; {
+  gamesPage--
+  loadTheGames()
+}
+```
+And two functions for changing pages. Simple as that.
+***
+The final result with dummy data looks like this on the browser:
+<center>![Capture.PNG](https://images.hive.blog/DQmcYZC1vixajRW4Ui5dHiSfTy5MYqEYZhXy2bd2ituz4Ar/Capture.PNG)</center>
+***
+That's it for this part. I'm really happy with the results we are getting. I didn't plan anything beforehand and I'm coding as I'm writing the posts.
+
+Today we made 3 API calls and created the basic front-end which for now only shows the list of games that are submitted to the Hive blockchain. In the next part, we will implement the methods for creating and joining the games on the client side. We also probably need to create a game page where actual gaming happens.
+
+Thanks for reading. Make sure to follow me and share the post. Upvote if you like and leave a comment.
+***
+[GitLab](https://gitlab.com/mahdiyari/decentralized-game-on-hive)
+[Part 1](https://hive.blog/hive-139531/@mahdiyari/making-a-decentralized-game-on-hive-tic-tac-toe-part-1)
+[Part 2](https://hive.blog/hive-139531/@mahdiyari/making-a-decentralized-game-on-hive-part-2)
+[Part 3](https://hive.blog/hive-139531/@mahdiyari/making-a-decentralized-game-on-hive-part-3)
+***
+**Vote for my witness:**
+- https://wallet.hive.blog/~witnesses
+- https://peakd.com/witnesses
+- https://ecency.com/witnesses</div>
+<script crossorigin="anonymous" integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=" src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+
+<script src="https://unpkg.com/steem-content-renderer"></script>
+
+<script>
+  $(document).ready(function() {
+    try {
+      const renderer = new SteemContentRenderer.DefaultRenderer({
+        baseUrl: "https://hive.blog/",
+        breaks: true,
+        skipSanitization: false,
+        allowInsecureScriptTags: false,
+        addNofollowToLinks: true,
+        doNotShowImages: false,
+        ipfsPrefix: "",
+        assetsWidth: 640,
+        assetsHeight: 480,
+        imageProxyFn: (url) => url,
+        usertagUrlFn: (account) => "/@mahdiyari",
+        hashtagUrlFn: (hashtag) => "/making-a-decentralized-game-on-hive-part-4",
+        isLinkSafeFn: (url) => true,
+      });
+      
+      const inputElem = $('#content-mahdiyari-making-a-decentralized-game-on-hive-part-4').html();
+      const outputElem = $('#content-mahdiyari-making-a-decentralized-game-on-hive-part-4');
+      const output = renderer.render(inputElem);
+      
+      outputElem.html(output);
+    } catch(e) {
+      console.log(e);
+    }
+  });
+</script>
+
+<style>
+  #content-mahdiyari-making-a-decentralized-game-on-hive-part-4 {
+    padding: 0 3rem;
+    color: #444444;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.8;
+    text-shadow: 0 1px 0 #ffffff;
+    padding: 0.5rem;
+  }
+  #content-mahdiyari-making-a-decentralized-game-on-hive-part-4 code {
+    background: white;
+  }
+  #content-mahdiyari-making-a-decentralized-game-on-hive-part-4 a {
+    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
+  }
+  #content-mahdiyari-making-a-decentralized-game-on-hive-part-4 a:hover {
+    border-bottom: 0;
+  }
+  #content-mahdiyari-making-a-decentralized-game-on-hive-part-4 h1 {
+    font-size: 2.2em;
+  }
+  #content-mahdiyari-making-a-decentralized-game-on-hive-part-4 h2, h3, h4, h5 {
+    margin-bottom: 0;
+  }
+  #content-mahdiyari-making-a-decentralized-game-on-hive-part-4 header small {
+    color: #999;
+    font-size: 50%;
+  }
+  #content-mahdiyari-making-a-decentralized-game-on-hive-part-4 img {
+    max-width: 100%;
+  }
+</style>
+
+<hr />
+
+<p>
+  See: <a href="https://hive.blog/hive-169321/@mahdiyari/making-a-decentralized-game-on-hive-part-4">Making a Decentralized Game on Hive - Part 4</a>
+  by
+  <a href="https://hive.blog/@mahdiyari">@mahdiyari</a>
+</p>
+
+
+  </div><a class="u-url" href="/howto/nodejs/2021/04/01/making-a-decentralized-game-on-hive-part-4.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading"><a rel="author" href="/">Hive Chain Documentation</a></h2>
+    
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">site curated by: @inertia</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>Your resource for various levels of Hive Documentation.</p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+</body>
+
+</html>
