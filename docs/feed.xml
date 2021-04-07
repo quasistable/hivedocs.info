@@ -1,4 +1,172 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="https://hivedocs.info/feed.xml" rel="self" type="application/atom+xml" /><link href="https://hivedocs.info/" rel="alternate" type="text/html" /><updated>2021-04-01T10:22:51-07:00</updated><id>https://hivedocs.info/feed.xml</id><title type="html">Hive Chain Documentation</title><subtitle>Your resource for various levels of Hive Documentation.</subtitle><author><name>site curated by: @inertia</name></author><entry><title type="html">Making a Decentralized Game on Hive - Part 4</title><link href="https://hivedocs.info/howto/nodejs/2021/04/01/making-a-decentralized-game-on-hive-part-4.html" rel="alternate" type="text/html" title="Making a Decentralized Game on Hive - Part 4" /><published>2021-04-01T10:09:48-07:00</published><updated>2021-04-01T10:09:48-07:00</updated><id>https://hivedocs.info/howto/nodejs/2021/04/01/making-a-decentralized-game-on-hive-part-4</id><content type="html" xml:base="https://hivedocs.info/howto/nodejs/2021/04/01/making-a-decentralized-game-on-hive-part-4.html">&lt;div id=&quot;content-mahdiyari-making-a-decentralized-game-on-hive-part-4&quot;&gt;&lt;center&gt;![coding-pixabay.jpg](https://images.hive.blog/DQmbqyPpfU2dpwYkn9GVJdMmJbfukkvZZ8Bwqk7epyswP9w/macbook-2617705_1280.jpg)&lt;/center&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="https://hivedocs.info/feed.xml" rel="self" type="application/atom+xml" /><link href="https://hivedocs.info/" rel="alternate" type="text/html" /><updated>2021-04-06T20:09:13-07:00</updated><id>https://hivedocs.info/feed.xml</id><title type="html">Hive Chain Documentation</title><subtitle>Your resource for various levels of Hive Documentation.</subtitle><author><name>site curated by: @inertia</name></author><entry><title type="html">8th update of 2021 on BlockTrades work on Hive software</title><link href="https://hivedocs.info/news/core/development/2021/04/06/8th-update-of-2021-on-blocktrades-work-on-hive-software.html" rel="alternate" type="text/html" title="8th update of 2021 on BlockTrades work on Hive software" /><published>2021-04-06T17:42:57-07:00</published><updated>2021-04-06T17:42:57-07:00</updated><id>https://hivedocs.info/news/core/development/2021/04/06/8th-update-of-2021-on-blocktrades-work-on-hive-software</id><content type="html" xml:base="https://hivedocs.info/news/core/development/2021/04/06/8th-update-of-2021-on-blocktrades-work-on-hive-software.html">&lt;div id=&quot;content-blocktrades-8th-update-of-2021-on-blocktrades-work-on-hive-software&quot;&gt;Below is a list of some Hive-related programming issues worked on by BlockTrades team during the past few weeks:
+
+# Hived work (blockchain node software)
+
+## Code cleanup and investigation of support for Ubuntu 20
+
+Separate from our hardfork 25 changes, we’ve been doing some general code cleanup to make the code more maintainable, and we also started a task to get the code to compile cleanly under Ubuntu 20 without requiring “fiddling” with the build process.
+
+## HF25 changes (these are described in detail in our Hive roadmap post)
+
+### Expiration of old governance votes
+We’ve completed and written tests for all changes related to handling expiration of governance votes (votes for witnesses and Hive Fund proposals).
+
+### Curation rewards calculation changes
+
+We completed analysis and implementation of voting window curation changes for HF25. We’re also writing some tests for the curation calculator, as we found the current tests were inadequate (our changes only triggered one fail of existing tests). 
+
+During the process, we also discovered an error in the implementation of the square-root function used by the current curation algorithm for unsigned 128 bit integers, but we’re removing use of this square-root function in the new curation calculation, as part of our removal of the convergent-linear curve code (this is the code that weakened small votes).
+
+The new curation reward algorithm works as follows: 
+* first day (24 hours) linear rewards (equal weight to all voters in that window)
+* second window (24 hours to 72 hours/3 days) with reward weight/2
+* remaining votes in 3rd window with reward weight/8
+
+Under the new algorithm, anyone voting with the first 24 hours of the post receives the same proportional rewards. In other words, for any given voting strength, the voter will get the same percentage return-on-investment as any other voter during that period. 
+
+Voters voting during the second and third window receive a smaller proportional curation reward (and voters who voted during the first 24 hour period receive a little more reward when voters vote during the 2nd or 3rd window). Note that if no one votes during the first window, then 2nd window voters will receive the same amount of curation as if they had voted during the first window.
+
+The basic idea behind the new algorithm is to encourage voters to find good content, but to put them on an equal footing with voting bots. Under the current algorithm that we’re replacing, voting bots have an advantage because there’s a short window in time to cast a vote for optimal curation rewards.
+
+Note that author rewards are not affected by this change: this change only affects how curation rewards are distributed among voters.
+
+### Hive to HBD conversion operation
+
+The only code we’re still working on in hived for hardfork 25 is the new operation that allows users to convert liquid Hive to HBD. We’re still researching some issues associated with the existing code that computes the median price for Hive, but we expect to have the conversion code completed and tested this week.
+
+### Hardfork code freeze in middle of this month
+
+We expect to do a code freeze on 4/15 (middle of this month) so that witnesses can launch a testnet and begin evaluating and testing the code changes for hardfork 25. 
+
+### Testnet to operate for at least one month
+
+Barring any problems, we expect the testnet to operate for at least one month, then we’ll begin final prep for HF25. 
+
+This will allow time for Hive API libraries and frontend web sites to make changes to provide notifications related to vote expiration and to enable the use of the new Hive→HBD conversion operation and the recurrent payments and rc delegation functionality implemented by @howo. But strictly speaking, most of such frontend functionality can be implemented after the hardfork is executed without causing any problems, so the primary reason for this time interval is to allow for testing and evaluation of the performance of the new algorithms and features.
+
+# Modular hivemind (application framework for 2nd layer apps)
+
+## Syncing modular hivemind from SQL account history plugin
+
+We were able to successfully sync a hivemind instance from the data injected by the SQL account history plugin (with the syncing taking place as the SQL data was injected by the plugin), but we encountered a problem at the end when some of the indexes were being recreated by hivemind as hivemind exited full sync mode and entered live sync mode. We’re investigating this issue now and we expect a fix in the next couple of days.
+
+## Performance measurements for hivemind sync with SQL account history plugin
+
+Despite the issue when exiting full sync mode, we were able to collect some useful performance measurements. 
+
+On the regular hivemind sync version, where we first do a hived replay to fill hivemind’s database, and where we then do a hivemind sync where indexes and foreign keys are dropped automatically and rebuilt at the end), the hivemind sync process took 50983s (hivemind sync) + 4047s (index creation) + 1998s (foreign key creation) = 57028s
+
+On the modified version of hivemind sync, where indexes are created before the sync begins, the hivemind sync took 67947s (regular version was 10918s faster).
+
+Despite the increased time for the modified version (10918s/3600s = 3.03 hours), this allows for an overall decrease  in the time to fully sync the hivemind node using the SQL account history plugin, because it means that the hivemind sync can be started while the hived node is being replayed to fill hivemind’s database. 
+
+In the “regular method”, the total time would be  hived sync (~8 hours) + hivemind full sync time (15.84 hours) = 23.84 hours. With the modified method, it looks like we can get this time down to just hivemind modified sync time (18.87 hours). 
+
+Note that all these times should ultimate be compared with the existing time to do a hivemind sync without the SQL account history plugin (~90+ hours). So it seems possible we could be looking at a 4x or better speedup in the time to do a full hivemind sync of a new node with the SQL account history plugin, if I haven’t messed up any where in my assumptions (I didn’t want to delay this report any longer, so it’s not been “peer-reviewed”).
+
+# Hivemind (social media middle-ware)
+
+## Significantly reduced memory usage by hivemind process
+
+We fixed an issue in hivemind where a dictionary was used as a cache for post ids, and this dictionary was progressively consuming more memory as the blockchain grew in size. We spotted this issue during some our performance testing of hivemind syncing using the data provided by the new SQL account history plugin (but the problem exists for all existing hivemind implementations).
+
+Unfortunately, we haven’t had a chance to measure the exact memory savings for the fix yet, as we were focused on other tasks, but I should have those numbers for our next report.
+
+## Testing hivemind syncing on a low-end server
+
+We’ve setup a low end computer (8GB of RAM and only a conventional hard disk drive, no SSD drive) to see what the minimum requirements are for a full hivemind node are, and to see if we can lower those requirements. In our tests, the hivemind process did manage to finish the full sync process, but it hit some problems during creation of indexes, so we’ll be digging into this issue further in the upcoming week.
+
+## Testing performance of hivemind with Postgres 13
+
+Currently postgres version 10 is the recommended version of the database for use with hivemind, but we did some tests this week to check if hivemind was compatible with the latest version of postgres (version 13) and to measure the relative performance. 
+
+It’s all good news: no code changes were required to support postgres 13, and as an extra bonus, we saw a 5% speedup in full sync time in our test. We didn’t make any comprehensive tests yet of API response time related to SQL query speed, but signs are good that we can only expect performance improvements and no regressions.
+
+## Miscellaneous hivemind bug fixes and documentation
+
+We fixed a couple of small bugs reported by users and frontend devs, such as a pagination issue with a community-related API call and an issue with community name validation:  https://gitlab.syncad.com/hive/hivemind/-/merge_requests/488
+https://gitlab.syncad.com/hive/hivemind/-/merge_requests/489
+
+And we have an open merge request for the code to generate openapi documentation for the various hivemind API methods: https://gitlab.syncad.com/hive/hivemind/-/merge_requests/486
+
+# Another progress update soon
+
+I’ll probably be putting out another progress update early next week, after we have more performance numbers. I kept delaying this one hoping to include those numbers, but we were caught up in too many tasks and small issues spoiled a bunch of our measurement attempts, and then the Easter holiday hit.&lt;/div&gt;
+&lt;script crossorigin=&quot;anonymous&quot; integrity=&quot;sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=&quot; src=&quot;https://code.jquery.com/jquery-3.5.1.slim.min.js&quot;&gt;&lt;/script&gt;
+
+&lt;script src=&quot;https://unpkg.com/steem-content-renderer&quot;&gt;&lt;/script&gt;
+
+&lt;script&gt;
+  $(document).ready(function() {
+    try {
+      const renderer = new SteemContentRenderer.DefaultRenderer({
+        baseUrl: &quot;https://hive.blog/&quot;,
+        breaks: true,
+        skipSanitization: false,
+        allowInsecureScriptTags: false,
+        addNofollowToLinks: true,
+        doNotShowImages: false,
+        ipfsPrefix: &quot;&quot;,
+        assetsWidth: 640,
+        assetsHeight: 480,
+        imageProxyFn: (url) =&gt; url,
+        usertagUrlFn: (account) =&gt; &quot;/@blocktrades&quot;,
+        hashtagUrlFn: (hashtag) =&gt; &quot;/8th-update-of-2021-on-blocktrades-work-on-hive-software&quot;,
+        isLinkSafeFn: (url) =&gt; true,
+      });
+      
+      const inputElem = $('#content-blocktrades-8th-update-of-2021-on-blocktrades-work-on-hive-software').html();
+      const outputElem = $('#content-blocktrades-8th-update-of-2021-on-blocktrades-work-on-hive-software');
+      const output = renderer.render(inputElem);
+      
+      outputElem.html(output);
+    } catch(e) {
+      console.log(e);
+    }
+  });
+&lt;/script&gt;
+
+&lt;style&gt;
+  #content-blocktrades-8th-update-of-2021-on-blocktrades-work-on-hive-software {
+    padding: 0 3rem;
+    color: #444444;
+    font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.8;
+    text-shadow: 0 1px 0 #ffffff;
+    padding: 0.5rem;
+  }
+  #content-blocktrades-8th-update-of-2021-on-blocktrades-work-on-hive-software code {
+    background: white;
+  }
+  #content-blocktrades-8th-update-of-2021-on-blocktrades-work-on-hive-software a {
+    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
+  }
+  #content-blocktrades-8th-update-of-2021-on-blocktrades-work-on-hive-software a:hover {
+    border-bottom: 0;
+  }
+  #content-blocktrades-8th-update-of-2021-on-blocktrades-work-on-hive-software h1 {
+    font-size: 2.2em;
+  }
+  #content-blocktrades-8th-update-of-2021-on-blocktrades-work-on-hive-software h2, h3, h4, h5 {
+    margin-bottom: 0;
+  }
+  #content-blocktrades-8th-update-of-2021-on-blocktrades-work-on-hive-software header small {
+    color: #999;
+    font-size: 50%;
+  }
+  #content-blocktrades-8th-update-of-2021-on-blocktrades-work-on-hive-software img {
+    max-width: 100%;
+  }
+&lt;/style&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;
+  See: &lt;a href=&quot;https://hive.blog/hive-139531/@blocktrades/8th-update-of-2021-on-blocktrades-work-on-hive-software&quot;&gt;8th update of 2021 on BlockTrades work on Hive software&lt;/a&gt;
+  by
+  &lt;a href=&quot;https://hive.blog/@blocktrades&quot;&gt;@blocktrades&lt;/a&gt;
+&lt;/p&gt;</content><author><name>blocktrades</name></author><category term="news" /><category term="core" /><category term="development" /><summary type="html">Below is a list of some Hive-related programming issues worked on by BlockTrades team during the past few weeks: # Hived work (blockchain node software) ## Code cleanup and investigation of support for Ubuntu 20 Separate from our hardfork 25 changes, we’ve been doing some general code cleanup to make the code more maintainable, and we also started a task to get the code to compile cleanly under Ubuntu 20 without requiring “fiddling” with the build process. ## HF25 changes (these are described in detail in our Hive roadmap post) ### Expiration of old governance votes We’ve completed and written tests for all changes related to handling expiration of governance votes (votes for witnesses and Hive Fund proposals). ### Curation rewards calculation changes We completed analysis and implementation of voting window curation changes for HF25. We’re also writing some tests for the curation calculator, as we found the current tests were inadequate (our changes only triggered one fail of existing tests). During the process, we also discovered an error in the implementation of the square-root function used by the current curation algorithm for unsigned 128 bit integers, but we’re removing use of this square-root function in the new curation calculation, as part of our removal of the convergent-linear curve code (this is the code that weakened small votes). The new curation reward algorithm works as follows: * first day (24 hours) linear rewards (equal weight to all voters in that window) * second window (24 hours to 72 hours/3 days) with reward weight/2 * remaining votes in 3rd window with reward weight/8 Under the new algorithm, anyone voting with the first 24 hours of the post receives the same proportional rewards. In other words, for any given voting strength, the voter will get the same percentage return-on-investment as any other voter during that period. Voters voting during the second and third window receive a smaller proportional curation reward (and voters who voted during the first 24 hour period receive a little more reward when voters vote during the 2nd or 3rd window). Note that if no one votes during the first window, then 2nd window voters will receive the same amount of curation as if they had voted during the first window. The basic idea behind the new algorithm is to encourage voters to find good content, but to put them on an equal footing with voting bots. Under the current algorithm that we’re replacing, voting bots have an advantage because there’s a short window in time to cast a vote for optimal curation rewards. Note that author rewards are not affected by this change: this change only affects how curation rewards are distributed among voters. ### Hive to HBD conversion operation The only code we’re still working on in hived for hardfork 25 is the new operation that allows users to convert liquid Hive to HBD. We’re still researching some issues associated with the existing code that computes the median price for Hive, but we expect to have the conversion code completed and tested this week. ### Hardfork code freeze in middle of this month We expect to do a code freeze on 4/15 (middle of this month) so that witnesses can launch a testnet and begin evaluating and testing the code changes for hardfork 25. ### Testnet to operate for at least one month Barring any problems, we expect the testnet to operate for at least one month, then we’ll begin final prep for HF25. This will allow time for Hive API libraries and frontend web sites to make changes to provide notifications related to vote expiration and to enable the use of the new Hive→HBD conversion operation and the recurrent payments and rc delegation functionality implemented by @howo. But strictly speaking, most of such frontend functionality can be implemented after the hardfork is executed without causing any problems, so the primary reason for this time interval is to allow for testing and evaluation of the performance of the new algorithms and features. # Modular hivemind (application framework for 2nd layer apps) ## Syncing modular hivemind from SQL account history plugin We were able to successfully sync a hivemind instance from the data injected by the SQL account history plugin (with the syncing taking place as the SQL data was injected by the plugin), but we encountered a problem at the end when some of the indexes were being recreated by hivemind as hivemind exited full sync mode and entered live sync mode. We’re investigating this issue now and we expect a fix in the next couple of days. ## Performance measurements for hivemind sync with SQL account history plugin Despite the issue when exiting full sync mode, we were able to collect some useful performance measurements. On the regular hivemind sync version, where we first do a hived replay to fill hivemind’s database, and where we then do a hivemind sync where indexes and foreign keys are dropped automatically and rebuilt at the end), the hivemind sync process took 50983s (hivemind sync) + 4047s (index creation) + 1998s (foreign key creation) = 57028s On the modified version of hivemind sync, where indexes are created before the sync begins, the hivemind sync took 67947s (regular version was 10918s faster). Despite the increased time for the modified version (10918s/3600s = 3.03 hours), this allows for an overall decrease in the time to fully sync the hivemind node using the SQL account history plugin, because it means that the hivemind sync can be started while the hived node is being replayed to fill hivemind’s database. In the “regular method”, the total time would be hived sync (~8 hours) + hivemind full sync time (15.84 hours) = 23.84 hours. With the modified method, it looks like we can get this time down to just hivemind modified sync time (18.87 hours). Note that all these times should ultimate be compared with the existing time to do a hivemind sync without the SQL account history plugin (~90+ hours). So it seems possible we could be looking at a 4x or better speedup in the time to do a full hivemind sync of a new node with the SQL account history plugin, if I haven’t messed up any where in my assumptions (I didn’t want to delay this report any longer, so it’s not been “peer-reviewed”). # Hivemind (social media middle-ware) ## Significantly reduced memory usage by hivemind process We fixed an issue in hivemind where a dictionary was used as a cache for post ids, and this dictionary was progressively consuming more memory as the blockchain grew in size. We spotted this issue during some our performance testing of hivemind syncing using the data provided by the new SQL account history plugin (but the problem exists for all existing hivemind implementations). Unfortunately, we haven’t had a chance to measure the exact memory savings for the fix yet, as we were focused on other tasks, but I should have those numbers for our next report. ## Testing hivemind syncing on a low-end server We’ve setup a low end computer (8GB of RAM and only a conventional hard disk drive, no SSD drive) to see what the minimum requirements are for a full hivemind node are, and to see if we can lower those requirements. In our tests, the hivemind process did manage to finish the full sync process, but it hit some problems during creation of indexes, so we’ll be digging into this issue further in the upcoming week. ## Testing performance of hivemind with Postgres 13 Currently postgres version 10 is the recommended version of the database for use with hivemind, but we did some tests this week to check if hivemind was compatible with the latest version of postgres (version 13) and to measure the relative performance. It’s all good news: no code changes were required to support postgres 13, and as an extra bonus, we saw a 5% speedup in full sync time in our test. We didn’t make any comprehensive tests yet of API response time related to SQL query speed, but signs are good that we can only expect performance improvements and no regressions. ## Miscellaneous hivemind bug fixes and documentation We fixed a couple of small bugs reported by users and frontend devs, such as a pagination issue with a community-related API call and an issue with community name validation: https://gitlab.syncad.com/hive/hivemind/-/merge_requests/488 https://gitlab.syncad.com/hive/hivemind/-/merge_requests/489 And we have an open merge request for the code to generate openapi documentation for the various hivemind API methods: https://gitlab.syncad.com/hive/hivemind/-/merge_requests/486 # Another progress update soon I’ll probably be putting out another progress update early next week, after we have more performance numbers. I kept delaying this one hoping to include those numbers, but we were caught up in too many tasks and small issues spoiled a bunch of our measurement attempts, and then the Easter holiday hit. See: 8th update of 2021 on BlockTrades work on Hive software by @blocktrades</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://hivedocs.info/assets/images/favicon.png" /><media:content medium="image" url="https://hivedocs.info/assets/images/favicon.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Making a Decentralized Game on Hive - Part 4</title><link href="https://hivedocs.info/howto/nodejs/2021/04/01/making-a-decentralized-game-on-hive-part-4.html" rel="alternate" type="text/html" title="Making a Decentralized Game on Hive - Part 4" /><published>2021-04-01T10:09:48-07:00</published><updated>2021-04-01T10:09:48-07:00</updated><id>https://hivedocs.info/howto/nodejs/2021/04/01/making-a-decentralized-game-on-hive-part-4</id><content type="html" xml:base="https://hivedocs.info/howto/nodejs/2021/04/01/making-a-decentralized-game-on-hive-part-4.html">&lt;div id=&quot;content-mahdiyari-making-a-decentralized-game-on-hive-part-4&quot;&gt;&lt;center&gt;![coding-pixabay.jpg](https://images.hive.blog/DQmbqyPpfU2dpwYkn9GVJdMmJbfukkvZZ8Bwqk7epyswP9w/macbook-2617705_1280.jpg)&lt;/center&gt;
 In the [previous part](https://hive.blog/hive-139531/@mahdiyari/making-a-decentralized-game-on-hive-part-3), we made a back-end that is streaming blocks and detects 3 methods in custom_json. Create a game, request to join a game, and accept the request. We also set up a MySQL server with 3 tables for the methods.
 
 &lt;sub&gt;You can find the links to the other parts at the end of the post.&lt;/sub&gt;
@@ -2459,129 +2627,4 @@ Follow me so you don't miss the next part. The final code of this part is on Git
   See: &lt;a href=&quot;https://hive.blog/hive-139531/@mahdiyari/making-a-decentralized-game-on-hive-part-2&quot;&gt;Making a Decentralized Game on Hive - Part 2&lt;/a&gt;
   by
   &lt;a href=&quot;https://hive.blog/@mahdiyari&quot;&gt;@mahdiyari&lt;/a&gt;
-&lt;/p&gt;</content><author><name>mahdiyari</name></author><category term="howto" /><category term="nodejs" /><summary type="html">![code-944499_1280.jpg](https://images.hive.blog/DQmZn8iD8SQbqnN8RNGJku4SCKQH6pKAPBh6QqtBrby1mAN/code-944499_1280.jpg) Previously in [part 1](https://hive.blog/hive-139531/@mahdiyari/making-a-decentralized-game-on-hive-tic-tac-toe-part-1), we made a simple front-end and a login option with posting key. In this part, we work on the back-end of the game. We use [Nodejs](https://nodejs.org/en/) for running our back-end codes. I assume you know how to create or run a Nodejs app. It's not complicated and I will cover most of it here. ## API server `api/server.js` is the starting point of the API server. Let's initialize it with expressjs and some libraries for API usage. ``` const express = require('express') const bodyParser = require('body-parser') const hpp = require('hpp') const helmet = require('helmet') const app = express() // more info: www.npmjs.com/package/hpp app.use(hpp()) app.use(helmet()) // support json encoded bodies and encoded bodies app.use(bodyParser.json()) app.use(bodyParser.urlencoded({ extended: true })) app.use(function (req, res, next) { res.header( 'Access-Control-Allow-Origin', 'http://localhost https://tic-tac-toe.mahdiyari.info/' ) res.header('Access-Control-Allow-Credentials', true) res.header( 'Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, access_key' ) next() }) const port = process.env.PORT || 2021 const host = process.env.HOST || '127.0.0.1' app.listen(port, host, () =&amp;gt; { console.log(`Application started on ${host}:${port}`) }) ``` Don't forget to install npm packages. ``` npm install express npm install body-parser npm install hpp npm install helmet ``` `hpp` and `helmet` are for increased security and `body-parser` for parsing request bodies for json encoded bodies and encoded bodies. I also added `http://localhost` and `https://tic-tac-toe.mahdiyari.info/` to the `Access-Control-Allow-Origin` header. You can add another URL to receive API calls from or just put `*`. It basically limits the usage of the API server to the listed URLs. Our API server will listen to `127.0.0.1:2021` by default. It does nothing at the moment. Let's continue with the main application. *** ## Main application We will run 2 Nodejs apps. One is the API server and the other is the main application where streaming blocks and processing data is happening. The reason for splitting applications is to run the API server in cluster mode. With cluster mode, we can run one API server for each CPU core. It will help with load balancing and keep API running as fast as possible while serving many requests. The cluster mode is useful only on API servers and especially Expressjs apps. We will need a helper to stream the blocks. `helpers/streamBlock.js`: ``` const hiveTx = require('hive-tx') const INTERVAL_TIME = 1000 const streamBlockNumber = async (cb) =&amp;gt; { try { let lastBlock = 0 setInterval(async () =&amp;gt; { const gdgp = await hiveTx.call( 'condenser_api.get_dynamic_global_properties' ) if ( gdgp &amp;amp;&amp;amp; gdgp.result &amp;amp;&amp;amp; gdgp.result.head_block_number &amp;amp;&amp;amp; !isNaN(gdgp.result.head_block_number) ) { if (gdgp.result.head_block_number &amp;gt; lastBlock) { lastBlock = gdgp.result.head_block_number cb(lastBlock) } } }, INTERVAL_TIME) } catch (e) { throw new Error(e) } } const streamBlockOperations = async (cb) =&amp;gt; { try { streamBlockNumber(async (blockNumber) =&amp;gt; { const result = await hiveTx.call('condenser_api.get_block', [ blockNumber ]) if (result.result) { const operations = result.result.transactions.map((transaction) =&amp;gt; { return transaction.operations }) if (operations.length &amp;gt; 0) { for (const operation of operations) { cb(operation) } } } }) } catch (e) { throw new Error(e) } } module.exports = { streamBlockNumber, streamBlockOperations } ``` install [hive-tx](https://www.npmjs.com/package/hive-tx): `npm install hive-tx` We created 2 functions here. The first one `streamBlockNumber` makes a call to get `dynamic_global_properties` every `INTERVAL_TIME` which I set to 1000ms (1 second) then checks for newly produced block number. If the block number is increased, then it calls the callback function with the new block number. It's a helpful function for getting newly generated block numbers. We use the first function inside the second function `streamBlockOperations` to get newly generated blocks and get operations inside that block by using the `condenser_api.get_block` method. `streamBlockOperations` will call the callback function with newly added operations to the blockchain (except virtual operations). `index.js`: ``` const stream = require('./helpers/streamBlock') try { stream.streamBlockOperations((ops) =&amp;gt; { if (ops) { const op = ops[0] if (op &amp;amp;&amp;amp; op[0] === 'custom_json' &amp;amp;&amp;amp; op[1].id === 'tictactoe') { processData(op[1].json) } } }) } catch (e) { throw new Error(e) } ``` This will stream newly added operations to the blockchain and send the JSON from `custom_json` operations with the id of `tictactoe` to the `processData` function. *** We should define game mechanics and their corresponding custom_json. **Create a game** ``` { app: 'tictactoe/0.0.1' action: 'create_game', id: 'Random generated id', starting_player: 'first or second' } ``` Create a game and wait for the other player to join. *** **Request join a game** ``` { app: 'tictactoe/0.0.1', action: 'request_join', id: 'Game id' } ``` Request to join an open game which is created by someone else. *** **Accept join request** ``` { app: 'tictactoe/0.0.1', action: 'accept_request', id: 'Game id', player: 'username' } ``` Accept the pending join request from another player to your created game. *** **Play** ``` { app: 'tictactoe/0.0.1', action: 'play', id: 'Game id', col: '1 to 3', row: '1 to 3' } ``` Play or place an X/O on the board. `col` is the column and `row` is for the row of the placed X/O on the board. ![tic-tac-toe-col-row.jpg](https://images.hive.blog/DQmYtN2du2ngnu51fernMHqvmp5VKSyZ5JkF6wRgS9MkubP/tic-tac-toe-col-row.jpg) *** Code implamantaion of the above in `index.js`: ``` const processData = (jsonData) =&amp;gt; { try { if (!jsonData) { return } const data = JSON.parse(jsonData) if (!data || !data.action || !data.app) { return } if (data.action === 'create_game') { createGame(data) } else if (data.action === 'request_join') { requestJoin(data) } else if (data.action === 'accept_request') { acceptRequest(data) } else if (data.action === 'play') { play(data) } } catch (e) { // error might be on JSON.parse and wrong json format return null } } ``` *** Let's create a function for each game mechanic. **createGame**: ``` const createGame = (data) =&amp;gt; { if (!data || !data.id || !data.starting_player) { return } // validating if ( data.id.length !== 20 || (data.starting_player !== 'first' &amp;amp;&amp;amp; data.starting_player !== 'second') ) { return } // Add game to database console.log('Create a game with id ' + data.id) } ``` *** **requestJoin**: ``` const requestJoin = (data) =&amp;gt; { if (!data || !data.id || !data.id.length !== 20) { return } // Check game id in database // Join game console.log('A player joined game id ' + data.id) } ``` *** **acceptRequest**: ``` const acceptRequest = (data) =&amp;gt; { if (!data || !data.id || !data.player || !data.id.length !== 20) { return } // Validate game in database // Accept the join request console.log('Accepted join request game id ' + data.id) } ``` *** **play**: ``` const play = (data) =&amp;gt; { if ( !data || !data.id || !data.col || !data.row || !data.id.length !== 20 || data.col &amp;lt; 1 || data.col &amp;gt; 3 || data.row &amp;lt; 1 || data.row &amp;gt; 3 ) { return } // Validate game in database // Validate the player round // Play game console.log('Played game id ' + data.id) } ``` *** The above functions are not doing anything at the moment. We will complete those functions after setting up the database in the next part. We can test our code by broadcasting custom_json operations. Let's see if the streaming method and processing data works. We can run the app by `node index.js` https://hiveblocks.com/tx/44799e6a27c64e935f9072ecb576602330cb80b8 ![image.png](https://images.hive.blog/DQmSfMrgDbSPjUPWaPeekrWfDFTS6zfdkk4NMySjNQmh3xh/image.png) And here is the console.log() confirmation in our app: ![image.png](https://images.hive.blog/DQmb4kymGnacj2H9D4f2jfU8xYWJdjcd1EKDZeLN6q96q8h/image.png) *** Follow me so you don't miss the next part. The final code of this part is on GitLab. [GitLab Repository](https://gitlab.com/mahdiyari/decentralized-game-on-hive) [Website](https://tic-tac-toe.mahdiyari.info/) [Part 1](https://hive.blog/hive-139531/@mahdiyari/making-a-decentralized-game-on-hive-tic-tac-toe-part-1) See: Making a Decentralized Game on Hive - Part 2 by @mahdiyari</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://images.hive.blog/DQmZn8iD8SQbqnN8RNGJku4SCKQH6pKAPBh6QqtBrby1mAN/code-944499_1280.jpg" /><media:content medium="image" url="https://images.hive.blog/DQmZn8iD8SQbqnN8RNGJku4SCKQH6pKAPBh6QqtBrby1mAN/code-944499_1280.jpg" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Hive core developer meeting #19</title><link href="https://hivedocs.info/news/core/development/2021/03/15/hive-core-developer-meeting-19.html" rel="alternate" type="text/html" title="Hive core developer meeting #19" /><published>2021-03-15T17:09:54-07:00</published><updated>2021-03-15T17:09:54-07:00</updated><id>https://hivedocs.info/news/core/development/2021/03/15/hive-core-developer-meeting-19</id><content type="html" xml:base="https://hivedocs.info/news/core/development/2021/03/15/hive-core-developer-meeting-19.html">&lt;div id=&quot;content-howo-hive-core-developer-meeting-19&quot;&gt;https://www.youtube.com/watch?v=UIRR5gFfVYk
-
-meeting tl;dr:
-
-## Dev sync
-As usual listen to this one is better 
-
-## hived proposal payout maintenance time drifting fix in hf25 or not [hive!168](https://gitlab.syncad.com/hive/hive/-/merge_requests/168)
-
-Lots of discussion on this one that branched into two problems, one is the proposal time drift issue, the other is about the unit tests behaving strangely due to the skipping logic.
-
-The output of that point is that I will try to fix it for hf25 and see how the unit tests go, but if I see that it takes too much time, I'll skip it and we'll fix it for hf26. It's a minor issue.
-
-## Incoming recurrent transfer api: hived or hivemind ? Broader discussion on should hivemind support recurrent transfers 
-
-Incoming recurrent transfers will be done via hivemind, and yes hivemind will support them, we will do it after hf25 has shipped though.
-
-## Update the beem used for unit tests in hived to one that is more up to date:
-
-Relatively short discussion, and since @holger80 implemented the hybrid transactions in the mainline github, we'll move towards using the version on github instead of gitlab.
-
-## Hived split block log in chunks and be able to sync those independently
-
-There was lots of discussions on this in the dev channels. It's not the focus right now as hf25 is upon us, there was some discussions on using external tools instead of implementing it directly within hived. To be rediscussed.
-
-## Hivemind Communities type 2/3 and account level mutes [hivemind#125](https://gitlab.syncad.com/hive/hivemind/-/issues/125) / [hivemind#145](https://gitlab.syncad.com/hive/hivemind/-/issues/145)
-
-Bt's team is building tests, we'll then then who takes this on, potentially bt's team as I'll be tied to hived 
-
-## Hivemind communities beneficiaries support [hivemind#149](https://gitlab.syncad.com/hive/hivemind/-/issues/149) +parameter naming: reward_share vs beneficiaries
-
-We also discussed changing the data type of the communities data from text to jsonb (https://gitlab.syncad.com/hive/hivemind/-/issues/153)
-
-Basically we'll use beneficiaries and the current implementations ideas are a bit early, we(I) are waiting for the changes to take place in communities type 2/3 + account level mutes to take place before taking this on.
-
-## Hivemind Communities metadata (topics/tags) [hivemind#148](https://gitlab.syncad.com/hive/hivemind/-/issues/148) 
-
-Yes why not, we'll add a new field to store a few &quot;communities tags&quot; and a new api to search for communities via said tags. The idea is to be able to tag a community like &quot;crypto nft games&quot; or &quot;sport tennis&quot; etc to make content discovery easier
-
-## Adding more stats for communities 
-
-A bit early to tell what we'll add but I'll definitely look into adding more stats and ways to sort communities with it.
-
-# Conclusion
-
-In the end lots of hivemind talks but those are mostly preliminary, our focus is hf25 we are tentatively(this is not an official date or anything, it's more like an &quot;ideally we would like it to be done by but might slip if needs be&quot;) looking at april 15 for locking the core code and build a testnet for hf25. This is when all the features for hf25 are set in stone and we stop adding new features to the core code. So all developments HAVE to be done by then. 
-
-This is why I'll be mostly focusing on hive core for the next month to get all of my ongoing code merged and included in hf25.
-
-See you around for the next dev meeting on march 29th :) 
-@howo&lt;/div&gt;
-&lt;script crossorigin=&quot;anonymous&quot; integrity=&quot;sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=&quot; src=&quot;https://code.jquery.com/jquery-3.5.1.slim.min.js&quot;&gt;&lt;/script&gt;
-
-&lt;script src=&quot;https://unpkg.com/steem-content-renderer&quot;&gt;&lt;/script&gt;
-
-&lt;script&gt;
-  $(document).ready(function() {
-    try {
-      const renderer = new SteemContentRenderer.DefaultRenderer({
-        baseUrl: &quot;https://hive.blog/&quot;,
-        breaks: true,
-        skipSanitization: false,
-        allowInsecureScriptTags: false,
-        addNofollowToLinks: true,
-        doNotShowImages: false,
-        ipfsPrefix: &quot;&quot;,
-        assetsWidth: 640,
-        assetsHeight: 480,
-        imageProxyFn: (url) =&gt; url,
-        usertagUrlFn: (account) =&gt; &quot;/@howo&quot;,
-        hashtagUrlFn: (hashtag) =&gt; &quot;/hive-core-developer-meeting-19&quot;,
-        isLinkSafeFn: (url) =&gt; true,
-      });
-      
-      const inputElem = $('#content-howo-hive-core-developer-meeting-19').html();
-      const outputElem = $('#content-howo-hive-core-developer-meeting-19');
-      const output = renderer.render(inputElem);
-      
-      outputElem.html(output);
-    } catch(e) {
-      console.log(e);
-    }
-  });
-&lt;/script&gt;
-
-&lt;style&gt;
-  #content-howo-hive-core-developer-meeting-19 {
-    padding: 0 3rem;
-    color: #444444;
-    font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif;
-    font-size: 16px;
-    line-height: 1.8;
-    text-shadow: 0 1px 0 #ffffff;
-    padding: 0.5rem;
-  }
-  #content-howo-hive-core-developer-meeting-19 code {
-    background: white;
-  }
-  #content-howo-hive-core-developer-meeting-19 a {
-    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
-  }
-  #content-howo-hive-core-developer-meeting-19 a:hover {
-    border-bottom: 0;
-  }
-  #content-howo-hive-core-developer-meeting-19 h1 {
-    font-size: 2.2em;
-  }
-  #content-howo-hive-core-developer-meeting-19 h2, h3, h4, h5 {
-    margin-bottom: 0;
-  }
-  #content-howo-hive-core-developer-meeting-19 header small {
-    color: #999;
-    font-size: 50%;
-  }
-  #content-howo-hive-core-developer-meeting-19 img {
-    max-width: 100%;
-  }
-&lt;/style&gt;
-
-&lt;hr /&gt;
-
-&lt;p&gt;
-  See: &lt;a href=&quot;https://peakd.com/hive/@howo/hive-core-developer-meeting-19&quot;&gt;Hive core developer meeting #19&lt;/a&gt;
-  by
-  &lt;a href=&quot;https://hive.blog/@howo&quot;&gt;@howo&lt;/a&gt;
-&lt;/p&gt;</content><author><name>howo</name></author><category term="news" /><category term="core" /><category term="development" /><summary type="html">https://www.youtube.com/watch?v=UIRR5gFfVYk meeting tl;dr: ## Dev sync As usual listen to this one is better ## hived proposal payout maintenance time drifting fix in hf25 or not [hive!168](https://gitlab.syncad.com/hive/hive/-/merge_requests/168) Lots of discussion on this one that branched into two problems, one is the proposal time drift issue, the other is about the unit tests behaving strangely due to the skipping logic. The output of that point is that I will try to fix it for hf25 and see how the unit tests go, but if I see that it takes too much time, I'll skip it and we'll fix it for hf26. It's a minor issue. ## Incoming recurrent transfer api: hived or hivemind ? Broader discussion on should hivemind support recurrent transfers Incoming recurrent transfers will be done via hivemind, and yes hivemind will support them, we will do it after hf25 has shipped though. ## Update the beem used for unit tests in hived to one that is more up to date: Relatively short discussion, and since @holger80 implemented the hybrid transactions in the mainline github, we'll move towards using the version on github instead of gitlab. ## Hived split block log in chunks and be able to sync those independently There was lots of discussions on this in the dev channels. It's not the focus right now as hf25 is upon us, there was some discussions on using external tools instead of implementing it directly within hived. To be rediscussed. ## Hivemind Communities type 2/3 and account level mutes [hivemind#125](https://gitlab.syncad.com/hive/hivemind/-/issues/125) / [hivemind#145](https://gitlab.syncad.com/hive/hivemind/-/issues/145) Bt's team is building tests, we'll then then who takes this on, potentially bt's team as I'll be tied to hived ## Hivemind communities beneficiaries support [hivemind#149](https://gitlab.syncad.com/hive/hivemind/-/issues/149) +parameter naming: reward_share vs beneficiaries We also discussed changing the data type of the communities data from text to jsonb (https://gitlab.syncad.com/hive/hivemind/-/issues/153) Basically we'll use beneficiaries and the current implementations ideas are a bit early, we(I) are waiting for the changes to take place in communities type 2/3 + account level mutes to take place before taking this on. ## Hivemind Communities metadata (topics/tags) [hivemind#148](https://gitlab.syncad.com/hive/hivemind/-/issues/148) Yes why not, we'll add a new field to store a few &quot;communities tags&quot; and a new api to search for communities via said tags. The idea is to be able to tag a community like &quot;crypto nft games&quot; or &quot;sport tennis&quot; etc to make content discovery easier ## Adding more stats for communities A bit early to tell what we'll add but I'll definitely look into adding more stats and ways to sort communities with it. # Conclusion In the end lots of hivemind talks but those are mostly preliminary, our focus is hf25 we are tentatively(this is not an official date or anything, it's more like an &quot;ideally we would like it to be done by but might slip if needs be&quot;) looking at april 15 for locking the core code and build a testnet for hf25. This is when all the features for hf25 are set in stone and we stop adding new features to the core code. So all developments HAVE to be done by then. This is why I'll be mostly focusing on hive core for the next month to get all of my ongoing code merged and included in hf25. See you around for the next dev meeting on march 29th :) @howo See: Hive core developer meeting #19 by @howo</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://img.youtube.com/vi/UIRR5gFfVYk/0.jpg" /><media:content medium="image" url="https://img.youtube.com/vi/UIRR5gFfVYk/0.jpg" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>
+&lt;/p&gt;</content><author><name>mahdiyari</name></author><category term="howto" /><category term="nodejs" /><summary type="html">![code-944499_1280.jpg](https://images.hive.blog/DQmZn8iD8SQbqnN8RNGJku4SCKQH6pKAPBh6QqtBrby1mAN/code-944499_1280.jpg) Previously in [part 1](https://hive.blog/hive-139531/@mahdiyari/making-a-decentralized-game-on-hive-tic-tac-toe-part-1), we made a simple front-end and a login option with posting key. In this part, we work on the back-end of the game. We use [Nodejs](https://nodejs.org/en/) for running our back-end codes. I assume you know how to create or run a Nodejs app. It's not complicated and I will cover most of it here. ## API server `api/server.js` is the starting point of the API server. Let's initialize it with expressjs and some libraries for API usage. ``` const express = require('express') const bodyParser = require('body-parser') const hpp = require('hpp') const helmet = require('helmet') const app = express() // more info: www.npmjs.com/package/hpp app.use(hpp()) app.use(helmet()) // support json encoded bodies and encoded bodies app.use(bodyParser.json()) app.use(bodyParser.urlencoded({ extended: true })) app.use(function (req, res, next) { res.header( 'Access-Control-Allow-Origin', 'http://localhost https://tic-tac-toe.mahdiyari.info/' ) res.header('Access-Control-Allow-Credentials', true) res.header( 'Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, access_key' ) next() }) const port = process.env.PORT || 2021 const host = process.env.HOST || '127.0.0.1' app.listen(port, host, () =&amp;gt; { console.log(`Application started on ${host}:${port}`) }) ``` Don't forget to install npm packages. ``` npm install express npm install body-parser npm install hpp npm install helmet ``` `hpp` and `helmet` are for increased security and `body-parser` for parsing request bodies for json encoded bodies and encoded bodies. I also added `http://localhost` and `https://tic-tac-toe.mahdiyari.info/` to the `Access-Control-Allow-Origin` header. You can add another URL to receive API calls from or just put `*`. It basically limits the usage of the API server to the listed URLs. Our API server will listen to `127.0.0.1:2021` by default. It does nothing at the moment. Let's continue with the main application. *** ## Main application We will run 2 Nodejs apps. One is the API server and the other is the main application where streaming blocks and processing data is happening. The reason for splitting applications is to run the API server in cluster mode. With cluster mode, we can run one API server for each CPU core. It will help with load balancing and keep API running as fast as possible while serving many requests. The cluster mode is useful only on API servers and especially Expressjs apps. We will need a helper to stream the blocks. `helpers/streamBlock.js`: ``` const hiveTx = require('hive-tx') const INTERVAL_TIME = 1000 const streamBlockNumber = async (cb) =&amp;gt; { try { let lastBlock = 0 setInterval(async () =&amp;gt; { const gdgp = await hiveTx.call( 'condenser_api.get_dynamic_global_properties' ) if ( gdgp &amp;amp;&amp;amp; gdgp.result &amp;amp;&amp;amp; gdgp.result.head_block_number &amp;amp;&amp;amp; !isNaN(gdgp.result.head_block_number) ) { if (gdgp.result.head_block_number &amp;gt; lastBlock) { lastBlock = gdgp.result.head_block_number cb(lastBlock) } } }, INTERVAL_TIME) } catch (e) { throw new Error(e) } } const streamBlockOperations = async (cb) =&amp;gt; { try { streamBlockNumber(async (blockNumber) =&amp;gt; { const result = await hiveTx.call('condenser_api.get_block', [ blockNumber ]) if (result.result) { const operations = result.result.transactions.map((transaction) =&amp;gt; { return transaction.operations }) if (operations.length &amp;gt; 0) { for (const operation of operations) { cb(operation) } } } }) } catch (e) { throw new Error(e) } } module.exports = { streamBlockNumber, streamBlockOperations } ``` install [hive-tx](https://www.npmjs.com/package/hive-tx): `npm install hive-tx` We created 2 functions here. The first one `streamBlockNumber` makes a call to get `dynamic_global_properties` every `INTERVAL_TIME` which I set to 1000ms (1 second) then checks for newly produced block number. If the block number is increased, then it calls the callback function with the new block number. It's a helpful function for getting newly generated block numbers. We use the first function inside the second function `streamBlockOperations` to get newly generated blocks and get operations inside that block by using the `condenser_api.get_block` method. `streamBlockOperations` will call the callback function with newly added operations to the blockchain (except virtual operations). `index.js`: ``` const stream = require('./helpers/streamBlock') try { stream.streamBlockOperations((ops) =&amp;gt; { if (ops) { const op = ops[0] if (op &amp;amp;&amp;amp; op[0] === 'custom_json' &amp;amp;&amp;amp; op[1].id === 'tictactoe') { processData(op[1].json) } } }) } catch (e) { throw new Error(e) } ``` This will stream newly added operations to the blockchain and send the JSON from `custom_json` operations with the id of `tictactoe` to the `processData` function. *** We should define game mechanics and their corresponding custom_json. **Create a game** ``` { app: 'tictactoe/0.0.1' action: 'create_game', id: 'Random generated id', starting_player: 'first or second' } ``` Create a game and wait for the other player to join. *** **Request join a game** ``` { app: 'tictactoe/0.0.1', action: 'request_join', id: 'Game id' } ``` Request to join an open game which is created by someone else. *** **Accept join request** ``` { app: 'tictactoe/0.0.1', action: 'accept_request', id: 'Game id', player: 'username' } ``` Accept the pending join request from another player to your created game. *** **Play** ``` { app: 'tictactoe/0.0.1', action: 'play', id: 'Game id', col: '1 to 3', row: '1 to 3' } ``` Play or place an X/O on the board. `col` is the column and `row` is for the row of the placed X/O on the board. ![tic-tac-toe-col-row.jpg](https://images.hive.blog/DQmYtN2du2ngnu51fernMHqvmp5VKSyZ5JkF6wRgS9MkubP/tic-tac-toe-col-row.jpg) *** Code implamantaion of the above in `index.js`: ``` const processData = (jsonData) =&amp;gt; { try { if (!jsonData) { return } const data = JSON.parse(jsonData) if (!data || !data.action || !data.app) { return } if (data.action === 'create_game') { createGame(data) } else if (data.action === 'request_join') { requestJoin(data) } else if (data.action === 'accept_request') { acceptRequest(data) } else if (data.action === 'play') { play(data) } } catch (e) { // error might be on JSON.parse and wrong json format return null } } ``` *** Let's create a function for each game mechanic. **createGame**: ``` const createGame = (data) =&amp;gt; { if (!data || !data.id || !data.starting_player) { return } // validating if ( data.id.length !== 20 || (data.starting_player !== 'first' &amp;amp;&amp;amp; data.starting_player !== 'second') ) { return } // Add game to database console.log('Create a game with id ' + data.id) } ``` *** **requestJoin**: ``` const requestJoin = (data) =&amp;gt; { if (!data || !data.id || !data.id.length !== 20) { return } // Check game id in database // Join game console.log('A player joined game id ' + data.id) } ``` *** **acceptRequest**: ``` const acceptRequest = (data) =&amp;gt; { if (!data || !data.id || !data.player || !data.id.length !== 20) { return } // Validate game in database // Accept the join request console.log('Accepted join request game id ' + data.id) } ``` *** **play**: ``` const play = (data) =&amp;gt; { if ( !data || !data.id || !data.col || !data.row || !data.id.length !== 20 || data.col &amp;lt; 1 || data.col &amp;gt; 3 || data.row &amp;lt; 1 || data.row &amp;gt; 3 ) { return } // Validate game in database // Validate the player round // Play game console.log('Played game id ' + data.id) } ``` *** The above functions are not doing anything at the moment. We will complete those functions after setting up the database in the next part. We can test our code by broadcasting custom_json operations. Let's see if the streaming method and processing data works. We can run the app by `node index.js` https://hiveblocks.com/tx/44799e6a27c64e935f9072ecb576602330cb80b8 ![image.png](https://images.hive.blog/DQmSfMrgDbSPjUPWaPeekrWfDFTS6zfdkk4NMySjNQmh3xh/image.png) And here is the console.log() confirmation in our app: ![image.png](https://images.hive.blog/DQmb4kymGnacj2H9D4f2jfU8xYWJdjcd1EKDZeLN6q96q8h/image.png) *** Follow me so you don't miss the next part. The final code of this part is on GitLab. [GitLab Repository](https://gitlab.com/mahdiyari/decentralized-game-on-hive) [Website](https://tic-tac-toe.mahdiyari.info/) [Part 1](https://hive.blog/hive-139531/@mahdiyari/making-a-decentralized-game-on-hive-tic-tac-toe-part-1) See: Making a Decentralized Game on Hive - Part 2 by @mahdiyari</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://images.hive.blog/DQmZn8iD8SQbqnN8RNGJku4SCKQH6pKAPBh6QqtBrby1mAN/code-944499_1280.jpg" /><media:content medium="image" url="https://images.hive.blog/DQmZn8iD8SQbqnN8RNGJku4SCKQH6pKAPBh6QqtBrby1mAN/code-944499_1280.jpg" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>
