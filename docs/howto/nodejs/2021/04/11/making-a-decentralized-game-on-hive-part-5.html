@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta property="og:image" content="/assets/images/sticker.png" /><!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>Making a Decentralized Game on Hive - Part 5 | Hive Chain Documentation</title>
+<meta name="generator" content="Jekyll v4.1.1" />
+<meta property="og:title" content="Making a Decentralized Game on Hive - Part 5" />
+<meta name="author" content="mahdiyari" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Games are fun and most people like to play different kinds of games. I’m not sure about the game we are building." />
+<meta property="og:description" content="Games are fun and most people like to play different kinds of games. I’m not sure about the game we are building." />
+<link rel="canonical" href="https://hive.blog/hive-169321/@mahdiyari/making-a-decentralized-game-on-hive-part-5" />
+<meta property="og:url" content="https://hive.blog/hive-169321/@mahdiyari/making-a-decentralized-game-on-hive-part-5" />
+<meta property="og:site_name" content="Hive Chain Documentation" />
+<meta property="og:image" content="https://images.hive.blog/DQmSeL2wLvGPWHqcLVX4ZtfhqidWhj4GVNiVDC2LsHX6jNX/game-4648923_1280.jpg" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2021-04-11T10:06:57-07:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="https://images.hive.blog/DQmSeL2wLvGPWHqcLVX4ZtfhqidWhj4GVNiVDC2LsHX6jNX/game-4648923_1280.jpg" />
+<meta property="twitter:title" content="Making a Decentralized Game on Hive - Part 5" />
+<script type="application/ld+json">
+{"mainEntityOfPage":{"@type":"WebPage","@id":"https://hive.blog/hive-169321/@mahdiyari/making-a-decentralized-game-on-hive-part-5"},"description":"Games are fun and most people like to play different kinds of games. I’m not sure about the game we are building.","@type":"BlogPosting","image":"https://images.hive.blog/DQmSeL2wLvGPWHqcLVX4ZtfhqidWhj4GVNiVDC2LsHX6jNX/game-4648923_1280.jpg","url":"https://hive.blog/hive-169321/@mahdiyari/making-a-decentralized-game-on-hive-part-5","headline":"Making a Decentralized Game on Hive - Part 5","dateModified":"2021-04-11T10:06:57-07:00","datePublished":"2021-04-11T10:06:57-07:00","author":{"@type":"Person","name":"mahdiyari"},"@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://hivedocs.info/feed.xml" title="Hive Chain Documentation" /><script>
+if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNotTrack === "yes" || navigator.msDoNotTrack === "1")) {
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-161692811-1', 'auto');
+  ga('send', 'pageview');
+}
+</script>
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/turbolinks/5.2.0/turbolinks.js" integrity="sha256-iM4Yzi/zLj/IshPWMC1IluRxTtRjMqjPGd97TZ9yYpU=" crossorigin="anonymous"></script>
+  <script src='https://unpkg.com/steem-content-renderer'></script>
+  <script>
+    (function () {
+      if (Turbolinks.supported) {
+        Turbolinks.setProgressBarDelay(500);
+      }
+    })();
+  </script>
+  <script src="/assets/javascript/universal-bridge-against-phishing.js"></script>
+  <script src="/assets/javascript/lazysizes.min.js" async=""></script>
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Cousine|Inconsolata" rel="stylesheet">
+  <link rel="shortcut icon" type="image/png" href="/assets/images/favicon.png">
+</head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Hive Chain Documentation</a>
+
+      <nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/news/">News</a><a class="page-link" href="/howto/">How To</a><a class="page-link" href="/links/">Useful Links</a><!-- HTML elements for search -->
+          <input type="text" id="search-input" placeholder="Search" />
+          
+          <ul id="results-container"></ul>
+
+          <script src="/assets/javascript/search.js"></script>
+          <script>
+            var sjs = SimpleJekyllSearch({
+              searchInput: document.getElementById('search-input'),
+              resultsContainer: document.getElementById('results-container'),
+              json: '/search.json'
+            })
+          </script>
+          <!-- <form style="float: right;" class="form-inline" method="get" action="http://www.google.com/search">
+            <input type="hidden" name="sitesearch" value="hivedocs.info" />
+            <input type="text" name="q" maxlength="255" placeholder="Search" />
+          </form> -->
+          
+          
+          <a href="#" onclick="try { $('#topics-container').slideToggle(); } catch { document.getElementById('topics-container').style.display = 'block'; }; return false;">Topics &#187;</a>
+          
+          <ul id="topics-container" style="display: none;"><li><a class="page-link" href="/account-recovery/"><nobr>Account Recovery</nobr></a></li><li><a class="page-link" href="/core-development/"><nobr>Core Development</nobr></a></li><li><a class="page-link" href="/dapps/"><nobr>Dapps</nobr></a></li><li><a class="page-link" href="/docker/"><nobr>Docker</nobr></a></li><li><a class="page-link" href="/hardfork/"><nobr>Hardfork</nobr></a></li><li><a class="page-link" href="/hivemind/"><nobr>Hivemind</nobr></a></li><li><a class="page-link" href="/javascript/"><nobr>Javascript</nobr></a></li><li><a class="page-link" href="/multisig/"><nobr>Multisig</nobr></a></li><li><a class="page-link" href="/python/"><nobr>Python</nobr></a></li><li><a class="page-link" href="/ruby/"><nobr>Ruby</nobr></a></li><li><a class="page-link" href="/testnet/"><nobr>Testnet</nobr></a></li><li><a class="page-link" href="/tools/"><nobr>Tools</nobr></a></li></ul>
+        </div>
+      </nav>
+  </div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Making a Decentralized Game on Hive - Part 5</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2021-04-11T10:06:57-07:00" itemprop="datePublished">Apr 11, 2021
+      </time>• <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">
+          <a href="https://hive.blog/@mahdiyari">mahdiyari</a>
+        </span></span></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <div id="content-mahdiyari-making-a-decentralized-game-on-hive-part-5"><center>![game-pixabay.jpg](https://images.hive.blog/DQmSeL2wLvGPWHqcLVX4ZtfhqidWhj4GVNiVDC2LsHX6jNX/game-4648923_1280.jpg)</center>
+Games are fun and most people like to play different kinds of games. I'm not sure about the game we are building. Whether it be fun or not, the purpose of this project is the tutorial. To have a step-by-step guide that developers can use as a reference in building apps on Hive.
+
+Check out previous posts:
+
+***
+#### Building the transactions
+We will build the back-end for the front-end that we built in the previous post. All goes into `js/app.js`.
+```
+const random = (length = 20) =&gt; {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+  let str = ''
+  for (let i = 0; i &lt; length; i++) {
+    str += chars.charAt(Math.floor(Math.random() * chars.length))
+  }
+  return str
+}
+```
+A simple function to generate a random string. We will use the random string for the game_id.
+***
+```
+const createGame = async () =&gt; {
+  const button = document.getElementById('create-game-btn')
+  button.setAttribute('disabled', 'true')
+  const errorOutput = document.getElementById('create-game-error')
+  const successOutput = document.getElementById('create-game-success')
+  errorOutput.innerHTML = ''
+  successOutput.innerHTML = ''
+  try {
+    const game = {
+      app: 'tictactoe/0.0.1',
+      action: 'create_game',
+      id: random(20),
+      starting_player: document.getElementById('starting-player').value
+    }
+    const operations = [
+      [
+        'custom_json',
+        {
+          required_auths: [],
+          required_posting_auths: [userData.username],
+          id: 'tictactoe',
+          json: JSON.stringify(game)
+        }
+      ]
+    ]
+    const tx = new hiveTx.Transaction()
+    await tx.create(operations)
+    const privateKey = hiveTx.PrivateKey.from(userData.key)
+    tx.sign(privateKey)
+    const result = await tx.broadcast()
+    if (result &amp;&amp; result.result &amp;&amp; result.result.block_num) {
+      successOutput.innerHTML =
+        'Success! <a href="link to game">Click to see</a>'
+    } else {
+      errorOutput.innerHTML =
+        'Error! Check console for details. Press Ctrl+Shift+J'
+      console.error(result)
+    }
+  } catch (e) {
+    errorOutput.innerHTML =
+      'Error! Check console for details. Press Ctrl+Shift+J'
+    console.error(e)
+  }
+  button.removeAttribute('disabled')
+}
+```
+We create the transaction by using the [hive-tx](https://www.npmjs.com/package/hive-tx) library then sign and broadcast it. We put the game link in the success message and show it to the user.
+
+Now users can create the game and see the list of games. We create the `game.html` page for users to play the game.
+***
+#### Game page
+We can add the game board, moves history, and the game stats like the winner, player1, and player2. I think we can make this page accessible by the game_id, like `/game.html?id=game_id_here`. Let's create the easier parts first.
+
+`game.html`: We use the head from `index.html` and the same navbar code.
+```
+&lt;!DOCTYPE html&gt;
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="A decentralized game on hive blockchain" />
+  <title>Tic-Tac-Toe on Hive blockchain</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous" />
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js" integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/hive-tx/dist/hive-tx.min.js"></script>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+
+<body>
+  <nav class="navbar navbar-expand navbar-dark bg-dark">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">Tic-Tac-Toe</a>
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#login-modal" id="login-button">
+            Login
+          </a>
+        <li class="nav-item dropdown" id="logout-menu" style="display: none;">
+          <a class="nav-link dropdown-toggle" href="#" id="username-button" role="button" data-bs-toggle="dropdown" aria-expanded="false"></a>
+          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="username-button">
+            <li><a class="dropdown-item" href="#" onclick="logout()">Logout</a></li>
+          </ul>
+        </li>
+        </li>
+      </ul>
+    </div>
+  </nav>
+  <!-- Login Modal -->
+  <div class="modal fade" id="login-modal" tabindex="-1" aria-labelledby="login-modal-title" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="login-modal-title">Login</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form onsubmit="login(); return false">
+            <div class="mb-3">
+              <label for="username" class="form-label">Username:</label>
+              <div class="input-group mb-3">
+                <span class="input-group-text">@</span>
+                <input type="text" class="form-control" placeholder="username" aria-label="username" id="username" required="" />
+              </div>
+              <div class="form-text">Your Hive username. Lowercase.</div>
+            </div>
+            <div class="mb-3">
+              <label for="posting-key" class="form-label">Posting key:</label>
+              <input type="password" class="form-control" id="posting-key" placeholder="Private posting key" required="" />
+              <div class="form-text">Your key will never leave your browser.</div>
+            </div>
+            <p id="login-error"></p>
+            <button type="submit" class="btn btn-primary" id="login-form-btn">Login</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Modal end -->
+
+  <script src="js/app.js"></script>
+</body>
+
+</html>
+```
+Since we use `app.js` here too, we have to modify 2 lines in `app.js`:
+```
+// Run the script only in homepage
+if (!window.location.pathname.match(/game.html$/)) {
+  loadTheGames()
+  setInterval(() =&gt; loadTheGames(), 5000)
+}
+```
+In the above code, we can define which scripts to run on the homepage and which run on the game page.
+
+We need an API for retrieving the game details by game_id. Let's set that up in the back-end.
+`api/game.js`:
+```
+const mysql = require('../helpers/mysql')
+const express = require('express')
+const router = express.Router()
+
+router.get('/game/:id', async (req, res) =&gt; {
+  try {
+    const id = req.params.id
+    if (!id || id.length !== 20 || !id.match(/^[a-zA-Z0-9]+$/)) {
+      return res.json({
+        id: 0,
+        error: 'Wrong id.'
+      })
+    }
+    const game = await mysql.query(
+      'SELECT `game_id`, `player1`, `player2`, `starting_player`, `status`, `winner` FROM `games`' +
+        'WHERE `game_id`=?',
+      [id]
+    )
+    if (!game || !Array.isArray(game) || game.length &lt; 1) {
+      return res.json({
+        id: 1,
+        game: []
+      })
+    }
+    return res.json({
+      id: 1,
+      game
+    })
+  } catch (e) {
+    return res.json({
+      id: 0,
+      error: 'Unexpected error.'
+    })
+  }
+})
+
+module.exports = router
+```
+The above code is similar to the other APIs we set up. Nothing new here. Now we can show the game details on the game.html page.
+
+```
+const getGameDetails = async (id) =&gt; {
+  const data = await APICall('/game/' + id)
+  if (data &amp;&amp; data.id === 0) {
+    document.getElementById('details-error').innerHTML = data.error
+  } else if (data &amp;&amp; data.id === 1) {
+    const game = data.game[0]
+    document.getElementById('game-details').innerHTML = `<tr>
+    <td>${game.player1}</td>
+    <td>${game.player2}</td>
+    <td>${game.starting_player}</td>
+    <td>${game.status}</td>
+    <td>${game.winner}</td>
+    </tr>`
+    if (game.player1 === userData.username) {
+      document.getElementById('req-message-1').style.display = 'block'
+      document.getElementById('req-message-2').style.display = 'none'
+    }
+  }
+}
+```
+And running the above function:
+```
+const queryString = window.location.search
+const urlParams = new URLSearchParams(queryString)
+
+// Run the script only in homepage
+if (!window.location.pathname.match(/game.html$/)) {
+  loadTheGames()
+  setInterval(() =&gt; loadTheGames(), 5000)
+} else {
+  // Run the script only in game page
+  if (urlParams.has('id')) {
+    getGameDetails(urlParams.get('id'))
+  }
+}
+```
+We get the `id` from the page URL and use it in the API call. Then display the data in an HTML table.
+```
+<table class="table">
+  <thead>
+    <tr>
+      <th>Player1</th>
+      <th>Player2</th>
+      <th>Starting player</th>
+      <th>Status</th>
+      <th>Winner</th>
+    </tr>
+  </thead>
+  <tbody id="game-details">
+  </tbody>
+</table>
+```
+***
+We can get the join requests from API and show them beside the game so player1 can accept one of the coming requests and start the game.
+A simple HTML table:
+```
+<table class="table">
+  <thead>
+    <tr>
+      <th>Player</th>
+      <th>Status</th>
+      <th>Action</th>
+    </tr>
+  </thead>
+  <tbody id="request-list"></tbody>
+</table>
+```
+And the API call:
+```
+const getRequests = async (id, creator = false) =&gt; {
+  const data = await APICall('/requests/' + id)
+  if (data &amp;&amp; data.id === 0) {
+    document.getElementById('requests-error').innerHTML = data.error
+  } else if (data &amp;&amp; data.id === 1) {
+    let temp = ''
+    for (let i = 0; i &lt; data.requests.length; i++) {
+      const request = data.requests[i]
+      temp += `<tr>
+        <td>${request.player}</td>
+        <td>${request.status}</td>`
+      if (creator) {
+        // Add an Accept button if the visitor is player1 (creator)
+        temp += `<td>
+          <button class="btn btn-primary" onclick="acceptRequest(${id}, ${request.player})">
+            Accept
+          </button>
+        </td>`
+      } else {
+        temp += '<td>---</td>'
+      }
+      temp += '</tr>'
+    }
+    if (data.requests.length &lt; 1) {
+      temp = 'None'
+    }
+    document.getElementById('request-list').innerHTML = temp
+  }
+}
+```
+We can call the `getRequests` function inside the `getGameDetails` function because we can know when the user (visitor) is the creator of the game aka player1. Then show them an `Accept` button based on that so the player1 can accept the request.
+```
+const getGameDetails = async (id) =&gt; {
+  ... // skipped unchanged lines
+    if (game.player1 === userData.username) {
+      document.getElementById('req-message-1').style.display = 'block'
+      document.getElementById('req-message-2').style.display = 'none'
+      getRequests(id, true)
+    } else {
+      getRequests(id, false)
+    }
+  }
+}
+```
+
+Also, let's make both functions run with an interval to auto-update the data.
+```
+// Run the script only in homepage
+if (!window.location.pathname.match(/game.html$/)) {
+  loadTheGames()
+  setInterval(() =&gt; loadTheGames(), 5000)
+} else {
+  // Run the script only in game page
+  if (urlParams.has('id')) {
+    getGameDetails(urlParams.get('id'))
+    setInterval(() =&gt; getGameDetails(urlParams.get('id')), 5000)
+  }
+}
+```
+***
+We added the `accept` button so let's add its function and transaction too.
+```
+const acceptRequest = async (id, player) =&gt; {
+  const success = document.getElementById('requests-success')
+  const error = document.getElementById('requests-error')
+  if (!userData.username) {
+    return
+  }
+  try {
+    const accept = {
+      app: 'tictactoe/0.0.1',
+      action: 'accept_request',
+      id,
+      player
+    }
+    const operations = [
+      [
+        'custom_json',
+        {
+          required_auths: [],
+          required_posting_auths: [userData.username],
+          id: 'tictactoe',
+          json: JSON.stringify(accept)
+        }
+      ]
+    ]
+    const tx = new hiveTx.Transaction()
+    await tx.create(operations)
+    const privateKey = hiveTx.PrivateKey.from(userData.key)
+    tx.sign(privateKey)
+    const result = await tx.broadcast()
+    if (result &amp;&amp; result.result &amp;&amp; result.result.block_num) {
+      success.innerHTML = 'Success! Game started.'
+    } else {
+      error.innerHTML = 'Error! Check console for details. Press Ctrl+Shift+J'
+      console.error(result)
+    }
+  } catch (e) {
+    error.innerHTML = 'Error! Check console for details. Press Ctrl+Shift+J'
+    console.error(e)
+  }
+}
+```
+***
+Now let's add a button for other users to join the game.
+```
+<button id="join-btn" class="btn btn-primary" onclick="joinGame()">Join the game</button>
+```
+And build the transaction for it:
+```
+const joinGame = async (gameId) =&gt; {
+  const success = document.getElementById('join-success')
+  const error = document.getElementById('join-error')
+  if (!urlParams.has('id')) {
+    return
+  }
+  const id = urlParams.get('id')
+  try {
+    const joinReq = {
+      app: 'tictactoe/0.0.1',
+      action: 'request_join',
+      id
+    }
+    const operations = [
+      [
+        'custom_json',
+        {
+          required_auths: [],
+          required_posting_auths: [userData.username],
+          id: 'tictactoe',
+          json: JSON.stringify(joinReq)
+        }
+      ]
+    ]
+    const tx = new hiveTx.Transaction()
+    await tx.create(operations)
+    const privateKey = hiveTx.PrivateKey.from(userData.key)
+    tx.sign(privateKey)
+    const result = await tx.broadcast()
+    if (result &amp;&amp; result.result &amp;&amp; result.result.block_num) {
+      success.innerHTML = 'Success! Your request submitted.'
+    } else {
+      error.innerHTML = 'Error! Check console for details. Press Ctrl+Shift+J'
+      console.error(result)
+    }
+  } catch (e) {
+    error.innerHTML = 'Error! Check console for details. Press Ctrl+Shift+J'
+    console.error(e)
+  }
+}
+```
+***
+## Next part
+We finally finished most of the functions needed for starting the game. I think the only remaining challenge is the gameplay. We can use Canvas for the front-end graphical gameplay. I already built a project with Canvas but there is nothing easy about coding. It's still a challenge.
+
+Let me list the remaining tasks:
+- Gameplay front-end
+- Gameplay back-end
+- resync method for the database
+- Front-end polishing
+
+We are getting to the end of this project and I think we can finish it in the next post and finally play this boring game at least once.
+
+Making tutorials and coding at the same time is really hard and tiring. I might continue writing this kind of series for different projects if there is enough interest but the target audience is too small. So let me know in the comments what you think.
+
+I wouldn't mind building an interesting app or game which can be some kind of tutorial too.
+
+TBH after writing the above line I wanted to remove it. Let's see what happens.
+
+Thanks for reading. Make sure to follow me and share the post. Upvote if you like and leave a comment.
+
+
+Enjoy the cat.
+<center>![cat-pixabay.jpg](https://images.hive.blog/DQmSnpWeu5yxjzddzEavE4c61BkweaXrEJepuv4LHyMKpg1/cat-4611189_1280.jpg)
+</center>
+<sub>Images source: pixabay.com</sub>
+***
+[GitLab](https://gitlab.com/mahdiyari/decentralized-game-on-hive)
+[Part 1](https://hive.blog/hive-139531/@mahdiyari/making-a-decentralized-game-on-hive-tic-tac-toe-part-1)
+[Part 2](https://hive.blog/hive-139531/@mahdiyari/making-a-decentralized-game-on-hive-part-2)
+[Part 3](https://hive.blog/hive-139531/@mahdiyari/making-a-decentralized-game-on-hive-part-3)
+[Part 4](https://hive.blog/hive-169321/@mahdiyari/making-a-decentralized-game-on-hive-part-4)
+***
+**Vote for my witness:**
+- https://wallet.hive.blog/~witnesses
+- https://peakd.com/witnesses
+- https://ecency.com/witnesses</div>
+<script crossorigin="anonymous" integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=" src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+
+<script src="https://unpkg.com/steem-content-renderer"></script>
+
+<script>
+  $(document).ready(function() {
+    try {
+      const renderer = new SteemContentRenderer.DefaultRenderer({
+        baseUrl: "https://hive.blog/",
+        breaks: true,
+        skipSanitization: false,
+        allowInsecureScriptTags: false,
+        addNofollowToLinks: true,
+        doNotShowImages: false,
+        ipfsPrefix: "",
+        assetsWidth: 640,
+        assetsHeight: 480,
+        imageProxyFn: (url) => url,
+        usertagUrlFn: (account) => "/@mahdiyari",
+        hashtagUrlFn: (hashtag) => "/making-a-decentralized-game-on-hive-part-5",
+        isLinkSafeFn: (url) => true,
+      });
+      
+      const inputElem = $('#content-mahdiyari-making-a-decentralized-game-on-hive-part-5').html();
+      const outputElem = $('#content-mahdiyari-making-a-decentralized-game-on-hive-part-5');
+      const output = renderer.render(inputElem);
+      
+      outputElem.html(output);
+    } catch(e) {
+      console.log(e);
+    }
+  });
+</script>
+
+<style>
+  #content-mahdiyari-making-a-decentralized-game-on-hive-part-5 {
+    padding: 0 3rem;
+    color: #444444;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.8;
+    text-shadow: 0 1px 0 #ffffff;
+    padding: 0.5rem;
+  }
+  #content-mahdiyari-making-a-decentralized-game-on-hive-part-5 code {
+    background: white;
+  }
+  #content-mahdiyari-making-a-decentralized-game-on-hive-part-5 a {
+    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
+  }
+  #content-mahdiyari-making-a-decentralized-game-on-hive-part-5 a:hover {
+    border-bottom: 0;
+  }
+  #content-mahdiyari-making-a-decentralized-game-on-hive-part-5 h1 {
+    font-size: 2.2em;
+  }
+  #content-mahdiyari-making-a-decentralized-game-on-hive-part-5 h2, h3, h4, h5 {
+    margin-bottom: 0;
+  }
+  #content-mahdiyari-making-a-decentralized-game-on-hive-part-5 header small {
+    color: #999;
+    font-size: 50%;
+  }
+  #content-mahdiyari-making-a-decentralized-game-on-hive-part-5 img {
+    max-width: 100%;
+  }
+</style>
+
+<hr />
+
+<p>
+  See: <a href="https://hive.blog/hive-169321/@mahdiyari/making-a-decentralized-game-on-hive-part-5">Making a Decentralized Game on Hive - Part 5</a>
+  by
+  <a href="https://hive.blog/@mahdiyari">@mahdiyari</a>
+</p>
+
+
+  </div><a class="u-url" href="/howto/nodejs/2021/04/11/making-a-decentralized-game-on-hive-part-5.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading"><a rel="author" href="/">Hive Chain Documentation</a></h2>
+    
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">site curated by: @inertia</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>Your resource for various levels of Hive Documentation.</p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+</body>
+
+</html>
