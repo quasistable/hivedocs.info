@@ -1,4 +1,173 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="https://hivedocs.info/feed.xml" rel="self" type="application/atom+xml" /><link href="https://hivedocs.info/" rel="alternate" type="text/html" /><updated>2021-04-11T11:33:16-07:00</updated><id>https://hivedocs.info/feed.xml</id><title type="html">Hive Chain Documentation</title><subtitle>Your resource for various levels of Hive Documentation.</subtitle><author><name>site curated by: @inertia</name></author><entry><title type="html">Making a Decentralized Game on Hive - Part 5</title><link href="https://hivedocs.info/howto/nodejs/2021/04/11/making-a-decentralized-game-on-hive-part-5.html" rel="alternate" type="text/html" title="Making a Decentralized Game on Hive - Part 5" /><published>2021-04-11T10:06:57-07:00</published><updated>2021-04-11T10:06:57-07:00</updated><id>https://hivedocs.info/howto/nodejs/2021/04/11/making-a-decentralized-game-on-hive-part-5</id><content type="html" xml:base="https://hivedocs.info/howto/nodejs/2021/04/11/making-a-decentralized-game-on-hive-part-5.html">&lt;div id=&quot;content-mahdiyari-making-a-decentralized-game-on-hive-part-5&quot;&gt;&lt;center&gt;![game-pixabay.jpg](https://images.hive.blog/DQmSeL2wLvGPWHqcLVX4ZtfhqidWhj4GVNiVDC2LsHX6jNX/game-4648923_1280.jpg)&lt;/center&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="https://hivedocs.info/feed.xml" rel="self" type="application/atom+xml" /><link href="https://hivedocs.info/" rel="alternate" type="text/html" /><updated>2021-04-12T09:03:07-07:00</updated><id>https://hivedocs.info/feed.xml</id><title type="html">Hive Chain Documentation</title><subtitle>Your resource for various levels of Hive Documentation.</subtitle><author><name>site curated by: @inertia</name></author><entry><title type="html">How to setup a Hivemind Dev Environment</title><link href="https://hivedocs.info/howto/hivemind/2021/04/12/how-to-setup-a-hivemind-dev-environment.html" rel="alternate" type="text/html" title="How to setup a Hivemind Dev Environment" /><published>2021-04-12T08:00:30-07:00</published><updated>2021-04-12T08:00:30-07:00</updated><id>https://hivedocs.info/howto/hivemind/2021/04/12/how-to-setup-a-hivemind-dev-environment</id><content type="html" xml:base="https://hivedocs.info/howto/hivemind/2021/04/12/how-to-setup-a-hivemind-dev-environment.html">&lt;div id=&quot;content-deathwing-how-to-setup-a-hivemind-dev-environment&quot;&gt;
+![image.png](https://files.peakd.com/file/peakd-hive/deathwing/23tbMTX77iKs3vk3Z3ST8kik2wiZYMhjovCQnPAJ2rER2tFCQ7jaSJrPkC124YF3Yyhpp.png)
+
+---
+
+#### Preface
+
+This tutorial assumes that you have a server with hived installed and synced. As well as a server capable of running [Hivemind](https://gitlab.syncad.com/hive/hivemind). (preferably Ubuntu 20.04)
+
+If you would like to run a production environment Hivemind, please run a docker container. It is a lot easier to set up and the potential of something going wrong is a lot less than manual setup. (Also recommended)
+
+#### Getting Started
+
+First of all, you would need to install PostgreSQL 12, since that is what we're using for Hivemind at the moment, as well as the main requirements for Hivemind.
+
+`apt install postgresql git python3 python3-dev build-essential libpq-dev libxml2-dev libxslt1-dev libldap2-dev libsasl2-dev libffi-dev`
+
+After the installation is complete, you will need to go into postgres. (This is similar to MySQL -uroot)
+
+`sudo -u postgres psql`
+
+then, create the database user.
+
+`create user hive with password 'hive';`
+
+
+![image.png](https://files.peakd.com/file/peakd-hive/deathwing/23tRxJBSsvGs8kKGcrU1f7twSivSfs2bybmpEHkRHNHKcxhEuQf7g8byrCoxdzoremfnC.png)
+
+Next step, create the database.
+
+`create database hive;`
+
+
+![image.png](https://files.peakd.com/file/peakd-hive/deathwing/23tkjayTiHw8sVBiXwXn72naK4FB3DfoVXehYyHvZa6MTPiMDzmjfEWKRcJM7Sqv7KVak.png)
+
+
+By default, a database is owned by user `postgres` you will need to change this to the user that you will be using for your Hivemind instance, so in this case, `hive`.
+
+`alter database hive owner to hive;`
+
+![image.png](https://files.peakd.com/file/peakd-hive/deathwing/23tkk3PMDiaaspZsH4fWxMfteMsqcmqw1P3uyzrLZTXnBJQ1AsnKpbEcq3KU5Jc8mMrXv.png)
+
+Next, you will need to set up an intarray extension in the database `hive`.
+
+`\c hive`
+`create extension intarray;`
+
+Type `\q` to exit postgres and return to terminal.
+
+The next step is to clone the repository for Hivemind.
+
+Use `git clone https://gitlab.syncad.com/hive/hivemind.git`
+
+Next, `cd` into the hivemind directory and installing prerequisites. (if you'd like to run tests)
+
+`cd hivemind`
+`git submodule update --init --recursive`
+
+Next step is to start building and installing hivemind.
+
+`python3 setup.py build`
+`python3 setup.py install`
+
+
+![image.png](https://files.peakd.com/file/peakd-hive/deathwing/23tRxSJgh4nF3dtPYtJVzn4m6LGzgQ8X4H67gWiX3eS6iqH6zm9B1gZXkjgveEBq3zz6x.png)
+
+After the build has been successfully completed, export the database information and node information.
+
+`export DATABASE_URL=postgresql://hive:hive@localhost:5432/hive` (hive:hive is user:password).
+`export STEEMD_URL='{&quot;default&quot;:&quot;http://apinode:8091&quot;}'`
+
+After everything is set up, you can run Hivemind with `hive sync`.
+
+
+![image.png](https://files.peakd.com/file/peakd-hive/deathwing/EoATUJKgNA7LDETYTfJJtdz53dwoquqYmG2wQpZhjFTThuhPqjVFsg3bWc9TPZrHWrg.png)
+
+![image.png](https://files.peakd.com/file/peakd-hive/deathwing/23tRxSKeYEg9BZPnmwFsbrzwSVWwuFH8W4An6HnM1Qqm4Wsy4RyWNdhuzMWhG1d6Vfpm2.png)
+
+
+
+If your set up was correct and your node is a private, preferably local node, your hivemind instance will start syncing. Just so you know the syncing process can take several days.
+
+To start the server (for incoming calls) you can use `hive server`.
+
+
+![image.png](https://files.peakd.com/file/peakd-hive/deathwing/EoATVNbcYtNqDHp9cACh9dHq3zj8bzUnYD5HvYmqjGj1UeZxr5mPQkkJrPNpKh1ufJL.png)
+&lt;sub&gt;As this is a test instance, it is not fully synced. So a fully synced hivemind will look different, especially *database_head_block* :)&lt;/sub&gt;
+
+#### The End
+
+Please don't forget that this is not recommended for use in production environments, please use Docker in that scenario.
+
+Also, if this helped you and you have an extra witness vote, I'd like to remind you that I am a witness! You are more than welcome to vote for my witness [here](https://peakd.com/me/witnesses).
+
+&lt;/div&gt;
+&lt;script crossorigin=&quot;anonymous&quot; integrity=&quot;sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=&quot; src=&quot;https://code.jquery.com/jquery-3.5.1.slim.min.js&quot;&gt;&lt;/script&gt;
+
+&lt;script src=&quot;https://unpkg.com/steem-content-renderer&quot;&gt;&lt;/script&gt;
+
+&lt;script&gt;
+  $(document).ready(function() {
+    try {
+      const renderer = new SteemContentRenderer.DefaultRenderer({
+        baseUrl: &quot;https://hive.blog/&quot;,
+        breaks: true,
+        skipSanitization: false,
+        allowInsecureScriptTags: false,
+        addNofollowToLinks: true,
+        doNotShowImages: false,
+        ipfsPrefix: &quot;&quot;,
+        assetsWidth: 640,
+        assetsHeight: 480,
+        imageProxyFn: (url) =&gt; url,
+        usertagUrlFn: (account) =&gt; &quot;/@deathwing&quot;,
+        hashtagUrlFn: (hashtag) =&gt; &quot;/how-to-setup-a-hivemind-dev-environment&quot;,
+        isLinkSafeFn: (url) =&gt; true,
+      });
+      
+      const inputElem = $('#content-deathwing-how-to-setup-a-hivemind-dev-environment').html();
+      const outputElem = $('#content-deathwing-how-to-setup-a-hivemind-dev-environment');
+      const output = renderer.render(inputElem);
+      
+      outputElem.html(output);
+    } catch(e) {
+      console.log(e);
+    }
+  });
+&lt;/script&gt;
+
+&lt;style&gt;
+  #content-deathwing-how-to-setup-a-hivemind-dev-environment {
+    padding: 0 3rem;
+    color: #444444;
+    font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.8;
+    text-shadow: 0 1px 0 #ffffff;
+    padding: 0.5rem;
+  }
+  #content-deathwing-how-to-setup-a-hivemind-dev-environment code {
+    background: white;
+  }
+  #content-deathwing-how-to-setup-a-hivemind-dev-environment a {
+    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
+  }
+  #content-deathwing-how-to-setup-a-hivemind-dev-environment a:hover {
+    border-bottom: 0;
+  }
+  #content-deathwing-how-to-setup-a-hivemind-dev-environment h1 {
+    font-size: 2.2em;
+  }
+  #content-deathwing-how-to-setup-a-hivemind-dev-environment h2, h3, h4, h5 {
+    margin-bottom: 0;
+  }
+  #content-deathwing-how-to-setup-a-hivemind-dev-environment header small {
+    color: #999;
+    font-size: 50%;
+  }
+  #content-deathwing-how-to-setup-a-hivemind-dev-environment img {
+    max-width: 100%;
+  }
+&lt;/style&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;
+  See: &lt;a href=&quot;https://peakd.com/hive-139531/@deathwing/how-to-setup-a-hivemind-dev-environment&quot;&gt;How to setup a Hivemind Dev Environment&lt;/a&gt;
+  by
+  &lt;a href=&quot;https://hive.blog/@deathwing&quot;&gt;@deathwing&lt;/a&gt;
+&lt;/p&gt;</content><author><name>deathwing</name></author><category term="howto" /><category term="hivemind" /><summary type="html">![image.png](https://files.peakd.com/file/peakd-hive/deathwing/23tbMTX77iKs3vk3Z3ST8kik2wiZYMhjovCQnPAJ2rER2tFCQ7jaSJrPkC124YF3Yyhpp.png) --- #### Preface This tutorial assumes that you have a server with hived installed and synced. As well as a server capable of running [Hivemind](https://gitlab.syncad.com/hive/hivemind). (preferably Ubuntu 20.04) If you would like to run a production environment Hivemind, please run a docker container. It is a lot easier to set up and the potential of something going wrong is a lot less than manual setup. (Also recommended) #### Getting Started First of all, you would need to install PostgreSQL 12, since that is what we're using for Hivemind at the moment, as well as the main requirements for Hivemind. `apt install postgresql git python3 python3-dev build-essential libpq-dev libxml2-dev libxslt1-dev libldap2-dev libsasl2-dev libffi-dev` After the installation is complete, you will need to go into postgres. (This is similar to MySQL -uroot) `sudo -u postgres psql` then, create the database user. `create user hive with password 'hive';` ![image.png](https://files.peakd.com/file/peakd-hive/deathwing/23tRxJBSsvGs8kKGcrU1f7twSivSfs2bybmpEHkRHNHKcxhEuQf7g8byrCoxdzoremfnC.png) Next step, create the database. `create database hive;` ![image.png](https://files.peakd.com/file/peakd-hive/deathwing/23tkjayTiHw8sVBiXwXn72naK4FB3DfoVXehYyHvZa6MTPiMDzmjfEWKRcJM7Sqv7KVak.png) By default, a database is owned by user `postgres` you will need to change this to the user that you will be using for your Hivemind instance, so in this case, `hive`. `alter database hive owner to hive;` ![image.png](https://files.peakd.com/file/peakd-hive/deathwing/23tkk3PMDiaaspZsH4fWxMfteMsqcmqw1P3uyzrLZTXnBJQ1AsnKpbEcq3KU5Jc8mMrXv.png) Next, you will need to set up an intarray extension in the database `hive`. `\c hive` `create extension intarray;` Type `\q` to exit postgres and return to terminal. The next step is to clone the repository for Hivemind. Use `git clone https://gitlab.syncad.com/hive/hivemind.git` Next, `cd` into the hivemind directory and installing prerequisites. (if you'd like to run tests) `cd hivemind` `git submodule update --init --recursive` Next step is to start building and installing hivemind. `python3 setup.py build` `python3 setup.py install` ![image.png](https://files.peakd.com/file/peakd-hive/deathwing/23tRxSJgh4nF3dtPYtJVzn4m6LGzgQ8X4H67gWiX3eS6iqH6zm9B1gZXkjgveEBq3zz6x.png) After the build has been successfully completed, export the database information and node information. `export DATABASE_URL=postgresql://hive:hive@localhost:5432/hive` (hive:hive is user:password). `export STEEMD_URL='{&quot;default&quot;:&quot;http://apinode:8091&quot;}'` After everything is set up, you can run Hivemind with `hive sync`. ![image.png](https://files.peakd.com/file/peakd-hive/deathwing/EoATUJKgNA7LDETYTfJJtdz53dwoquqYmG2wQpZhjFTThuhPqjVFsg3bWc9TPZrHWrg.png) ![image.png](https://files.peakd.com/file/peakd-hive/deathwing/23tRxSKeYEg9BZPnmwFsbrzwSVWwuFH8W4An6HnM1Qqm4Wsy4RyWNdhuzMWhG1d6Vfpm2.png) If your set up was correct and your node is a private, preferably local node, your hivemind instance will start syncing. Just so you know the syncing process can take several days. To start the server (for incoming calls) you can use `hive server`. ![image.png](https://files.peakd.com/file/peakd-hive/deathwing/EoATVNbcYtNqDHp9cACh9dHq3zj8bzUnYD5HvYmqjGj1UeZxr5mPQkkJrPNpKh1ufJL.png) As this is a test instance, it is not fully synced. So a fully synced hivemind will look different, especially *database_head_block* :) #### The End Please don't forget that this is not recommended for use in production environments, please use Docker in that scenario. Also, if this helped you and you have an extra witness vote, I'd like to remind you that I am a witness! You are more than welcome to vote for my witness [here](https://peakd.com/me/witnesses). See: How to setup a Hivemind Dev Environment by @deathwing</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://files.peakd.com/file/peakd-hive/deathwing/23tbMTX77iKs3vk3Z3ST8kik2wiZYMhjovCQnPAJ2rER2tFCQ7jaSJrPkC124YF3Yyhpp.png" /><media:content medium="image" url="https://files.peakd.com/file/peakd-hive/deathwing/23tbMTX77iKs3vk3Z3ST8kik2wiZYMhjovCQnPAJ2rER2tFCQ7jaSJrPkC124YF3Yyhpp.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Making a Decentralized Game on Hive - Part 5</title><link href="https://hivedocs.info/howto/nodejs/2021/04/11/making-a-decentralized-game-on-hive-part-5.html" rel="alternate" type="text/html" title="Making a Decentralized Game on Hive - Part 5" /><published>2021-04-11T10:06:57-07:00</published><updated>2021-04-11T10:06:57-07:00</updated><id>https://hivedocs.info/howto/nodejs/2021/04/11/making-a-decentralized-game-on-hive-part-5</id><content type="html" xml:base="https://hivedocs.info/howto/nodejs/2021/04/11/making-a-decentralized-game-on-hive-part-5.html">&lt;div id=&quot;content-mahdiyari-making-a-decentralized-game-on-hive-part-5&quot;&gt;&lt;center&gt;![game-pixabay.jpg](https://images.hive.blog/DQmSeL2wLvGPWHqcLVX4ZtfhqidWhj4GVNiVDC2LsHX6jNX/game-4648923_1280.jpg)&lt;/center&gt;
 Games are fun and most people like to play different kinds of games. I'm not sure about the game we are building. Whether it be fun or not, the purpose of this project is the tutorial. To have a step-by-step guide that developers can use as a reference in building apps on Hive.
 
 Check out previous posts:
@@ -2615,176 +2784,4 @@ Also see: https://peakd.com/proposals/inertia&lt;/div&gt;
   See: &lt;a href=&quot;https://peakd.com/hive-139531/@inertia/devportal-python-tutorial-review-complete&quot;&gt;Devportal Python Tutorial Review Complete&lt;/a&gt;
   by
   &lt;a href=&quot;https://hive.blog/@inertia&quot;&gt;@inertia&lt;/a&gt;
-&lt;/p&gt;</content><author><name>inertia</name></author><category term="howto" /><category term="beem" /><category term="python" /><summary type="html">Prior to this merge, the bulk of my work was on [the javascript tutorials](https://peakd.com/hive/@inertia/hive-developer-portal-update-language-tutorials-et-al). After my proposal got funded, I was able to [dig deep into the API Definitions and begin the python tutorials](https://peakd.com/hive-139531/@inertia/hive-devportal-update-sdk-references-python-tutorials). For this merge, I've continued to spend the last few weeks on the python tutorials. There are 30+ tutorials ranging from how to vote to account recovery. Most of them were written with the previous chain in mind. As such, they all used the previous chain's &quot;official&quot; python library. Now, they all use [beem](http://beem.readthedocs.io/) instead, because beem rocks. Anyway, here are all the newly audited python tutorials: http://developers-staging.hive.io/tutorials/#tutorials-python Related merge: https://gitlab.syncad.com/hive/devportal/-/merge_requests/66 This update also tracks the new Bridge API changes (Hivemind/Communities), [thanks to the information provided by openapi](https://peakd.com/openapi/@inertia/questions-about-hivemind-api-documentation). --- One of the python tutorials I'm particularly proud of is the one about delegations: https://developers.hive.io/tutorials-python/delegate_power.html Before my changes, it was technically correct, which I admit is [the best kind of correct](https://www.youtube.com/watch?v=hou0lU8WMgo). But in addition, I wanted to clarify in the tutorial, and in code examples, that it's best to present HIVE Power to the end-user, not VESTS. While it's fine to write scripts that deal in VESTS, most people never encounter them. Not only that, but the amount of HIVE Power vs. VESTS always changes. Like, right now, at the time of writing, 527.344 HIVE Power is worth 1,000,000 VESTS. That's not a very intuitive conversion, especially since it changes continuously. So I added steps to present VESTS as HIVE Power and capture HIVE Power inputs and turn them back to VESTS, since the blockchain wants to deal in VESTS. That's just an example of the kinds of principles and best practices I want to enforce in the devportal, as much as possible. I wrote 20 short programs in Python yesterday. It was wonderful. Perl, I'm leaving you. Next, I'll do the same review audit for the ruby tutorials, but somehow I don't think that will take as long. --- If you'd like to vote for my current proposal: [https://hivesigner.com/sign/update-proposal-votes?proposal_ids=[151]&amp;amp;approve=true](https://hivesigner.com/sign/update-proposal-votes?proposal_ids=[151]&amp;amp;approve=true) Also see: https://peakd.com/proposals/inertia See: Devportal Python Tutorial Review Complete by @inertia</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://developers.hive.io/images/sticker.png" /><media:content medium="image" url="https://developers.hive.io/images/sticker.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Hive Account Recovery - Major update and new User Interface</title><link href="https://hivedocs.info/tools/2021/03/16/hive-account-recovery-major-update-and-new-user-interface.html" rel="alternate" type="text/html" title="Hive Account Recovery - Major update and new User Interface" /><published>2021-03-16T15:26:24-07:00</published><updated>2021-03-16T15:26:24-07:00</updated><id>https://hivedocs.info/tools/2021/03/16/hive-account-recovery-major-update-and-new-user-interface</id><content type="html" xml:base="https://hivedocs.info/tools/2021/03/16/hive-account-recovery-major-update-and-new-user-interface.html">&lt;div id=&quot;content-arcange-hive-account-recovery-major-update-and-new-user-interface&quot;&gt;&lt;center&gt;![](https://i.imgur.com/bVz67Yj.png)&lt;/center&gt;
-
-Last week, I deployed an [update to the Hive Recovery service](/hive-139531/@arcange/hive-account-recovery-update). Hive Recovery is a service that runs continuously and on its own to help you secure and recover your account if it were to be compromised.
-
-The latest wave of phishing currently raging and the growing number of accounts that have been hacked recently make the recovery process more than topical.
-
-I recently had to provide assistance to users who wanted to change their recovery account. It allowed me to realize how the recovery procedure can seem complex for some. On the other hand, it's always a good thing to review your basics, the things that you (think you) have mastered and that seem obvious to you but not to others.
-
-This previous update allowed me to dive back into the code and the associated process of recovering accounts and I realized that I was not fully satisfied with the proposed solution and that it could still be greatly improved, mainly at the user interface level. It also needed better edge cases and error handling and better feedback to users.
-
-Therefore, I decided to go back to the drawing board and redesign it to transform what may seem complex for users to achieve into something simple and intuitive.
-
-### Introducing Hive Recovery v2.0
-
-The new [**Hive Recovery web page**](https://tools.hivechain.app/recovery) has been radically simplified and now clearly reflects the 3 steps associated with the Hive account recovery process:
-
-![](https://i.imgur.com/im6VOdS.png)
-
-1. You set @hive.recovery as your trusted account recovery partner.
-2. Should your account be compromised, you request @hive.recovery to initiate the recovery process
-3. Once @hive.recovery has done so, you confirm and finalize the process.
-
-I will not provide you here with all the details regarding the use of this brand new recovery UI. It is available in the updated [Hive Recovery User Guide](/hive/@hive.recovery/userguide). Better to avoid turning this post into a wall of text and pictures. Anyway, here are a few screenshots of the new user interface.
-
-### A quick overview of the recovery process
-
-**Navigate to https://tools.hivechain.app/recovery**
-
-The first thing to do is to enter your username (without the @) and hit enter or click on the account check button. If the account name is valid, the change recovery account button will light up and allow you to click on it.
-
-![](https://i.imgur.com/ZTyY1Z0.png)
-
-&amp;gt; **Note:** If you have already set @hive.recovery as your recovery account, the button will turn green. You can go to the next step or perform this step again if you want to change your recovery settings.
-
-#### 1. Changing your recovery account
-
-After clicking on the &quot;Change Recovery Account&quot; button, the following form will be displayed:
-
-![](https://i.imgur.com/HUi2s0H.png)
-
-Refer to the [Hive Recovery User Guide](/hive/@hive.recovery/userguide) for more information on how to fill the form and perform this step.
-
-Once you have completed the first step, you will have to wait for 30 days before @hive.recovery actually becomes your recovery account. 
-
-![](https://i.imgur.com/dZubbxc.png)
-
-#### 2. Requesting for your recovery account
-
-Should your account be compromised, head back to the [Hive Recovery website](https://tools.hivechain.app/recovery) and request @hive.recovery to initiate the recovery process. After validating your username, the first button should have turned to green (meaning @hive.recovery is now your recovery account) and the Request Recovery button should the page should be enabled
-
-![](https://i.imgur.com/94vb8CG.png)
-![](https://i.imgur.com/dYxb0iP.png)
-
-Once again, refer to the [Hive Recovery User Guide](/hive/@hive.recovery/userguide) for more information on how to fill the form and what will happen when you perform this step.
-
-@hive.recovery will initiate the recovery process. If all of the information you provided is correct, it should automatically take place within a few minutes.
-
-![](https://i.imgur.com/OyRRJTY.png)
-
-You now then have 24 hours to confirm the recovery of your account.
-
-#### 3. Confirming the recovery of your account.
-
-This is the very last step. You are now in control to finalize the recovery process
-
-![](https://i.imgur.com/jIAKOCW.png)
-
-After entering the required information and clicking on the confirmation button, the page will send a recovery confirmation to the blockchain, update your account keys and confirm that everything has gone well.
-
-![](https://i.imgur.com/PQGSGu6.png)
-
-Hooray, you are done and you have recovered your account!
-
-### Please read the guide!
-
-Check out the [Hive Recovery User Guide](/hive/@hive.recovery/userguide) for a complete and detailed description of the entire account recovery process.
-
-The [Hive Recovery User Guide](/hive/@hive.recovery/userguide) also covers any questions you might have about security, privacy and how trusted it can be.
-
-### Check your Recovery Account before it's too late
-
-As mentioned at the beginning of this post, I have been led on several occasions to assist users who have their accounts hacked and who wanted to recover them.
-
-Unfortunately, some of them still had @steem as their recovery account or had chosen an account that is no longer active or that does not respond to their request. What a pity that we can no longer help them
-
-Therefore, check your recovery account and change it if the current one is inappropriate.
-
-It's been a lot of work to create and improve this service and make the recovery process as easy as possible for all non-tech-savvy users. It would be a shame not to take advantage of it.
-
-Take care of your account!
-
-## &lt;center&gt;https://tools.hivechain.app/recovery&lt;/center&gt;
----
-&lt;center&gt;
-
-### Check out my apps and services
-&lt;a href=&quot;/hive/@hive.engage/stay-connected-with-your-hive-audience-and-catch-attention&quot;&gt;&lt;img src=&quot;https://i.imgur.com/GiNJqlm.png&quot; /&gt;&lt;/a&gt;&lt;a href=&quot;/@hivebuzz&quot;&gt;&lt;img src=&quot;https://i.imgur.com/B4UTun2.png&quot; /&gt;&lt;/a&gt;&lt;a href=&quot;/@hivesql&quot;&gt;&lt;img src=&quot;https://i.imgur.com/EPN8RW6.png&quot; /&gt;&lt;/a&gt;&lt;a href=&quot;/hive/@arcange/introducing-hive-account-recovery&quot;&gt;&lt;img src=&quot;https://i.imgur.com/6TWeW7V.png&quot; /&gt;&lt;/a&gt;&lt;a href=&quot;/@hive.autoclaim&quot;&gt;&lt;img src=&quot;https://i.imgur.com/ih2pEOw.png&quot; /&gt;&lt;/a&gt;&lt;/center&gt;
-&lt;center&gt;
-
-### [Vote for me as a witness ![](https://i.imgur.com/2bi4SnT.png)](https://hivesigner.com/sign/account-witness-vote?witness=arcange&amp;amp;approve=1)&amp;lt;/div&amp;gt;
-&lt;script crossorigin=&quot;anonymous&quot; integrity=&quot;sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=&quot; src=&quot;https://code.jquery.com/jquery-3.5.1.slim.min.js&quot;&gt;&lt;/script&gt;
-&lt;script src=&quot;https://unpkg.com/steem-content-renderer&quot;&gt;&lt;/script&gt;
-&lt;script&gt;
-  $(document).ready(function() {
-    try {
-      const renderer = new SteemContentRenderer.DefaultRenderer({
-        baseUrl: &quot;https://hive.blog/&quot;,
-        breaks: true,
-        skipSanitization: false,
-        allowInsecureScriptTags: false,
-        addNofollowToLinks: true,
-        doNotShowImages: false,
-        ipfsPrefix: &quot;&quot;,
-        assetsWidth: 640,
-        assetsHeight: 480,
-        imageProxyFn: (url) =&gt; url,
-        usertagUrlFn: (account) =&gt; &quot;/@arcange&quot;,
-        hashtagUrlFn: (hashtag) =&gt; &quot;/hive-account-recovery-major-update-and-new-user-interface&quot;,
-        isLinkSafeFn: (url) =&gt; true,
-      });
-      
-      const inputElem = $('#content-arcange-hive-account-recovery-major-update-and-new-user-interface').html();
-      const outputElem = $('#content-arcange-hive-account-recovery-major-update-and-new-user-interface');
-      const output = renderer.render(inputElem);
-      
-      outputElem.html(output);
-    } catch(e) {
-      console.log(e);
-    }
-  });
-&lt;/script&gt;
-&lt;style&gt;
-  #content-arcange-hive-account-recovery-major-update-and-new-user-interface {
-    padding: 0 3rem;
-    color: #444444;
-    font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif;
-    font-size: 16px;
-    line-height: 1.8;
-    text-shadow: 0 1px 0 #ffffff;
-    padding: 0.5rem;
-  }
-  #content-arcange-hive-account-recovery-major-update-and-new-user-interface code {
-    background: white;
-  }
-  #content-arcange-hive-account-recovery-major-update-and-new-user-interface a {
-    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
-  }
-  #content-arcange-hive-account-recovery-major-update-and-new-user-interface a:hover {
-    border-bottom: 0;
-  }
-  #content-arcange-hive-account-recovery-major-update-and-new-user-interface h1 {
-    font-size: 2.2em;
-  }
-  #content-arcange-hive-account-recovery-major-update-and-new-user-interface h2, h3, h4, h5 {
-    margin-bottom: 0;
-  }
-  #content-arcange-hive-account-recovery-major-update-and-new-user-interface header small {
-    color: #999;
-    font-size: 50%;
-  }
-  #content-arcange-hive-account-recovery-major-update-and-new-user-interface img {
-    max-width: 100%;
-  }
-&lt;/style&gt;
-
-&lt;hr /&gt;
-&lt;p&gt;
-  See: &lt;a href=&quot;https://peakd.com/hive-139531/@arcange/hive-account-recovery-major-update-and-new-user-interface&quot;&gt;Hive Account Recovery - Major update and new User Interface&lt;/a&gt;
-  by
-  &lt;a href=&quot;https://hive.blog/@arcange&quot;&gt;@arcange&lt;/a&gt;
-&lt;/p&gt;
-
-&lt;/center&gt;&lt;/div&gt;</content><author><name>arcange</name></author><category term="tools" /><summary type="html">![](https://i.imgur.com/bVz67Yj.png) Last week, I deployed an [update to the Hive Recovery service](/hive-139531/@arcange/hive-account-recovery-update). Hive Recovery is a service that runs continuously and on its own to help you secure and recover your account if it were to be compromised. The latest wave of phishing currently raging and the growing number of accounts that have been hacked recently make the recovery process more than topical. I recently had to provide assistance to users who wanted to change their recovery account. It allowed me to realize how the recovery procedure can seem complex for some. On the other hand, it's always a good thing to review your basics, the things that you (think you) have mastered and that seem obvious to you but not to others. This previous update allowed me to dive back into the code and the associated process of recovering accounts and I realized that I was not fully satisfied with the proposed solution and that it could still be greatly improved, mainly at the user interface level. It also needed better edge cases and error handling and better feedback to users. Therefore, I decided to go back to the drawing board and redesign it to transform what may seem complex for users to achieve into something simple and intuitive. ### Introducing Hive Recovery v2.0 The new [**Hive Recovery web page**](https://tools.hivechain.app/recovery) has been radically simplified and now clearly reflects the 3 steps associated with the Hive account recovery process: ![](https://i.imgur.com/im6VOdS.png) 1. You set @hive.recovery as your trusted account recovery partner. 2. Should your account be compromised, you request @hive.recovery to initiate the recovery process 3. Once @hive.recovery has done so, you confirm and finalize the process. I will not provide you here with all the details regarding the use of this brand new recovery UI. It is available in the updated [Hive Recovery User Guide](/hive/@hive.recovery/userguide). Better to avoid turning this post into a wall of text and pictures. Anyway, here are a few screenshots of the new user interface. ### A quick overview of the recovery process **Navigate to https://tools.hivechain.app/recovery** The first thing to do is to enter your username (without the @) and hit enter or click on the account check button. If the account name is valid, the change recovery account button will light up and allow you to click on it. ![](https://i.imgur.com/ZTyY1Z0.png) &amp;gt; **Note:** If you have already set @hive.recovery as your recovery account, the button will turn green. You can go to the next step or perform this step again if you want to change your recovery settings. #### 1. Changing your recovery account After clicking on the &quot;Change Recovery Account&quot; button, the following form will be displayed: ![](https://i.imgur.com/HUi2s0H.png) Refer to the [Hive Recovery User Guide](/hive/@hive.recovery/userguide) for more information on how to fill the form and perform this step. Once you have completed the first step, you will have to wait for 30 days before @hive.recovery actually becomes your recovery account. ![](https://i.imgur.com/dZubbxc.png) #### 2. Requesting for your recovery account Should your account be compromised, head back to the [Hive Recovery website](https://tools.hivechain.app/recovery) and request @hive.recovery to initiate the recovery process. After validating your username, the first button should have turned to green (meaning @hive.recovery is now your recovery account) and the Request Recovery button should the page should be enabled ![](https://i.imgur.com/94vb8CG.png) ![](https://i.imgur.com/dYxb0iP.png) Once again, refer to the [Hive Recovery User Guide](/hive/@hive.recovery/userguide) for more information on how to fill the form and what will happen when you perform this step. @hive.recovery will initiate the recovery process. If all of the information you provided is correct, it should automatically take place within a few minutes. ![](https://i.imgur.com/OyRRJTY.png) You now then have 24 hours to confirm the recovery of your account. #### 3. Confirming the recovery of your account. This is the very last step. You are now in control to finalize the recovery process ![](https://i.imgur.com/jIAKOCW.png) After entering the required information and clicking on the confirmation button, the page will send a recovery confirmation to the blockchain, update your account keys and confirm that everything has gone well. ![](https://i.imgur.com/PQGSGu6.png) Hooray, you are done and you have recovered your account! ### Please read the guide! Check out the [Hive Recovery User Guide](/hive/@hive.recovery/userguide) for a complete and detailed description of the entire account recovery process. The [Hive Recovery User Guide](/hive/@hive.recovery/userguide) also covers any questions you might have about security, privacy and how trusted it can be. ### Check your Recovery Account before it's too late As mentioned at the beginning of this post, I have been led on several occasions to assist users who have their accounts hacked and who wanted to recover them. Unfortunately, some of them still had @steem as their recovery account or had chosen an account that is no longer active or that does not respond to their request. What a pity that we can no longer help them Therefore, check your recovery account and change it if the current one is inappropriate. It's been a lot of work to create and improve this service and make the recovery process as easy as possible for all non-tech-savvy users. It would be a shame not to take advantage of it. Take care of your account! ## https://tools.hivechain.app/recovery --- ### Check out my apps and services ### [Vote for me as a witness ![](https://i.imgur.com/2bi4SnT.png)](https://hivesigner.com/sign/account-witness-vote?witness=arcange&amp;amp;approve=1)&amp;lt;/div&amp;gt; See: Hive Account Recovery - Major update and new User Interface by @arcange</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://i.imgur.com/bVz67Yj.png" /><media:content medium="image" url="https://i.imgur.com/bVz67Yj.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>
+&lt;/p&gt;</content><author><name>inertia</name></author><category term="howto" /><category term="beem" /><category term="python" /><summary type="html">Prior to this merge, the bulk of my work was on [the javascript tutorials](https://peakd.com/hive/@inertia/hive-developer-portal-update-language-tutorials-et-al). After my proposal got funded, I was able to [dig deep into the API Definitions and begin the python tutorials](https://peakd.com/hive-139531/@inertia/hive-devportal-update-sdk-references-python-tutorials). For this merge, I've continued to spend the last few weeks on the python tutorials. There are 30+ tutorials ranging from how to vote to account recovery. Most of them were written with the previous chain in mind. As such, they all used the previous chain's &quot;official&quot; python library. Now, they all use [beem](http://beem.readthedocs.io/) instead, because beem rocks. Anyway, here are all the newly audited python tutorials: http://developers-staging.hive.io/tutorials/#tutorials-python Related merge: https://gitlab.syncad.com/hive/devportal/-/merge_requests/66 This update also tracks the new Bridge API changes (Hivemind/Communities), [thanks to the information provided by openapi](https://peakd.com/openapi/@inertia/questions-about-hivemind-api-documentation). --- One of the python tutorials I'm particularly proud of is the one about delegations: https://developers.hive.io/tutorials-python/delegate_power.html Before my changes, it was technically correct, which I admit is [the best kind of correct](https://www.youtube.com/watch?v=hou0lU8WMgo). But in addition, I wanted to clarify in the tutorial, and in code examples, that it's best to present HIVE Power to the end-user, not VESTS. While it's fine to write scripts that deal in VESTS, most people never encounter them. Not only that, but the amount of HIVE Power vs. VESTS always changes. Like, right now, at the time of writing, 527.344 HIVE Power is worth 1,000,000 VESTS. That's not a very intuitive conversion, especially since it changes continuously. So I added steps to present VESTS as HIVE Power and capture HIVE Power inputs and turn them back to VESTS, since the blockchain wants to deal in VESTS. That's just an example of the kinds of principles and best practices I want to enforce in the devportal, as much as possible. I wrote 20 short programs in Python yesterday. It was wonderful. Perl, I'm leaving you. Next, I'll do the same review audit for the ruby tutorials, but somehow I don't think that will take as long. --- If you'd like to vote for my current proposal: [https://hivesigner.com/sign/update-proposal-votes?proposal_ids=[151]&amp;amp;approve=true](https://hivesigner.com/sign/update-proposal-votes?proposal_ids=[151]&amp;amp;approve=true) Also see: https://peakd.com/proposals/inertia See: Devportal Python Tutorial Review Complete by @inertia</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://developers.hive.io/images/sticker.png" /><media:content medium="image" url="https://developers.hive.io/images/sticker.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>
