@@ -1,4 +1,103 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="https://hivedocs.info/feed.xml" rel="self" type="application/atom+xml" /><link href="https://hivedocs.info/" rel="alternate" type="text/html" /><updated>2021-04-12T09:03:07-07:00</updated><id>https://hivedocs.info/feed.xml</id><title type="html">Hive Chain Documentation</title><subtitle>Your resource for various levels of Hive Documentation.</subtitle><author><name>site curated by: @inertia</name></author><entry><title type="html">How to setup a Hivemind Dev Environment</title><link href="https://hivedocs.info/howto/hivemind/2021/04/12/how-to-setup-a-hivemind-dev-environment.html" rel="alternate" type="text/html" title="How to setup a Hivemind Dev Environment" /><published>2021-04-12T08:00:30-07:00</published><updated>2021-04-12T08:00:30-07:00</updated><id>https://hivedocs.info/howto/hivemind/2021/04/12/how-to-setup-a-hivemind-dev-environment</id><content type="html" xml:base="https://hivedocs.info/howto/hivemind/2021/04/12/how-to-setup-a-hivemind-dev-environment.html">&lt;div id=&quot;content-deathwing-how-to-setup-a-hivemind-dev-environment&quot;&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="https://hivedocs.info/feed.xml" rel="self" type="application/atom+xml" /><link href="https://hivedocs.info/" rel="alternate" type="text/html" /><updated>2021-04-13T01:01:41-07:00</updated><id>https://hivedocs.info/feed.xml</id><title type="html">Hive Chain Documentation</title><subtitle>Your resource for various levels of Hive Documentation.</subtitle><author><name>site curated by: @inertia</name></author><entry><title type="html">My new contributions to the Hive Condenser and Wallet apps.</title><link href="https://hivedocs.info/news/nodejs/condenser/2021/04/13/5ps1ah-my-new-contributions-to-the-hive-condenser-and-wallet-apps.html" rel="alternate" type="text/html" title="My new contributions to the Hive Condenser and Wallet apps." /><published>2021-04-13T00:27:24-07:00</published><updated>2021-04-13T00:27:24-07:00</updated><id>https://hivedocs.info/news/nodejs/condenser/2021/04/13/5ps1ah-my-new-contributions-to-the-hive-condenser-and-wallet-apps</id><content type="html" xml:base="https://hivedocs.info/news/nodejs/condenser/2021/04/13/5ps1ah-my-new-contributions-to-the-hive-condenser-and-wallet-apps.html">&lt;div id=&quot;content-quochuy-5ps1ah-my-new-contributions-to-the-hive-condenser-and-wallet-apps&quot;&gt;## Context
+I have been involved (voluntarily) with the development of the Condenser &amp;amp; Wallet apps (that are powering https://hive.blog and https://wallet.hive.blog) for quite a while now. There are other great frontends to Hive out there such as https://peakd.com and https://ecency.com but I have always been more or less faithful with the Condenser.
+
+This is a regular report on my new contributions. Some of the new work below might still be in test and not yet deployed.
+
+## Sanitize input fields
+I noticed that when creating a new community, users were allowed to use HTML code. Although the HTML is not interpreted it is still displayed (encoded) on the screen which looks bad. Apparently, there is no sanitising code of user input for those fields. This code change adds input sanitisation at creation and content filtering at display to clean up existing data.
+
+Merge request: https://gitlab.syncad.com/hive/condenser/-/merge_requests/232
+
+## Modifying the community selection on post creation
+Myself and other users have often accidentally posted our content in the wrong community because we forgot to select the right one when creating the post. Currently the community selection process is not very obvious. For this change what I've done is:
+- create an actually community selector drop down menu in the post editing form
+- move it to the bottom right next to the `Post` button
+
+![Community selector](https://gitlab.syncad.com/hive/condenser/uploads/2c64f4229ba3743c83cf0afcb37f9d91/Screen_Shot_2021-04-09_at_4.51.17_pm.jpg)
+
+To change community, you don't have to go back to browse through them anymore, the menu should make it easier.
+![Community selector](https://gitlab.syncad.com/hive/condenser/uploads/00cc3a8373a5914ee8dc506928e7af4a/Screen_Shot_2021-04-09_at_5.07.49_pm.jpg)
+
+---
+
+**Vote for my witness**
+[![Support @quochuy Witness.jpg](https://images.hive.blog/DQmecYTZemY8SwU6rrg7awhpNRBsehUp7ivk9RGyZsUUpVw/quochuy-hive-witness.jpg)](https://hivesigner.com/sign/account-witness-vote?witness=quochuy&amp;amp;approve=1)
+On Hive, Witnesses are playing the important role of providing a performant and safe network for all of us. You have the power to choose 30 trusty witnesses to package transactions and sign the blocks that will go in the Hive blockchain. [Vote for me via HiveSigner](https://hivesigner.com/sign/account-witness-vote?witness=quochuy&amp;amp;approve=1) to support my work for the community.&lt;/div&gt;
+&lt;script crossorigin=&quot;anonymous&quot; integrity=&quot;sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=&quot; src=&quot;https://code.jquery.com/jquery-3.5.1.slim.min.js&quot;&gt;&lt;/script&gt;
+
+&lt;script src=&quot;https://unpkg.com/steem-content-renderer&quot;&gt;&lt;/script&gt;
+
+&lt;script&gt;
+  $(document).ready(function() {
+    try {
+      const renderer = new SteemContentRenderer.DefaultRenderer({
+        baseUrl: &quot;https://hive.blog/&quot;,
+        breaks: true,
+        skipSanitization: false,
+        allowInsecureScriptTags: false,
+        addNofollowToLinks: true,
+        doNotShowImages: false,
+        ipfsPrefix: &quot;&quot;,
+        assetsWidth: 640,
+        assetsHeight: 480,
+        imageProxyFn: (url) =&gt; url,
+        usertagUrlFn: (account) =&gt; &quot;/@quochuy&quot;,
+        hashtagUrlFn: (hashtag) =&gt; &quot;/5ps1ah-my-new-contributions-to-the-hive-condenser-and-wallet-apps&quot;,
+        isLinkSafeFn: (url) =&gt; true,
+      });
+      
+      const inputElem = $('#content-quochuy-5ps1ah-my-new-contributions-to-the-hive-condenser-and-wallet-apps').html();
+      const outputElem = $('#content-quochuy-5ps1ah-my-new-contributions-to-the-hive-condenser-and-wallet-apps');
+      const output = renderer.render(inputElem);
+      
+      outputElem.html(output);
+    } catch(e) {
+      console.log(e);
+    }
+  });
+&lt;/script&gt;
+
+&lt;style&gt;
+  #content-quochuy-5ps1ah-my-new-contributions-to-the-hive-condenser-and-wallet-apps {
+    padding: 0 3rem;
+    color: #444444;
+    font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.8;
+    text-shadow: 0 1px 0 #ffffff;
+    padding: 0.5rem;
+  }
+  #content-quochuy-5ps1ah-my-new-contributions-to-the-hive-condenser-and-wallet-apps code {
+    background: white;
+  }
+  #content-quochuy-5ps1ah-my-new-contributions-to-the-hive-condenser-and-wallet-apps a {
+    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
+  }
+  #content-quochuy-5ps1ah-my-new-contributions-to-the-hive-condenser-and-wallet-apps a:hover {
+    border-bottom: 0;
+  }
+  #content-quochuy-5ps1ah-my-new-contributions-to-the-hive-condenser-and-wallet-apps h1 {
+    font-size: 2.2em;
+  }
+  #content-quochuy-5ps1ah-my-new-contributions-to-the-hive-condenser-and-wallet-apps h2, h3, h4, h5 {
+    margin-bottom: 0;
+  }
+  #content-quochuy-5ps1ah-my-new-contributions-to-the-hive-condenser-and-wallet-apps header small {
+    color: #999;
+    font-size: 50%;
+  }
+  #content-quochuy-5ps1ah-my-new-contributions-to-the-hive-condenser-and-wallet-apps img {
+    max-width: 100%;
+  }
+&lt;/style&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;
+  See: &lt;a href=&quot;https://hive.blog/hive-139531/@quochuy/5ps1ah-my-new-contributions-to-the-hive-condenser-and-wallet-apps&quot;&gt;My new contributions to the Hive Condenser and Wallet apps.&lt;/a&gt;
+  by
+  &lt;a href=&quot;https://hive.blog/@quochuy&quot;&gt;@quochuy&lt;/a&gt;
+&lt;/p&gt;</content><author><name>quochuy</name></author><category term="news" /><category term="nodejs" /><category term="condenser" /><summary type="html">## Context I have been involved (voluntarily) with the development of the Condenser &amp;amp; Wallet apps (that are powering https://hive.blog and https://wallet.hive.blog) for quite a while now. There are other great frontends to Hive out there such as https://peakd.com and https://ecency.com but I have always been more or less faithful with the Condenser. This is a regular report on my new contributions. Some of the new work below might still be in test and not yet deployed. ## Sanitize input fields I noticed that when creating a new community, users were allowed to use HTML code. Although the HTML is not interpreted it is still displayed (encoded) on the screen which looks bad. Apparently, there is no sanitising code of user input for those fields. This code change adds input sanitisation at creation and content filtering at display to clean up existing data. Merge request: https://gitlab.syncad.com/hive/condenser/-/merge_requests/232 ## Modifying the community selection on post creation Myself and other users have often accidentally posted our content in the wrong community because we forgot to select the right one when creating the post. Currently the community selection process is not very obvious. For this change what I've done is: - create an actually community selector drop down menu in the post editing form - move it to the bottom right next to the `Post` button ![Community selector](https://gitlab.syncad.com/hive/condenser/uploads/2c64f4229ba3743c83cf0afcb37f9d91/Screen_Shot_2021-04-09_at_4.51.17_pm.jpg) To change community, you don't have to go back to browse through them anymore, the menu should make it easier. ![Community selector](https://gitlab.syncad.com/hive/condenser/uploads/00cc3a8373a5914ee8dc506928e7af4a/Screen_Shot_2021-04-09_at_5.07.49_pm.jpg) --- **Vote for my witness** [![Support @quochuy Witness.jpg](https://images.hive.blog/DQmecYTZemY8SwU6rrg7awhpNRBsehUp7ivk9RGyZsUUpVw/quochuy-hive-witness.jpg)](https://hivesigner.com/sign/account-witness-vote?witness=quochuy&amp;amp;approve=1) On Hive, Witnesses are playing the important role of providing a performant and safe network for all of us. You have the power to choose 30 trusty witnesses to package transactions and sign the blocks that will go in the Hive blockchain. [Vote for me via HiveSigner](https://hivesigner.com/sign/account-witness-vote?witness=quochuy&amp;amp;approve=1) to support my work for the community. See: My new contributions to the Hive Condenser and Wallet apps. by @quochuy</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://gitlab.syncad.com/hive/condenser/uploads/2c64f4229ba3743c83cf0afcb37f9d91/Screen_Shot_2021-04-09_at_4.51.17_pm.jpg" /><media:content medium="image" url="https://gitlab.syncad.com/hive/condenser/uploads/2c64f4229ba3743c83cf0afcb37f9d91/Screen_Shot_2021-04-09_at_4.51.17_pm.jpg" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">How to setup a Hivemind Dev Environment</title><link href="https://hivedocs.info/howto/hivemind/2021/04/12/how-to-setup-a-hivemind-dev-environment.html" rel="alternate" type="text/html" title="How to setup a Hivemind Dev Environment" /><published>2021-04-12T08:00:30-07:00</published><updated>2021-04-12T08:00:30-07:00</updated><id>https://hivedocs.info/howto/hivemind/2021/04/12/how-to-setup-a-hivemind-dev-environment</id><content type="html" xml:base="https://hivedocs.info/howto/hivemind/2021/04/12/how-to-setup-a-hivemind-dev-environment.html">&lt;div id=&quot;content-deathwing-how-to-setup-a-hivemind-dev-environment&quot;&gt;
 ![image.png](https://files.peakd.com/file/peakd-hive/deathwing/23tbMTX77iKs3vk3Z3ST8kik2wiZYMhjovCQnPAJ2rER2tFCQ7jaSJrPkC124YF3Yyhpp.png)
 
 ---
@@ -2658,130 +2757,4 @@ Take care,
   &lt;a href=&quot;https://hive.blog/@keys-defender&quot;&gt;@keys-defender&lt;/a&gt;
 &lt;/p&gt;
 
-&lt;/div&gt;</content><author><name>keys-defender</name></author><category term="news" /><category term="devops" /><category term="security" /><summary type="html">One &amp;nbsp; script &amp;nbsp; to rule them all.. https://files.peakd.com/file/peakd-hive/keys-defender/23uEx3ge6ahMEAqbNu2KxP3EvamdsBroMaGSYrkDRPsGUHc7sjst6GKUUPo7MoFq9YGo6.png ----- Problem: In the past few weeks Hive has been plagued by phishing campaigns and some users lost access to their account or lost their funds. This is nothing new and has been going on for years on ~~Steem~~ and Hive. https://files.peakd.com/file/peakd-hive/keys-defender/23ynfLMyQ7Cub6dZ3Dkgy3ibKnFc8DCeGkhiMRJjhBRtEVFTGBzSfAF8SxegpyrQM4eg4.png To make things worse, registrars are not quick enough to take down phishing domains.. https://files.peakd.com/file/peakd-hive/keys-defender/243MPzTbbyDU6fHr6SnsBBTJ3VSMBJk9KgL2At8pnztriEQmsYMWGAMwgEApYdzvTfB5e.png src It is time that the Hive community tries to mitigate this issue on their own. Potential solution:Use a plug-and-play universal script (or a modified copy of it) that all Hive frontends can integrate to block phishing links in a timely matter. As soon as a phishing campaign starts on Hive and the attacker's domain is spotted and added to a blacklist API (eg. @spaminator's), the universal script would immediately block the attack in all Hive frontends and at the same time leave the User Experience unaffected. As a matter of fact, this is what I worked on in the past few days. - Here is the universal script for all Hive frontends: https://github.com/keys-defender/hive/blob/master/scripts/universal-bridge-against-phishing.js - Here is a demo website with my script in action: https://keys-defender.github.io/hive *NOTE* : the demo page will not be sanitized by my universal script until you: 1. Navigate to https://cors-anywhere.herokuapp.com/corsdemo and click on the &quot;Request temporary access&quot; button, 2. refresh the demo website. I have proved my universal script working on: &amp;nbsp; &amp;nbsp; &amp;nbsp;(see screenshots down below) HIVE.BLOG - https://hive.blog - @blocktrades @quochuy PEAKD - https://peakd.com - @asgarth, @jarvie LEOFINANCE - https://leofinance.io - @khaleelkazi ECENCY - https://ecency.com - @good-karma 3SPEAK - https://3speak.tv - @theycallmedan, @starkerz D.BUZZ - https://d.buzz - @chrisrice STEM social - https://stem.openhive.network - @lemouth STEM geeks - https://stemgeeks.net - @enforcer48 ? It would be great if each Hive frontend maintaner could review it and adapt it to their needs (if they need to -- I tested this script in all major Hive frontends already and it did not seem to have unwanted side effects). I highly recommend though that the integration is thoroughly regression tested before it's used in production. FYI also for: AnonRamblings @emrebeyler, DTube @heimindanger, Engage @arcange, Engrave @engrave, @nicniezgrublem, Hive-db @jesta, Hive-Engine @aggroed, Hiveblockexplorer @penguinpablo, Hiveblocks @roadscape, HiveEngine @holger80, Quello @tobias-g, ... \+ other project maintaners: @yabapmatt, @stoodkev, @aggroed, @louis88, @mahdiyari, @acidyo, @fbslo, @rishi556. (apologies for the mass tag) I believe that blocking phishing campaigns in an unified way in all frontends is possible despite the different tech stacks in use. It does no matter which framework the website maintainer used to develop their website (eg. ReactJS, AngularJS, VueJS, JQuery, vanilla JS, etc). Using JS global overrides it is possible to prevent users from falling victim of phishing. What does my script do? It uses the native APIs offered by all browsers in order to immediately block phishing links and images in all Hive frontends as soon as they are discovered and published into the blacklist. - Any known phishing link in the UI will be red and strikethrough-ed. Furthermore if you click on a known phishing link you'll see an alert telling you that it's phishing and it won't allow you to navigate to the phishing domain from the Hive frontend. - Any image that is marked as a phishing attempt (eg. an image with some text saying &quot;claim your $ 1000 in tokens at www.justinscam.com&quot;) will not be displayed in any frontend that uses my script (or a variant of it) as soon as its URL is published into the public blacklist. More details will follow towards the end of the post to list all the native features of the browser that are hardened by my script in order to prevent phishing (ie. iframes, scripts, window open, XHR requests, Fetch api). Usage: How difficult is it to try out my universal script in your Hive-powered website? Integrating this script is very **straightforward**. In order to integrate it, simply add a ` See: Phishing on Hive? No more. Solution for all Frontends. by @keys-defender</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://files.peakd.com/file/peakd-hive/keys-defender/23uEx3ge6ahMEAqbNu2KxP3EvamdsBroMaGSYrkDRPsGUHc7sjst6GKUUPo7MoFq9YGo6.png" /><media:content medium="image" url="https://files.peakd.com/file/peakd-hive/keys-defender/23uEx3ge6ahMEAqbNu2KxP3EvamdsBroMaGSYrkDRPsGUHc7sjst6GKUUPo7MoFq9YGo6.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Devportal Python Tutorial Review Complete</title><link href="https://hivedocs.info/howto/beem/python/2021/03/16/devportal-python-tutorial-review-complete.html" rel="alternate" type="text/html" title="Devportal Python Tutorial Review Complete" /><published>2021-03-16T22:05:21-07:00</published><updated>2021-03-16T22:05:21-07:00</updated><id>https://hivedocs.info/howto/beem/python/2021/03/16/devportal-python-tutorial-review-complete</id><content type="html" xml:base="https://hivedocs.info/howto/beem/python/2021/03/16/devportal-python-tutorial-review-complete.html">&lt;div id=&quot;content-inertia-devportal-python-tutorial-review-complete&quot;&gt;&lt;div class=&quot;pull-right&quot;&gt;
-  &lt;img src=&quot;https://developers.hive.io/images/sticker.png&quot; /&gt;
-&lt;/div&gt;
-
-Prior to this merge, the bulk of my work was on [the javascript tutorials](https://peakd.com/hive/@inertia/hive-developer-portal-update-language-tutorials-et-al).  After my proposal got funded, I was able to [dig deep into the API Definitions and begin the python tutorials](https://peakd.com/hive-139531/@inertia/hive-devportal-update-sdk-references-python-tutorials).
-
-For this merge, I've continued to spend the last few weeks on the python tutorials.  There are 30+ tutorials ranging from how to vote to account recovery.
-
-Most of them were written with the previous chain in mind.  As such, they all used the previous chain's &quot;official&quot; python library.  Now, they all use [beem](http://beem.readthedocs.io/) instead, because beem rocks.
-
-Anyway, here are all the newly audited python tutorials:
-
-http://developers-staging.hive.io/tutorials/#tutorials-python
-
-Related merge:
-
-https://gitlab.syncad.com/hive/devportal/-/merge_requests/66
-
-This update also tracks the new Bridge API changes (Hivemind/Communities), [thanks to the information provided by openapi](https://peakd.com/openapi/@inertia/questions-about-hivemind-api-documentation).
-
----
-
-One of the python tutorials I'm particularly proud of is the one about delegations:
-
-https://developers.hive.io/tutorials-python/delegate_power.html
-
-Before my changes, it was technically correct, which I admit is [the best kind of correct](https://www.youtube.com/watch?v=hou0lU8WMgo).  But in addition, I wanted to clarify in the tutorial, and in code examples, that it's best to present HIVE Power to the end-user, not VESTS.
-
-While it's fine to write scripts that deal in VESTS, most people never encounter them.  Not only that, but the amount of HIVE Power vs. VESTS always changes.  Like, right now, at the time of writing, 527.344 HIVE Power is worth 1,000,000 VESTS.  That's not a very intuitive conversion, especially since it changes continuously.
-
-&lt;center&gt;&lt;img src=&quot;https://files.peakd.com/file/peakd-hive/inertia/23uQvSia5q4QnBBeK9pYZ7bFsUawG5UWsdcFpygaxX4RQ9T9QEyB1PAE8Nm5HzLgj6a8c.jpg&quot; /&gt;&lt;/center&gt;
-
-So I added steps to present VESTS as HIVE Power and capture HIVE Power inputs and turn them back to VESTS, since the blockchain wants to deal in VESTS.
-
-That's just an example of the kinds of principles and best practices I want to enforce in the devportal, as much as possible.
-
-&lt;center&gt;
-  &lt;a href=&quot;https://xkcd.com/353/&quot;&gt;
-    &lt;img src=&quot;https://imgs.xkcd.com/comics/python.png&quot; /&gt;
-  &lt;/a&gt;
-  &lt;sup&gt;I wrote 20 short programs in Python yesterday.  It was wonderful.  Perl, I'm leaving you.&lt;/sup&gt;
-&lt;/center&gt;
-
-Next, I'll do the same review audit for the ruby tutorials, but somehow I don't think that will take as long.
-
----
-
-If you'd like to vote for my current proposal:
-
-[https://hivesigner.com/sign/update-proposal-votes?proposal_ids=[151]&amp;amp;approve=true](https://hivesigner.com/sign/update-proposal-votes?proposal_ids=[151]&amp;amp;approve=true)
-
-Also see: https://peakd.com/proposals/inertia&lt;/div&gt;
-&lt;script crossorigin=&quot;anonymous&quot; integrity=&quot;sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=&quot; src=&quot;https://code.jquery.com/jquery-3.5.1.slim.min.js&quot;&gt;&lt;/script&gt;
-
-&lt;script src=&quot;https://unpkg.com/steem-content-renderer&quot;&gt;&lt;/script&gt;
-
-&lt;script&gt;
-  $(document).ready(function() {
-    try {
-      const renderer = new SteemContentRenderer.DefaultRenderer({
-        baseUrl: &quot;https://hive.blog/&quot;,
-        breaks: true,
-        skipSanitization: false,
-        allowInsecureScriptTags: false,
-        addNofollowToLinks: true,
-        doNotShowImages: false,
-        ipfsPrefix: &quot;&quot;,
-        assetsWidth: 640,
-        assetsHeight: 480,
-        imageProxyFn: (url) =&gt; url,
-        usertagUrlFn: (account) =&gt; &quot;/@inertia&quot;,
-        hashtagUrlFn: (hashtag) =&gt; &quot;/devportal-python-tutorial-review-complete&quot;,
-        isLinkSafeFn: (url) =&gt; true,
-      });
-      
-      const inputElem = $('#content-inertia-devportal-python-tutorial-review-complete').html();
-      const outputElem = $('#content-inertia-devportal-python-tutorial-review-complete');
-      const output = renderer.render(inputElem);
-      
-      outputElem.html(output);
-    } catch(e) {
-      console.log(e);
-    }
-  });
-&lt;/script&gt;
-
-&lt;style&gt;
-  #content-inertia-devportal-python-tutorial-review-complete {
-    padding: 0 3rem;
-    color: #444444;
-    font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif;
-    font-size: 16px;
-    line-height: 1.8;
-    text-shadow: 0 1px 0 #ffffff;
-    padding: 0.5rem;
-  }
-  #content-inertia-devportal-python-tutorial-review-complete code {
-    background: white;
-  }
-  #content-inertia-devportal-python-tutorial-review-complete a {
-    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
-  }
-  #content-inertia-devportal-python-tutorial-review-complete a:hover {
-    border-bottom: 0;
-  }
-  #content-inertia-devportal-python-tutorial-review-complete h1 {
-    font-size: 2.2em;
-  }
-  #content-inertia-devportal-python-tutorial-review-complete h2, h3, h4, h5 {
-    margin-bottom: 0;
-  }
-  #content-inertia-devportal-python-tutorial-review-complete header small {
-    color: #999;
-    font-size: 50%;
-  }
-  #content-inertia-devportal-python-tutorial-review-complete img {
-    max-width: 100%;
-  }
-&lt;/style&gt;
-
-&lt;hr /&gt;
-
-&lt;p&gt;
-  See: &lt;a href=&quot;https://peakd.com/hive-139531/@inertia/devportal-python-tutorial-review-complete&quot;&gt;Devportal Python Tutorial Review Complete&lt;/a&gt;
-  by
-  &lt;a href=&quot;https://hive.blog/@inertia&quot;&gt;@inertia&lt;/a&gt;
-&lt;/p&gt;</content><author><name>inertia</name></author><category term="howto" /><category term="beem" /><category term="python" /><summary type="html">Prior to this merge, the bulk of my work was on [the javascript tutorials](https://peakd.com/hive/@inertia/hive-developer-portal-update-language-tutorials-et-al). After my proposal got funded, I was able to [dig deep into the API Definitions and begin the python tutorials](https://peakd.com/hive-139531/@inertia/hive-devportal-update-sdk-references-python-tutorials). For this merge, I've continued to spend the last few weeks on the python tutorials. There are 30+ tutorials ranging from how to vote to account recovery. Most of them were written with the previous chain in mind. As such, they all used the previous chain's &quot;official&quot; python library. Now, they all use [beem](http://beem.readthedocs.io/) instead, because beem rocks. Anyway, here are all the newly audited python tutorials: http://developers-staging.hive.io/tutorials/#tutorials-python Related merge: https://gitlab.syncad.com/hive/devportal/-/merge_requests/66 This update also tracks the new Bridge API changes (Hivemind/Communities), [thanks to the information provided by openapi](https://peakd.com/openapi/@inertia/questions-about-hivemind-api-documentation). --- One of the python tutorials I'm particularly proud of is the one about delegations: https://developers.hive.io/tutorials-python/delegate_power.html Before my changes, it was technically correct, which I admit is [the best kind of correct](https://www.youtube.com/watch?v=hou0lU8WMgo). But in addition, I wanted to clarify in the tutorial, and in code examples, that it's best to present HIVE Power to the end-user, not VESTS. While it's fine to write scripts that deal in VESTS, most people never encounter them. Not only that, but the amount of HIVE Power vs. VESTS always changes. Like, right now, at the time of writing, 527.344 HIVE Power is worth 1,000,000 VESTS. That's not a very intuitive conversion, especially since it changes continuously. So I added steps to present VESTS as HIVE Power and capture HIVE Power inputs and turn them back to VESTS, since the blockchain wants to deal in VESTS. That's just an example of the kinds of principles and best practices I want to enforce in the devportal, as much as possible. I wrote 20 short programs in Python yesterday. It was wonderful. Perl, I'm leaving you. Next, I'll do the same review audit for the ruby tutorials, but somehow I don't think that will take as long. --- If you'd like to vote for my current proposal: [https://hivesigner.com/sign/update-proposal-votes?proposal_ids=[151]&amp;amp;approve=true](https://hivesigner.com/sign/update-proposal-votes?proposal_ids=[151]&amp;amp;approve=true) Also see: https://peakd.com/proposals/inertia See: Devportal Python Tutorial Review Complete by @inertia</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://developers.hive.io/images/sticker.png" /><media:content medium="image" url="https://developers.hive.io/images/sticker.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>
+&lt;/div&gt;</content><author><name>keys-defender</name></author><category term="news" /><category term="devops" /><category term="security" /><summary type="html">One &amp;nbsp; script &amp;nbsp; to rule them all.. https://files.peakd.com/file/peakd-hive/keys-defender/23uEx3ge6ahMEAqbNu2KxP3EvamdsBroMaGSYrkDRPsGUHc7sjst6GKUUPo7MoFq9YGo6.png ----- Problem: In the past few weeks Hive has been plagued by phishing campaigns and some users lost access to their account or lost their funds. This is nothing new and has been going on for years on ~~Steem~~ and Hive. https://files.peakd.com/file/peakd-hive/keys-defender/23ynfLMyQ7Cub6dZ3Dkgy3ibKnFc8DCeGkhiMRJjhBRtEVFTGBzSfAF8SxegpyrQM4eg4.png To make things worse, registrars are not quick enough to take down phishing domains.. https://files.peakd.com/file/peakd-hive/keys-defender/243MPzTbbyDU6fHr6SnsBBTJ3VSMBJk9KgL2At8pnztriEQmsYMWGAMwgEApYdzvTfB5e.png src It is time that the Hive community tries to mitigate this issue on their own. Potential solution:Use a plug-and-play universal script (or a modified copy of it) that all Hive frontends can integrate to block phishing links in a timely matter. As soon as a phishing campaign starts on Hive and the attacker's domain is spotted and added to a blacklist API (eg. @spaminator's), the universal script would immediately block the attack in all Hive frontends and at the same time leave the User Experience unaffected. As a matter of fact, this is what I worked on in the past few days. - Here is the universal script for all Hive frontends: https://github.com/keys-defender/hive/blob/master/scripts/universal-bridge-against-phishing.js - Here is a demo website with my script in action: https://keys-defender.github.io/hive *NOTE* : the demo page will not be sanitized by my universal script until you: 1. Navigate to https://cors-anywhere.herokuapp.com/corsdemo and click on the &quot;Request temporary access&quot; button, 2. refresh the demo website. I have proved my universal script working on: &amp;nbsp; &amp;nbsp; &amp;nbsp;(see screenshots down below) HIVE.BLOG - https://hive.blog - @blocktrades @quochuy PEAKD - https://peakd.com - @asgarth, @jarvie LEOFINANCE - https://leofinance.io - @khaleelkazi ECENCY - https://ecency.com - @good-karma 3SPEAK - https://3speak.tv - @theycallmedan, @starkerz D.BUZZ - https://d.buzz - @chrisrice STEM social - https://stem.openhive.network - @lemouth STEM geeks - https://stemgeeks.net - @enforcer48 ? It would be great if each Hive frontend maintaner could review it and adapt it to their needs (if they need to -- I tested this script in all major Hive frontends already and it did not seem to have unwanted side effects). I highly recommend though that the integration is thoroughly regression tested before it's used in production. FYI also for: AnonRamblings @emrebeyler, DTube @heimindanger, Engage @arcange, Engrave @engrave, @nicniezgrublem, Hive-db @jesta, Hive-Engine @aggroed, Hiveblockexplorer @penguinpablo, Hiveblocks @roadscape, HiveEngine @holger80, Quello @tobias-g, ... \+ other project maintaners: @yabapmatt, @stoodkev, @aggroed, @louis88, @mahdiyari, @acidyo, @fbslo, @rishi556. (apologies for the mass tag) I believe that blocking phishing campaigns in an unified way in all frontends is possible despite the different tech stacks in use. It does no matter which framework the website maintainer used to develop their website (eg. ReactJS, AngularJS, VueJS, JQuery, vanilla JS, etc). Using JS global overrides it is possible to prevent users from falling victim of phishing. What does my script do? It uses the native APIs offered by all browsers in order to immediately block phishing links and images in all Hive frontends as soon as they are discovered and published into the blacklist. - Any known phishing link in the UI will be red and strikethrough-ed. Furthermore if you click on a known phishing link you'll see an alert telling you that it's phishing and it won't allow you to navigate to the phishing domain from the Hive frontend. - Any image that is marked as a phishing attempt (eg. an image with some text saying &quot;claim your $ 1000 in tokens at www.justinscam.com&quot;) will not be displayed in any frontend that uses my script (or a variant of it) as soon as its URL is published into the public blacklist. More details will follow towards the end of the post to list all the native features of the browser that are hardened by my script in order to prevent phishing (ie. iframes, scripts, window open, XHR requests, Fetch api). Usage: How difficult is it to try out my universal script in your Hive-powered website? Integrating this script is very **straightforward**. In order to integrate it, simply add a ` See: Phishing on Hive? No more. Solution for all Frontends. by @keys-defender</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://files.peakd.com/file/peakd-hive/keys-defender/23uEx3ge6ahMEAqbNu2KxP3EvamdsBroMaGSYrkDRPsGUHc7sjst6GKUUPo7MoFq9YGo6.png" /><media:content medium="image" url="https://files.peakd.com/file/peakd-hive/keys-defender/23uEx3ge6ahMEAqbNu2KxP3EvamdsBroMaGSYrkDRPsGUHc7sjst6GKUUPo7MoFq9YGo6.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>
