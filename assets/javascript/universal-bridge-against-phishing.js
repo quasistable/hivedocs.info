@@ -1,6 +1,6 @@
 (function(window, document, XMLHttpRequestClass) {
   // LOGGER
-  const IS_DEBUG = true;
+  const IS_DEBUG = false;
   const log = {
     debug: (...args) => IS_DEBUG && console.log('%c[no-phish]', 'color:green', ...args),
     error: (...args) => console.error('%c[no-phish]', 'color:orange', ...args),
