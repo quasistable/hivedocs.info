@@ -21,7 +21,7 @@
 <meta property="twitter:image" content="https://hivedocs.info/assets/images/favicon.png" />
 <meta property="twitter:title" content="NPM module for Hive Keychain" />
 <script type="application/ld+json">
-{"description":"I’ve created a small Keychain helper for myself a while ago and recently converted it to an npm module to make it easier for other devs to integrate Keychain into their websites.","mainEntityOfPage":{"@type":"WebPage","@id":"https://peakd.com/hive-139531/@therealwolf/npm-module-for-hive-keychain"},"datePublished":"2020-12-02T02:19:03-08:00","@type":"BlogPosting","url":"https://peakd.com/hive-139531/@therealwolf/npm-module-for-hive-keychain","image":"https://hivedocs.info/assets/images/favicon.png","author":{"@type":"Person","name":"therealwolf"},"headline":"NPM module for Hive Keychain","dateModified":"2020-12-02T02:19:03-08:00","@context":"https://schema.org"}</script>
+{"description":"I’ve created a small Keychain helper for myself a while ago and recently converted it to an npm module to make it easier for other devs to integrate Keychain into their websites.","image":"https://hivedocs.info/assets/images/favicon.png","headline":"NPM module for Hive Keychain","dateModified":"2020-12-02T02:19:03-08:00","datePublished":"2020-12-02T02:19:03-08:00","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://peakd.com/hive-139531/@therealwolf/npm-module-for-hive-keychain"},"url":"https://peakd.com/hive-139531/@therealwolf/npm-module-for-hive-keychain","author":{"@type":"Person","name":"therealwolf"},"@context":"https://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://hivedocs.info/feed.xml" title="Hive Chain Documentation" /><script>
 if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNotTrack === "yes" || navigator.msDoNotTrack === "1")) {
@@ -103,7 +103,7 @@ if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNo
           
           <div id="topics-container" class="modal">
             <h3>Topics</h3>
-            <ul><li><a class="page-link" href="/account-recovery/"><nobr>Account Recovery</nobr></a></li><li><a class="page-link" href="/core-development/"><nobr>Core Development</nobr></a></li><li><a class="page-link" href="/dapps/"><nobr>Dapps</nobr></a></li><li><a class="page-link" href="/docker/"><nobr>Docker</nobr></a></li><li><a class="page-link" href="/hardfork/"><nobr>Hardfork</nobr></a></li><li><a class="page-link" href="/hivemind/"><nobr>Hivemind</nobr></a></li><li><a class="page-link" href="/javascript/"><nobr>Javascript</nobr></a></li><li><a class="page-link" href="/multisig/"><nobr>Multisig</nobr></a></li><li><a class="page-link" href="/python/"><nobr>Python</nobr></a></li><li><a class="page-link" href="/ruby/"><nobr>Ruby</nobr></a></li><li><a class="page-link" href="/testnet/"><nobr>Testnet</nobr></a></li><li><a class="page-link" href="/tools/"><nobr>Tools</nobr></a></li></ul>
+            <ul><li><a class="page-link" href="/account-recovery/"><nobr>Account Recovery</nobr></a></li><li><a class="page-link" href="/core-development/"><nobr>Core Development</nobr></a></li><li><a class="page-link" href="/dapps/"><nobr>Dapps</nobr></a></li><li><a class="page-link" href="/docker/"><nobr>Docker</nobr></a></li><li><a class="page-link" href="/hardfork/"><nobr>Hardfork</nobr></a></li><li><a class="page-link" href="/hivemind/"><nobr>Hivemind</nobr></a></li><li><a class="page-link" href="/javascript/"><nobr>Javascript</nobr></a></li><li><a class="page-link" href="/multisig/"><nobr>Multisig</nobr></a></li><li><a class="page-link" href="/python/"><nobr>Python</nobr></a></li><li><a class="page-link" href="/ruby/"><nobr>Ruby</nobr></a></li><li><a class="page-link" href="/testnet/"><nobr>Testnet</nobr></a></li><li><a class="page-link" href="/tools/"><nobr>Tools</nobr></a></li><li><a class="page-link" href="/witness/"><nobr>Witness</nobr></a></li></ul>
           </div>
         </div>
       </nav>
@@ -127,130 +127,7 @@ if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNo
   </header>
 
   <div class="post-content e-content" itemprop="articleBody">
-    <div id="content-therealwolf-npm-module-for-hive-keychain">Greetings #Hivers,
-
-I've created a small Keychain helper for myself a while ago and recently converted it to an npm module to make it easier for other devs to integrate Keychain into their websites. Seriously, just install it and you're good to go.
-
-&gt; https://www.npmjs.com/package/@hiveio/keychain
-
-&gt; https://gitlab.syncad.com/hive/keychain-node
-
-## Example Code
-
-```
-import {keychain, isKeychainInstalled, hasKeychainBeenUsed} from '@hiveio/keychain'
-
-const {success, msg, cancel, notInstalled, notActive} = await keychain(window, 'requestTransfer', 'test', 'therealwolf', 5, 'test memo', 'HIVE')
-
-// All good
-if(success) {
- // do your thing
-}
-// User didn't cancel, so something must have happened
-else if(!cancel) {
-  if(notActive) {
-    // alert('Please allow Keychain to access this website')
-  } else if(notInstalled) {
-    // alert('Please install Keychain')
-  } else {
-    // error happened - check msg
-  }
-}
-```
-
-## Explanation
-
-- `keychain`: run a specific keychain function
-- `isKeychainInstalled`: checks whether keychain is installed and can be found within the window object.
-- `hasKeychainBeenUsed`: checks whether a key/value inside the localStorage exists, which means Keychain has been used before, but isn't active. That can happen if extensions have to be activated per site.
-
-- `notInstalled`: Return boolean from `keychain` with same logic as `isKeychainInstalled`
-- `notActive`: Return boolean from `keychain` with same logic as `hasKeychainBeenUsed`
-- `cancel`: Return boolean from `keychain` which indicates whether the Keychain popup has been closed, thus cancelled. Should be ignored.
-- `success`: Return boolean from `keychain` which indicates whether the transaction was successful. Will be false in case of `cancel`.
-- `msg`: Return string from `keychain` which can be an error.
-
-For the normal workflow, you don't need to use `isKeychainInstalled` or `hasKeychainBeenUsed` as it's automatically checked when running `keychain`. These functions mostly matter for UX purposes.
-
----
-
-Happy coding!</div>
-<script crossorigin="anonymous" integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=" src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-
-<script src="https://unpkg.com/steem-content-renderer"></script>
-
-<script>
-  $(document).ready(function() {
-    try {
-      const renderer = new SteemContentRenderer.DefaultRenderer({
-        baseUrl: "https://hive.blog/",
-        breaks: true,
-        skipSanitization: false,
-        allowInsecureScriptTags: false,
-        addNofollowToLinks: true,
-        doNotShowImages: false,
-        ipfsPrefix: "",
-        assetsWidth: 640,
-        assetsHeight: 480,
-        imageProxyFn: (url) => url,
-        usertagUrlFn: (account) => "/@therealwolf",
-        hashtagUrlFn: (hashtag) => "/npm-module-for-hive-keychain",
-        isLinkSafeFn: (url) => true,
-      });
-      
-      const inputElem = $('#content-therealwolf-npm-module-for-hive-keychain').html();
-      const outputElem = $('#content-therealwolf-npm-module-for-hive-keychain');
-      const output = renderer.render(inputElem);
-      
-      outputElem.html(output);
-    } catch(e) {
-      console.log(e);
-    }
-  });
-</script>
-
-<style>
-  #content-therealwolf-npm-module-for-hive-keychain {
-    padding: 0 3rem;
-    color: #444444;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    font-size: 16px;
-    line-height: 1.8;
-    text-shadow: 0 1px 0 #ffffff;
-    padding: 0.5rem;
-  }
-  #content-therealwolf-npm-module-for-hive-keychain code {
-    background: white;
-  }
-  #content-therealwolf-npm-module-for-hive-keychain a {
-    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
-  }
-  #content-therealwolf-npm-module-for-hive-keychain a:hover {
-    border-bottom: 0;
-  }
-  #content-therealwolf-npm-module-for-hive-keychain h1 {
-    font-size: 2.2em;
-  }
-  #content-therealwolf-npm-module-for-hive-keychain h2, h3, h4, h5 {
-    margin-bottom: 0;
-  }
-  #content-therealwolf-npm-module-for-hive-keychain header small {
-    color: #999;
-    font-size: 50%;
-  }
-  #content-therealwolf-npm-module-for-hive-keychain img {
-    max-width: 100%;
-  }
-</style>
-
-<hr />
-
-<p>
-  See: <a href="https://peakd.com/hive-139531/@therealwolf/npm-module-for-hive-keychain">NPM module for Hive Keychain</a>
-  by
-  <a href="https://hive.blog/@therealwolf">@therealwolf</a>
-</p>
-
+    
 
   </div><a class="u-url" href="/news/nodejs/hive-keychain/2020/12/02/npm-module-for-hive-keychain.html" hidden></a>
 </article>

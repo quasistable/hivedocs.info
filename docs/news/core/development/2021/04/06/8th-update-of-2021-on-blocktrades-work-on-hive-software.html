@@ -21,7 +21,7 @@
 <meta property="twitter:image" content="https://hivedocs.info/assets/images/favicon.png" />
 <meta property="twitter:title" content="8th update of 2021 on BlockTrades work on Hive software" />
 <script type="application/ld+json">
-{"description":"Hive-related programming issues worked on by BlockTrades team during the past few weeks …","mainEntityOfPage":{"@type":"WebPage","@id":"https://hive.blog/hive-139531/@blocktrades/8th-update-of-2021-on-blocktrades-work-on-hive-software"},"datePublished":"2021-04-06T17:42:57-07:00","@type":"BlogPosting","url":"https://hive.blog/hive-139531/@blocktrades/8th-update-of-2021-on-blocktrades-work-on-hive-software","image":"https://hivedocs.info/assets/images/favicon.png","author":{"@type":"Person","name":"blocktrades"},"headline":"8th update of 2021 on BlockTrades work on Hive software","dateModified":"2021-04-06T17:42:57-07:00","@context":"https://schema.org"}</script>
+{"description":"Hive-related programming issues worked on by BlockTrades team during the past few weeks …","image":"https://hivedocs.info/assets/images/favicon.png","headline":"8th update of 2021 on BlockTrades work on Hive software","dateModified":"2021-04-06T17:42:57-07:00","datePublished":"2021-04-06T17:42:57-07:00","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://hive.blog/hive-139531/@blocktrades/8th-update-of-2021-on-blocktrades-work-on-hive-software"},"url":"https://hive.blog/hive-139531/@blocktrades/8th-update-of-2021-on-blocktrades-work-on-hive-software","author":{"@type":"Person","name":"blocktrades"},"@context":"https://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://hivedocs.info/feed.xml" title="Hive Chain Documentation" /><script>
 if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNotTrack === "yes" || navigator.msDoNotTrack === "1")) {
@@ -103,7 +103,7 @@ if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNo
           
           <div id="topics-container" class="modal">
             <h3>Topics</h3>
-            <ul><li><a class="page-link" href="/account-recovery/"><nobr>Account Recovery</nobr></a></li><li><a class="page-link" href="/core-development/"><nobr>Core Development</nobr></a></li><li><a class="page-link" href="/dapps/"><nobr>Dapps</nobr></a></li><li><a class="page-link" href="/docker/"><nobr>Docker</nobr></a></li><li><a class="page-link" href="/hardfork/"><nobr>Hardfork</nobr></a></li><li><a class="page-link" href="/hivemind/"><nobr>Hivemind</nobr></a></li><li><a class="page-link" href="/javascript/"><nobr>Javascript</nobr></a></li><li><a class="page-link" href="/multisig/"><nobr>Multisig</nobr></a></li><li><a class="page-link" href="/python/"><nobr>Python</nobr></a></li><li><a class="page-link" href="/ruby/"><nobr>Ruby</nobr></a></li><li><a class="page-link" href="/testnet/"><nobr>Testnet</nobr></a></li><li><a class="page-link" href="/tools/"><nobr>Tools</nobr></a></li></ul>
+            <ul><li><a class="page-link" href="/account-recovery/"><nobr>Account Recovery</nobr></a></li><li><a class="page-link" href="/core-development/"><nobr>Core Development</nobr></a></li><li><a class="page-link" href="/dapps/"><nobr>Dapps</nobr></a></li><li><a class="page-link" href="/docker/"><nobr>Docker</nobr></a></li><li><a class="page-link" href="/hardfork/"><nobr>Hardfork</nobr></a></li><li><a class="page-link" href="/hivemind/"><nobr>Hivemind</nobr></a></li><li><a class="page-link" href="/javascript/"><nobr>Javascript</nobr></a></li><li><a class="page-link" href="/multisig/"><nobr>Multisig</nobr></a></li><li><a class="page-link" href="/python/"><nobr>Python</nobr></a></li><li><a class="page-link" href="/ruby/"><nobr>Ruby</nobr></a></li><li><a class="page-link" href="/testnet/"><nobr>Testnet</nobr></a></li><li><a class="page-link" href="/tools/"><nobr>Tools</nobr></a></li><li><a class="page-link" href="/witness/"><nobr>Witness</nobr></a></li></ul>
           </div>
         </div>
       </nav>
@@ -220,15 +220,21 @@ And we have an open merge request for the code to generate openapi documentation
 
 # Another progress update soon
 
-I’ll probably be putting out another progress update early next week, after we have more performance numbers. I kept delaying this one hoping to include those numbers, but we were caught up in too many tasks and small issues spoiled a bunch of our measurement attempts, and then the Easter holiday hit.</div>
+I’ll probably be putting out another progress update early next week, after we have more performance numbers. I kept delaying this one hoping to include those numbers, but we were caught up in too many tasks and small issues spoiled a bunch of our measurement attempts, and then the Easter holiday hit.
+
+[EDIT] Several people have misinterpreted the function of the weights in the new algorithm, and this has led to a misapprehension about curation rewards for late voters. The weights are used to allocate the rewards between the curators. So if there are few strong voters in the first period and most in a later period, the late voters will receive roughly the same rewards as if they had voted in the early period. 
+
+Total post reward amount (author + curation rewards) will be calculated based on total rshares with the new algorithm, not the weights. In pretty much every case, this new algorithm is designed to be MORE favorable to late voters than the current algorithm. So if this leads to people only voting in the first 24 hours, it's only due to misinformation. We'll be presenting more data later to explain how the new algorithm distributes curation rewards.</div>
 <script crossorigin="anonymous" integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=" src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 
 <script src="https://unpkg.com/steem-content-renderer"></script>
 
+<!-- <script src="https://cdn.jsdelivr.net/npm/hive-content-renderer/dist/hive-content-renderer.min.js"></script> -->
 <script>
   $(document).ready(function() {
     try {
       const renderer = new SteemContentRenderer.DefaultRenderer({
+      // const renderer = new HiveContentRenderer({
         baseUrl: "https://hive.blog/",
         breaks: true,
         skipSanitization: false,
