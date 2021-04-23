@@ -3,7 +3,40 @@ layout: null
 ---
 [
   {% for post in site.posts %}
-    {% assign keywords = post.content | downcase | strip_html | strip_newlines | replace: '"', '' | replace: '\', '' | split: ' ' | uniq %}
+    {%
+      assign keywords = post.content | downcase | strip_html | strip_newlines |
+      replace: '"', ' ' |
+      replace: "'", ' ' |
+      replace: '\', ' ' |
+      replace: '`', ' ' |
+      replace: ',', ' ' |
+      replace: ';', ' ' |
+      replace: '.', ' ' |
+      replace: '?', ' ' |
+      replace: '!', ' ' |
+      replace: '…', ' ' |
+      replace: ':', ' ' |
+      replace: '_', ' ' |
+      replace: '*', ' ' |
+      replace: '$', ' ' |
+      replace: '#', ' ' |
+      replace: '=', ' ' |
+      replace: '/', ' ' |
+      replace: '[', ' ' |
+      replace: ']', ' ' |
+      replace: '(', ' ' |
+      replace: ')', ' ' |
+      replace: '{', ' ' |
+      replace: '}', ' ' |
+      replace: '|', ' ' |
+      replace: '-', ' ' |
+      replace: '+', ' ' |
+      replace: '&amp;', ' ' |
+      replace: '&gt;', ' ' |
+      replace: '&lt;', ' ' |
+      split: ' ' |
+      uniq
+    %}
     {% assign description = post.description %}
     
     {% if description == null %}
