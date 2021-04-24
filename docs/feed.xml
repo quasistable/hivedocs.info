@@ -1,4 +1,104 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="https://hivedocs.info/feed.xml" rel="self" type="application/atom+xml" /><link href="https://hivedocs.info/" rel="alternate" type="text/html" /><updated>2021-04-23T11:11:45-07:00</updated><id>https://hivedocs.info/feed.xml</id><title type="html">Hive Chain Documentation</title><subtitle>Your resource for various levels of Hive Documentation.</subtitle><author><name>site curated by: @inertia</name></author><entry><title type="html">My new contributions to the Hive Condenser and Wallet apps.</title><link href="https://hivedocs.info/news/nodejs/condenser/2021/04/22/6cv6sw-my-new-contributions-to-the-hive-condenser-and-wallet-apps.html" rel="alternate" type="text/html" title="My new contributions to the Hive Condenser and Wallet apps." /><published>2021-04-22T05:59:18-07:00</published><updated>2021-04-22T05:59:18-07:00</updated><id>https://hivedocs.info/news/nodejs/condenser/2021/04/22/6cv6sw-my-new-contributions-to-the-hive-condenser-and-wallet-apps</id><content type="html" xml:base="https://hivedocs.info/news/nodejs/condenser/2021/04/22/6cv6sw-my-new-contributions-to-the-hive-condenser-and-wallet-apps.html">&lt;div id=&quot;content-quochuy-6cv6sw-my-new-contributions-to-the-hive-condenser-and-wallet-apps&quot;&gt;## Context
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="https://hivedocs.info/feed.xml" rel="self" type="application/atom+xml" /><link href="https://hivedocs.info/" rel="alternate" type="text/html" /><updated>2021-04-23T17:39:18-07:00</updated><id>https://hivedocs.info/feed.xml</id><title type="html">Hive Chain Documentation</title><subtitle>Your resource for various levels of Hive Documentation.</subtitle><author><name>site curated by: @inertia</name></author><entry><title type="html">Ruby Client for Hive: hive-ruby-1.0.3</title><link href="https://hivedocs.info/news/ruby/2021/04/22/ruby-client-for-hive-hive-ruby-103.html" rel="alternate" type="text/html" title="Ruby Client for Hive: hive-ruby-1.0.3" /><published>2021-04-22T22:05:09-07:00</published><updated>2021-04-22T22:05:09-07:00</updated><id>https://hivedocs.info/news/ruby/2021/04/22/ruby-client-for-hive-hive-ruby-103</id><content type="html" xml:base="https://hivedocs.info/news/ruby/2021/04/22/ruby-client-for-hive-hive-ruby-103.html">&lt;div id=&quot;content-inertia-ruby-client-for-hive-hive-ruby-103&quot;&gt;&lt;div class=&quot;pull-right&quot;&gt;
+  &lt;img src=&quot;https://files.peakd.com/file/peakd-hive/inertia/aJnQFjOw-logo-128.png&quot; /&gt;
+&lt;/div&gt;
+
+This is a version bump and should not adversely affect existing applications that use the `hive-ruby` gem.  Changes are focused on performance improvements to `Hive::Stream` subroutines.
+
+The main change is that we no longer have to rely on `json-rpc-batch` to stream blocks.  Prior to this change, if the API node supported batched requests, it would ask for up to 50 blocks using [this published standard](https://www.jsonrpc.org/specification#batch).
+
+But not all API endpoints supported the standard.  In HF24, we got the [`block_api.get_block_range`](https://developers.hive.io/apidefinitions/#block_api.get_block_range) method.  And although not all endpoints support this method, it's much more supported than `json-rpc-batch`.
+
+Hive Ruby will try whatever the endpoint will provide, starting with `get_block_range`, then `json-rpc-batch`, and then just fall back on non-batched requests.
+
+In addition to this new method, if you area streaming virtual operations, Hive Ruby will now use [`account_history_api.enum_virtual_ops`](https://developers.hive.io/apidefinitions/#account_history_api.enum_virtual_ops) (if supported).  This will improve performance and reliability, even when streaming virtual operations from the head block.
+
+See rev.: [94142bc](
+https://gitlab.syncad.com/hive/hive-ruby/-/commit/94142bc9b21a662ce8f467c60f1e039a7e62d832)
+
+To update your application:
+
+```bash
+bundle update hive-ruby
+```
+
+See previous `hive-ruby` posts: [peakd.com/c/hive-139531/search?q=hive-ruby](https://peakd.com/c/hive-139531/search?q=hive-ruby)&lt;/div&gt;
+&lt;script crossorigin=&quot;anonymous&quot; integrity=&quot;sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=&quot; src=&quot;https://code.jquery.com/jquery-3.5.1.slim.min.js&quot;&gt;&lt;/script&gt;
+
+&lt;script src=&quot;https://unpkg.com/steem-content-renderer&quot;&gt;&lt;/script&gt;
+
+&lt;!-- &lt;script src=&quot;https://cdn.jsdelivr.net/npm/hive-content-renderer/dist/hive-content-renderer.min.js&quot;&gt;&lt;/script&gt; --&gt;
+&lt;script&gt;
+  $(document).ready(function() {
+    try {
+      const renderer = new SteemContentRenderer.DefaultRenderer({
+      // const renderer = new HiveContentRenderer({
+        baseUrl: &quot;https://hive.blog/&quot;,
+        breaks: true,
+        skipSanitization: false,
+        allowInsecureScriptTags: false,
+        addNofollowToLinks: true,
+        doNotShowImages: false,
+        ipfsPrefix: &quot;&quot;,
+        assetsWidth: 640,
+        assetsHeight: 480,
+        imageProxyFn: (url) =&gt; url,
+        usertagUrlFn: (account) =&gt; &quot;/@inertia&quot;,
+        hashtagUrlFn: (hashtag) =&gt; &quot;/ruby-client-for-hive-hive-ruby-103&quot;,
+        isLinkSafeFn: (url) =&gt; true,
+      });
+      
+      const inputElem = $('#content-inertia-ruby-client-for-hive-hive-ruby-103').html();
+      const outputElem = $('#content-inertia-ruby-client-for-hive-hive-ruby-103');
+      const output = renderer.render(inputElem);
+      
+      outputElem.html(output);
+    } catch(e) {
+      console.log(e);
+    }
+  });
+&lt;/script&gt;
+
+&lt;style&gt;
+  #content-inertia-ruby-client-for-hive-hive-ruby-103 {
+    padding: 0 3rem;
+    color: #444444;
+    font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.8;
+    text-shadow: 0 1px 0 #ffffff;
+    padding: 0.5rem;
+  }
+  #content-inertia-ruby-client-for-hive-hive-ruby-103 code {
+    background: white;
+  }
+  #content-inertia-ruby-client-for-hive-hive-ruby-103 a {
+    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
+  }
+  #content-inertia-ruby-client-for-hive-hive-ruby-103 a:hover {
+    border-bottom: 0;
+  }
+  #content-inertia-ruby-client-for-hive-hive-ruby-103 h1 {
+    font-size: 2.2em;
+  }
+  #content-inertia-ruby-client-for-hive-hive-ruby-103 h2, h3, h4, h5 {
+    margin-bottom: 0;
+  }
+  #content-inertia-ruby-client-for-hive-hive-ruby-103 header small {
+    color: #999;
+    font-size: 50%;
+  }
+  #content-inertia-ruby-client-for-hive-hive-ruby-103 img {
+    max-width: 100%;
+  }
+&lt;/style&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;
+  See: &lt;a href=&quot;https://peakd.com/hive-139531/@inertia/ruby-client-for-hive-hive-ruby-103&quot;&gt;Ruby Client for Hive: hive-ruby-1.0.3&lt;/a&gt;
+  by
+  &lt;a href=&quot;https://hive.blog/@inertia&quot;&gt;@inertia&lt;/a&gt;
+&lt;/p&gt;</content><author><name>inertia</name></author><category term="news" /><category term="ruby" /><summary type="html">This is a version bump and should not adversely affect existing applications that use the `hive-ruby` gem. Changes are focused on performance improvements to `Hive::Stream` subroutines. The main change is that we no longer have to rely on `json-rpc-batch` to stream blocks. Prior to this change, if the API node supported batched requests, it would ask for up to 50 blocks using [this published standard](https://www.jsonrpc.org/specification#batch). But not all API endpoints supported the standard. In HF24, we got the [`block_api.get_block_range`](https://developers.hive.io/apidefinitions/#block_api.get_block_range) method. And although not all endpoints support this method, it's much more supported than `json-rpc-batch`. Hive Ruby will try whatever the endpoint will provide, starting with `get_block_range`, then `json-rpc-batch`, and then just fall back on non-batched requests. In addition to this new method, if you area streaming virtual operations, Hive Ruby will now use [`account_history_api.enum_virtual_ops`](https://developers.hive.io/apidefinitions/#account_history_api.enum_virtual_ops) (if supported). This will improve performance and reliability, even when streaming virtual operations from the head block. See rev.: [94142bc]( https://gitlab.syncad.com/hive/hive-ruby/-/commit/94142bc9b21a662ce8f467c60f1e039a7e62d832) To update your application: ```bash bundle update hive-ruby ``` See previous `hive-ruby` posts: [peakd.com/c/hive-139531/search?q=hive-ruby](https://peakd.com/c/hive-139531/search?q=hive-ruby) See: Ruby Client for Hive: hive-ruby-1.0.3 by @inertia</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://files.peakd.com/file/peakd-hive/inertia/aJnQFjOw-logo-128.png" /><media:content medium="image" url="https://files.peakd.com/file/peakd-hive/inertia/aJnQFjOw-logo-128.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">My new contributions to the Hive Condenser and Wallet apps.</title><link href="https://hivedocs.info/news/nodejs/condenser/2021/04/22/6cv6sw-my-new-contributions-to-the-hive-condenser-and-wallet-apps.html" rel="alternate" type="text/html" title="My new contributions to the Hive Condenser and Wallet apps." /><published>2021-04-22T05:59:18-07:00</published><updated>2021-04-22T05:59:18-07:00</updated><id>https://hivedocs.info/news/nodejs/condenser/2021/04/22/6cv6sw-my-new-contributions-to-the-hive-condenser-and-wallet-apps</id><content type="html" xml:base="https://hivedocs.info/news/nodejs/condenser/2021/04/22/6cv6sw-my-new-contributions-to-the-hive-condenser-and-wallet-apps.html">&lt;div id=&quot;content-quochuy-6cv6sw-my-new-contributions-to-the-hive-condenser-and-wallet-apps&quot;&gt;## Context
 I have been involved (voluntarily) with the development of the Condenser &amp;amp; Wallet apps (that are powering https://hive.blog and https://wallet.hive.blog) for quite a while now. There are other great frontends to Hive out there such as https://peakd.com and https://ecency.com but I have always been more or less faithful with the Condenser.
 
 This is a regular report on my new contributions. Some of the new work below might still be in test and not yet deployed.
@@ -2072,555 +2172,4 @@ Thanks for reading. Make sure to follow me and share the post. Upvote if you lik
   See: &lt;a href=&quot;https://hive.blog/hive-169321/@mahdiyari/making-a-decentralized-game-on-hive-part-4&quot;&gt;Making a Decentralized Game on Hive - Part 4&lt;/a&gt;
   by
   &lt;a href=&quot;https://hive.blog/@mahdiyari&quot;&gt;@mahdiyari&lt;/a&gt;
-&lt;/p&gt;</content><author><name>mahdiyari</name></author><category term="howto" /><category term="nodejs" /><summary type="html">![coding-pixabay.jpg](https://images.hive.blog/DQmbqyPpfU2dpwYkn9GVJdMmJbfukkvZZ8Bwqk7epyswP9w/macbook-2617705_1280.jpg) In the [previous part](https://hive.blog/hive-139531/@mahdiyari/making-a-decentralized-game-on-hive-part-3), we made a back-end that is streaming blocks and detects 3 methods in custom_json. Create a game, request to join a game, and accept the request. We also set up a MySQL server with 3 tables for the methods. You can find the links to the other parts at the end of the post. ### API Let's start by implementing the API for retrieving the games list. Our API is public so it doesn't require user authentication. The API will just return the data synced from the blockchain. `api/games.js`: ``` const mysql = require('../helpers/mysql') const express = require('express') const router = express.Router() // Return all games on route /games router.get('/games', async (req, res) =&amp;gt; { try { // Get games data from Database const games = await mysql.query( 'SELECT `game_id`, `player1`, `player2`, `starting_player`, `status`, `winner` FROM `games`' ) // Check for expected result if (!games || !Array.isArray(games) || games.length &amp;lt; 1) { // WE return id: 1 for success and id: 0 for errors return res.json({ id: 1, games: [] }) } // We return `games` as we receive from MySQL but it's not a good practice // specially when you have critical data in the database // You can return data one by one like `games: [{game_id: games.game_id, ...}]` return res.json({ id: 1, games }) } catch (e) { // Return error for unexpected errors like connection drops res.json({ id: 0, error: 'Unexpected error.' }) } }) module.exports = router ``` The comments are in the code itself for better understanding. Note: We use `try{} catch{}` wherever we can. It is always good to handle errors. We can test our API at this point to detect possible errors in the code. Include the following code in `api/server.js` just above the `port` and `host` constants. ``` const games = require('./games') app.use(games) ``` Run `node api/server.js`. We can see the console.log: `Application started on 127.0.0.1:2021` Let's open `127.0.0.1:2021/games` in the browser. ![image.png](https://images.hive.blog/DQmbTKVAbtUB6nDH8HWuvku8NuiZv3jovu94jtEMAEU1vSX/image.png) The API works as expected. But it's not done yet. This API returns ALL the games without a specific order. We should implement pagination and define an order for our list. Updated code `api/games.js`: ``` const mysql = require('../helpers/mysql') const express = require('express') const router = express.Router() router.get('/games/:page', async (req, res) =&amp;gt; { try { if (isNaN(req.params.page)) { res.json({ id: 0, error: 'Expected number.' }) } const page = Math.floor(req.params.page) if (page &amp;lt; 1) { res.json({ id: 0, error: 'Expected &amp;gt; 0' }) } const offset = (page - 1) * 10 const games = await mysql.query( 'SELECT `game_id`, `player1`, `player2`, `starting_player`, `status`, `winner` FROM `games`' + ' ORDER BY `id` DESC LIMIT 10 OFFSET ?', [offset] ) if (!games || !Array.isArray(games) || games.length &amp;lt; 1) { return res.json({ id: 1, games: [] }) } return res.json({ id: 1, games }) } catch (e) { res.json({ id: 0, error: 'Unexpected error.' }) } }) module.exports = router ``` We used `id` to order our list and get the newly created games first. Each page returns up to 10 games. We can try `127.0.0.1:2021/games/1` for testing. *** Let's set another API for requests. The code is almost similar but we return only requests for the specific game_id. `api/requests.js`: ``` const mysql = require('../helpers/mysql') const express = require('express') const router = express.Router() router.get('/requests/:id', async (req, res) =&amp;gt; { try { if (!req.params.id) { res.json({ id: 0, error: 'Expected game_id.' }) } // We are passing user input into the database // You should be careful in such cases // We use ? for parameters which escapes the characters const requests = await mysql.query( 'SELECT `player`, `status` FROM `requests` WHERE `game_id`= ?', [req.params.id] ) if (!requests || !Array.isArray(requests) || requests.length &amp;lt; 1) { return res.json({ id: 1, requests: [] }) } return res.json({ id: 1, requests }) } catch (e) { res.json({ id: 0, error: 'Unexpected error.' }) } }) module.exports = router ``` Note: `:id` in the above router represents a variable named id. So for example `http://127.0.0.1:2021/requests/mygameidhere` in this request, the `id` variable is `mygameidhere` which is accessible by `req.params.id`. *** A similar code for the `moves` table. There wasn't a better name in my mind for this table. `api/moves.js`: ``` const mysql = require('../helpers/mysql') const express = require('express') const router = express.Router() router.get('/moves/:id', async (req, res) =&amp;gt; { try { if (!req.params.id) { res.json({ id: 0, error: 'Expected game_id.' }) } const moves = await mysql.query( 'SELECT `player`, `col`, `row` FROM `moves` WHERE `game_id`= ?', [req.params.id] ) if (!moves || !Array.isArray(moves) || moves.length &amp;lt; 1) { return res.json({ id: 1, moves: [] }) } return res.json({ id: 1, moves }) } catch (e) { res.json({ id: 0, error: 'Unexpected error.' }) } }) module.exports = router ``` Now our 3 APIs are ready to be implemented on the front-end. *** Here is the updated `api/server.js` after including the APIs: ``` const express = require('express') const bodyParser = require('body-parser') const hpp = require('hpp') const helmet = require('helmet') const app = express() // more info: www.npmjs.com/package/hpp app.use(hpp()) app.use(helmet()) // support json encoded bodies and encoded bodies app.use(bodyParser.json()) app.use(bodyParser.urlencoded({ extended: true })) app.use(function (req, res, next) { res.header( 'Access-Control-Allow-Origin', 'http://localhost https://tic-tac-toe.mahdiyari.info/' ) res.header('Access-Control-Allow-Credentials', true) res.header( 'Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, access_key' ) next() }) // APIs const games = require('./games') const requests = require('./requests') const moves = require('./moves') app.use(games) app.use(requests) app.use(moves) const port = process.env.PORT || 2021 const host = process.env.HOST || '127.0.0.1' app.listen(port, host, () =&amp;gt; { console.log(`Application started on ${host}:${port}`) }) ``` *** ### Front-end I think using pure HTML is a mistake and I would prefer something like Angular for the web applications but that comes with its own learning process which can make this tutorial complex. So my recommendation is to learn something like Angular or Vue and live a happy life. Anyway, coding time. I'm not going to drop `index.html` here. It doesn't need much explanation and it's long. You can see it on the [GitLab repository](https://gitlab.com/mahdiyari/decentralized-game-on-hive/-/blob/master/front-end/index.html). I will just add some references here used in `app.js`. The table for listing the games and buttons for pagination. `index.html`: ``` Games list Auto updating every 5s # Game ID Player 1 Player 2 Starting Player Status Winner Action &amp;laquo; 1 &amp;raquo; ``` *** We have to fill the table above. So let's implement some basic functions. `js/app.js`: ``` const baseAPI = 'http://127.0.0.1:2021' const APICall = async (api) =&amp;gt; { return (await fetch(baseAPI + api)).json() } ``` For ease of use, we define a function for `GET` calls using `fetch` and a variable for our API address. *** ``` const getGames = async (page = 1) =&amp;gt; { const games = await APICall('/games/' + page) return games.games } ``` This function basically gets the games from the API per page. *** ``` const fillGamesTable = (data) =&amp;gt; { const tbody = document.getElementById('games-table-body') let temp = '' for (let i = 0; i &amp;lt; data.length; i++) { temp += ` ${(gamesPage - 1) * 10 + i + 1} ${data[i].game_id} ${data[i].player1} ${data[i].player2} ${data[i].starting_player} ${data[i].status} ${data[i].winner} ` } if (data.length &amp;lt; 1) { temp = 'No games.' } tbody.innerHTML = temp } ``` `fillGamesTable` takes the result from `getGames` function and fills the HTML table with data using a `for` loop. *** ``` let gamesPage = 1 const loadTheGames = async () =&amp;gt; { const games = await getGames(gamesPage) fillGamesTable(games) if (games.length &amp;lt; 10) { document.getElementById('next-btn').className = 'page-item disabled' } else { document.getElementById('next-btn').className = 'page-item' } if (gamesPage === 1) { document.getElementById('prev-btn').className = 'page-item disabled' } else { document.getElementById('prev-btn').className = 'page-item' } document.getElementById('page-number').innerHTML = ` ${gamesPage} ` } loadTheGames() setInterval(() =&amp;gt; loadTheGames(), 5000) ``` With this function, we call the two previously defined functions to do their job and update the pagination buttons and the page number every time we update the table data. Also, every 5 seconds, it gets new data from API and updates the table with new data so users don't have to reload the page for new data. *** ``` const nextGamesPage = () =&amp;gt; { gamesPage++ loadTheGames() } const prevGamesPage = () =&amp;gt; { gamesPage-- loadTheGames() } ``` And two functions for changing pages. Simple as that. *** The final result with dummy data looks like this on the browser: ![Capture.PNG](https://images.hive.blog/DQmcYZC1vixajRW4Ui5dHiSfTy5MYqEYZhXy2bd2ituz4Ar/Capture.PNG) *** That's it for this part. I'm really happy with the results we are getting. I didn't plan anything beforehand and I'm coding as I'm writing the posts. Today we made 3 API calls and created the basic front-end which for now only shows the list of games that are submitted to the Hive blockchain. In the next part, we will implement the methods for creating and joining the games on the client side. We also probably need to create a game page where actual gaming happens. Thanks for reading. Make sure to follow me and share the post. Upvote if you like and leave a comment. *** [GitLab](https://gitlab.com/mahdiyari/decentralized-game-on-hive) [Part 1](https://hive.blog/hive-139531/@mahdiyari/making-a-decentralized-game-on-hive-tic-tac-toe-part-1) [Part 2](https://hive.blog/hive-139531/@mahdiyari/making-a-decentralized-game-on-hive-part-2) [Part 3](https://hive.blog/hive-139531/@mahdiyari/making-a-decentralized-game-on-hive-part-3) [Next part &amp;gt;&amp;gt;](https://hive.blog/hive-169321/@mahdiyari/making-a-decentralized-game-on-hive-part-5) *** **Vote for my witness:** - https://wallet.hive.blog/~witnesses - https://peakd.com/witnesses - https://ecency.com/witnesses See: Making a Decentralized Game on Hive - Part 4 by @mahdiyari</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://images.hive.blog/DQmbqyPpfU2dpwYkn9GVJdMmJbfukkvZZ8Bwqk7epyswP9w/macbook-2617705_1280.jpg" /><media:content medium="image" url="https://images.hive.blog/DQmbqyPpfU2dpwYkn9GVJdMmJbfukkvZZ8Bwqk7epyswP9w/macbook-2617705_1280.jpg" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Wanna help test RC delegations ? Here’s all you need to know</title><link href="https://hivedocs.info/howto/contribute/qa/2021/04/01/wanna-help-test-rc-delegations-heres-all-you-need-to-know.html" rel="alternate" type="text/html" title="Wanna help test RC delegations ? Here’s all you need to know" /><published>2021-04-01T05:47:18-07:00</published><updated>2021-04-01T05:47:18-07:00</updated><id>https://hivedocs.info/howto/contribute/qa/2021/04/01/wanna-help-test-rc-delegations-heres-all-you-need-to-know</id><content type="html" xml:base="https://hivedocs.info/howto/contribute/qa/2021/04/01/wanna-help-test-rc-delegations-heres-all-you-need-to-know.html">&lt;div id=&quot;content-howo-wanna-help-test-rc-delegations-heres-all-you-need-to-know&quot;&gt;Hello,
-
-
-![social_hive_city.jpg](https://files.peakd.com/file/peakd-hive/howo/23tkhtbrgHEVtkgv17tzktjCoVTGzkbSPxxv2tqiF57xYvgh8XouRqfeV68p7cVTKfipk.jpg)
-
-
-some users asked me how they can help testing rc delegations so I set to write a guide
-
-disclaimer: this assumes that you are very technical and have a good understanding of how hive works.
-
-## rc delegations
-
-### Pools
-
-Each account got an RC pool in his account, anyone can delegate to any account pool, that RC won't be usable by the account, it's just a pool he can delegate RC from. (he can delegate to himself if he wishes).
-
-### RC slots
-
-There is a notion of delegation slots, each account got 3 slots from which they can receive delegations. meaning they can receive rc from at most from 3 pools, also, each slot can only receive from a specific pool. If you are not &quot;whitelisted&quot; you can't delegate to an user.
-
-For new accounts the slots will be set like this by default:
-Slot 1 is set to the account creator of the account, and both the account and the account creator can change that slot
-Slot 2 is set to the recovery account or not set, the account and the recovery partner for the account can change that slot
-Slot 3 is not set, and only the account can change that slot.
-
-Most of the use cases for rc delegations are linked to account creation, games or other operation intensive applications could have a button to &quot;ask for rc&quot; that would make the user set a slot to the game and then the app would delegate to it.
-
-It's worth noting that if you change your slot, you lose your previous delegation on that slot.
-
-### Oversubscription
-
-Pool work on an oversubscription model:
-
-Let's say Alice delegates 100 RC to an RC Pool.
-That pool can then delegates 30 RC to Bob, Carol, Dave, and Eugene.
-There is a total of 120 RC delegated, but only 100 RC in the pool.
-
-Is that a problem? No.The implementation allows each of the out delegations to use up to the delegation's worth of RC, but that is charged to the pool.
-
-If Bob uses all 30 RC and no one else does, Bob will no longer have access to RC from the pool until his regenerates, even though to pool still has 70 RC available. However, if Bob, Carol, and Dave all use 30 RC, then Eugene will only be able to use 10 RC before he cannot access any more.
-
-Although he has RC still available from the delegation, because the pool ran out of RC, Eugene does not have any to use.
-
-This is useful for this use case: multiple large stakeholder delegating to one account creation pool making many small delegations to new users. Users will consume their RC, but because not all users are retained, this can be significantly over subscribed.
-Another real life example:
-
-```
-Alice delegates 50 rc to her pool
-Bob changes it slot 3 to Alice
-Alice delegates 30 RC from it's pool to Bob (Bob can now use the RC)
-Alice tries to delegate to Eve, but since she didn't set a slot to Alice, Alice cannot delegate RC to it
-```
-
-That's it ! Feel free to comment if you have questions
-this doc may give you some more info: https://gitlab.syncad.com/hive/hive/-/blob/feature/rc_delegation_rebase/doc/devs/delegation_pools.md
-
-Now onto the actual testing.
-
-# compiling hive
-
-if you are on ubuntu 20 see this other guide first: https://peakd.com/hive/@howo/how-to-build-hive-on-ubuntu-20-04
-
-first install all of the dependencies :
-
-```
-apt-get install -y \
-        autoconf \
-        automake \
-        autotools-dev \
-        build-essential \
-        cmake \
-        doxygen \
-        git \
-        libboost-all-dev \
-        libyajl-dev \
-        libreadline-dev \
-        libssl-dev \
-        libtool \
-        liblz4-tool \
-        ncurses-dev \
-        python3 \
-        python3-dev \
-        python3-jinja2 \
-        python3-pip \
-        libgflags-dev \
-        libsnappy-dev \
-        zlib1g-dev \
-        libbz2-dev \
-        liblz4-dev \
-        libzstd-dev
-```
-
-then build hive on the rc delegations branch:
-
-```
-git clone git@gitlab.syncad.com:hive/hive.git
-cd hive
-git checkout feature/rc_delegation_rebase
-git submodule update --init --recursive
-mkdir build
-cd build
-
-cmake -DENABLE_COVERAGE_TESTING=ON -DBUILD_HIVE_TESTNET=ON -DLOW_MEMORY_NODE=ON ..
-
-make -j$(nproc) hived cli_wallet
-```
-
-if you got an error while doing the git clone try with this url:
-
-`https://gitlab.syncad.com/hive/hive.git`
-
-# running it
-
-Run the node a few seconds and then exit hived like so
-
-`./programs/steemd/hived -d testnet/`
-
-this will create a testnet directory with the default config file.
-
-open the config.ini file
-
-`nano testnethf24/config.ini`
-
-replace the config.ini with this one:
-
-```
-# Appender definition json: {&quot;appender&quot;, &quot;stream&quot;, &quot;file&quot;} Can only specify a file OR a stream
-log-appender = {&quot;appender&quot;:&quot;stderr&quot;,&quot;stream&quot;:&quot;std_error&quot;} {&quot;appender&quot;:&quot;p2p&quot;,&quot;file&quot;:&quot;logs/p2p/p2p.log&quot;}
-
-# log-console-appender = 
-
-# log-file-appender = 
-
-# Logger definition json: {&quot;name&quot;, &quot;level&quot;, &quot;appender&quot;}
-log-logger = {&quot;name&quot;:&quot;default&quot;,&quot;level&quot;:&quot;info&quot;,&quot;appender&quot;:&quot;stderr&quot;} {&quot;name&quot;:&quot;p2p&quot;,&quot;level&quot;:&quot;warn&quot;,&quot;appender&quot;:&quot;p2p&quot;}
-
-# Whether to print backtrace on SIGSEGV
-backtrace = yes
-
-# Plugin(s) to enable, may be specified multiple times
-plugin = witness account_by_key account_by_key_api condenser_api 
-
-# Defines a range of accounts to track as a json pair [&quot;from&quot;,&quot;to&quot;] [from,to] Can be specified multiple times.
-# account-history-track-account-range = 
-
-# Defines a range of accounts to track as a json pair [&quot;from&quot;,&quot;to&quot;] [from,to] Can be specified multiple times. Deprecated in favor of account-history-track-account-range.
-# track-account-range = 
-
-# Defines a list of operations which will be explicitly logged.
-# account-history-whitelist-ops = 
-
-# Defines a list of operations which will be explicitly logged. Deprecated in favor of account-history-whitelist-ops.
-# history-whitelist-ops = 
-
-# Defines a list of operations which will be explicitly ignored.
-# account-history-blacklist-ops = 
-
-# Defines a list of operations which will be explicitly ignored. Deprecated in favor of account-history-blacklist-ops.
-# history-blacklist-ops = 
-
-# Disables automatic account history trimming
-history-disable-pruning = 0
-
-# The location of the rocksdb database for account history. By default it is $DATA_DIR/blockchain/account-history-rocksdb-storage
-account-history-rocksdb-path = &quot;blockchain/account-history-rocksdb-storage&quot;
-
-# Defines a range of accounts to track as a json pair [&quot;from&quot;,&quot;to&quot;] [from,to] Can be specified multiple times.
-# account-history-rocksdb-track-account-range = 
-
-# Defines a list of operations which will be explicitly logged.
-# account-history-rocksdb-whitelist-ops = 
-
-# Defines a list of operations which will be explicitly ignored.
-# account-history-rocksdb-blacklist-ops = 
-
-# Where to export data (NONE to discard)
-block-data-export-file = NONE
-
-# How often to print out block_log_info (default 1 day)
-block-log-info-print-interval-seconds = 86400
-
-# Whether to defer printing until block is irreversible
-block-log-info-print-irreversible = 1
-
-# Where to print (filename or special sink ILOG, STDOUT, STDERR)
-block-log-info-print-file = ILOG
-
-# Maximum numbers of proposals/votes which can be removed in the same cycle
-sps-remove-threshold = 200
-
-# the location of the chain shared memory files (absolute path or relative to application data dir)
-shared-file-dir = &quot;blockchain&quot;
-
-# Size of the shared memory file. Default: 54G. If running a full node, increase this value to 200G.
-shared-file-size = 54G
-
-# A 2 precision percentage (0-10000) that defines the threshold for when to autoscale the shared memory file. Setting this to 0 disables autoscaling. Recommended value for consensus node is 9500 (95%). Full node is 9900 (99%)
-shared-file-full-threshold = 0
-
-# A 2 precision percentage (0-10000) that defines how quickly to scale the shared memory file. When autoscaling occurs the file's size will be increased by this percent. Setting this to 0 disables autoscaling. Recommended value is between 1000-2000 (10-20%)
-shared-file-scale-rate = 0
-
-# Pairs of [BLOCK_NUM,BLOCK_ID] that should be enforced as checkpoints.
-# checkpoint = 
-
-# flush shared memory changes to disk every N blocks
-# flush-state-interval = 
-
-# Database edits to apply on startup (may specify multiple times)
-# debug-node-edit-script = 
-
-# Database edits to apply on startup (may specify multiple times). Deprecated in favor of debug-node-edit-script.
-# edit-script = 
-
-# Set the maximum size of cached feed for an account
-follow-max-feed-size = 500
-
-# Block time (in epoch seconds) when to start calculating feeds
-follow-start-feeds = 0
-
-# json-rpc log directory name.
-# log-json-rpc = 
-
-# Track market history by grouping orders into buckets of equal size measured in seconds specified as a JSON array of numbers
-market-history-bucket-size = [15,60,300,3600,86400]
-
-# How far back in time to track history for each bucket size, measured in the number of buckets (default: 5760)
-market-history-buckets-per-size = 5760
-
-# The local IP address and port to listen for incoming connections.
-# p2p-endpoint = 
-
-# Maxmimum number of incoming connections on P2P endpoint.
-# p2p-max-connections = 
-
-# The IP address and port of a remote peer to sync with. Deprecated in favor of p2p-seed-node.
-# seed-node = 
-
-# The IP address and port of a remote peer to sync with.
-# p2p-seed-node = 
-
-# P2P network parameters. (Default: {&quot;listen_endpoint&quot;:&quot;0.0.0.0:0&quot;,&quot;accept_incoming_connections&quot;:true,&quot;wait_if_endpoint_is_busy&quot;:true,&quot;private_key&quot;:&quot;0000000000000000000000000000000000000000000000000000000000000000&quot;,&quot;desired_number_of_connections&quot;:20,&quot;maximum_number_of_connections&quot;:200,&quot;peer_connection_retry_timeout&quot;:30,&quot;peer_inactivity_timeout&quot;:5,&quot;peer_advertising_disabled&quot;:false,&quot;maximum_number_of_blocks_to_handle_at_one_time&quot;:200,&quot;maximum_number_of_sync_blocks_to_prefetch&quot;:2000,&quot;maximum_blocks_per_peer_during_syncing&quot;:200,&quot;active_ignored_request_timeout_microseconds&quot;:6000000} )
-# p2p-parameters = 
-
-# Skip rejecting transactions when account has insufficient RCs. This is not recommended.
-rc-skip-reject-not-enough-rc = 0
-
-# Generate historical resource credits
-rc-compute-historical-rc = 0
-
-# Start calculating RCs at a specific block
-rc-start-at-block = 0
-
-# Ignore RC calculations for the whitelist
-# rc-account-whitelist = 
-
-# Endpoint to send statsd messages to.
-# statsd-endpoint = 
-
-# Size to batch statsd messages.
-statsd-batchsize = 1
-
-# Whitelist of statistics to capture.
-# statsd-whitelist = 
-
-# Blacklist of statistics to capture.
-# statsd-blacklist = 
-
-# Block time (in epoch seconds) when to start calculating promoted content. Should be 1 week prior to current time.
-tags-start-promoted = 0
-
-# Skip updating tags on startup. Can safely be skipped when starting a previously running node. Should not be skipped when reindexing.
-tags-skip-startup-update = 0
-
-# Defines the number of blocks from the head block that transaction statuses will be tracked.
-transaction-status-block-depth = 64000
-
-# Defines the block number the transaction status plugin will begin tracking.
-transaction-status-track-after-block = 0
-
-# Local http endpoint for webserver requests.
-# webserver-http-endpoint = 
-
-# Local unix http endpoint for webserver requests.
-# webserver-unix-endpoint = 
-
-# Local websocket endpoint for webserver requests.
-# webserver-ws-endpoint = 
-
-# Local http and websocket endpoint for webserver requests. Deprecated in favor of webserver-http-endpoint and webserver-ws-endpoint
-# rpc-endpoint = 
-
-# Number of threads used to handle queries. Default: 32.
-webserver-thread-pool-size = 32
-
-# Enable block production, even if the chain is stale.
-enable-stale-production = 1
-
-# Percent of witnesses (0-99) that must be participating in order to produce blocks
-required-participation = 0
-
-# name of witness controlled by this node (e.g. initwitness )
-witness = &quot;initminer&quot;
-
-# WIF PRIVATE KEY to be used by one or more witnesses or miners
-private-key = 5JNHfZYKGaomSFvd4NUdQ9qMcEAC43kujbfjueTHpVapX1Kzq2n
-
-# Skip enforcing bandwidth restrictions. Default is true in favor of rc_plugin.
-witness-skip-enforce-bandwidth = 1
-
-# Local http endpoint for webserver requests.
-webserver-http-endpoint = 127.0.0.1:8090
-
-# Local websocket endpoint for webserver requests.
-webserver-ws-endpoint =127.0.0.1:8091
-
-plugin = webserver p2p json_rpc witness account_by_key reputation market_history
-
-plugin = database_api account_by_key_api network_broadcast_api reputation_api market_history_api condenser_api block_api rc_api account_history account_history_api
-```
-
-then run hived again
-`./programs/steemd/hived -d testnet/`
-
-# Testing rc delegations 
-
-I mostly test using the cli_wallet for real world tests, you can also look at hive-js that has support for the new operations (see this old half made script, ask me questions if you really want to use hive-js and not cli_wallet: https://github.com/drov0/hf23-testing/blob/master/rc_pools.js )
-
-to run the cli_wallet locally:
-
-`./programs/cli_wallet/cli_wallet --server-rpc-endpoint=&quot;ws://127.0.0.1:8091&quot;`
-
-here's a simple &quot;happy path&quot; setup to give you an idea:
-
-```
-# set a password
-set_password p
-# unlock the wallet
-unlock p
-# import initminer's key 
-import_key 5JNHfZYKGaomSFvd4NUdQ9qMcEAC43kujbfjueTHpVapX1Kzq2n
-# account who will get the rc
-create_account &quot;initminer&quot; &quot;howo&quot; &quot;&quot; true
-# pool account 
-create_account &quot;initminer&quot; &quot;pool&quot; &quot;&quot; true
-# transfer some funds to test rc usage
-transfer  initminer howo &quot;2500.000 TESTS&quot; &quot;&quot; true
-# doesn't work because howo has no rc
-transfer howo initminer &quot;1.000 TESTS&quot; &quot;&quot; true
-# set slot 0 to point to pool signing using initminer
-set_slot_delegator &quot;pool&quot; &quot;howo&quot; 0 &quot;initminer&quot; true
-# delegate 100 rc to the pool account's rc pool from initminer
-delegate_to_pool initminer pool {&quot;symbol&quot;:&quot;VESTS&quot;,&quot;amount&quot;: &quot;100&quot;, &quot;precision&quot;: 6, &quot;nai&quot;: &quot;@@000000037&quot;} true
-# delegate 10 tests so that the pool account can delegate some rcs (delegating to the pool of an account doesn't make it available to the account)
-transfer_to_vesting &quot;initminer&quot; &quot;pool&quot; &quot;10.000 TESTS&quot; true
-# delegate 100 rc from the pool to howo
-delegate_drc_from_pool pool howo {&quot;decimals&quot;: 6, &quot;nai&quot;: &quot;@@000000037&quot;} 100 true
-# howo can now transfer
-transfer howo initminer &quot;1.000 TESTS&quot; &quot;&quot; true
-```
-
-Some additional useful cli commands to see how things are going:
-
-find_rc_accounts [&quot;account&quot;]:
-
-gives you the state of your the rc account 
-
-```
-unlocked &amp;gt;&amp;gt;&amp;gt; find_rc_accounts [&quot;howo&quot;]
-find_rc_accounts [&quot;howo&quot;]
-[{
-    &quot;account&quot;: &quot;howo&quot;,
-    &quot;creator&quot;: &quot;initminer&quot;,
-    &quot;rc_manabar&quot;: {
-      &quot;current_mana&quot;: 356050,
-      &quot;last_update_time&quot;: 1617274335
-    },
-    &quot;max_rc_creation_adjustment&quot;: {
-      &quot;amount&quot;: &quot;0&quot;,
-      &quot;precision&quot;: 6,
-      &quot;nai&quot;: &quot;@@000000037&quot;
-    },
-    &quot;max_rc&quot;: 356054,
-    &quot;vests_delegated_to_pools&quot;: {
-      &quot;amount&quot;: &quot;0&quot;,
-      &quot;precision&quot;: 6,
-      &quot;nai&quot;: &quot;@@000000037&quot;
-    },
-    &quot;delegation_slots&quot;: [{
-        &quot;rc_manabar&quot;: {
-          &quot;current_mana&quot;: 96,
-          &quot;last_update_time&quot;: 1617274335
-        },
-        &quot;max_mana&quot;: 100,
-        &quot;delegator&quot;: &quot;pool&quot;
-      },{
-        &quot;rc_manabar&quot;: {
-          &quot;current_mana&quot;: 0,
-          &quot;last_update_time&quot;: 0
-        },
-        &quot;max_mana&quot;: 0,
-        &quot;delegator&quot;: &quot;&quot;
-      },{
-        &quot;rc_manabar&quot;: {
-          &quot;current_mana&quot;: 0,
-          &quot;last_update_time&quot;: 0
-        },
-        &quot;max_mana&quot;: 0,
-        &quot;delegator&quot;: &quot;&quot;
-      }
-    ],
-    &quot;out_delegation_total&quot;: 0
-  }
-]
-````
-
-
-find_rc_delegation_pools [&quot;pool&quot;]
-
-gets the status of a pool (how much rc is in it)
-```
-[{
-    &quot;id&quot;: 0,
-    &quot;account&quot;: &quot;pool&quot;,
-    &quot;asset_symbol&quot;: {
-      &quot;nai&quot;: &quot;@@000000037&quot;,
-      &quot;decimals&quot;: 6
-    },
-    &quot;rc_pool_manabar&quot;: {
-      &quot;current_mana&quot;: 100,
-      &quot;last_update_time&quot;: 1617278439
-    },
-    &quot;max_rc&quot;: 100
-  }
-]
-```
-
-Here's a dump of all the commands and their parameters:
-```
-delegate_drc_from_pool(account_name_type from_pool, account_name_type to_account, asset_symbol_type asset_symbol, int64_t drc_max_mana, bool broadcast)
-delegate_to_pool(account_name_type from_account, account_name_type to_pool, asset amount, bool broadcast)
-set_slot_delegator(account_name_type from_pool, account_name_type to_account, uint8_t to_slot, account_name_type signer, bool broadcast)
-
-
-find_rc_accounts(vector&lt;account_name_type&gt; accounts)
-find_rc_delegation_pools(vector&lt;account_name_type&gt; accounts)
-find_rc_delegations(account_name_type account) 
-list_rc_accounts(account_name_type account, uint32_t limit, rc::sort_order_type order)
-list_rc_delegation_pools(account_name_type account, uint32_t limit, rc::sort_order_type order)
-list_rc_delegations(vector&lt;account_name_type&gt; account, uint32_t limit, rc::sort_order_type order)    
-```
-
-for list the sort orders are:
-
-```
-by_name
-by_edge (edge is both an account and a pool)
-by_pool
-```
-
-Finally if you want to reset your testnet, just delete the contents the blockchain dir and rerun hived:
-`rm -rf testnet/blockchain/*`
-
-Here's a few things you can test:
-
-- lots of users delegating to a single pool (like 10k accounts) 
-- one pool delegating to many users
-- trying to break it by using very large or negative numbers 
-- use your imagination !
-
-please do ask questions if you have any I'd gladly reply to them.
-
-# Support what I'm doing 
-
-If you like what I'm doing, please consider voting on my new proposal:
-https://peakd.com/proposals/167
-[hivesigner](https://hivesigner.com/import?redirect=%2Fsign%2Fupdate-proposal-votes%3Fproposal_ids%3D%255B167%255D%26approve%3Dtrue&amp;amp;authority=active)&amp;lt;/div&amp;gt;
-&lt;script crossorigin=&quot;anonymous&quot; integrity=&quot;sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=&quot; src=&quot;https://code.jquery.com/jquery-3.5.1.slim.min.js&quot;&gt;&lt;/script&gt;
-&lt;script src=&quot;https://unpkg.com/steem-content-renderer&quot;&gt;&lt;/script&gt;
-&lt;!-- &lt;script src=&quot;https://cdn.jsdelivr.net/npm/hive-content-renderer/dist/hive-content-renderer.min.js&quot;&gt;&lt;/script&gt; --&gt;
-&lt;script&gt;
-  $(document).ready(function() {
-    try {
-      const renderer = new SteemContentRenderer.DefaultRenderer({
-      // const renderer = new HiveContentRenderer({
-        baseUrl: &quot;https://hive.blog/&quot;,
-        breaks: true,
-        skipSanitization: false,
-        allowInsecureScriptTags: false,
-        addNofollowToLinks: true,
-        doNotShowImages: false,
-        ipfsPrefix: &quot;&quot;,
-        assetsWidth: 640,
-        assetsHeight: 480,
-        imageProxyFn: (url) =&gt; url,
-        usertagUrlFn: (account) =&gt; &quot;/@howo&quot;,
-        hashtagUrlFn: (hashtag) =&gt; &quot;/wanna-help-test-rc-delegations-heres-all-you-need-to-know&quot;,
-        isLinkSafeFn: (url) =&gt; true,
-      });
-      
-      const inputElem = $('#content-howo-wanna-help-test-rc-delegations-heres-all-you-need-to-know').html();
-      const outputElem = $('#content-howo-wanna-help-test-rc-delegations-heres-all-you-need-to-know');
-      const output = renderer.render(inputElem);
-      
-      outputElem.html(output);
-    } catch(e) {
-      console.log(e);
-    }
-  });
-&lt;/script&gt;
-&lt;style&gt;
-  #content-howo-wanna-help-test-rc-delegations-heres-all-you-need-to-know {
-    padding: 0 3rem;
-    color: #444444;
-    font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif;
-    font-size: 16px;
-    line-height: 1.8;
-    text-shadow: 0 1px 0 #ffffff;
-    padding: 0.5rem;
-  }
-  #content-howo-wanna-help-test-rc-delegations-heres-all-you-need-to-know code {
-    background: white;
-  }
-  #content-howo-wanna-help-test-rc-delegations-heres-all-you-need-to-know a {
-    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
-  }
-  #content-howo-wanna-help-test-rc-delegations-heres-all-you-need-to-know a:hover {
-    border-bottom: 0;
-  }
-  #content-howo-wanna-help-test-rc-delegations-heres-all-you-need-to-know h1 {
-    font-size: 2.2em;
-  }
-  #content-howo-wanna-help-test-rc-delegations-heres-all-you-need-to-know h2, h3, h4, h5 {
-    margin-bottom: 0;
-  }
-  #content-howo-wanna-help-test-rc-delegations-heres-all-you-need-to-know header small {
-    color: #999;
-    font-size: 50%;
-  }
-  #content-howo-wanna-help-test-rc-delegations-heres-all-you-need-to-know img {
-    max-width: 100%;
-  }
-&lt;/style&gt;
-
-&lt;hr /&gt;
-&lt;p&gt;
-  See: &lt;a href=&quot;https://peakd.com/test/@howo/wanna-help-test-rc-delegations-heres-all-you-need-to-know&quot;&gt;Wanna help test RC delegations ? Here's all you need to know&lt;/a&gt;
-  by
-  &lt;a href=&quot;https://hive.blog/@howo&quot;&gt;@howo&lt;/a&gt;
-&lt;/p&gt;
-
-&lt;/account_name_type&gt;&lt;/account_name_type&gt;&lt;/account_name_type&gt;&lt;/div&gt;</content><author><name>howo</name></author><category term="howto" /><category term="contribute" /><category term="qa" /><summary type="html">Hello, ![social_hive_city.jpg](https://files.peakd.com/file/peakd-hive/howo/23tkhtbrgHEVtkgv17tzktjCoVTGzkbSPxxv2tqiF57xYvgh8XouRqfeV68p7cVTKfipk.jpg) some users asked me how they can help testing rc delegations so I set to write a guide disclaimer: this assumes that you are very technical and have a good understanding of how hive works. ## rc delegations ### Pools Each account got an RC pool in his account, anyone can delegate to any account pool, that RC won't be usable by the account, it's just a pool he can delegate RC from. (he can delegate to himself if he wishes). ### RC slots There is a notion of delegation slots, each account got 3 slots from which they can receive delegations. meaning they can receive rc from at most from 3 pools, also, each slot can only receive from a specific pool. If you are not &quot;whitelisted&quot; you can't delegate to an user. For new accounts the slots will be set like this by default: Slot 1 is set to the account creator of the account, and both the account and the account creator can change that slot Slot 2 is set to the recovery account or not set, the account and the recovery partner for the account can change that slot Slot 3 is not set, and only the account can change that slot. Most of the use cases for rc delegations are linked to account creation, games or other operation intensive applications could have a button to &quot;ask for rc&quot; that would make the user set a slot to the game and then the app would delegate to it. It's worth noting that if you change your slot, you lose your previous delegation on that slot. ### Oversubscription Pool work on an oversubscription model: Let's say Alice delegates 100 RC to an RC Pool. That pool can then delegates 30 RC to Bob, Carol, Dave, and Eugene. There is a total of 120 RC delegated, but only 100 RC in the pool. Is that a problem? No.The implementation allows each of the out delegations to use up to the delegation's worth of RC, but that is charged to the pool. If Bob uses all 30 RC and no one else does, Bob will no longer have access to RC from the pool until his regenerates, even though to pool still has 70 RC available. However, if Bob, Carol, and Dave all use 30 RC, then Eugene will only be able to use 10 RC before he cannot access any more. Although he has RC still available from the delegation, because the pool ran out of RC, Eugene does not have any to use. This is useful for this use case: multiple large stakeholder delegating to one account creation pool making many small delegations to new users. Users will consume their RC, but because not all users are retained, this can be significantly over subscribed. Another real life example: ``` Alice delegates 50 rc to her pool Bob changes it slot 3 to Alice Alice delegates 30 RC from it's pool to Bob (Bob can now use the RC) Alice tries to delegate to Eve, but since she didn't set a slot to Alice, Alice cannot delegate RC to it ``` That's it ! Feel free to comment if you have questions this doc may give you some more info: https://gitlab.syncad.com/hive/hive/-/blob/feature/rc_delegation_rebase/doc/devs/delegation_pools.md Now onto the actual testing. # compiling hive if you are on ubuntu 20 see this other guide first: https://peakd.com/hive/@howo/how-to-build-hive-on-ubuntu-20-04 first install all of the dependencies : ``` apt-get install -y \ autoconf \ automake \ autotools-dev \ build-essential \ cmake \ doxygen \ git \ libboost-all-dev \ libyajl-dev \ libreadline-dev \ libssl-dev \ libtool \ liblz4-tool \ ncurses-dev \ python3 \ python3-dev \ python3-jinja2 \ python3-pip \ libgflags-dev \ libsnappy-dev \ zlib1g-dev \ libbz2-dev \ liblz4-dev \ libzstd-dev ``` then build hive on the rc delegations branch: ``` git clone git@gitlab.syncad.com:hive/hive.git cd hive git checkout feature/rc_delegation_rebase git submodule update --init --recursive mkdir build cd build cmake -DENABLE_COVERAGE_TESTING=ON -DBUILD_HIVE_TESTNET=ON -DLOW_MEMORY_NODE=ON .. make -j$(nproc) hived cli_wallet ``` if you got an error while doing the git clone try with this url: `https://gitlab.syncad.com/hive/hive.git` # running it Run the node a few seconds and then exit hived like so `./programs/steemd/hived -d testnet/` this will create a testnet directory with the default config file. open the config.ini file `nano testnethf24/config.ini` replace the config.ini with this one: ``` # Appender definition json: {&quot;appender&quot;, &quot;stream&quot;, &quot;file&quot;} Can only specify a file OR a stream log-appender = {&quot;appender&quot;:&quot;stderr&quot;,&quot;stream&quot;:&quot;std_error&quot;} {&quot;appender&quot;:&quot;p2p&quot;,&quot;file&quot;:&quot;logs/p2p/p2p.log&quot;} # log-console-appender = # log-file-appender = # Logger definition json: {&quot;name&quot;, &quot;level&quot;, &quot;appender&quot;} log-logger = {&quot;name&quot;:&quot;default&quot;,&quot;level&quot;:&quot;info&quot;,&quot;appender&quot;:&quot;stderr&quot;} {&quot;name&quot;:&quot;p2p&quot;,&quot;level&quot;:&quot;warn&quot;,&quot;appender&quot;:&quot;p2p&quot;} # Whether to print backtrace on SIGSEGV backtrace = yes # Plugin(s) to enable, may be specified multiple times plugin = witness account_by_key account_by_key_api condenser_api # Defines a range of accounts to track as a json pair [&quot;from&quot;,&quot;to&quot;] [from,to] Can be specified multiple times. # account-history-track-account-range = # Defines a range of accounts to track as a json pair [&quot;from&quot;,&quot;to&quot;] [from,to] Can be specified multiple times. Deprecated in favor of account-history-track-account-range. # track-account-range = # Defines a list of operations which will be explicitly logged. # account-history-whitelist-ops = # Defines a list of operations which will be explicitly logged. Deprecated in favor of account-history-whitelist-ops. # history-whitelist-ops = # Defines a list of operations which will be explicitly ignored. # account-history-blacklist-ops = # Defines a list of operations which will be explicitly ignored. Deprecated in favor of account-history-blacklist-ops. # history-blacklist-ops = # Disables automatic account history trimming history-disable-pruning = 0 # The location of the rocksdb database for account history. By default it is $DATA_DIR/blockchain/account-history-rocksdb-storage account-history-rocksdb-path = &quot;blockchain/account-history-rocksdb-storage&quot; # Defines a range of accounts to track as a json pair [&quot;from&quot;,&quot;to&quot;] [from,to] Can be specified multiple times. # account-history-rocksdb-track-account-range = # Defines a list of operations which will be explicitly logged. # account-history-rocksdb-whitelist-ops = # Defines a list of operations which will be explicitly ignored. # account-history-rocksdb-blacklist-ops = # Where to export data (NONE to discard) block-data-export-file = NONE # How often to print out block_log_info (default 1 day) block-log-info-print-interval-seconds = 86400 # Whether to defer printing until block is irreversible block-log-info-print-irreversible = 1 # Where to print (filename or special sink ILOG, STDOUT, STDERR) block-log-info-print-file = ILOG # Maximum numbers of proposals/votes which can be removed in the same cycle sps-remove-threshold = 200 # the location of the chain shared memory files (absolute path or relative to application data dir) shared-file-dir = &quot;blockchain&quot; # Size of the shared memory file. Default: 54G. If running a full node, increase this value to 200G. shared-file-size = 54G # A 2 precision percentage (0-10000) that defines the threshold for when to autoscale the shared memory file. Setting this to 0 disables autoscaling. Recommended value for consensus node is 9500 (95%). Full node is 9900 (99%) shared-file-full-threshold = 0 # A 2 precision percentage (0-10000) that defines how quickly to scale the shared memory file. When autoscaling occurs the file's size will be increased by this percent. Setting this to 0 disables autoscaling. Recommended value is between 1000-2000 (10-20%) shared-file-scale-rate = 0 # Pairs of [BLOCK_NUM,BLOCK_ID] that should be enforced as checkpoints. # checkpoint = # flush shared memory changes to disk every N blocks # flush-state-interval = # Database edits to apply on startup (may specify multiple times) # debug-node-edit-script = # Database edits to apply on startup (may specify multiple times). Deprecated in favor of debug-node-edit-script. # edit-script = # Set the maximum size of cached feed for an account follow-max-feed-size = 500 # Block time (in epoch seconds) when to start calculating feeds follow-start-feeds = 0 # json-rpc log directory name. # log-json-rpc = # Track market history by grouping orders into buckets of equal size measured in seconds specified as a JSON array of numbers market-history-bucket-size = [15,60,300,3600,86400] # How far back in time to track history for each bucket size, measured in the number of buckets (default: 5760) market-history-buckets-per-size = 5760 # The local IP address and port to listen for incoming connections. # p2p-endpoint = # Maxmimum number of incoming connections on P2P endpoint. # p2p-max-connections = # The IP address and port of a remote peer to sync with. Deprecated in favor of p2p-seed-node. # seed-node = # The IP address and port of a remote peer to sync with. # p2p-seed-node = # P2P network parameters. (Default: {&quot;listen_endpoint&quot;:&quot;0.0.0.0:0&quot;,&quot;accept_incoming_connections&quot;:true,&quot;wait_if_endpoint_is_busy&quot;:true,&quot;private_key&quot;:&quot;0000000000000000000000000000000000000000000000000000000000000000&quot;,&quot;desired_number_of_connections&quot;:20,&quot;maximum_number_of_connections&quot;:200,&quot;peer_connection_retry_timeout&quot;:30,&quot;peer_inactivity_timeout&quot;:5,&quot;peer_advertising_disabled&quot;:false,&quot;maximum_number_of_blocks_to_handle_at_one_time&quot;:200,&quot;maximum_number_of_sync_blocks_to_prefetch&quot;:2000,&quot;maximum_blocks_per_peer_during_syncing&quot;:200,&quot;active_ignored_request_timeout_microseconds&quot;:6000000} ) # p2p-parameters = # Skip rejecting transactions when account has insufficient RCs. This is not recommended. rc-skip-reject-not-enough-rc = 0 # Generate historical resource credits rc-compute-historical-rc = 0 # Start calculating RCs at a specific block rc-start-at-block = 0 # Ignore RC calculations for the whitelist # rc-account-whitelist = # Endpoint to send statsd messages to. # statsd-endpoint = # Size to batch statsd messages. statsd-batchsize = 1 # Whitelist of statistics to capture. # statsd-whitelist = # Blacklist of statistics to capture. # statsd-blacklist = # Block time (in epoch seconds) when to start calculating promoted content. Should be 1 week prior to current time. tags-start-promoted = 0 # Skip updating tags on startup. Can safely be skipped when starting a previously running node. Should not be skipped when reindexing. tags-skip-startup-update = 0 # Defines the number of blocks from the head block that transaction statuses will be tracked. transaction-status-block-depth = 64000 # Defines the block number the transaction status plugin will begin tracking. transaction-status-track-after-block = 0 # Local http endpoint for webserver requests. # webserver-http-endpoint = # Local unix http endpoint for webserver requests. # webserver-unix-endpoint = # Local websocket endpoint for webserver requests. # webserver-ws-endpoint = # Local http and websocket endpoint for webserver requests. Deprecated in favor of webserver-http-endpoint and webserver-ws-endpoint # rpc-endpoint = # Number of threads used to handle queries. Default: 32. webserver-thread-pool-size = 32 # Enable block production, even if the chain is stale. enable-stale-production = 1 # Percent of witnesses (0-99) that must be participating in order to produce blocks required-participation = 0 # name of witness controlled by this node (e.g. initwitness ) witness = &quot;initminer&quot; # WIF PRIVATE KEY to be used by one or more witnesses or miners private-key = 5JNHfZYKGaomSFvd4NUdQ9qMcEAC43kujbfjueTHpVapX1Kzq2n # Skip enforcing bandwidth restrictions. Default is true in favor of rc_plugin. witness-skip-enforce-bandwidth = 1 # Local http endpoint for webserver requests. webserver-http-endpoint = 127.0.0.1:8090 # Local websocket endpoint for webserver requests. webserver-ws-endpoint =127.0.0.1:8091 plugin = webserver p2p json_rpc witness account_by_key reputation market_history plugin = database_api account_by_key_api network_broadcast_api reputation_api market_history_api condenser_api block_api rc_api account_history account_history_api ``` then run hived again `./programs/steemd/hived -d testnet/` # Testing rc delegations I mostly test using the cli_wallet for real world tests, you can also look at hive-js that has support for the new operations (see this old half made script, ask me questions if you really want to use hive-js and not cli_wallet: https://github.com/drov0/hf23-testing/blob/master/rc_pools.js ) to run the cli_wallet locally: `./programs/cli_wallet/cli_wallet --server-rpc-endpoint=&quot;ws://127.0.0.1:8091&quot;` here's a simple &quot;happy path&quot; setup to give you an idea: ``` # set a password set_password p # unlock the wallet unlock p # import initminer's key import_key 5JNHfZYKGaomSFvd4NUdQ9qMcEAC43kujbfjueTHpVapX1Kzq2n # account who will get the rc create_account &quot;initminer&quot; &quot;howo&quot; &quot;&quot; true # pool account create_account &quot;initminer&quot; &quot;pool&quot; &quot;&quot; true # transfer some funds to test rc usage transfer initminer howo &quot;2500.000 TESTS&quot; &quot;&quot; true # doesn't work because howo has no rc transfer howo initminer &quot;1.000 TESTS&quot; &quot;&quot; true # set slot 0 to point to pool signing using initminer set_slot_delegator &quot;pool&quot; &quot;howo&quot; 0 &quot;initminer&quot; true # delegate 100 rc to the pool account's rc pool from initminer delegate_to_pool initminer pool {&quot;symbol&quot;:&quot;VESTS&quot;,&quot;amount&quot;: &quot;100&quot;, &quot;precision&quot;: 6, &quot;nai&quot;: &quot;@@000000037&quot;} true # delegate 10 tests so that the pool account can delegate some rcs (delegating to the pool of an account doesn't make it available to the account) transfer_to_vesting &quot;initminer&quot; &quot;pool&quot; &quot;10.000 TESTS&quot; true # delegate 100 rc from the pool to howo delegate_drc_from_pool pool howo {&quot;decimals&quot;: 6, &quot;nai&quot;: &quot;@@000000037&quot;} 100 true # howo can now transfer transfer howo initminer &quot;1.000 TESTS&quot; &quot;&quot; true ``` Some additional useful cli commands to see how things are going: find_rc_accounts [&quot;account&quot;]: gives you the state of your the rc account ``` unlocked &amp;gt;&amp;gt;&amp;gt; find_rc_accounts [&quot;howo&quot;] find_rc_accounts [&quot;howo&quot;] [{ &quot;account&quot;: &quot;howo&quot;, &quot;creator&quot;: &quot;initminer&quot;, &quot;rc_manabar&quot;: { &quot;current_mana&quot;: 356050, &quot;last_update_time&quot;: 1617274335 }, &quot;max_rc_creation_adjustment&quot;: { &quot;amount&quot;: &quot;0&quot;, &quot;precision&quot;: 6, &quot;nai&quot;: &quot;@@000000037&quot; }, &quot;max_rc&quot;: 356054, &quot;vests_delegated_to_pools&quot;: { &quot;amount&quot;: &quot;0&quot;, &quot;precision&quot;: 6, &quot;nai&quot;: &quot;@@000000037&quot; }, &quot;delegation_slots&quot;: [{ &quot;rc_manabar&quot;: { &quot;current_mana&quot;: 96, &quot;last_update_time&quot;: 1617274335 }, &quot;max_mana&quot;: 100, &quot;delegator&quot;: &quot;pool&quot; },{ &quot;rc_manabar&quot;: { &quot;current_mana&quot;: 0, &quot;last_update_time&quot;: 0 }, &quot;max_mana&quot;: 0, &quot;delegator&quot;: &quot;&quot; },{ &quot;rc_manabar&quot;: { &quot;current_mana&quot;: 0, &quot;last_update_time&quot;: 0 }, &quot;max_mana&quot;: 0, &quot;delegator&quot;: &quot;&quot; } ], &quot;out_delegation_total&quot;: 0 } ] ```` find_rc_delegation_pools [&quot;pool&quot;] gets the status of a pool (how much rc is in it) ``` [{ &quot;id&quot;: 0, &quot;account&quot;: &quot;pool&quot;, &quot;asset_symbol&quot;: { &quot;nai&quot;: &quot;@@000000037&quot;, &quot;decimals&quot;: 6 }, &quot;rc_pool_manabar&quot;: { &quot;current_mana&quot;: 100, &quot;last_update_time&quot;: 1617278439 }, &quot;max_rc&quot;: 100 } ] ``` Here's a dump of all the commands and their parameters: ``` delegate_drc_from_pool(account_name_type from_pool, account_name_type to_account, asset_symbol_type asset_symbol, int64_t drc_max_mana, bool broadcast) delegate_to_pool(account_name_type from_account, account_name_type to_pool, asset amount, bool broadcast) set_slot_delegator(account_name_type from_pool, account_name_type to_account, uint8_t to_slot, account_name_type signer, bool broadcast) find_rc_accounts(vector accounts) find_rc_delegation_pools(vector accounts) find_rc_delegations(account_name_type account) list_rc_accounts(account_name_type account, uint32_t limit, rc::sort_order_type order) list_rc_delegation_pools(account_name_type account, uint32_t limit, rc::sort_order_type order) list_rc_delegations(vector account, uint32_t limit, rc::sort_order_type order) ``` for list the sort orders are: ``` by_name by_edge (edge is both an account and a pool) by_pool ``` Finally if you want to reset your testnet, just delete the contents the blockchain dir and rerun hived: `rm -rf testnet/blockchain/*` Here's a few things you can test: - lots of users delegating to a single pool (like 10k accounts) - one pool delegating to many users - trying to break it by using very large or negative numbers - use your imagination ! please do ask questions if you have any I'd gladly reply to them. # Support what I'm doing If you like what I'm doing, please consider voting on my new proposal: https://peakd.com/proposals/167 [hivesigner](https://hivesigner.com/import?redirect=%2Fsign%2Fupdate-proposal-votes%3Fproposal_ids%3D%255B167%255D%26approve%3Dtrue&amp;amp;authority=active)&amp;lt;/div&amp;gt; See: Wanna help test RC delegations ? Here's all you need to know by @howo</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://files.peakd.com/file/peakd-hive/howo/23tkhtbrgHEVtkgv17tzktjCoVTGzkbSPxxv2tqiF57xYvgh8XouRqfeV68p7cVTKfipk.jpg" /><media:content medium="image" url="https://files.peakd.com/file/peakd-hive/howo/23tkhtbrgHEVtkgv17tzktjCoVTGzkbSPxxv2tqiF57xYvgh8XouRqfeV68p7cVTKfipk.jpg" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>
+&lt;/p&gt;</content><author><name>mahdiyari</name></author><category term="howto" /><category term="nodejs" /><summary type="html">![coding-pixabay.jpg](https://images.hive.blog/DQmbqyPpfU2dpwYkn9GVJdMmJbfukkvZZ8Bwqk7epyswP9w/macbook-2617705_1280.jpg) In the [previous part](https://hive.blog/hive-139531/@mahdiyari/making-a-decentralized-game-on-hive-part-3), we made a back-end that is streaming blocks and detects 3 methods in custom_json. Create a game, request to join a game, and accept the request. We also set up a MySQL server with 3 tables for the methods. You can find the links to the other parts at the end of the post. ### API Let's start by implementing the API for retrieving the games list. Our API is public so it doesn't require user authentication. The API will just return the data synced from the blockchain. `api/games.js`: ``` const mysql = require('../helpers/mysql') const express = require('express') const router = express.Router() // Return all games on route /games router.get('/games', async (req, res) =&amp;gt; { try { // Get games data from Database const games = await mysql.query( 'SELECT `game_id`, `player1`, `player2`, `starting_player`, `status`, `winner` FROM `games`' ) // Check for expected result if (!games || !Array.isArray(games) || games.length &amp;lt; 1) { // WE return id: 1 for success and id: 0 for errors return res.json({ id: 1, games: [] }) } // We return `games` as we receive from MySQL but it's not a good practice // specially when you have critical data in the database // You can return data one by one like `games: [{game_id: games.game_id, ...}]` return res.json({ id: 1, games }) } catch (e) { // Return error for unexpected errors like connection drops res.json({ id: 0, error: 'Unexpected error.' }) } }) module.exports = router ``` The comments are in the code itself for better understanding. Note: We use `try{} catch{}` wherever we can. It is always good to handle errors. We can test our API at this point to detect possible errors in the code. Include the following code in `api/server.js` just above the `port` and `host` constants. ``` const games = require('./games') app.use(games) ``` Run `node api/server.js`. We can see the console.log: `Application started on 127.0.0.1:2021` Let's open `127.0.0.1:2021/games` in the browser. ![image.png](https://images.hive.blog/DQmbTKVAbtUB6nDH8HWuvku8NuiZv3jovu94jtEMAEU1vSX/image.png) The API works as expected. But it's not done yet. This API returns ALL the games without a specific order. We should implement pagination and define an order for our list. Updated code `api/games.js`: ``` const mysql = require('../helpers/mysql') const express = require('express') const router = express.Router() router.get('/games/:page', async (req, res) =&amp;gt; { try { if (isNaN(req.params.page)) { res.json({ id: 0, error: 'Expected number.' }) } const page = Math.floor(req.params.page) if (page &amp;lt; 1) { res.json({ id: 0, error: 'Expected &amp;gt; 0' }) } const offset = (page - 1) * 10 const games = await mysql.query( 'SELECT `game_id`, `player1`, `player2`, `starting_player`, `status`, `winner` FROM `games`' + ' ORDER BY `id` DESC LIMIT 10 OFFSET ?', [offset] ) if (!games || !Array.isArray(games) || games.length &amp;lt; 1) { return res.json({ id: 1, games: [] }) } return res.json({ id: 1, games }) } catch (e) { res.json({ id: 0, error: 'Unexpected error.' }) } }) module.exports = router ``` We used `id` to order our list and get the newly created games first. Each page returns up to 10 games. We can try `127.0.0.1:2021/games/1` for testing. *** Let's set another API for requests. The code is almost similar but we return only requests for the specific game_id. `api/requests.js`: ``` const mysql = require('../helpers/mysql') const express = require('express') const router = express.Router() router.get('/requests/:id', async (req, res) =&amp;gt; { try { if (!req.params.id) { res.json({ id: 0, error: 'Expected game_id.' }) } // We are passing user input into the database // You should be careful in such cases // We use ? for parameters which escapes the characters const requests = await mysql.query( 'SELECT `player`, `status` FROM `requests` WHERE `game_id`= ?', [req.params.id] ) if (!requests || !Array.isArray(requests) || requests.length &amp;lt; 1) { return res.json({ id: 1, requests: [] }) } return res.json({ id: 1, requests }) } catch (e) { res.json({ id: 0, error: 'Unexpected error.' }) } }) module.exports = router ``` Note: `:id` in the above router represents a variable named id. So for example `http://127.0.0.1:2021/requests/mygameidhere` in this request, the `id` variable is `mygameidhere` which is accessible by `req.params.id`. *** A similar code for the `moves` table. There wasn't a better name in my mind for this table. `api/moves.js`: ``` const mysql = require('../helpers/mysql') const express = require('express') const router = express.Router() router.get('/moves/:id', async (req, res) =&amp;gt; { try { if (!req.params.id) { res.json({ id: 0, error: 'Expected game_id.' }) } const moves = await mysql.query( 'SELECT `player`, `col`, `row` FROM `moves` WHERE `game_id`= ?', [req.params.id] ) if (!moves || !Array.isArray(moves) || moves.length &amp;lt; 1) { return res.json({ id: 1, moves: [] }) } return res.json({ id: 1, moves }) } catch (e) { res.json({ id: 0, error: 'Unexpected error.' }) } }) module.exports = router ``` Now our 3 APIs are ready to be implemented on the front-end. *** Here is the updated `api/server.js` after including the APIs: ``` const express = require('express') const bodyParser = require('body-parser') const hpp = require('hpp') const helmet = require('helmet') const app = express() // more info: www.npmjs.com/package/hpp app.use(hpp()) app.use(helmet()) // support json encoded bodies and encoded bodies app.use(bodyParser.json()) app.use(bodyParser.urlencoded({ extended: true })) app.use(function (req, res, next) { res.header( 'Access-Control-Allow-Origin', 'http://localhost https://tic-tac-toe.mahdiyari.info/' ) res.header('Access-Control-Allow-Credentials', true) res.header( 'Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, access_key' ) next() }) // APIs const games = require('./games') const requests = require('./requests') const moves = require('./moves') app.use(games) app.use(requests) app.use(moves) const port = process.env.PORT || 2021 const host = process.env.HOST || '127.0.0.1' app.listen(port, host, () =&amp;gt; { console.log(`Application started on ${host}:${port}`) }) ``` *** ### Front-end I think using pure HTML is a mistake and I would prefer something like Angular for the web applications but that comes with its own learning process which can make this tutorial complex. So my recommendation is to learn something like Angular or Vue and live a happy life. Anyway, coding time. I'm not going to drop `index.html` here. It doesn't need much explanation and it's long. You can see it on the [GitLab repository](https://gitlab.com/mahdiyari/decentralized-game-on-hive/-/blob/master/front-end/index.html). I will just add some references here used in `app.js`. The table for listing the games and buttons for pagination. `index.html`: ``` Games list Auto updating every 5s # Game ID Player 1 Player 2 Starting Player Status Winner Action &amp;laquo; 1 &amp;raquo; ``` *** We have to fill the table above. So let's implement some basic functions. `js/app.js`: ``` const baseAPI = 'http://127.0.0.1:2021' const APICall = async (api) =&amp;gt; { return (await fetch(baseAPI + api)).json() } ``` For ease of use, we define a function for `GET` calls using `fetch` and a variable for our API address. *** ``` const getGames = async (page = 1) =&amp;gt; { const games = await APICall('/games/' + page) return games.games } ``` This function basically gets the games from the API per page. *** ``` const fillGamesTable = (data) =&amp;gt; { const tbody = document.getElementById('games-table-body') let temp = '' for (let i = 0; i &amp;lt; data.length; i++) { temp += ` ${(gamesPage - 1) * 10 + i + 1} ${data[i].game_id} ${data[i].player1} ${data[i].player2} ${data[i].starting_player} ${data[i].status} ${data[i].winner} ` } if (data.length &amp;lt; 1) { temp = 'No games.' } tbody.innerHTML = temp } ``` `fillGamesTable` takes the result from `getGames` function and fills the HTML table with data using a `for` loop. *** ``` let gamesPage = 1 const loadTheGames = async () =&amp;gt; { const games = await getGames(gamesPage) fillGamesTable(games) if (games.length &amp;lt; 10) { document.getElementById('next-btn').className = 'page-item disabled' } else { document.getElementById('next-btn').className = 'page-item' } if (gamesPage === 1) { document.getElementById('prev-btn').className = 'page-item disabled' } else { document.getElementById('prev-btn').className = 'page-item' } document.getElementById('page-number').innerHTML = ` ${gamesPage} ` } loadTheGames() setInterval(() =&amp;gt; loadTheGames(), 5000) ``` With this function, we call the two previously defined functions to do their job and update the pagination buttons and the page number every time we update the table data. Also, every 5 seconds, it gets new data from API and updates the table with new data so users don't have to reload the page for new data. *** ``` const nextGamesPage = () =&amp;gt; { gamesPage++ loadTheGames() } const prevGamesPage = () =&amp;gt; { gamesPage-- loadTheGames() } ``` And two functions for changing pages. Simple as that. *** The final result with dummy data looks like this on the browser: ![Capture.PNG](https://images.hive.blog/DQmcYZC1vixajRW4Ui5dHiSfTy5MYqEYZhXy2bd2ituz4Ar/Capture.PNG) *** That's it for this part. I'm really happy with the results we are getting. I didn't plan anything beforehand and I'm coding as I'm writing the posts. Today we made 3 API calls and created the basic front-end which for now only shows the list of games that are submitted to the Hive blockchain. In the next part, we will implement the methods for creating and joining the games on the client side. We also probably need to create a game page where actual gaming happens. Thanks for reading. Make sure to follow me and share the post. Upvote if you like and leave a comment. *** [GitLab](https://gitlab.com/mahdiyari/decentralized-game-on-hive) [Part 1](https://hive.blog/hive-139531/@mahdiyari/making-a-decentralized-game-on-hive-tic-tac-toe-part-1) [Part 2](https://hive.blog/hive-139531/@mahdiyari/making-a-decentralized-game-on-hive-part-2) [Part 3](https://hive.blog/hive-139531/@mahdiyari/making-a-decentralized-game-on-hive-part-3) [Next part &amp;gt;&amp;gt;](https://hive.blog/hive-169321/@mahdiyari/making-a-decentralized-game-on-hive-part-5) *** **Vote for my witness:** - https://wallet.hive.blog/~witnesses - https://peakd.com/witnesses - https://ecency.com/witnesses See: Making a Decentralized Game on Hive - Part 4 by @mahdiyari</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://images.hive.blog/DQmbqyPpfU2dpwYkn9GVJdMmJbfukkvZZ8Bwqk7epyswP9w/macbook-2617705_1280.jpg" /><media:content medium="image" url="https://images.hive.blog/DQmbqyPpfU2dpwYkn9GVJdMmJbfukkvZZ8Bwqk7epyswP9w/macbook-2617705_1280.jpg" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>
