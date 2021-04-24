@@ -573,7 +573,168 @@ if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNo
   </header>
 
   <div class="post-content e-content" itemprop="articleBody">
-    
+    <div id="content-rishi556-how-to-setup-hive-witness-pricefeed-using-hivefeed-js">Setting up a pricefeed is quite a simple task to do yet so many witnesses don't do it. I use it as one of my basic qualifiers on who I'll vote for a witness(if yours isn't updated in 3.5 days, no chance of getting my witness vote). It's a very basic thing to do and its just a quick and easy way to see how much a witness is paying attention to their own witness.
+
+The pricefeed is how Hive knows about the price of Hive. Some events require Hive knowing its price, including post payout and hbd -&gt; hive conversions. While only the top 20 witnesses's price feed is used(from what I've been told, please correct me if this is wrong), I believe its important for everyone running a witness to run a pricefeed. We have some pretty old pricefeeds in our witness rank, including some in the top 100 who've never broadcast a pricefeed at all and 4 in the top 30 who haven't updated their pricefeed in over a month.
+
+I personally use @someguy123's hivefeed-js as I've been updating it myself too. It's quite easy to use and anyone on privex's node in a box gets it on their box so knowledge on how to use it might be useful. The codebase can be found here: https://github.com/someguy123/hivefeed-js.
+
+Let's get onto the guide. If you are using privex's node in a box, you can skip the download the codebase part (the git pull). I'll also be explaining how to start it with node and pm2, not docker. The docker instructions are clear enough on the readme. Someguy says that he uses the docker version so he can restart it easily every few hours in case this breaks, but I've never seen it break due to reasons other than a bad node(which has since been fixed). 
+
+### Set up
+
+Always start with an update to the server, especially if you are like me and the first time is usually the only time you update your server. We'll also need git since we'll need to get the codebase. We'll also need nodejs and npm.
+
+```
+sudo apt-get update -y
+sudo apt-get upgrade -y
+sudo apt-get install git -y
+sudo apt-get install npm -y
+```
+
+We'll want to update our version onf nodejs to 14 using n.
+
+```
+sudo npm i -g n
+sudo n 14
+```
+
+Restart your ssh session as thats the easiest way to use the latest version of nodejs. 
+
+Clone the repo(if you already have it, skip this step)
+
+```
+git clone https://github.com/Someguy123/hivefeed-js.git
+```
+
+Navigate to the directory we cloned or already have, if it's named something else, just change over to it. 
+
+```
+cd hivefeed-js
+```
+
+Install the dependencies with npm.
+
+```
+npm i
+```
+
+Install pm2 globally.
+
+```
+sudo npm i -g pm2
+```
+### Modifying the config
+
+Now we'll need to change the config file to our liking. First we'll need to copy the example config to just config.
+
+```
+cp config.example.json config.json
+```
+
+Then we'll want to open it up using a text editor. I like nano, it's the easiest to use by far.
+
+```
+nano config.json
+```
+
+I won't be explaining advanced config, just the simple stuff. The main fields that you want to pay attention to is `name` which should be your username, `wif` which should be your private active key(yes there is a way to sign price feed updates with just your witness signing key, so far the easiest way to do that is with beem, someguy was looking into incorporating that into hivefeed and if I have time, I'm trying to do the same as well), and `interval` which is how often you want to broadcast in minutes. I recommend somewhere between 1-6 hours. Broadcasting too much will have no use with slight price changes and you don't want to broadcast too little either as the opposite problem can occur with larger price changes(one of the things I want to add is broadcasting upon a price shift of x% from your last broadcast). 
+
+Those are the only ones you really need to change. There are a few other ones that I think you should know. `node` will let you pick the running node, the default being https://hived.privex.io and `alternate_nodes` will let you specify some alternate nodes to switch to if the default one fails. The default alternate nodes are https://api.hive.blog and https://api.deathwing.me. Node should just be a string and alternate_nodes should be an array of strings. Don't worry too much about these if you don't understand(feel free to ask me questions if you would like to learn more though). 
+
+Save your config. Time to start it up.
+
+### Starting up
+
+Staring up is pretty simple. 
+
+```
+pm2 start app.js --name priceFeed
+```
+
+Thanks to pm2, if it crashes, it will automatically restart(though if it has other errors not leading to a crash it will not restart). If you want to monitor it, you can do `pm2 monitor` to see the running program with live logs, or `pm2 logs` to see some older logs logs and as more are written to the logs, it will add more. If you need to stop it for any reason, you can do `pm2 stop priceFeed`.
+
+You won't see the price feed immediately publish. The first publish will happen after the amount of minutes that you set in the config. And there you go, you have setup your pricefeed. 
+
+I do maintain the repo and so if you have any suggestions for features that you'd like, just lmk and if I ever find time for it, I'll get around to it. If you like what I do, considering voting my witness, @hextech. Here's a handy link for that: https://vote.hive.uno/@hextech</div>
+<script crossorigin="anonymous" integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=" src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+
+<script src="https://unpkg.com/steem-content-renderer"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/hive-content-renderer/dist/hive-content-renderer.min.js"></script> -->
+<script>
+  $(document).ready(function() {
+    try {
+      const renderer = new SteemContentRenderer.DefaultRenderer({
+      // const renderer = new HiveContentRenderer({
+        baseUrl: "https://hive.blog/",
+        breaks: true,
+        skipSanitization: false,
+        allowInsecureScriptTags: false,
+        addNofollowToLinks: true,
+        doNotShowImages: false,
+        ipfsPrefix: "",
+        assetsWidth: 640,
+        assetsHeight: 480,
+        imageProxyFn: (url) => url,
+        usertagUrlFn: (account) => "/@rishi556",
+        hashtagUrlFn: (hashtag) => "/how-to-setup-hive-witness-pricefeed-using-hivefeed-js",
+        isLinkSafeFn: (url) => true,
+      });
+      
+      const inputElem = $('#content-rishi556-how-to-setup-hive-witness-pricefeed-using-hivefeed-js').html();
+      const outputElem = $('#content-rishi556-how-to-setup-hive-witness-pricefeed-using-hivefeed-js');
+      const output = renderer.render(inputElem);
+      
+      outputElem.html(output);
+    } catch(e) {
+      console.log(e);
+    }
+  });
+</script>
+
+<style>
+  #content-rishi556-how-to-setup-hive-witness-pricefeed-using-hivefeed-js {
+    padding: 0 3rem;
+    color: #444444;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.8;
+    text-shadow: 0 1px 0 #ffffff;
+    padding: 0.5rem;
+  }
+  #content-rishi556-how-to-setup-hive-witness-pricefeed-using-hivefeed-js code {
+    background: white;
+  }
+  #content-rishi556-how-to-setup-hive-witness-pricefeed-using-hivefeed-js a {
+    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
+  }
+  #content-rishi556-how-to-setup-hive-witness-pricefeed-using-hivefeed-js a:hover {
+    border-bottom: 0;
+  }
+  #content-rishi556-how-to-setup-hive-witness-pricefeed-using-hivefeed-js h1 {
+    font-size: 2.2em;
+  }
+  #content-rishi556-how-to-setup-hive-witness-pricefeed-using-hivefeed-js h2, h3, h4, h5 {
+    margin-bottom: 0;
+  }
+  #content-rishi556-how-to-setup-hive-witness-pricefeed-using-hivefeed-js header small {
+    color: #999;
+    font-size: 50%;
+  }
+  #content-rishi556-how-to-setup-hive-witness-pricefeed-using-hivefeed-js img {
+    max-width: 100%;
+  }
+</style>
+
+<hr />
+
+<p>
+  See: <a href="https://peakd.com/witness/@rishi556/how-to-setup-hive-witness-pricefeed-using-hivefeed-js">How To Setup Hive Witness Pricefeed Using Hivefeed-JS</a>
+  by
+  <a href="https://hive.blog/@rishi556">@rishi556</a>
+</p>
+
 
   </div><a class="u-url" href="/howto/witness/pricefeed/2020/11/26/how-to-setup-hive-witness-pricefeed-using-hivefeed-js.html" hidden></a>
 </article>
