@@ -27,3 +27,5 @@ permalink: /authors/
     </li>
   {%- endfor -%}
 </ul>
+
+Find new posts by these author on: <a href="https://hyperion.zone/posts?utf=√&author%5B%5D={{ authors | join: '&author%5B%5D=' }}">hyperion.zone</a>
