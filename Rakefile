@@ -67,6 +67,17 @@ task :grab, :url do |t, args|
   end
 end
 
+desc 'List of all posts.'
+task :list do
+  Dir.glob("_posts/*").sort_by{|f| f}.each do |filename|
+    next if File.directory? filename
+    
+    post = File.open(filename).read
+    
+    puts post.split('canonical_url: ').last.split("\n").first
+  end
+end
+
 desc 'Build site to docs for release.'
 task :build do
   baseurl = ENV.fetch('BASEURL', '/')

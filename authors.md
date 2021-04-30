@@ -28,4 +28,17 @@ permalink: /authors/
   {%- endfor -%}
 </ul>
 
-Find new posts by these author on: <a href="https://hyperion.zone/posts?utf=√&author%5B%5D={{ authors | join: '&author%5B%5D=' }}">hyperion.zone</a>
+<hr />
+
+<ul>
+  <li>
+    Find new posts by these author on:
+    <ul>
+      <li /><a href="https://hyperion.zone/posts?utf8=√&author%5B%5D={{ authors | join: '&author%5B%5D=' }}">hyperion.zone</a>
+      <li /><a href="https://peakd.com/b/badge-424377">B/Hive Chain Documentation Authors</a>
+    </ul>
+  </li>
+  <li />Active developers on the Hive Blockchain: <a href="https://peakd.com/b/badge-424242">B/Hive Devs</a>
+  <li />Community: <a href="https://peakd.com/c/hive-139531/created">HiveDevs</a>
+  <li />Community: <a href="https://peakd.com/c/hive-169321/created">Programming/Dev Community</a>
+</ul>
