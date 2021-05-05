@@ -1,4 +1,144 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="https://hivedocs.info/feed.xml" rel="self" type="application/atom+xml" /><link href="https://hivedocs.info/" rel="alternate" type="text/html" /><updated>2021-04-30T09:38:40-07:00</updated><id>https://hivedocs.info/feed.xml</id><title type="html">Hive Chain Documentation</title><subtitle>Your resource for various levels of Hive Documentation.</subtitle><author><name>site curated by: @inertia</name></author><entry><title type="html">Curated Content Collections, Hive Engine Wallet Updates and More</title><link href="https://hivedocs.info/news/projects/peakd/2021/04/27/curated-content-collections-hive-engine-wallet-updates-and-more.html" rel="alternate" type="text/html" title="Curated Content Collections, Hive Engine Wallet Updates and More" /><published>2021-04-27T02:40:15-07:00</published><updated>2021-04-27T02:40:15-07:00</updated><id>https://hivedocs.info/news/projects/peakd/2021/04/27/curated-content-collections-hive-engine-wallet-updates-and-more</id><content type="html" xml:base="https://hivedocs.info/news/projects/peakd/2021/04/27/curated-content-collections-hive-engine-wallet-updates-and-more.html">&lt;div id=&quot;content-peakd-curated-content-collections-hive-engine-wallet-updates-and-more&quot;&gt;A new release of [peakd.com](https://peakd.com) is now available. Keep reading to discover the new features and check the full list of improvements ;)
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="https://hivedocs.info/feed.xml" rel="self" type="application/atom+xml" /><link href="https://hivedocs.info/" rel="alternate" type="text/html" /><updated>2021-05-04T17:00:09-07:00</updated><id>https://hivedocs.info/feed.xml</id><title type="html">Hive Chain Documentation</title><subtitle>Your resource for various levels of Hive Documentation.</subtitle><author><name>site curated by: @inertia</name></author><entry><title type="html">10th update of 2021 on BlockTrades work on Hive software</title><link href="https://hivedocs.info/news/core/development/2021/05/04/10th-update-of-2021-on-blocktrades-work-on-hive-software.html" rel="alternate" type="text/html" title="10th update of 2021 on BlockTrades work on Hive software" /><published>2021-05-04T16:58:30-07:00</published><updated>2021-05-04T16:58:30-07:00</updated><id>https://hivedocs.info/news/core/development/2021/05/04/10th-update-of-2021-on-blocktrades-work-on-hive-software</id><content type="html" xml:base="https://hivedocs.info/news/core/development/2021/05/04/10th-update-of-2021-on-blocktrades-work-on-hive-software.html">&lt;div id=&quot;content-blocktrades-10th-update-of-2021-on-blocktrades-work-on-hive-software&quot;&gt;Below is a list of Hive-related programming issues worked on by BlockTrades team during the last week:
+
+# Hived work (blockchain node software)
+We launched the first testnet of hived for hardfork 25 last Wednesday and have been experimenting with configuring tinman for it.
+
+[Tinman](https://gitlab.syncad.com/hive/tinman) is a testnet management tool for hived that can create accounts and inject various forms of test data into a hived node.
+
+During some of our testing, we found a problem with hived where it would eat up 100% CPU of a core if a hived was launched without a valid seed node because the blockchain code was stuck in a tight loop polling for transactions and blocks that never show up (because the node has no peers to get data from). 
+
+Even more problematically, no reasonable diagnostic information was reported in this situation, so it took a little while for us to identify the real problem. We’re currently working on a fix for this issue that lowers the CPU overhead in this case, and also adds warning messages to identify the problem.
+
+We found a problem with beem (the python-based API library for Hive) used for running API tests on hived. @howo provided a quick patch and we’re working on a long term fix now (should be fixed tomorrow).
+
+@howo also made updates to the recurrent transfers function based on specification change requests by our devs, and we are planning a final review of those changes tomorrow, with the plan to merge it into the develop branch for deployment in the next testnet launch.
+
+# Jussi caching optimization
+Over the weekend, I observed that our hivemind was loaded much more heavily than normal (this was initially noticeable on hive.blog where it was taking longer to open a post to read). 
+
+Eventually I found that our node is getting hit with a dramatic increase in the number of bridge.get_discussion API calls (these calls are made when you navigate to a user's post on a site like peakd or hive.blog) and this led to a CPU bottleneck in the python code that process API calls.
+
+It turns out there's a new site that allows for browsing Hive posts, but unfortunately it is currently coded to make this call every second or so (I suspect to detect new comments on the post) and this resulted in a large increase in the number of API calls our hivemind had to process.
+
+The ultimate solution was fairly simple: we reconfigured our Jussi process to cache results of this call for 1 second (previous we had no caching configured for this call). 
+
+All API calls first go to Jussi before being passed to hivemind, and if Jussi has cached the answer to a previous API call, then it can just return the previous answer instead of asking hivemind again.
+
+Up till now, we haven't enabled a lot of caching on api.hive.blog other than a few basic things so that we could identify which calls are expensive for hivemind to process, and then optimize the processing of those calls.
+
+But now that optimization work is mostly complete, so we'll be taking a look soon at ways to optimize our Jussi caching to reduce load on hivemind and hived, as this should allow for a substantial scaling increase for our node.
+
+# Hivemind (2nd layer applications + social media middleware)
+
+We isolated the cause of the memory leak in hivemind: it appears to be a case where python isn’t releasing memory from dictionaries when the data in the dictionary is cleared. We’ve added code to do a “deep clean” of those dictionaries. We'll likely have performance measurements late next week on how much memory this saves at the current block height. 
+
+As a side note, I believe current nodes can recover this memory prior to obtaining our fix by stopping and restarting their hivemind instance.
+
+We’ve also been making some changes to hivemind tests based on the change in the way community muting is being implemented, and those changes will probably be merged into the develop branch tomorrow.
+
+We’ve been running full hivemind syncs on several systems to benchmark performance under different hivemind configurations. We found a slowdown on one machine running with one new hivemind command-line option and we’re trying to analyze if it is due to the use of the new command-line option or some other configuration issue on that system (e.g. hardware or database configuration). At this point, we’re trying various experiments to isolate the root problem on that system.
+
+# Modular hivemind (framework for hive applications)
+This week, we completed the first pass work on the fork resolution code for modular hivemind using a fully SQL-based solution relying on shadow tables that save changes that need to be undone in the case of a fork switch. 
+
+We’re currently creating an architecture document to describe how the fork resolution code works and how to use it to create a Hive-based application.
+
+# Updating hived testnet
+We’re planning to launch an updated testnet on Thursday with the latest fixes to hived discussed above.
+
+That will be followed by a launch of an API node configured to draw data from the testnet (probably on Friday, if all goes well). 
+
+This API node will allow Hive applications to begin adding code changes to support new features added by the hardfork, such as vote expiration reporting.
+
+# New hivemind release planned soon
+In the next week we’ll continue testing the latest changes to hivemind: first more performance testing of hivemind sync, then real-world performance testing on api.hive.blog. 
+
+If all that testing goes well, we may be able to release a new version of hivemind to API node operators by the end of next week. This release would contain the various bug fixes and performance optimizations reported in previous posts.
+
+# SQL Account history plugin for hived (requirement for modular hivemind)
+We planned to get to this task last week, but unfortunately it was delayed by other tasks. But we hope to complete the changes to the SQL account history plugin that pushes data to postgres (eliminating the need for hivemind to pull the data via RPC calls) in the new couple of days.
+
+After the plugin changes are completed, we’ll run a simultaneous replay of hived with a full sync of hivemind to measure the speedup, and see if it matches our expected improvement in hivemind full sync time (we expect 2 days versus the current 4 days required).
+
+# Anticipated hardfork date
+I believe we still need to do more testnet-based testing before notifying exchanges of the new version of the code, and since we want to give them approximately 30 days to update after we have a well-tested code release, I think we're still at least 1.5 months out from a possible hardfork date.&lt;/div&gt;
+&lt;script crossorigin=&quot;anonymous&quot; integrity=&quot;sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=&quot; src=&quot;https://code.jquery.com/jquery-3.5.1.slim.min.js&quot;&gt;&lt;/script&gt;
+
+&lt;script src=&quot;https://unpkg.com/steem-content-renderer&quot;&gt;&lt;/script&gt;
+
+&lt;!-- &lt;script src=&quot;https://cdn.jsdelivr.net/npm/hive-content-renderer/dist/hive-content-renderer.min.js&quot;&gt;&lt;/script&gt; --&gt;
+&lt;script&gt;
+  $(document).ready(function() {
+    try {
+      const renderer = new SteemContentRenderer.DefaultRenderer({
+      // const renderer = new HiveContentRenderer({
+        baseUrl: &quot;https://hive.blog/&quot;,
+        breaks: true,
+        skipSanitization: false,
+        allowInsecureScriptTags: false,
+        addNofollowToLinks: true,
+        doNotShowImages: false,
+        ipfsPrefix: &quot;&quot;,
+        assetsWidth: 640,
+        assetsHeight: 480,
+        imageProxyFn: (url) =&gt; url,
+        usertagUrlFn: (account) =&gt; &quot;/@blocktrades&quot;,
+        hashtagUrlFn: (hashtag) =&gt; &quot;/10th-update-of-2021-on-blocktrades-work-on-hive-software&quot;,
+        isLinkSafeFn: (url) =&gt; true,
+      });
+      
+      const inputElem = $('#content-blocktrades-10th-update-of-2021-on-blocktrades-work-on-hive-software').html();
+      const outputElem = $('#content-blocktrades-10th-update-of-2021-on-blocktrades-work-on-hive-software');
+      const output = renderer.render(inputElem);
+      
+      outputElem.html(output);
+    } catch(e) {
+      console.log(e);
+    }
+  });
+&lt;/script&gt;
+
+&lt;style&gt;
+  #content-blocktrades-10th-update-of-2021-on-blocktrades-work-on-hive-software {
+    padding: 0 3rem;
+    color: #444444;
+    font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.8;
+    text-shadow: 0 1px 0 #ffffff;
+    padding: 0.5rem;
+  }
+  #content-blocktrades-10th-update-of-2021-on-blocktrades-work-on-hive-software code {
+    background: white;
+  }
+  #content-blocktrades-10th-update-of-2021-on-blocktrades-work-on-hive-software a {
+    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
+  }
+  #content-blocktrades-10th-update-of-2021-on-blocktrades-work-on-hive-software a:hover {
+    border-bottom: 0;
+  }
+  #content-blocktrades-10th-update-of-2021-on-blocktrades-work-on-hive-software h1 {
+    font-size: 2.2em;
+  }
+  #content-blocktrades-10th-update-of-2021-on-blocktrades-work-on-hive-software h2, h3, h4, h5 {
+    margin-bottom: 0;
+  }
+  #content-blocktrades-10th-update-of-2021-on-blocktrades-work-on-hive-software header small {
+    color: #999;
+    font-size: 50%;
+  }
+  #content-blocktrades-10th-update-of-2021-on-blocktrades-work-on-hive-software img {
+    max-width: 100%;
+  }
+&lt;/style&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;
+  See: &lt;a href=&quot;https://hive.blog/hive-139531/@blocktrades/10th-update-of-2021-on-blocktrades-work-on-hive-software&quot;&gt;10th update of 2021 on BlockTrades work on Hive software&lt;/a&gt;
+  by
+  &lt;a href=&quot;https://hive.blog/@blocktrades&quot;&gt;@blocktrades&lt;/a&gt;
+&lt;/p&gt;</content><author><name>blocktrades</name></author><category term="news" /><category term="core" /><category term="development" /><summary type="html">Below is a list of Hive-related programming issues worked on by BlockTrades team during the last week: # Hived work (blockchain node software) We launched the first testnet of hived for hardfork 25 last Wednesday and have been experimenting with configuring tinman for it. [Tinman](https://gitlab.syncad.com/hive/tinman) is a testnet management tool for hived that can create accounts and inject various forms of test data into a hived node. During some of our testing, we found a problem with hived where it would eat up 100% CPU of a core if a hived was launched without a valid seed node because the blockchain code was stuck in a tight loop polling for transactions and blocks that never show up (because the node has no peers to get data from). Even more problematically, no reasonable diagnostic information was reported in this situation, so it took a little while for us to identify the real problem. We’re currently working on a fix for this issue that lowers the CPU overhead in this case, and also adds warning messages to identify the problem. We found a problem with beem (the python-based API library for Hive) used for running API tests on hived. @howo provided a quick patch and we’re working on a long term fix now (should be fixed tomorrow). @howo also made updates to the recurrent transfers function based on specification change requests by our devs, and we are planning a final review of those changes tomorrow, with the plan to merge it into the develop branch for deployment in the next testnet launch. # Jussi caching optimization Over the weekend, I observed that our hivemind was loaded much more heavily than normal (this was initially noticeable on hive.blog where it was taking longer to open a post to read). Eventually I found that our node is getting hit with a dramatic increase in the number of bridge.get_discussion API calls (these calls are made when you navigate to a user's post on a site like peakd or hive.blog) and this led to a CPU bottleneck in the python code that process API calls. It turns out there's a new site that allows for browsing Hive posts, but unfortunately it is currently coded to make this call every second or so (I suspect to detect new comments on the post) and this resulted in a large increase in the number of API calls our hivemind had to process. The ultimate solution was fairly simple: we reconfigured our Jussi process to cache results of this call for 1 second (previous we had no caching configured for this call). All API calls first go to Jussi before being passed to hivemind, and if Jussi has cached the answer to a previous API call, then it can just return the previous answer instead of asking hivemind again. Up till now, we haven't enabled a lot of caching on api.hive.blog other than a few basic things so that we could identify which calls are expensive for hivemind to process, and then optimize the processing of those calls. But now that optimization work is mostly complete, so we'll be taking a look soon at ways to optimize our Jussi caching to reduce load on hivemind and hived, as this should allow for a substantial scaling increase for our node. # Hivemind (2nd layer applications + social media middleware) We isolated the cause of the memory leak in hivemind: it appears to be a case where python isn’t releasing memory from dictionaries when the data in the dictionary is cleared. We’ve added code to do a “deep clean” of those dictionaries. We'll likely have performance measurements late next week on how much memory this saves at the current block height. As a side note, I believe current nodes can recover this memory prior to obtaining our fix by stopping and restarting their hivemind instance. We’ve also been making some changes to hivemind tests based on the change in the way community muting is being implemented, and those changes will probably be merged into the develop branch tomorrow. We’ve been running full hivemind syncs on several systems to benchmark performance under different hivemind configurations. We found a slowdown on one machine running with one new hivemind command-line option and we’re trying to analyze if it is due to the use of the new command-line option or some other configuration issue on that system (e.g. hardware or database configuration). At this point, we’re trying various experiments to isolate the root problem on that system. # Modular hivemind (framework for hive applications) This week, we completed the first pass work on the fork resolution code for modular hivemind using a fully SQL-based solution relying on shadow tables that save changes that need to be undone in the case of a fork switch. We’re currently creating an architecture document to describe how the fork resolution code works and how to use it to create a Hive-based application. # Updating hived testnet We’re planning to launch an updated testnet on Thursday with the latest fixes to hived discussed above. That will be followed by a launch of an API node configured to draw data from the testnet (probably on Friday, if all goes well). This API node will allow Hive applications to begin adding code changes to support new features added by the hardfork, such as vote expiration reporting. # New hivemind release planned soon In the next week we’ll continue testing the latest changes to hivemind: first more performance testing of hivemind sync, then real-world performance testing on api.hive.blog. If all that testing goes well, we may be able to release a new version of hivemind to API node operators by the end of next week. This release would contain the various bug fixes and performance optimizations reported in previous posts. # SQL Account history plugin for hived (requirement for modular hivemind) We planned to get to this task last week, but unfortunately it was delayed by other tasks. But we hope to complete the changes to the SQL account history plugin that pushes data to postgres (eliminating the need for hivemind to pull the data via RPC calls) in the new couple of days. After the plugin changes are completed, we’ll run a simultaneous replay of hived with a full sync of hivemind to measure the speedup, and see if it matches our expected improvement in hivemind full sync time (we expect 2 days versus the current 4 days required). # Anticipated hardfork date I believe we still need to do more testnet-based testing before notifying exchanges of the new version of the code, and since we want to give them approximately 30 days to update after we have a well-tested code release, I think we're still at least 1.5 months out from a possible hardfork date. See: 10th update of 2021 on BlockTrades work on Hive software by @blocktrades</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://hivedocs.info/assets/images/favicon.png" /><media:content medium="image" url="https://hivedocs.info/assets/images/favicon.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Curated Content Collections, Hive Engine Wallet Updates and More</title><link href="https://hivedocs.info/news/projects/peakd/2021/04/27/curated-content-collections-hive-engine-wallet-updates-and-more.html" rel="alternate" type="text/html" title="Curated Content Collections, Hive Engine Wallet Updates and More" /><published>2021-04-27T02:40:15-07:00</published><updated>2021-04-27T02:40:15-07:00</updated><id>https://hivedocs.info/news/projects/peakd/2021/04/27/curated-content-collections-hive-engine-wallet-updates-and-more</id><content type="html" xml:base="https://hivedocs.info/news/projects/peakd/2021/04/27/curated-content-collections-hive-engine-wallet-updates-and-more.html">&lt;div id=&quot;content-peakd-curated-content-collections-hive-engine-wallet-updates-and-more&quot;&gt;A new release of [peakd.com](https://peakd.com) is now available. Keep reading to discover the new features and check the full list of improvements ;)
 
 &lt;center&gt;&lt;h4&gt;The new release is now live at https://peakd.com&lt;/h4&gt;&lt;/center&gt;
 
@@ -1315,227 +1455,4 @@ Or scanning this QR Code :
   See: &lt;a href=&quot;https://peakd.com/keychain/@keychain/beta-testing-the-keychain-in-app-browser&quot;&gt;Beta testing the Keychain in-App browser&lt;/a&gt;
   by
   &lt;a href=&quot;https://hive.blog/@keychain&quot;&gt;@keychain&lt;/a&gt;
-&lt;/p&gt;</content><author><name>keychain</name></author><category term="news" /><category term="projects" /><category term="hive-keychain" /><summary type="html">![social_keychainforhive.jpg](https://files.peakd.com/file/peakd-hive/keychain/xnmVXGi6-social_keychain-for-hive.jpg) The first version of our in-App browser is ready for testing, on both TestFlight (iOS) and Google Play as version 1.1.0. This new version adds a browser tab to the Keychain menu, on which users can have the same Keychain experience as on their desktop browser. Testers, please update your App to 1.1.0 to test this new feature. If you wish to try it but are not on our tester list yet, join us on Discord (see below) and drop a message in the join-testers channel. Although it's not complete yet, the most widely used operations are all included and ready to get tested: - Login methods - Generic broadcasts - Post / Comment - Vote - Transfer (with or without encrypted memo) - Hive Engine Transfer - Power up / down - Delegations - Proposal votes - Witness vote / proxy - Encode / Decode message - Sign transaction / buffer Please don't hesitate to open issue on [our Github](https://github.com/stoodkev/hive-keychain-mobile/issues). Future improvements for the in-App browser that are already on the roadmap for the next update include: - Adding missing requests - Handle browser history - Url autocomplete - Handling multiple browser tabs - Bookmarking - Automatically accept posting authority requests if whitelisted (similar to the browser extension) ## Download the Apps [](https://apps.apple.com/us/app/hive-keychain/id1552190010) [](https://play.google.com/store/apps/details?id=com.mobilekeychain) 1. This is a first release and the Application is still in Beta. It has been tested extensively but it should not by any means be the only place you store your keys on. 2. To import accounts quickly from your Hive Keychain extension to your mobile App, use the QR Code scanner by pressing the QR code logo: On your extension, navigate to the menu (top right button), then to `Manage Accounts` and finally click on `Show QR Code`. ## Discord To communicate with us or become an Alpha tester, join our Discord by following this link : https://discord.gg/3EM6YfRrGv Or scanning this QR Code : ![image.png](https://files.peakd.com/file/peakd-hive/keychain/BRNgvm9y-image.png) #### Core Team @stoodkev : Lead Dev - [Witness](https://hivesigner.com/sign/account-witness-vote?witness=stoodkev&amp;amp;approve=1) @nateaguila : UI/UX @yabapmatt : Founder - [Witness](https://hivesigner.com/sign/account-witness-vote?witness=yabapmatt&amp;amp;approve=1) @aggroed : Founder - [Witness](https://hivesigner.com/sign/account-witness-vote?witness=aggroed&amp;amp;approve=1) --- ### Support Hive Keychain development by voting for [our proposal](https://peakd.com/hive/@keychain/hive-keychain-development-proposal-2) on [PeakD](https://peakd.com/proposals/140) (on the upcoming section)or with [HiveSigner](https://hivesigner.com/sign/update-proposal-votes?proposal_ids=%5B140%5D&amp;amp;approve=true). See: Beta testing the Keychain in-App browser by @keychain</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://files.peakd.com/file/peakd-hive/keychain/xnmVXGi6-social_keychain-for-hive.jpg" /><media:content medium="image" url="https://files.peakd.com/file/peakd-hive/keychain/xnmVXGi6-social_keychain-for-hive.jpg" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Tin Toy - HF25 on a Local Testnet</title><link href="https://hivedocs.info/tools/docker/testnet/2021/04/15/tin-toy-hf26-on-a-local-testnet.html" rel="alternate" type="text/html" title="Tin Toy - HF25 on a Local Testnet" /><published>2021-04-15T00:20:51-07:00</published><updated>2021-04-15T00:20:51-07:00</updated><id>https://hivedocs.info/tools/docker/testnet/2021/04/15/tin-toy-hf26-on-a-local-testnet</id><content type="html" xml:base="https://hivedocs.info/tools/docker/testnet/2021/04/15/tin-toy-hf26-on-a-local-testnet.html">&lt;div id=&quot;content-inertia-tin-toy-hf26-on-a-local-testnet&quot;&gt;&lt;div class=&quot;pull-right&quot;&gt;
-  &lt;img src=&quot;https://i.imgur.com/FkZIVUu.jpg&quot; /&gt;
-&lt;/div&gt;
-
-One of the tools I maintain is Tin Toy.  It's a docker image for running a tiny Hive testnet on your local computer.
-
-With it, you can point your application and test new functionality, without having to broadcast to the mainnet.
-
-I just did a refresh on the `develop` branch so you can try out the next hardfork, HF25.
-
-It's also a tool that comes in handy for me, when I'm doing [documentation](https://peakd.com/c/hive-139531/search?q=devportal), because it helps me find new functionality and create tutorials.  You'll find that anytime the devportal mentions a testnet, it's going to recommend tintoy.  And so for this reason, I feel like this is time well spent when researching and improving the devportal.
-
-To try out the hived 1.26.0, right now:
-
-```bash
-docker run -d -p 8090:8090 inertia/tintoy:develop
-```
-
-Then point your app API endpoint at `http://127.0.0.1:8080`
-
---- 
-
-Tin Toy - A tiny Hive testnet based on [tinman](https://gitlab.syncad.com/hive/tinman)
-
-# Quickstart
-
-```bash
-docker run -d -p 8090:8090 inertia/tintoy:latest
-```
-
-Using `-p 8090:8090` will expose json-rpc.
-
-... or ...
-
-```bash
-docker run -d -P inertia/tintoy:latest
-```
-
-Using `-P` will expose all of the ports, ephemerally (see below).
-
-If you want to modify the scripts before deploying:
-
-```bash
-git clone https://gist.github.com/b88e7bfff8862858e54c59392e2bce20.git tintoy
-cd tintoy
-docker build -t myname/tintoy:mybranch .
-docker run -d -P myname/tintoy:mybranch
-```
-
-For example, you can modify the first line of `Dockerfile` to switch versions of `hived`.
-
-Tin Toy uses:
-
-```Dockerfile
-FROM hiveio/hive:latest
-```
-
-But you can switch to any branch and try it out.  Suggested branches to try can be found in [hive/activity](https://gitlab.syncad.com/hive/hive/activity).
-
-Say we want to take a look at a branch like `develop`.  Change the first line of the `Dockerfile` to:
-
-```Dockerfile
-FROM hiveio/hive:develop
-```
-
-Then build and run.
-
-# Shell In
-
-* Use `docker ps` to get the name of the existing container.
-* Use the command `docker exec -it &lt;container name=&quot;&quot;&gt; /bin/bash` to get a bash shell in the container.
-
-# How to Use
-
-Once the docker container has fully deployed, you'll have access to various port.  Internally, the docker container responds to:
-
-| Port | Purpose   |
-|------|-----------|
-| 2001 | p2p       |
-| 8090 | jussi json-rpc |
-| 8091 | hived json-rpc |
-| 8092 | hivemind json-rpc |
-| 5000 | tinman server (if enabled) |
-
-If you launched with `-P` (ephemeral ports enabled), you can get a list of ports:
-
-```bash
-docker ps
-```
-
-Which might return something like:
-
-```
-CONTAINER ID        IMAGE                   COMMAND                  CREATED             STATUS              PORTS                                                                                                NAMES
-290810dba18e        inertia/tintoy:latest   &quot;/bin/sh -c /app/boo…&quot;   5 minutes ago       Up 5 minutes        0.0.0.0:32832-&amp;gt;2001/tcp, 0.0.0.0:32831-&amp;gt;8080/tcp, 0.0.0.0:32830-&amp;gt;8090/tcp, 0.0.0.0:32829-&amp;gt;8091/tcp   tintoy
-```
-
-## Default Secret Key
-
-Normally, the secret key for a testnet is kept secret.  But for a local testnet, there's no reason to keep it a secret.  For tintoy, the default secret key is set in the `Dockerfile`:
-
-```bash
-ENV SHARED_SECRET tintoy
-```
-
-Which means, if you want to derive the private keys for `tnman`, you could use the following command:
-
-```bash
-get_dev_key tintoy owner-tnman active-tnman posting-tnman memo-tnman | jq
-```
-
-```json
-[
-  {
-    &quot;private_key&quot;: &quot;5K5kjWq8pY23YptZaiEkiiaKi1wafufj63nzAtaDu1epVXw9fvz&quot;,
-    &quot;public_key&quot;: &quot;TST7uubH7SpknapasQTzW1rFho3LUn1pFmdR7X4f1cHmK22aTJYm3&quot;,
-    &quot;account_name&quot;: &quot;owner-tnman&quot;
-  },
-  {
-    &quot;private_key&quot;: &quot;5K3NwkFwCnsSfJNACw1qm3zzojWBtP8k4rTb2kbLQ4DDR6TgGnw&quot;,
-    &quot;public_key&quot;: &quot;TST4w9GXogQtqPprzPhp7WKZPPKWXv4KvqqMMgd5agJQCDtYLBJwA&quot;,
-    &quot;account_name&quot;: &quot;active-tnman&quot;
-  },
-  {
-    &quot;private_key&quot;: &quot;5Jrdrbt5xfjVeHfHd5JMiJy1FfrGtuieRvzr9WFYhcdHpjgfwPY&quot;,
-    &quot;public_key&quot;: &quot;TST883nSqJL5KbVgfdV44snPPDTStQQxfR7vj8XttsZo25sXvHAnQ&quot;,
-    &quot;account_name&quot;: &quot;posting-tnman&quot;
-  },
-  {
-    &quot;private_key&quot;: &quot;5KB3ddeh5o3WghSM3qQaUthxVt7QZWfNYCoiAW3XYfeDki1oH9z&quot;,
-    &quot;public_key&quot;: &quot;TST56jtUgZrajuBUgdECYaew6cebjSbKWVdtCKkc4xxLAFZQ9f8A9&quot;,
-    &quot;account_name&quot;: &quot;memo-tnman&quot;
-  }
-]
-```
-
-Every account on the testnet uses `tnman` as their account authority.  Using this account, you can sign any transaction for any account.
-
-## Snapshot Refresh
-
-Occasionally, it's a good idea to refresh the `sample-snapshot.json` file.  This process is usually only required to be performed by the repo maintainer, but if you want to do it yourself, here are the steps:
-
-1. Install `tinman` by following that product's [README.md](https://gitlab.syncad.com/hive/tinman#installation).
-2. Next, [generate a new snapshot](https://gitlab.syncad.com/hive/tinman#taking-a-snapshot).
-  * Example: `tinman snapshot -s https://anyx.io -o - | pv &amp;gt; snapshot.json`
-3. Once we have our new snapshot, create a sample, overwriting the previous one.
-  * Example: `tinman sample -i snapshot.json -o sample-snapshot.json`
-4. Delete (or move) `snapshot.json` (we don't need it anymore now that we have `sample-snapshot.json`).
-&amp;lt;/div&amp;gt;
-&lt;script crossorigin=&quot;anonymous&quot; integrity=&quot;sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=&quot; src=&quot;https://code.jquery.com/jquery-3.5.1.slim.min.js&quot;&gt;&lt;/script&gt;
-&lt;script src=&quot;https://unpkg.com/steem-content-renderer&quot;&gt;&lt;/script&gt;
-&lt;!-- &lt;script src=&quot;https://cdn.jsdelivr.net/npm/hive-content-renderer/dist/hive-content-renderer.min.js&quot;&gt;&lt;/script&gt; --&gt;
-&lt;script&gt;
-  $(document).ready(function() {
-    try {
-      const renderer = new SteemContentRenderer.DefaultRenderer({
-      // const renderer = new HiveContentRenderer({
-        baseUrl: &quot;https://hive.blog/&quot;,
-        breaks: true,
-        skipSanitization: false,
-        allowInsecureScriptTags: false,
-        addNofollowToLinks: true,
-        doNotShowImages: false,
-        ipfsPrefix: &quot;&quot;,
-        assetsWidth: 640,
-        assetsHeight: 480,
-        imageProxyFn: (url) =&gt; url,
-        usertagUrlFn: (account) =&gt; &quot;/@inertia&quot;,
-        hashtagUrlFn: (hashtag) =&gt; &quot;/tin-toy-hf26-on-a-local-testnet&quot;,
-        isLinkSafeFn: (url) =&gt; true,
-      });
-      
-      const inputElem = $('#content-inertia-tin-toy-hf26-on-a-local-testnet').html();
-      const outputElem = $('#content-inertia-tin-toy-hf26-on-a-local-testnet');
-      const output = renderer.render(inputElem);
-      
-      outputElem.html(output);
-    } catch(e) {
-      console.log(e);
-    }
-  });
-&lt;/script&gt;
-&lt;style&gt;
-  #content-inertia-tin-toy-hf26-on-a-local-testnet {
-    padding: 0 3rem;
-    color: #444444;
-    font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif;
-    font-size: 16px;
-    line-height: 1.8;
-    text-shadow: 0 1px 0 #ffffff;
-    padding: 0.5rem;
-  }
-  #content-inertia-tin-toy-hf26-on-a-local-testnet code {
-    background: white;
-  }
-  #content-inertia-tin-toy-hf26-on-a-local-testnet a {
-    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
-  }
-  #content-inertia-tin-toy-hf26-on-a-local-testnet a:hover {
-    border-bottom: 0;
-  }
-  #content-inertia-tin-toy-hf26-on-a-local-testnet h1 {
-    font-size: 2.2em;
-  }
-  #content-inertia-tin-toy-hf26-on-a-local-testnet h2, h3, h4, h5 {
-    margin-bottom: 0;
-  }
-  #content-inertia-tin-toy-hf26-on-a-local-testnet header small {
-    color: #999;
-    font-size: 50%;
-  }
-  #content-inertia-tin-toy-hf26-on-a-local-testnet img {
-    max-width: 100%;
-  }
-&lt;/style&gt;
-
-&lt;hr /&gt;
-&lt;p&gt;
-  See: &lt;a href=&quot;https://peakd.com/hive-139531/@inertia/tin-toy-hf26-on-a-local-testnet&quot;&gt;Tin Toy - HF25 on a Local Testnet&lt;/a&gt;
-  by
-  &lt;a href=&quot;https://hive.blog/@inertia&quot;&gt;@inertia&lt;/a&gt;
-&lt;/p&gt;
-
-&lt;/container&gt;&lt;/div&gt;</content><author><name>inertia</name></author><category term="tools" /><category term="docker" /><category term="testnet" /><summary type="html">One of the tools I maintain is Tin Toy. It's a docker image for running a tiny Hive testnet on your local computer. With it, you can point your application and test new functionality, without having to broadcast to the mainnet. I just did a refresh on the `develop` branch so you can try out the next hardfork, HF25. It's also a tool that comes in handy for me, when I'm doing [documentation](https://peakd.com/c/hive-139531/search?q=devportal), because it helps me find new functionality and create tutorials. You'll find that anytime the devportal mentions a testnet, it's going to recommend tintoy. And so for this reason, I feel like this is time well spent when researching and improving the devportal. To try out the hived 1.26.0, right now: ```bash docker run -d -p 8090:8090 inertia/tintoy:develop ``` Then point your app API endpoint at `http://127.0.0.1:8080` --- Tin Toy - A tiny Hive testnet based on [tinman](https://gitlab.syncad.com/hive/tinman) # Quickstart ```bash docker run -d -p 8090:8090 inertia/tintoy:latest ``` Using `-p 8090:8090` will expose json-rpc. ... or ... ```bash docker run -d -P inertia/tintoy:latest ``` Using `-P` will expose all of the ports, ephemerally (see below). If you want to modify the scripts before deploying: ```bash git clone https://gist.github.com/b88e7bfff8862858e54c59392e2bce20.git tintoy cd tintoy docker build -t myname/tintoy:mybranch . docker run -d -P myname/tintoy:mybranch ``` For example, you can modify the first line of `Dockerfile` to switch versions of `hived`. Tin Toy uses: ```Dockerfile FROM hiveio/hive:latest ``` But you can switch to any branch and try it out. Suggested branches to try can be found in [hive/activity](https://gitlab.syncad.com/hive/hive/activity). Say we want to take a look at a branch like `develop`. Change the first line of the `Dockerfile` to: ```Dockerfile FROM hiveio/hive:develop ``` Then build and run. # Shell In * Use `docker ps` to get the name of the existing container. * Use the command `docker exec -it /bin/bash` to get a bash shell in the container. # How to Use Once the docker container has fully deployed, you'll have access to various port. Internally, the docker container responds to: | Port | Purpose | |------|-----------| | 2001 | p2p | | 8090 | jussi json-rpc | | 8091 | hived json-rpc | | 8092 | hivemind json-rpc | | 5000 | tinman server (if enabled) | If you launched with `-P` (ephemeral ports enabled), you can get a list of ports: ```bash docker ps ``` Which might return something like: ``` CONTAINER ID IMAGE COMMAND CREATED STATUS PORTS NAMES 290810dba18e inertia/tintoy:latest &quot;/bin/sh -c /app/boo…&quot; 5 minutes ago Up 5 minutes 0.0.0.0:32832-&amp;gt;2001/tcp, 0.0.0.0:32831-&amp;gt;8080/tcp, 0.0.0.0:32830-&amp;gt;8090/tcp, 0.0.0.0:32829-&amp;gt;8091/tcp tintoy ``` ## Default Secret Key Normally, the secret key for a testnet is kept secret. But for a local testnet, there's no reason to keep it a secret. For tintoy, the default secret key is set in the `Dockerfile`: ```bash ENV SHARED_SECRET tintoy ``` Which means, if you want to derive the private keys for `tnman`, you could use the following command: ```bash get_dev_key tintoy owner-tnman active-tnman posting-tnman memo-tnman | jq ``` ```json [ { &quot;private_key&quot;: &quot;5K5kjWq8pY23YptZaiEkiiaKi1wafufj63nzAtaDu1epVXw9fvz&quot;, &quot;public_key&quot;: &quot;TST7uubH7SpknapasQTzW1rFho3LUn1pFmdR7X4f1cHmK22aTJYm3&quot;, &quot;account_name&quot;: &quot;owner-tnman&quot; }, { &quot;private_key&quot;: &quot;5K3NwkFwCnsSfJNACw1qm3zzojWBtP8k4rTb2kbLQ4DDR6TgGnw&quot;, &quot;public_key&quot;: &quot;TST4w9GXogQtqPprzPhp7WKZPPKWXv4KvqqMMgd5agJQCDtYLBJwA&quot;, &quot;account_name&quot;: &quot;active-tnman&quot; }, { &quot;private_key&quot;: &quot;5Jrdrbt5xfjVeHfHd5JMiJy1FfrGtuieRvzr9WFYhcdHpjgfwPY&quot;, &quot;public_key&quot;: &quot;TST883nSqJL5KbVgfdV44snPPDTStQQxfR7vj8XttsZo25sXvHAnQ&quot;, &quot;account_name&quot;: &quot;posting-tnman&quot; }, { &quot;private_key&quot;: &quot;5KB3ddeh5o3WghSM3qQaUthxVt7QZWfNYCoiAW3XYfeDki1oH9z&quot;, &quot;public_key&quot;: &quot;TST56jtUgZrajuBUgdECYaew6cebjSbKWVdtCKkc4xxLAFZQ9f8A9&quot;, &quot;account_name&quot;: &quot;memo-tnman&quot; } ] ``` Every account on the testnet uses `tnman` as their account authority. Using this account, you can sign any transaction for any account. ## Snapshot Refresh Occasionally, it's a good idea to refresh the `sample-snapshot.json` file. This process is usually only required to be performed by the repo maintainer, but if you want to do it yourself, here are the steps: 1. Install `tinman` by following that product's [README.md](https://gitlab.syncad.com/hive/tinman#installation). 2. Next, [generate a new snapshot](https://gitlab.syncad.com/hive/tinman#taking-a-snapshot). * Example: `tinman snapshot -s https://anyx.io -o - | pv &amp;gt; snapshot.json` 3. Once we have our new snapshot, create a sample, overwriting the previous one. * Example: `tinman sample -i snapshot.json -o sample-snapshot.json` 4. Delete (or move) `snapshot.json` (we don't need it anymore now that we have `sample-snapshot.json`). &amp;lt;/div&amp;gt; See: Tin Toy - HF25 on a Local Testnet by @inertia</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://i.imgur.com/FkZIVUu.jpg" /><media:content medium="image" url="https://i.imgur.com/FkZIVUu.jpg" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>
+&lt;/p&gt;</content><author><name>keychain</name></author><category term="news" /><category term="projects" /><category term="hive-keychain" /><summary type="html">![social_keychainforhive.jpg](https://files.peakd.com/file/peakd-hive/keychain/xnmVXGi6-social_keychain-for-hive.jpg) The first version of our in-App browser is ready for testing, on both TestFlight (iOS) and Google Play as version 1.1.0. This new version adds a browser tab to the Keychain menu, on which users can have the same Keychain experience as on their desktop browser. Testers, please update your App to 1.1.0 to test this new feature. If you wish to try it but are not on our tester list yet, join us on Discord (see below) and drop a message in the join-testers channel. Although it's not complete yet, the most widely used operations are all included and ready to get tested: - Login methods - Generic broadcasts - Post / Comment - Vote - Transfer (with or without encrypted memo) - Hive Engine Transfer - Power up / down - Delegations - Proposal votes - Witness vote / proxy - Encode / Decode message - Sign transaction / buffer Please don't hesitate to open issue on [our Github](https://github.com/stoodkev/hive-keychain-mobile/issues). Future improvements for the in-App browser that are already on the roadmap for the next update include: - Adding missing requests - Handle browser history - Url autocomplete - Handling multiple browser tabs - Bookmarking - Automatically accept posting authority requests if whitelisted (similar to the browser extension) ## Download the Apps [](https://apps.apple.com/us/app/hive-keychain/id1552190010) [](https://play.google.com/store/apps/details?id=com.mobilekeychain) 1. This is a first release and the Application is still in Beta. It has been tested extensively but it should not by any means be the only place you store your keys on. 2. To import accounts quickly from your Hive Keychain extension to your mobile App, use the QR Code scanner by pressing the QR code logo: On your extension, navigate to the menu (top right button), then to `Manage Accounts` and finally click on `Show QR Code`. ## Discord To communicate with us or become an Alpha tester, join our Discord by following this link : https://discord.gg/3EM6YfRrGv Or scanning this QR Code : ![image.png](https://files.peakd.com/file/peakd-hive/keychain/BRNgvm9y-image.png) #### Core Team @stoodkev : Lead Dev - [Witness](https://hivesigner.com/sign/account-witness-vote?witness=stoodkev&amp;amp;approve=1) @nateaguila : UI/UX @yabapmatt : Founder - [Witness](https://hivesigner.com/sign/account-witness-vote?witness=yabapmatt&amp;amp;approve=1) @aggroed : Founder - [Witness](https://hivesigner.com/sign/account-witness-vote?witness=aggroed&amp;amp;approve=1) --- ### Support Hive Keychain development by voting for [our proposal](https://peakd.com/hive/@keychain/hive-keychain-development-proposal-2) on [PeakD](https://peakd.com/proposals/140) (on the upcoming section)or with [HiveSigner](https://hivesigner.com/sign/update-proposal-votes?proposal_ids=%5B140%5D&amp;amp;approve=true). See: Beta testing the Keychain in-App browser by @keychain</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://files.peakd.com/file/peakd-hive/keychain/xnmVXGi6-social_keychain-for-hive.jpg" /><media:content medium="image" url="https://files.peakd.com/file/peakd-hive/keychain/xnmVXGi6-social_keychain-for-hive.jpg" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>
