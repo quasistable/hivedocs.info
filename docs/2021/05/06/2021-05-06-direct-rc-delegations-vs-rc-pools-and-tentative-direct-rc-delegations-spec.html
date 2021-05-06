@@ -1,0 +1,168 @@
+<div id="content-howo-direct-rc-delegations-vs-rc-pools-and-tentative-direct-rc-delegations-spec">
+![image.png](https://files.peakd.com/file/peakd-hive/howo/23xLL8qDDTTeLahePNVpwjjgTxQjQd5spVivJncMvRrCXw5iM6bhLMoTNsSrvbPyeKo2L.png)
+
+Hello, 
+
+First let's settle on the terms, when I say "RC pools", it refers to the implementation where everyone can delegate to pools and then pools can delegate to users, with more notions like overdelegation (you can delegate more RC than there is available in the pool) etc, we'll get back to it later.
+When I say "direct RC delegations", it's enabling users to delegate RC directly from one to another instead. Which would remove all the compexity of RC pools while retaining most of its features
+
+tl;dr:
+Direct RC delegations = user to user RC delegation
+RC pool = more feature complete version
+
+In the recent [dev meeting](https://peakd.com/meeting/@howo/hive-core-developer-meeting-22) we discussed RC delegations/pools a bit. Basically there is some concerns from @blocktrades's team regarding the complexity of RC pools, both in terms of complexity (risk of unforseen edge cases or bugs) and performance (could cost too much in processing power/memory to node operators). This also comes from the fact the RC system while functional still has some kinks to be worked out, it could be dangerous to build a complex system on something that is not rock solid.
+
+This post aims to start a discussion and discuss around the fact that maybe we don't need RC pools as simple rc delegations cover most of the use cases. 
+
+## Proposed direct RC delegations feature Set
+
+some more terms:
+max rc is the maximum amount of RC that the account can have 
+current RC is the amount of RC that the account currently have, current RC regenerates over time to match max RC if not used.
+
+You can see the spec (and discussion from other core devs) here: https://gitlab.syncad.com/hive/hive/-/issues/152 
+I very much encourage you to read the link before continuing.
+
+Direct RC delegations are super straightworward, just delegate 50 RC, your account now loses 50 max RC and the user you delegate to has an extra 50 max RC, I say max RC, because RC regenerates, so if the user you delegate to uses the 50 rc, it will come back eventually.
+
+Advantages are:
+
+- Pretty easy to code (writting it from scratch and could be as fast or even faster as finishing RC pools)
+- Very simple so very small performance and memory footprint, less bug risks
+- Simple UX-wise and easy for front ends to implement 
+
+## RC pools 
+
+if you want to know how RC pools work look here : https://peakd.com/test/@howo/wanna-help-test-rc-delegations-heres-all-you-need-to-know
+tl;dr:
+With the RC pool implementation, everyone can contribute to a pool, then a pool can delegate to multiple accoutns, there is a notion of "oversubscription" meaning that you delegate "drc" or delegated RC to an user not actual RC, drc basically allow you to spend the RC that is inside of the pool at a 1:1 ratio, but if the pool is empty and you got 50 drc, you can't get any RC. The main advantage of this approach is:
+
+- Multiple users can contribute to the same pool 
+- You don't have to guess what the user will consume to distribute RC, you just allows people to use at most, x RC.
+- Already coded, lots of tests but need further reviewed and tested in a proper testnet 
+
+disadvantage is obviously added complexity both in the chain and UX-wise (with the slot system, read up on it int he post above) that may not be worth it.
+
+## comparaison of various use cases 
+
+### Account creation 
+
+Probably the biggest use case for direct RC delegations/pools. We create an account and transfer RC to it so it can transact comfortably. Today this is done by delegating hive power, but HP has many problems namely abuse and limitations.
+
+#### Direct RC delegations
+
+Direct RC delegations cover this use case, it would be an almost drop-in replacement for hive power delegation, take how much hp you used to delegate to new users and replace this with RC.
+
+Of course we run into issues when we want to do this more at scale where you have to give the maximum RC an account usually use so if everyone uses 30 RC, but bob uses 100 because he's so excited about the platform, bob would be stuck, although with RC being "free", bob could ask for a second delegation via an "RC faucet" or something.
+
+The second problem is that this implies that the account creation account has a lot of RC, so if you want to onboard 10k users, you may run into problems, and it would be complicated to coordinate with other whales who might want to help (because direct RC delegations delegations would require active authority, whales probably won't give that auth to allow for automatic direct RC delegations). Delegating delegated RC (a whale could delegate to an account creation service who would redelegate RC) is a no go I think because it creates a ton of new edge cases.
+
+But it wouldn't be too hard to create a system where you "trail" delegations, so if you're a whale and you see a service delegating 30 RC, you can delegate 10 RC too on top of it. It would be pretty easy. But once again not easily automatable since it touches the active authority. 
+
+Ultimately direct RC delegations would cover the use case as well as HP delegations, not the best but still a massive improvement IMHO.
+
+While I'm at it, direct RC delegations could be done using posting auth to make it way easier to manage and automate everything, there is no technical limitations to this, interested to hear your thoughts. The only risk is that someone dapp could then empty the RC in your account and prevent you from transacting.
+
+#### RC pools
+
+RC pools cover this case as well, It doesn't run into the same issues as direct RC delegations you can delegate 100 RC to everyone and just let people use RC as they go, if everyone uses 30 out of their 100 that's fine, and bob won't be restricted. This would allow account creation services to be way less strict in the way they manage RC, they could delegate a lot of RC to make sure newcomers are never running out of RC when doing the first basic things (voting posts/posting etc) as long as the pools are flowing thanks to delegations to the pools themselves.
+
+### Delegate to a user who doesn't have RC left 
+
+This is IMHO, the second biggest use case for direct RC delegations, the user used up all of his RC and we want him to continue to use hive, he could request an RC deleations from any RC faucet (I expect those to pop up once direct RC delegations make it to the chain) or a friend to give him some RC. Right now this is covered by HP delegations but no such faucets really exist for obvious abuse reasons.
+
+#### direct RC delegations
+
+This is a case where direct RC delegations work great, pretty easy to send an extra 500 RC to a user if he asks for it, and then maybe remove it a month later. You still have the same pain points outlined in the account creation use case though:
+
+- you are bound to run out of RC if you delegate too much, so you're forced to be more conservative in your delegations 
+- Others can't "fund" you with RC to help you 
+
+#### RC pools
+
+While RC pools can do it and be great at it thank to the delegated RC system, there is an important caveat: with RC pools you cannot get RC from a pool unless you set a slot to point to it first, this means that you can end up in these awkward situations where you can't set a slot to get RC from a pool because you're out of RC and cannot get RC from a pool because you didn't set your slot to point to the pool.
+Although this scenario is relatively unlikely because a set_slot operation is a custom_json which costs very little.
+
+## conclusion:
+
+I think both approaches are valid but I think the extra weight and risk on the chain of RC pools make me lean towards implementing direct RC delegations with posting auth (even though I'll have to redo everything haha) along with a tool for people to "trail" other people's delegations. The UX benefits are also non negligible.
+
+What are your thoughts ?</div>
+<script crossorigin="anonymous" integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=" src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+
+<script src="https://unpkg.com/steem-content-renderer"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/hive-content-renderer/dist/hive-content-renderer.min.js"></script> -->
+<script>
+  $(document).ready(function() {
+    try {
+      const renderer = new SteemContentRenderer.DefaultRenderer({
+      // const renderer = new HiveContentRenderer({
+        baseUrl: "https://hive.blog/",
+        breaks: true,
+        skipSanitization: false,
+        allowInsecureScriptTags: false,
+        addNofollowToLinks: true,
+        doNotShowImages: false,
+        ipfsPrefix: "",
+        assetsWidth: 640,
+        assetsHeight: 480,
+        imageProxyFn: (url) => url,
+        usertagUrlFn: (account) => "/@howo",
+        hashtagUrlFn: (hashtag) => "/direct-rc-delegations-vs-rc-pools-and-tentative-direct-rc-delegations-spec",
+        isLinkSafeFn: (url) => true,
+      });
+      
+      const inputElem = $('#content-howo-direct-rc-delegations-vs-rc-pools-and-tentative-direct-rc-delegations-spec').html();
+      const outputElem = $('#content-howo-direct-rc-delegations-vs-rc-pools-and-tentative-direct-rc-delegations-spec');
+      const output = renderer.render(inputElem);
+      
+      outputElem.html(output);
+    } catch(e) {
+      console.log(e);
+    }
+  });
+</script>
+
+<style>
+  #content-howo-direct-rc-delegations-vs-rc-pools-and-tentative-direct-rc-delegations-spec {
+    padding: 0 3rem;
+    color: #444444;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.8;
+    text-shadow: 0 1px 0 #ffffff;
+    padding: 0.5rem;
+  }
+  #content-howo-direct-rc-delegations-vs-rc-pools-and-tentative-direct-rc-delegations-spec code {
+    background: white;
+  }
+  #content-howo-direct-rc-delegations-vs-rc-pools-and-tentative-direct-rc-delegations-spec a {
+    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
+  }
+  #content-howo-direct-rc-delegations-vs-rc-pools-and-tentative-direct-rc-delegations-spec a:hover {
+    border-bottom: 0;
+  }
+  #content-howo-direct-rc-delegations-vs-rc-pools-and-tentative-direct-rc-delegations-spec h1 {
+    font-size: 2.2em;
+  }
+  #content-howo-direct-rc-delegations-vs-rc-pools-and-tentative-direct-rc-delegations-spec h2, h3, h4, h5 {
+    margin-bottom: 0;
+  }
+  #content-howo-direct-rc-delegations-vs-rc-pools-and-tentative-direct-rc-delegations-spec header small {
+    color: #999;
+    font-size: 50%;
+  }
+  #content-howo-direct-rc-delegations-vs-rc-pools-and-tentative-direct-rc-delegations-spec img {
+    max-width: 100%;
+  }
+</style>
+
+<hr />
+
+<p>
+  See: <a href="https://peakd.com/rc/@howo/direct-rc-delegations-vs-rc-pools-and-tentative-direct-rc-delegations-spec">Direct RC delegations vs RC pools and tentative direct rc delegations spec</a>
+  by
+  <a href="https://hive.blog/@howo">@howo</a>
+</p>
+
