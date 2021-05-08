@@ -1,4 +1,158 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="https://hivedocs.info/feed.xml" rel="self" type="application/atom+xml" /><link href="https://hivedocs.info/" rel="alternate" type="text/html" /><updated>2021-05-06T10:04:13-07:00</updated><id>https://hivedocs.info/feed.xml</id><title type="html">Hive Chain Documentation</title><subtitle>Your resource for various levels of Hive Documentation.</subtitle><author><name>site curated by: @inertia</name></author><entry><title type="html">HiveSQL Update - New Status Page</title><link href="https://hivedocs.info/news/sql/database/2021/05/06/hivesql-status.html" rel="alternate" type="text/html" title="HiveSQL Update - New Status Page" /><published>2021-05-06T05:32:57-07:00</published><updated>2021-05-06T05:32:57-07:00</updated><id>https://hivedocs.info/news/sql/database/2021/05/06/hivesql-status</id><content type="html" xml:base="https://hivedocs.info/news/sql/database/2021/05/06/hivesql-status.html">&lt;div id=&quot;content-arcange-hivesql-status&quot;&gt;![](https://i.imgur.com/HbmjGRG.png)
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="https://hivedocs.info/feed.xml" rel="self" type="application/atom+xml" /><link href="https://hivedocs.info/" rel="alternate" type="text/html" /><updated>2021-05-08T09:16:08-07:00</updated><id>https://hivedocs.info/feed.xml</id><title type="html">Hive Chain Documentation</title><subtitle>Your resource for various levels of Hive Documentation.</subtitle><author><name>site curated by: @inertia</name></author><entry><title type="html">HiveSQL Upate - New Blacklists and Mutes tables</title><link href="https://hivedocs.info/news/sql/database/2021/05/08/hivesql-upate-20210508.html" rel="alternate" type="text/html" title="HiveSQL Upate - New Blacklists and Mutes tables" /><published>2021-05-08T05:20:33-07:00</published><updated>2021-05-08T05:20:33-07:00</updated><id>https://hivedocs.info/news/sql/database/2021/05/08/hivesql-upate-20210508</id><content type="html" xml:base="https://hivedocs.info/news/sql/database/2021/05/08/hivesql-upate-20210508.html">&lt;div id=&quot;content-arcange-hivesql-upate-20210508&quot;&gt;![](https://i.imgur.com/FE9D32t.png)
+
+The concept of [decentralized blacklists and mutes lists](/hive-102930/@blocktrades/hive-improvement-proposal-decentralize-blacklists-on-hive) was introduced by @blocktrades some time ago. These lists are recorded in the blockchain as `custom_json` operations, which makes them hard to track given the large number of such operations issued each day.
+
+Therefore, I created additional tables to make life easier for those who would be interested in such information.
+
+### What's new?
+
+Four new &quot;state&quot; tables have been added to the database. State tables do not store transactions but reflect the result of operations recorded in the blockchain.
+
+**Blacklists**
+
+Blacklists allow anyone to construct a set of blacklisted users and allow each user to use one or more blacklists created by others.
+
+Blacklisting an account implies the blacklister thinks the account is doing something wrong, and is intended to be used as a way to warn others that he thinks they should be careful when dealing with that account.
+
+|Column|Description|
+|-|-|
+|blacklister|account owning the blacklist|
+|blasklisted|account being blacklisted|
+
+**BlacklistsFollows**
+
+This table contains a list of accounts following other account's blacklist.
+
+|Column|Description|
+|-|-|
+|account|account following a blacklist|
+|blacklist|account who created a blacklist|
+
+**Mutes**
+
+Mutes lists allow anyone to construct a set of users and allow each user to use one or more mute lists created by others.
+
+Muting an account means one doesn’t want to see the account’s posts and comments. Most frontends honor muting by preventing those posts from being displayed when its users view the site.
+
+|Column|Description|
+|-|-|
+|muter|account owning the mutes list|
+|muted|account being muted|
+
+**MutesFollows**
+
+This table contains a list of account following other account's mutes list
+
+|Column|Description|
+|-|-|
+|account|account following a mutes list|
+|mutelist|account who created a mutes list|
+
+### What else?
+
+**Support for reblogs deletion**
+
+Hivemind has recently added support for undoing Reblogs.
+
+This allows users to remove old reblogs they don't want to appear on their feed or posts they mistakenly reblogged.
+
+HiveSQL will also manage such operations and remove related entries from its `Reblogs` state table.
+
+## Support
+
+If you have any questions or remarks, support is provided on the [HiveSQL Discord Channel](https://discord.gg/kyEFDfT).
+
+Thank you for reading.
+
+---
+**Let's keep HiveSQL free to use - Support its proposals**!
+|HiveSQL|HiveBuzz|
+|-|-|
+|[Vote for the proposal on PeakD](https://peakd.com/me/proposals/138)&lt;br /&gt;[Vote for the proposal on Ecency](https://ecency.com/proposals/138)&lt;br /&gt;[Vote for the proposal using HiveSigner](https://hivesigner.com/sign/update_proposal_votes?proposal_ids=%5B%22138%22%5D&amp;amp;approve=true)|[Vote for the proposal on PeakD](https://peakd.com/me/proposals/147)&lt;br /&gt;[Vote for the proposal on Ecency](https://ecency.com/proposals/147)&lt;br /&gt;[Vote for the proposal using HiveSigner](https://hivesigner.com/sign/update_proposal_votes?proposal_ids=%5B%22147%22%5D&amp;amp;approve=true)|
+
+---
+&lt;center&gt;
+
+### Check out my apps and services
+&lt;a href=&quot;/hive/@hive.engage/stay-connected-with-your-hive-audience-and-catch-attention&quot;&gt;&lt;img src=&quot;https://i.imgur.com/GiNJqlm.png&quot; /&gt;&lt;/a&gt;&lt;a href=&quot;/@hivebuzz&quot;&gt;&lt;img src=&quot;https://i.imgur.com/B4UTun2.png&quot; /&gt;&lt;/a&gt;&lt;a href=&quot;/@hivesql&quot;&gt;&lt;img src=&quot;https://i.imgur.com/EPN8RW6.png&quot; /&gt;&lt;/a&gt;&lt;a href=&quot;/hive/@arcange/introducing-hive-account-recovery&quot;&gt;&lt;img src=&quot;https://i.imgur.com/6TWeW7V.png&quot; /&gt;&lt;/a&gt;&lt;a href=&quot;/@hive.autoclaim&quot;&gt;&lt;img src=&quot;https://i.imgur.com/ih2pEOw.png&quot; /&gt;&lt;/a&gt;&lt;/center&gt;
+&lt;center&gt;
+
+### [Vote for me as a witness ![](https://i.imgur.com/2bi4SnT.png)](https://hivesigner.com/sign/account-witness-vote?witness=arcange&amp;amp;approve=1)&amp;lt;/div&amp;gt;
+&lt;script crossorigin=&quot;anonymous&quot; integrity=&quot;sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=&quot; src=&quot;https://code.jquery.com/jquery-3.5.1.slim.min.js&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;https://unpkg.com/steem-content-renderer&quot;&gt;&lt;/script&gt;
+&lt;!-- &lt;script src=&quot;https://cdn.jsdelivr.net/npm/hive-content-renderer/dist/hive-content-renderer.min.js&quot;&gt;&lt;/script&gt; --&gt;
+&lt;script&gt;
+  $(document).ready(function() {
+    try {
+      const renderer = new SteemContentRenderer.DefaultRenderer({
+      // const renderer = new HiveContentRenderer({
+        baseUrl: &quot;https://hive.blog/&quot;,
+        breaks: true,
+        skipSanitization: false,
+        allowInsecureScriptTags: false,
+        addNofollowToLinks: true,
+        doNotShowImages: false,
+        ipfsPrefix: &quot;&quot;,
+        assetsWidth: 640,
+        assetsHeight: 480,
+        imageProxyFn: (url) =&gt; url,
+        usertagUrlFn: (account) =&gt; &quot;/@arcange&quot;,
+        hashtagUrlFn: (hashtag) =&gt; &quot;/hivesql-upate-20210508&quot;,
+        isLinkSafeFn: (url) =&gt; true,
+      });
+      
+      const inputElem = $('#content-arcange-hivesql-upate-20210508').html();
+      const outputElem = $('#content-arcange-hivesql-upate-20210508');
+      const output = renderer.render(inputElem);
+      
+      outputElem.html(output);
+    } catch(e) {
+      console.log(e);
+    }
+  });
+&lt;/script&gt;
+&lt;style&gt;
+  #content-arcange-hivesql-upate-20210508 {
+    padding: 0 3rem;
+    color: #444444;
+    font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.8;
+    text-shadow: 0 1px 0 #ffffff;
+    padding: 0.5rem;
+  }
+  #content-arcange-hivesql-upate-20210508 code {
+    background: white;
+  }
+  #content-arcange-hivesql-upate-20210508 a {
+    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
+  }
+  #content-arcange-hivesql-upate-20210508 a:hover {
+    border-bottom: 0;
+  }
+  #content-arcange-hivesql-upate-20210508 h1 {
+    font-size: 2.2em;
+  }
+  #content-arcange-hivesql-upate-20210508 h2, h3, h4, h5 {
+    margin-bottom: 0;
+  }
+  #content-arcange-hivesql-upate-20210508 header small {
+    color: #999;
+    font-size: 50%;
+  }
+  #content-arcange-hivesql-upate-20210508 img {
+    max-width: 100%;
+  }
+&lt;/style&gt;
+
+&lt;hr /&gt;
+&lt;p&gt;
+  See: &lt;a href=&quot;https://peakd.com/hive-139531/@arcange/hivesql-upate-20210508&quot;&gt;HiveSQL Upate - New Blacklists and Mutes tables&lt;/a&gt;
+  by
+  &lt;a href=&quot;https://hive.blog/@arcange&quot;&gt;@arcange&lt;/a&gt;
+&lt;/p&gt;
+
+&lt;/center&gt;&lt;/div&gt;</content><author><name>arcange</name></author><category term="news" /><category term="sql" /><category term="database" /><summary type="html">![](https://i.imgur.com/FE9D32t.png) The concept of [decentralized blacklists and mutes lists](/hive-102930/@blocktrades/hive-improvement-proposal-decentralize-blacklists-on-hive) was introduced by @blocktrades some time ago. These lists are recorded in the blockchain as `custom_json` operations, which makes them hard to track given the large number of such operations issued each day. Therefore, I created additional tables to make life easier for those who would be interested in such information. ### What's new? Four new &quot;state&quot; tables have been added to the database. State tables do not store transactions but reflect the result of operations recorded in the blockchain. **Blacklists** Blacklists allow anyone to construct a set of blacklisted users and allow each user to use one or more blacklists created by others. Blacklisting an account implies the blacklister thinks the account is doing something wrong, and is intended to be used as a way to warn others that he thinks they should be careful when dealing with that account. |Column|Description| |-|-| |blacklister|account owning the blacklist| |blasklisted|account being blacklisted| **BlacklistsFollows** This table contains a list of accounts following other account's blacklist. |Column|Description| |-|-| |account|account following a blacklist| |blacklist|account who created a blacklist| **Mutes** Mutes lists allow anyone to construct a set of users and allow each user to use one or more mute lists created by others. Muting an account means one doesn’t want to see the account’s posts and comments. Most frontends honor muting by preventing those posts from being displayed when its users view the site. |Column|Description| |-|-| |muter|account owning the mutes list| |muted|account being muted| **MutesFollows** This table contains a list of account following other account's mutes list |Column|Description| |-|-| |account|account following a mutes list| |mutelist|account who created a mutes list| ### What else? **Support for reblogs deletion** Hivemind has recently added support for undoing Reblogs. This allows users to remove old reblogs they don't want to appear on their feed or posts they mistakenly reblogged. HiveSQL will also manage such operations and remove related entries from its `Reblogs` state table. ## Support If you have any questions or remarks, support is provided on the [HiveSQL Discord Channel](https://discord.gg/kyEFDfT). Thank you for reading. --- **Let's keep HiveSQL free to use - Support its proposals**! |HiveSQL|HiveBuzz| |-|-| |[Vote for the proposal on PeakD](https://peakd.com/me/proposals/138)[Vote for the proposal on Ecency](https://ecency.com/proposals/138)[Vote for the proposal using HiveSigner](https://hivesigner.com/sign/update_proposal_votes?proposal_ids=%5B%22138%22%5D&amp;amp;approve=true)|[Vote for the proposal on PeakD](https://peakd.com/me/proposals/147)[Vote for the proposal on Ecency](https://ecency.com/proposals/147)[Vote for the proposal using HiveSigner](https://hivesigner.com/sign/update_proposal_votes?proposal_ids=%5B%22147%22%5D&amp;amp;approve=true)| --- ### Check out my apps and services ### [Vote for me as a witness ![](https://i.imgur.com/2bi4SnT.png)](https://hivesigner.com/sign/account-witness-vote?witness=arcange&amp;amp;approve=1)&amp;lt;/div&amp;gt; See: HiveSQL Upate - New Blacklists and Mutes tables by @arcange</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://i.imgur.com/FE9D32t.png" /><media:content medium="image" url="https://i.imgur.com/FE9D32t.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">HiveSQL Update - New Status Page</title><link href="https://hivedocs.info/news/sql/database/2021/05/06/hivesql-status.html" rel="alternate" type="text/html" title="HiveSQL Update - New Status Page" /><published>2021-05-06T05:32:57-07:00</published><updated>2021-05-06T05:32:57-07:00</updated><id>https://hivedocs.info/news/sql/database/2021/05/06/hivesql-status</id><content type="html" xml:base="https://hivedocs.info/news/sql/database/2021/05/06/hivesql-status.html">&lt;div id=&quot;content-arcange-hivesql-status&quot;&gt;![](https://i.imgur.com/HbmjGRG.png)
 
 Every day, HiveSQL provides its services to dozens of users and (d)Apps that hammer the server with thousands of queries. At the same time, it also has to process all the new blocks, split the data into different tables, update indexes, update non-transactional tables, etc…
 
@@ -1327,183 +1481,4 @@ If you've decided that scammers should be rewarded, we ask you to still please e
   See: &lt;a href=&quot;https://hive.blog/hivewatchers/@hivewatchers/mutelists-blacklists-what-s-the-difference-faq&quot;&gt;Mutelists, Blacklists: What's the difference? + FAQ&lt;/a&gt;
   by
   &lt;a href=&quot;https://hive.blog/@hivewatchers&quot;&gt;@hivewatchers&lt;/a&gt;
-&lt;/p&gt;</content><author><name>hivewatchers</name></author><category term="howto" /><category term="community" /><category term="blacklists" /><summary type="html">![image.png](https://images.hive.blog/DQmQ48rPArkkRHK9bTYHhYkcrQfWicUS4ZbbEw4RW8GycTx/image.png) [Source of Image](https://unsplash.com/photos/-1_RZL8BGBM) There has been much confusion about the various lists available on Hive. This post is meant to answer some of your questions to that regard. Please feel free to ask more questions as you see fit. # Decentralized blacklists and mutelists These are on-chain lists based on the 'follow' function, which allows you to interact by either choosing to view in prominence or to hide from view the posts of another account. Any user can create a list or subscribe to an existing list that someone else created. When subscribed or created, the list will govern which accounts the user will not see. This is currently widely used for phishing accounts. - List is for limiting interaction with accounts on it - Users and projects are able to create a coherent list of undesirable accounts (in their opinion) - Subscribers can limit what they themselves can see and keep their experienced focused - Lists mainly affect the frontend user experience - Lists do not have any effect on reward distribution # Spaminator blacklist The Spaminator blacklist is for accounts that are involved in **exploitation** on Hive. This is usually directly related to the exploitation of the reward pool. The Spaminator bot works off a ledger of account names, the on-chain interactions of which it logs into its database as it streams the blockchain. - A hands-off bot written in Python - 76955 accounts on it right now - 1012 different account groups (grouped for classification purposes) of which many are different botnets - Very, very few users on it are unique individuals; most are exploitation accounts - No appeal timer, prompt removal is possible - No maximum amount of strikes for unique individuals Only active accounts are logged and are given a warning downvote. Where they are a unique individual, they will come and reply in some way. The unique individuals are usually victims of hacking/phishing or of other scams against them. They are warned through the bot and are helped to recover. # Hivewatchers Banlist What is commonly referred to as the 'Hivewatchers blacklist' is actually a 'banlist'. We are not sure on how this name originally came about as we inherited the project and it's list but that's its official name. Hivewatchers is focused on **fraud**. Fraud can be defined as ID theft/deception, plagiarism (of all types), and generally fraudulent activities of various types. - Not part of Spaminator - Used to educate users and give them a chance to be removed - Only for unique individual accounts - Not used for botnets unless the botnet is based on deception - Has a timer that gets activated for removal after an appeal starts - A maximum two strikes and no more appeals are possible for unique individuals # Mutelist vs Spaminator vs Hivewatchers Because of the words 'list' and 'blacklist' there are many points of confusion around their differences and similarities. Stored centrally | Mutelist | Spaminator | Hivewatchers | -|-|-|-| Stored centrally in database | No | Yes | Yes | Created by specific entity | Yes | Yes | Yes | Limits interaction | Yes | No | No | Frontend-focused | Yes | No | Yes | Mandatory for users | No | No | No | Automatically restores rewards | No | Yes | No | Downvotes to warn | No | Yes | Yes | Upvotes to warn | No | No | No | Scope is set by default | No | Yes | Yes | Hides post | Yes | No | No | Is a hands-off bot | No | Yes | Both | Is a feature | Yes | No | No | On-chain controls | Yes | No | Yes | # Outdated Terminology: 'Spam' The word 'Spam' is being phased out because of several issues: - Too overused, vague and unclear - Commonly used to mislabel and thus downgrade major threats such as phishing that require urgency - Is often found attributed to everything irrespective of scope by users - Is used to label low-effort content, shorter content, content that is disliked by the user, content in languages that don't always properly display, etc. The most predominant issue is phishing. When phishing becomes mislabeled as spam, the person being warned to either seek help recovering their account or to not click on a malicious link does not understand the severity of the matter. All phishing should always be referred to as 'phishing'. The word 'spam' is actively being removed from Hivewatchers comments and we are currently in transition to that regard. # Hive.Blog Mutelist This list is used for phishing/hacked accounts predominantly, with a few accounts spreading malware thrown in. It is a great list to follow by default and is also replicated in the [Plenty of Phish repository](https://github.com/gryter/plentyofphish/blob/master/phishing.txt), on Spaminator and several other places. Once an account is recovered and is safe, it is removed from the list. This is one example of a Mutelist being used effectively and for a concrete purpose that warrants subscription and benefits all users irrespective of their beliefs, outlook, or anything else. It is strongly recommended that everyone takes all possible measures to prevent supporting hackers or falling prey to them. ![image.png](https://images.hive.blog/DQmYthGMZLHCnNtUnD1yphVpjJxPYq47Jrw2Pdw6e4yK7K8/image.png) # FAQ **So why can't Spaminator just use a decentralized list? I still don't understand.** Spaminator is a bot and needs its data in a local ledger (on its servers) to function. It was made to purely read the chain (it streams the blocks) and constantly querying on-chain lists would put a huge load on the endpoints quite unnecessarily. Additionally, it has about 76k account on it, many of which are massive botnets and not individual users. They are listed in their respective categories and managed through our servers. Adding them to one massive on-chain list is just not practical. **Will there be a Hivewatchers decentralized on-chain Mutelist or Blacklist?** Yes. The Hivewatchers list is quite short in comparison to Spaminator and is meant to focus on fraud, as we already discussed. We'll have an announcement to that regard. We will likely end up with two lists on Hivewatchers; one for accounts that are permanently on and one for those that have a chance to appeal or are appealing. **Do you recommend I follow the Hivewatchers list and set my account to automatically downvote everything on it?** We ask that you keep yourself safe. Some of the accounts we deal with belong to individuals who are extremely dangerous, are known for targeted harassment, death threats, stalking, doxxing, and other similar activities. Use your personal discretion. **Are all accounts granted appeals?** No. ID thieves, exploitation ring operators, hackers/phishers, or systemic repeat fraudsters are not granted further consideration. There is a limit to our 'revolving door'. Repeatedly having the same accounts mislead the community in their appeals is damaging to Hive. **My account is both on Hivewatchers and Spaminator. Why?** In cases where there is fraud coupled with exploitation of the blockchain and its reward mechanism, the account may fit both scopes. If the account is part of a botnet or an organized ring, then it will likely be on both. **Is short-form content allowed on Hive?** All content is treated the same way: It should be at least 50% original to have some value and anything taken from the internet should be clearly cited. Short-form content doesn't mean that suddenly there is free reign to copy/paste other people's work and make money off it. It is never acceptable to steal from others for personal profit. **I tried to use the on-chain Mutelist/Blacklist feature and I discovered bugs or issues. What do I do?** The decentralized list feature is still being developed. Please submit your bugs/issues to https://gitlab.syncad.com/hive/condenser **Should I report hacking/phishing, even if it's not on chain but still related to the Hive ecosystem in general?** Yes. Please contact @guiltyparties and outline what happened. Even if your dapp got hacked please advise. **I hate Hivewatchers and Spaminator and want to disrupt all activities, so I'm upvoting everything Spaminator downvotes.** If you've decided that scammers should be rewarded, we ask you to still please ensure that you are not supporting those who hack and phish other people's accounts. Just reach out to @guiltyparties on Openhive.chat or Discord and I'll set you up with the appropriate lists to exclude from your 'curation'. It's not an all or nothing deal. If you are supporting phishing you will be treated the same as the hackers themselves. See: Mutelists, Blacklists: What's the difference? + FAQ by @hivewatchers</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://images.hive.blog/DQmQ48rPArkkRHK9bTYHhYkcrQfWicUS4ZbbEw4RW8GycTx/image.png" /><media:content medium="image" url="https://images.hive.blog/DQmQ48rPArkkRHK9bTYHhYkcrQfWicUS4ZbbEw4RW8GycTx/image.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Some cloudflare stats for hive.blog</title><link href="https://hivedocs.info/news/projects/hive/2021/04/24/some-cloudflare-stats-for-hive-blog.html" rel="alternate" type="text/html" title="Some cloudflare stats for hive.blog" /><published>2021-04-24T14:20:48-07:00</published><updated>2021-04-24T14:20:48-07:00</updated><id>https://hivedocs.info/news/projects/hive/2021/04/24/some-cloudflare-stats-for-hive-blog</id><content type="html" xml:base="https://hivedocs.info/news/projects/hive/2021/04/24/some-cloudflare-stats-for-hive-blog.html">&lt;div id=&quot;content-blocktrades-some-cloudflare-stats-for-hive-blog&quot;&gt;I don't usually bother to analyze web traffic on hive.blog, since I'm more focused on the technical development of Hive rather than Hive's success at marketing itself. Still, cloudflare send me a  monthly email that shows the amount internet traffic on the site, including some geographical breakdown of that data. So I've long known that the US has consistently been the largest source of our web traffic, ever since the site first launched.
-
-The inspiration of this post was a discussion I was having with @logic. He had found a post that was attempting to do an analysis of hive.blog's traffic based on organic search data (I think, I didn't read too closely) and it made a few incorrect conclusions about traffic on the site, so I decided to publish some of the data we have from cloudflare, after that discussion.
-
-Hive.blog only has the data that cloudflare provides for free, so I can only access the last 30 days worth of traffic data, plus I have those monthly emails which allows me to get a little bit of historical data beyond the past 30 days. So I can only present a few graphs that may be of interest.
-
-# US web traffic for Hive.blog
-
-This graph of US traffic was created by taking US traffic data from the emails (I deleted or moved the email from February apparently, so that's why there's a missing bar in the graph):
-
-![image.png](https://images.hive.blog/DQmQtrVBAZmGZUGzBASQafVHsdXs6xh67ELsoWPqoCq2emC/image.png)
-I'm not really sure why there was such a huge spike of traffic from the US during the month of May (120M), but there may not have been many other sites able to browse Hive posts during that month, so it may have born the brunt of Hive user traffic during that month. My best guess is that peakd, ecency, etc took away a lot of the traffic in  the next month, once everyone could return to using their preferred post browser.
-
-The graph shows there's been a steady growth of traffic from October of last year until now (2x growth of US traffic over that period), which is nice, especially since we know a lot of other web sites are getting more traction nowadays as post browsers and therefore competing for total Hive traffic. So overall, this looks pretty promising for overall growth of viewership for Hive social media posts.
-
-# Heatmap for hive.blog's worldwide traffic
-Here's a heatmap of global traffic to hive.blog, and a numeric breakdown of traffic from the top 5 countries  in the last 30 days by country:
-
-
-![image.png](https://images.hive.blog/DQmb9vvoBzQrQJPutwb5hnquU7KJHdRNCidggBkAVKDapVp/image.png)
-
-# A few more from the heatmap
-
-I also manually looked up a few other countries on the heatmap (by mousing over them) and roughly sorted the results. Now, this was a fairly tedious process and there's a lot of countries, so please don't be upset if I missed your country.
-* Brazil 8.5M
-* Canada 7.4M
-* Turkey 7.4M
-* Indonesia 6.8M
-* Spain 5.8M
-* India 5.5M
-* France 5.2M
-* Nigeria 5M
-* Ukraine 4.9M
-* Italy 4.6M
-* Argentina 4.2M
-* Bangladesh 4M
-* Poland 3.8M
-* Russia 3.4M
-* Thailand 3.1M
-* Australia 3M
-* Portugal 2.9M
-* Mexico 2.9M
-* Netherlands 2.8M
-* Pakistan 2.4M
-* Columbia 2.2M
-* Vietnam 2M
-* S. Korea 1.8M
-* Romania 1.7M
-* Bulgaria 1.5M
-* Serbia 1.5M
-* Malaysia 1.4M
-* South Africa 1.4M
-* Greece 1.5M
-* Japan 1.1M
-* Austria 1.2M
-* Switzerland 1.2M
-* New Zealand 1.2M
-* Belgium 1M
-* Peru 1M
-* Chile 1M
-* Czech 0.9M
-* Sweden 1M
-* Norway 0.9M
-* Finland 0.8M
-* Ireland 0.8M
-* Belarus 0.7M
-* Croatia 0.7M
-* Ecuador 0.7M
-* Taiwan 0.5M
-* Estonia 0.5M
-* Macedonia 0.5M
-* Slovenia 0.5M
-* Denmark 0.4M
-* Slovakia 0.4M
-* Hungary 0.4M
-* Suriname 0.4M
-* Israel 0.3M
-* Lithuania 0.3M
-* Uruguay 0.3M
-* Paraguay 0.3M
-* Panama 0.3M
-* Costa Rica 0.3M
-* Saudi Arabia 0.2M
-* Iran 0.2M
-* Egypt 0.2M
-* Morocco 0.2M
-* Kazakhstan
-* Algeria 0.2M
-* Dominican Republic 0.2M
-* Latvia 0.2M
-* Sri Lanka 0.2M
-* Guatemala 0.2M
-* Bolivia 0.2M
-* Nepal 0.2M
-* Iceland 0.1M
-* El Salvador 0.1M
-* Kenya 0.1M
-* Cuba 0.1M
-* China 0.1M
-* Bosnia/Herz: 0.1M
-* Moldova 0.1M
-* Azerbaijan 0.1M
-* Oman 0.1M&lt;/div&gt;
-&lt;script crossorigin=&quot;anonymous&quot; integrity=&quot;sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=&quot; src=&quot;https://code.jquery.com/jquery-3.5.1.slim.min.js&quot;&gt;&lt;/script&gt;
-
-&lt;script src=&quot;https://unpkg.com/steem-content-renderer&quot;&gt;&lt;/script&gt;
-
-&lt;!-- &lt;script src=&quot;https://cdn.jsdelivr.net/npm/hive-content-renderer/dist/hive-content-renderer.min.js&quot;&gt;&lt;/script&gt; --&gt;
-&lt;script&gt;
-  $(document).ready(function() {
-    try {
-      const renderer = new SteemContentRenderer.DefaultRenderer({
-      // const renderer = new HiveContentRenderer({
-        baseUrl: &quot;https://hive.blog/&quot;,
-        breaks: true,
-        skipSanitization: false,
-        allowInsecureScriptTags: false,
-        addNofollowToLinks: true,
-        doNotShowImages: false,
-        ipfsPrefix: &quot;&quot;,
-        assetsWidth: 640,
-        assetsHeight: 480,
-        imageProxyFn: (url) =&gt; url,
-        usertagUrlFn: (account) =&gt; &quot;/@blocktrades&quot;,
-        hashtagUrlFn: (hashtag) =&gt; &quot;/some-cloudflare-stats-for-hive-blog&quot;,
-        isLinkSafeFn: (url) =&gt; true,
-      });
-      
-      const inputElem = $('#content-blocktrades-some-cloudflare-stats-for-hive-blog').html();
-      const outputElem = $('#content-blocktrades-some-cloudflare-stats-for-hive-blog');
-      const output = renderer.render(inputElem);
-      
-      outputElem.html(output);
-    } catch(e) {
-      console.log(e);
-    }
-  });
-&lt;/script&gt;
-
-&lt;style&gt;
-  #content-blocktrades-some-cloudflare-stats-for-hive-blog {
-    padding: 0 3rem;
-    color: #444444;
-    font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif;
-    font-size: 16px;
-    line-height: 1.8;
-    text-shadow: 0 1px 0 #ffffff;
-    padding: 0.5rem;
-  }
-  #content-blocktrades-some-cloudflare-stats-for-hive-blog code {
-    background: white;
-  }
-  #content-blocktrades-some-cloudflare-stats-for-hive-blog a {
-    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
-  }
-  #content-blocktrades-some-cloudflare-stats-for-hive-blog a:hover {
-    border-bottom: 0;
-  }
-  #content-blocktrades-some-cloudflare-stats-for-hive-blog h1 {
-    font-size: 2.2em;
-  }
-  #content-blocktrades-some-cloudflare-stats-for-hive-blog h2, h3, h4, h5 {
-    margin-bottom: 0;
-  }
-  #content-blocktrades-some-cloudflare-stats-for-hive-blog header small {
-    color: #999;
-    font-size: 50%;
-  }
-  #content-blocktrades-some-cloudflare-stats-for-hive-blog img {
-    max-width: 100%;
-  }
-&lt;/style&gt;
-
-&lt;hr /&gt;
-
-&lt;p&gt;
-  See: &lt;a href=&quot;https://hive.blog/hive-133987/@blocktrades/some-cloudflare-stats-for-hive-blog&quot;&gt;Some cloudflare stats for hive.blog&lt;/a&gt;
-  by
-  &lt;a href=&quot;https://hive.blog/@blocktrades&quot;&gt;@blocktrades&lt;/a&gt;
-&lt;/p&gt;</content><author><name>blocktrades</name></author><category term="news" /><category term="projects" /><category term="hive" /><summary type="html">I don't usually bother to analyze web traffic on hive.blog, since I'm more focused on the technical development of Hive rather than Hive's success at marketing itself. Still, cloudflare send me a monthly email that shows the amount internet traffic on the site, including some geographical breakdown of that data. So I've long known that the US has consistently been the largest source of our web traffic, ever since the site first launched. The inspiration of this post was a discussion I was having with @logic. He had found a post that was attempting to do an analysis of hive.blog's traffic based on organic search data (I think, I didn't read too closely) and it made a few incorrect conclusions about traffic on the site, so I decided to publish some of the data we have from cloudflare, after that discussion. Hive.blog only has the data that cloudflare provides for free, so I can only access the last 30 days worth of traffic data, plus I have those monthly emails which allows me to get a little bit of historical data beyond the past 30 days. So I can only present a few graphs that may be of interest. # US web traffic for Hive.blog This graph of US traffic was created by taking US traffic data from the emails (I deleted or moved the email from February apparently, so that's why there's a missing bar in the graph): ![image.png](https://images.hive.blog/DQmQtrVBAZmGZUGzBASQafVHsdXs6xh67ELsoWPqoCq2emC/image.png) I'm not really sure why there was such a huge spike of traffic from the US during the month of May (120M), but there may not have been many other sites able to browse Hive posts during that month, so it may have born the brunt of Hive user traffic during that month. My best guess is that peakd, ecency, etc took away a lot of the traffic in the next month, once everyone could return to using their preferred post browser. The graph shows there's been a steady growth of traffic from October of last year until now (2x growth of US traffic over that period), which is nice, especially since we know a lot of other web sites are getting more traction nowadays as post browsers and therefore competing for total Hive traffic. So overall, this looks pretty promising for overall growth of viewership for Hive social media posts. # Heatmap for hive.blog's worldwide traffic Here's a heatmap of global traffic to hive.blog, and a numeric breakdown of traffic from the top 5 countries in the last 30 days by country: ![image.png](https://images.hive.blog/DQmb9vvoBzQrQJPutwb5hnquU7KJHdRNCidggBkAVKDapVp/image.png) # A few more from the heatmap I also manually looked up a few other countries on the heatmap (by mousing over them) and roughly sorted the results. Now, this was a fairly tedious process and there's a lot of countries, so please don't be upset if I missed your country. * Brazil 8.5M * Canada 7.4M * Turkey 7.4M * Indonesia 6.8M * Spain 5.8M * India 5.5M * France 5.2M * Nigeria 5M * Ukraine 4.9M * Italy 4.6M * Argentina 4.2M * Bangladesh 4M * Poland 3.8M * Russia 3.4M * Thailand 3.1M * Australia 3M * Portugal 2.9M * Mexico 2.9M * Netherlands 2.8M * Pakistan 2.4M * Columbia 2.2M * Vietnam 2M * S. Korea 1.8M * Romania 1.7M * Bulgaria 1.5M * Serbia 1.5M * Malaysia 1.4M * South Africa 1.4M * Greece 1.5M * Japan 1.1M * Austria 1.2M * Switzerland 1.2M * New Zealand 1.2M * Belgium 1M * Peru 1M * Chile 1M * Czech 0.9M * Sweden 1M * Norway 0.9M * Finland 0.8M * Ireland 0.8M * Belarus 0.7M * Croatia 0.7M * Ecuador 0.7M * Taiwan 0.5M * Estonia 0.5M * Macedonia 0.5M * Slovenia 0.5M * Denmark 0.4M * Slovakia 0.4M * Hungary 0.4M * Suriname 0.4M * Israel 0.3M * Lithuania 0.3M * Uruguay 0.3M * Paraguay 0.3M * Panama 0.3M * Costa Rica 0.3M * Saudi Arabia 0.2M * Iran 0.2M * Egypt 0.2M * Morocco 0.2M * Kazakhstan * Algeria 0.2M * Dominican Republic 0.2M * Latvia 0.2M * Sri Lanka 0.2M * Guatemala 0.2M * Bolivia 0.2M * Nepal 0.2M * Iceland 0.1M * El Salvador 0.1M * Kenya 0.1M * Cuba 0.1M * China 0.1M * Bosnia/Herz: 0.1M * Moldova 0.1M * Azerbaijan 0.1M * Oman 0.1M See: Some cloudflare stats for hive.blog by @blocktrades</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://images.hive.blog/DQmQtrVBAZmGZUGzBASQafVHsdXs6xh67ELsoWPqoCq2emC/image.png" /><media:content medium="image" url="https://images.hive.blog/DQmQtrVBAZmGZUGzBASQafVHsdXs6xh67ELsoWPqoCq2emC/image.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>
+&lt;/p&gt;</content><author><name>hivewatchers</name></author><category term="howto" /><category term="community" /><category term="blacklists" /><summary type="html">![image.png](https://images.hive.blog/DQmQ48rPArkkRHK9bTYHhYkcrQfWicUS4ZbbEw4RW8GycTx/image.png) [Source of Image](https://unsplash.com/photos/-1_RZL8BGBM) There has been much confusion about the various lists available on Hive. This post is meant to answer some of your questions to that regard. Please feel free to ask more questions as you see fit. # Decentralized blacklists and mutelists These are on-chain lists based on the 'follow' function, which allows you to interact by either choosing to view in prominence or to hide from view the posts of another account. Any user can create a list or subscribe to an existing list that someone else created. When subscribed or created, the list will govern which accounts the user will not see. This is currently widely used for phishing accounts. - List is for limiting interaction with accounts on it - Users and projects are able to create a coherent list of undesirable accounts (in their opinion) - Subscribers can limit what they themselves can see and keep their experienced focused - Lists mainly affect the frontend user experience - Lists do not have any effect on reward distribution # Spaminator blacklist The Spaminator blacklist is for accounts that are involved in **exploitation** on Hive. This is usually directly related to the exploitation of the reward pool. The Spaminator bot works off a ledger of account names, the on-chain interactions of which it logs into its database as it streams the blockchain. - A hands-off bot written in Python - 76955 accounts on it right now - 1012 different account groups (grouped for classification purposes) of which many are different botnets - Very, very few users on it are unique individuals; most are exploitation accounts - No appeal timer, prompt removal is possible - No maximum amount of strikes for unique individuals Only active accounts are logged and are given a warning downvote. Where they are a unique individual, they will come and reply in some way. The unique individuals are usually victims of hacking/phishing or of other scams against them. They are warned through the bot and are helped to recover. # Hivewatchers Banlist What is commonly referred to as the 'Hivewatchers blacklist' is actually a 'banlist'. We are not sure on how this name originally came about as we inherited the project and it's list but that's its official name. Hivewatchers is focused on **fraud**. Fraud can be defined as ID theft/deception, plagiarism (of all types), and generally fraudulent activities of various types. - Not part of Spaminator - Used to educate users and give them a chance to be removed - Only for unique individual accounts - Not used for botnets unless the botnet is based on deception - Has a timer that gets activated for removal after an appeal starts - A maximum two strikes and no more appeals are possible for unique individuals # Mutelist vs Spaminator vs Hivewatchers Because of the words 'list' and 'blacklist' there are many points of confusion around their differences and similarities. Stored centrally | Mutelist | Spaminator | Hivewatchers | -|-|-|-| Stored centrally in database | No | Yes | Yes | Created by specific entity | Yes | Yes | Yes | Limits interaction | Yes | No | No | Frontend-focused | Yes | No | Yes | Mandatory for users | No | No | No | Automatically restores rewards | No | Yes | No | Downvotes to warn | No | Yes | Yes | Upvotes to warn | No | No | No | Scope is set by default | No | Yes | Yes | Hides post | Yes | No | No | Is a hands-off bot | No | Yes | Both | Is a feature | Yes | No | No | On-chain controls | Yes | No | Yes | # Outdated Terminology: 'Spam' The word 'Spam' is being phased out because of several issues: - Too overused, vague and unclear - Commonly used to mislabel and thus downgrade major threats such as phishing that require urgency - Is often found attributed to everything irrespective of scope by users - Is used to label low-effort content, shorter content, content that is disliked by the user, content in languages that don't always properly display, etc. The most predominant issue is phishing. When phishing becomes mislabeled as spam, the person being warned to either seek help recovering their account or to not click on a malicious link does not understand the severity of the matter. All phishing should always be referred to as 'phishing'. The word 'spam' is actively being removed from Hivewatchers comments and we are currently in transition to that regard. # Hive.Blog Mutelist This list is used for phishing/hacked accounts predominantly, with a few accounts spreading malware thrown in. It is a great list to follow by default and is also replicated in the [Plenty of Phish repository](https://github.com/gryter/plentyofphish/blob/master/phishing.txt), on Spaminator and several other places. Once an account is recovered and is safe, it is removed from the list. This is one example of a Mutelist being used effectively and for a concrete purpose that warrants subscription and benefits all users irrespective of their beliefs, outlook, or anything else. It is strongly recommended that everyone takes all possible measures to prevent supporting hackers or falling prey to them. ![image.png](https://images.hive.blog/DQmYthGMZLHCnNtUnD1yphVpjJxPYq47Jrw2Pdw6e4yK7K8/image.png) # FAQ **So why can't Spaminator just use a decentralized list? I still don't understand.** Spaminator is a bot and needs its data in a local ledger (on its servers) to function. It was made to purely read the chain (it streams the blocks) and constantly querying on-chain lists would put a huge load on the endpoints quite unnecessarily. Additionally, it has about 76k account on it, many of which are massive botnets and not individual users. They are listed in their respective categories and managed through our servers. Adding them to one massive on-chain list is just not practical. **Will there be a Hivewatchers decentralized on-chain Mutelist or Blacklist?** Yes. The Hivewatchers list is quite short in comparison to Spaminator and is meant to focus on fraud, as we already discussed. We'll have an announcement to that regard. We will likely end up with two lists on Hivewatchers; one for accounts that are permanently on and one for those that have a chance to appeal or are appealing. **Do you recommend I follow the Hivewatchers list and set my account to automatically downvote everything on it?** We ask that you keep yourself safe. Some of the accounts we deal with belong to individuals who are extremely dangerous, are known for targeted harassment, death threats, stalking, doxxing, and other similar activities. Use your personal discretion. **Are all accounts granted appeals?** No. ID thieves, exploitation ring operators, hackers/phishers, or systemic repeat fraudsters are not granted further consideration. There is a limit to our 'revolving door'. Repeatedly having the same accounts mislead the community in their appeals is damaging to Hive. **My account is both on Hivewatchers and Spaminator. Why?** In cases where there is fraud coupled with exploitation of the blockchain and its reward mechanism, the account may fit both scopes. If the account is part of a botnet or an organized ring, then it will likely be on both. **Is short-form content allowed on Hive?** All content is treated the same way: It should be at least 50% original to have some value and anything taken from the internet should be clearly cited. Short-form content doesn't mean that suddenly there is free reign to copy/paste other people's work and make money off it. It is never acceptable to steal from others for personal profit. **I tried to use the on-chain Mutelist/Blacklist feature and I discovered bugs or issues. What do I do?** The decentralized list feature is still being developed. Please submit your bugs/issues to https://gitlab.syncad.com/hive/condenser **Should I report hacking/phishing, even if it's not on chain but still related to the Hive ecosystem in general?** Yes. Please contact @guiltyparties and outline what happened. Even if your dapp got hacked please advise. **I hate Hivewatchers and Spaminator and want to disrupt all activities, so I'm upvoting everything Spaminator downvotes.** If you've decided that scammers should be rewarded, we ask you to still please ensure that you are not supporting those who hack and phish other people's accounts. Just reach out to @guiltyparties on Openhive.chat or Discord and I'll set you up with the appropriate lists to exclude from your 'curation'. It's not an all or nothing deal. If you are supporting phishing you will be treated the same as the hackers themselves. See: Mutelists, Blacklists: What's the difference? + FAQ by @hivewatchers</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://images.hive.blog/DQmQ48rPArkkRHK9bTYHhYkcrQfWicUS4ZbbEw4RW8GycTx/image.png" /><media:content medium="image" url="https://images.hive.blog/DQmQ48rPArkkRHK9bTYHhYkcrQfWicUS4ZbbEw4RW8GycTx/image.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>
