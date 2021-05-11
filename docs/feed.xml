@@ -1,4 +1,151 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="https://hivedocs.info/feed.xml" rel="self" type="application/atom+xml" /><link href="https://hivedocs.info/" rel="alternate" type="text/html" /><updated>2021-05-10T14:34:36-07:00</updated><id>https://hivedocs.info/feed.xml</id><title type="html">Hive Chain Documentation</title><subtitle>Your resource for various levels of Hive Documentation.</subtitle><author><name>site curated by: @inertia</name></author><entry><title type="html">11th update of 2021 on BlockTrades work on Hive software</title><link href="https://hivedocs.info/news/core/development/2021/05/10/11th-update-of-2021-on-blocktrades-work-on-hive-software.html" rel="alternate" type="text/html" title="11th update of 2021 on BlockTrades work on Hive software" /><published>2021-05-10T14:27:30-07:00</published><updated>2021-05-10T14:27:30-07:00</updated><id>https://hivedocs.info/news/core/development/2021/05/10/11th-update-of-2021-on-blocktrades-work-on-hive-software</id><content type="html" xml:base="https://hivedocs.info/news/core/development/2021/05/10/11th-update-of-2021-on-blocktrades-work-on-hive-software.html">&lt;div id=&quot;content-blocktrades-11th-update-of-2021-on-blocktrades-work-on-hive-software&quot;&gt;![blocktrades update.png](https://images.hive.blog/DQmSihw8Kz4U7TuCQa98DDdCzqbqPFRumuVWAbareiYZW1Z/blocktrades%20update.png)
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="https://hivedocs.info/feed.xml" rel="self" type="application/atom+xml" /><link href="https://hivedocs.info/" rel="alternate" type="text/html" /><updated>2021-05-11T09:41:31-07:00</updated><id>https://hivedocs.info/feed.xml</id><title type="html">Hive Chain Documentation</title><subtitle>Your resource for various levels of Hive Documentation.</subtitle><author><name>site curated by: @inertia</name></author><entry><title type="html">HiveSQL Upate - Database maintenance and new Account Recovery Tables</title><link href="https://hivedocs.info/news/sql/database/2021/05/11/hivesql-update-20210511.html" rel="alternate" type="text/html" title="HiveSQL Upate - Database maintenance and new Account Recovery Tables" /><published>2021-05-11T06:48:15-07:00</published><updated>2021-05-11T06:48:15-07:00</updated><id>https://hivedocs.info/news/sql/database/2021/05/11/hivesql-update-20210511</id><content type="html" xml:base="https://hivedocs.info/news/sql/database/2021/05/11/hivesql-update-20210511.html">&lt;div id=&quot;content-arcange-hivesql-update-20210511&quot;&gt;![](https://i.imgur.com/E2xbX8S.png)
+
+As you know, the account recovery process is something I have [worked](/hive-139531/@arcange/hive-account-recovery-major-update-and-new-user-interface) on and [written](/hive-139531/@arcange/account-recovery-about-trusting-and-not-being-trusted) a lot about recently. 
+
+This allowed me to better understand the related transactions recorded in the blockchain. I also noticed that the related tables in HiveSQL were not that well organized (some early days errors)
+
+So I took advantage of the HiveSQL reorganization work that I am currently carrying out to make some modifications.
+
+### What changed?
+
+* The table `TxAccountChangeRecovers` has been renamed to `TxAccountRecoveryChanges`
+* The content of the table `TxAccountRecovers` has been split into `TxAccountRecoveryRequests` and `TxAccountRecoveryConfirms`.
+
+Therefore, we now have three new tables available:
+
+**TxAccountRecoveryChanges**
+
+This table contains operations broadcasted to the blockchain when users want to change their Recovery Account.
+
+|Column|Description|
+|-|-|
+|account_to_recover|the account that wants to change its Recovery Account|
+|new_recovery_account|the new Recovery Account|
+
+**TxAccountRecoveryRequests**
+
+This operation is broadcasted to the blockchain by the Account Recovery of an account that has been hacked to initiate the recovery process
+
+|Column|Description|
+|-|-|
+|recovery_account|username of the Recovery Account|
+|account_to_recover|username of the account to recover|
+|new_owner_authority|new public owner key provided by the account to recover to the recovery account|
+
+**TxAccountRecoveryConfirms**
+
+This table contains operations broadcasted to the blockchain by the hacked account's owner to confirm the account recovery request sent by its Recovery Account.
+
+|Column|Description|
+|-|-|
+|account_to_recover|username of the account to recover|
+|new_owner_authority|new public owner key provided by the account to recover to the recovery account|
+|recent_owner_authority|a public owner key of the account to recover before it was last changed|
+
+## What's next?
+
+This first change should make it easier to find information relating to the account recovery process. 
+
+As indicated at the beginning of this post, I have embarked on a work of reorganizing and improving the database. So expect to see more posts on this subject in the coming days.
+
+## Support
+
+If you have any questions or remarks, support is provided on the [HiveSQL Discord Channel](https://discord.gg/kyEFDfT).
+
+Thank you for reading.
+
+---
+**Let's keep HiveSQL free to use - Support its proposals**!
+|HiveSQL|HiveBuzz|
+|-|-|
+|[Vote for the proposal on PeakD](https://peakd.com/me/proposals/138)&lt;br /&gt;[Vote for the proposal on Ecency](https://ecency.com/proposals/138)&lt;br /&gt;[Vote for the proposal using HiveSigner](https://hivesigner.com/sign/update_proposal_votes?proposal_ids=%5B%22138%22%5D&amp;amp;approve=true)|[Vote for the proposal on PeakD](https://peakd.com/me/proposals/147)&lt;br /&gt;[Vote for the proposal on Ecency](https://ecency.com/proposals/147)&lt;br /&gt;[Vote for the proposal using HiveSigner](https://hivesigner.com/sign/update_proposal_votes?proposal_ids=%5B%22147%22%5D&amp;amp;approve=true)|
+
+---
+&lt;center&gt;
+
+### Check out my apps and services
+&lt;a href=&quot;/hive/@hive.engage/stay-connected-with-your-hive-audience-and-catch-attention&quot;&gt;&lt;img src=&quot;https://i.imgur.com/GiNJqlm.png&quot; /&gt;&lt;/a&gt;&lt;a href=&quot;/@hivebuzz&quot;&gt;&lt;img src=&quot;https://i.imgur.com/B4UTun2.png&quot; /&gt;&lt;/a&gt;&lt;a href=&quot;/@hivesql&quot;&gt;&lt;img src=&quot;https://i.imgur.com/EPN8RW6.png&quot; /&gt;&lt;/a&gt;&lt;a href=&quot;/hive/@arcange/introducing-hive-account-recovery&quot;&gt;&lt;img src=&quot;https://i.imgur.com/6TWeW7V.png&quot; /&gt;&lt;/a&gt;&lt;a href=&quot;/@hive.autoclaim&quot;&gt;&lt;img src=&quot;https://i.imgur.com/ih2pEOw.png&quot; /&gt;&lt;/a&gt;&lt;/center&gt;
+&lt;center&gt;
+
+### [Vote for me as a witness ![](https://i.imgur.com/2bi4SnT.png)](https://hivesigner.com/sign/account-witness-vote?witness=arcange&amp;amp;approve=1)
+&lt;/center&gt;&lt;/div&gt;
+&lt;script crossorigin=&quot;anonymous&quot; integrity=&quot;sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=&quot; src=&quot;https://code.jquery.com/jquery-3.5.1.slim.min.js&quot;&gt;&lt;/script&gt;
+
+&lt;script src=&quot;https://unpkg.com/steem-content-renderer&quot;&gt;&lt;/script&gt;
+
+&lt;!-- &lt;script src=&quot;https://cdn.jsdelivr.net/npm/hive-content-renderer/dist/hive-content-renderer.min.js&quot;&gt;&lt;/script&gt; --&gt;
+&lt;script&gt;
+  $(document).ready(function() {
+    try {
+      const renderer = new SteemContentRenderer.DefaultRenderer({
+      // const renderer = new HiveContentRenderer({
+        baseUrl: &quot;https://hive.blog/&quot;,
+        breaks: true,
+        skipSanitization: false,
+        allowInsecureScriptTags: false,
+        addNofollowToLinks: true,
+        doNotShowImages: false,
+        ipfsPrefix: &quot;&quot;,
+        assetsWidth: 640,
+        assetsHeight: 480,
+        imageProxyFn: (url) =&gt; url,
+        usertagUrlFn: (account) =&gt; &quot;/@arcange&quot;,
+        hashtagUrlFn: (hashtag) =&gt; &quot;/hivesql-update-20210511&quot;,
+        isLinkSafeFn: (url) =&gt; true,
+      });
+      
+      const inputElem = $('#content-arcange-hivesql-update-20210511').html();
+      const outputElem = $('#content-arcange-hivesql-update-20210511');
+      const output = renderer.render(inputElem);
+      
+      outputElem.html(output);
+    } catch(e) {
+      console.log(e);
+    }
+  });
+&lt;/script&gt;
+
+&lt;style&gt;
+  #content-arcange-hivesql-update-20210511 {
+    padding: 0 3rem;
+    color: #444444;
+    font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.8;
+    text-shadow: 0 1px 0 #ffffff;
+    padding: 0.5rem;
+  }
+  #content-arcange-hivesql-update-20210511 code {
+    background: white;
+  }
+  #content-arcange-hivesql-update-20210511 a {
+    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
+  }
+  #content-arcange-hivesql-update-20210511 a:hover {
+    border-bottom: 0;
+  }
+  #content-arcange-hivesql-update-20210511 h1 {
+    font-size: 2.2em;
+  }
+  #content-arcange-hivesql-update-20210511 h2, h3, h4, h5 {
+    margin-bottom: 0;
+  }
+  #content-arcange-hivesql-update-20210511 header small {
+    color: #999;
+    font-size: 50%;
+  }
+  #content-arcange-hivesql-update-20210511 img {
+    max-width: 100%;
+  }
+&lt;/style&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;
+  See: &lt;a href=&quot;https://peakd.com/hive-139531/@arcange/hivesql-update-20210511&quot;&gt;HiveSQL Upate - Database maintenance and new Account Recovery Tables&lt;/a&gt;
+  by
+  &lt;a href=&quot;https://hive.blog/@arcange&quot;&gt;@arcange&lt;/a&gt;
+&lt;/p&gt;</content><author><name>arcange</name></author><category term="news" /><category term="sql" /><category term="database" /><summary type="html">![](https://i.imgur.com/E2xbX8S.png) As you know, the account recovery process is something I have [worked](/hive-139531/@arcange/hive-account-recovery-major-update-and-new-user-interface) on and [written](/hive-139531/@arcange/account-recovery-about-trusting-and-not-being-trusted) a lot about recently. This allowed me to better understand the related transactions recorded in the blockchain. I also noticed that the related tables in HiveSQL were not that well organized (some early days errors) So I took advantage of the HiveSQL reorganization work that I am currently carrying out to make some modifications. ### What changed? * The table `TxAccountChangeRecovers` has been renamed to `TxAccountRecoveryChanges` * The content of the table `TxAccountRecovers` has been split into `TxAccountRecoveryRequests` and `TxAccountRecoveryConfirms`. Therefore, we now have three new tables available: **TxAccountRecoveryChanges** This table contains operations broadcasted to the blockchain when users want to change their Recovery Account. |Column|Description| |-|-| |account_to_recover|the account that wants to change its Recovery Account| |new_recovery_account|the new Recovery Account| **TxAccountRecoveryRequests** This operation is broadcasted to the blockchain by the Account Recovery of an account that has been hacked to initiate the recovery process |Column|Description| |-|-| |recovery_account|username of the Recovery Account| |account_to_recover|username of the account to recover| |new_owner_authority|new public owner key provided by the account to recover to the recovery account| **TxAccountRecoveryConfirms** This table contains operations broadcasted to the blockchain by the hacked account's owner to confirm the account recovery request sent by its Recovery Account. |Column|Description| |-|-| |account_to_recover|username of the account to recover| |new_owner_authority|new public owner key provided by the account to recover to the recovery account| |recent_owner_authority|a public owner key of the account to recover before it was last changed| ## What's next? This first change should make it easier to find information relating to the account recovery process. As indicated at the beginning of this post, I have embarked on a work of reorganizing and improving the database. So expect to see more posts on this subject in the coming days. ## Support If you have any questions or remarks, support is provided on the [HiveSQL Discord Channel](https://discord.gg/kyEFDfT). Thank you for reading. --- **Let's keep HiveSQL free to use - Support its proposals**! |HiveSQL|HiveBuzz| |-|-| |[Vote for the proposal on PeakD](https://peakd.com/me/proposals/138)[Vote for the proposal on Ecency](https://ecency.com/proposals/138)[Vote for the proposal using HiveSigner](https://hivesigner.com/sign/update_proposal_votes?proposal_ids=%5B%22138%22%5D&amp;amp;approve=true)|[Vote for the proposal on PeakD](https://peakd.com/me/proposals/147)[Vote for the proposal on Ecency](https://ecency.com/proposals/147)[Vote for the proposal using HiveSigner](https://hivesigner.com/sign/update_proposal_votes?proposal_ids=%5B%22147%22%5D&amp;amp;approve=true)| --- ### Check out my apps and services ### [Vote for me as a witness ![](https://i.imgur.com/2bi4SnT.png)](https://hivesigner.com/sign/account-witness-vote?witness=arcange&amp;amp;approve=1) See: HiveSQL Upate - Database maintenance and new Account Recovery Tables by @arcange</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://i.imgur.com/E2xbX8S.png" /><media:content medium="image" url="https://i.imgur.com/E2xbX8S.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">11th update of 2021 on BlockTrades work on Hive software</title><link href="https://hivedocs.info/news/core/development/2021/05/10/11th-update-of-2021-on-blocktrades-work-on-hive-software.html" rel="alternate" type="text/html" title="11th update of 2021 on BlockTrades work on Hive software" /><published>2021-05-10T14:27:30-07:00</published><updated>2021-05-10T14:27:30-07:00</updated><id>https://hivedocs.info/news/core/development/2021/05/10/11th-update-of-2021-on-blocktrades-work-on-hive-software</id><content type="html" xml:base="https://hivedocs.info/news/core/development/2021/05/10/11th-update-of-2021-on-blocktrades-work-on-hive-software.html">&lt;div id=&quot;content-blocktrades-11th-update-of-2021-on-blocktrades-work-on-hive-software&quot;&gt;![blocktrades update.png](https://images.hive.blog/DQmSihw8Kz4U7TuCQa98DDdCzqbqPFRumuVWAbareiYZW1Z/blocktrades%20update.png)
 
 Below is a list of Hive-related programming issues worked on by the BlockTrades team during the last week:
 
@@ -1296,151 +1443,4 @@ Or scanning this QR Code :
   See: &lt;a href=&quot;https://peakd.com/keychain/@keychain/hive-keychain-mobile-11--in-app-browser&quot;&gt;Hive Keychain Mobile 1.1 : in-App browser&lt;/a&gt;
   by
   &lt;a href=&quot;https://hive.blog/@keychain&quot;&gt;@keychain&lt;/a&gt;
-&lt;/p&gt;</content><author><name>keychain</name></author><category term="news" /><category term="projects" /><category term="hive-keychain" /><summary type="html">![social_keychainforhive.jpg](https://files.peakd.com/file/peakd-hive/keychain/xnmVXGi6-social_keychain-for-hive.jpg) Hive Keychain for mobile is now available in version 1.1.2 on both Android and iOS (the issue with Apple is finally resolved). It introduces an in-App browser that lets you use your dApps in a similar manner that on desktop, with the dApps issuing requests to Keychain, that will then sign the transactions upon approval. Here's an example of logging in on PeakD: https://files.peakd.com/file/peakd-hive/keychain/23zRyEJARgwZGS6LoYg85kwBy9n2YV9jc6MVRutVZ2tCGtVVd1Y7cjcCKACoJYTvtEs5W.gif All the major request types are already implemented, so that you can make the most of your Keychain experience on mobile : - Login methods - Generic broadcasts - Post / Comment - Vote - Transfer (with or without encrypted memo) - Hive Engine Transfer - Power up / down - Delegations - Proposal votes - Witness vote / proxy - Encode / Decode message - Sign transaction / buffer The release was delayed by one day to add browser history management and url autocomplete features. Hope you will enjoy it! Some additional requests are still missing but more rarely used, and will be added soon. Additionally, the browser will be improved with favorites and multiple tabs handling. We will also add the possibility to whitelist some requests in the future, in order to mirror the behavior that you can find on the browser extension. ## Download the Apps [](https://apps.apple.com/us/app/hive-keychain/id1552190010) [](https://play.google.com/store/apps/details?id=com.mobilekeychain) 1. The Application is still in Beta. It has been tested extensively but it should not by any means be the only place you store your keys on. 2. To import accounts quickly from your Hive Keychain extension to your mobile App, use the QR Code scanner by pressing the QR code logo: On your extension, navigate to the menu (top right button), then to `Manage Accounts` and finally click on `Show QR Code`. ## Discord To communicate with us or become an Alpha tester, join our Discord by following this link : https://discord.gg/3EM6YfRrGv Or scanning this QR Code : ![image.png](https://files.peakd.com/file/peakd-hive/keychain/BRNgvm9y-image.png) #### Core Team @stoodkev : Lead Dev - [Witness](https://hivesigner.com/sign/account-witness-vote?witness=stoodkev&amp;amp;approve=1) @nateaguila : UI/UX @yabapmatt : Founder - [Witness](https://hivesigner.com/sign/account-witness-vote?witness=yabapmatt&amp;amp;approve=1) @aggroed : Founder - [Witness](https://hivesigner.com/sign/account-witness-vote?witness=aggroed&amp;amp;approve=1) --- ### Support Hive Keychain development by voting for [our proposal](https://peakd.com/hive/@keychain/hive-keychain-development-proposal-2) on [PeakD](https://peakd.com/proposals/140) or with [HiveSigner](https://hivesigner.com/sign/update-proposal-votes?proposal_ids=%5B140%5D&amp;amp;approve=true). *100% of payout is redirected to the DAO* See: Hive Keychain Mobile 1.1 : in-App browser by @keychain</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://files.peakd.com/file/peakd-hive/keychain/xnmVXGi6-social_keychain-for-hive.jpg" /><media:content medium="image" url="https://files.peakd.com/file/peakd-hive/keychain/xnmVXGi6-social_keychain-for-hive.jpg" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">9th update of 2021 on BlockTrades work on Hive software</title><link href="https://hivedocs.info/news/core/development/2021/04/26/9th-update-of-2021-on-blocktrades-work-on-hive-software.html" rel="alternate" type="text/html" title="9th update of 2021 on BlockTrades work on Hive software" /><published>2021-04-26T12:27:15-07:00</published><updated>2021-04-26T12:27:15-07:00</updated><id>https://hivedocs.info/news/core/development/2021/04/26/9th-update-of-2021-on-blocktrades-work-on-hive-software</id><content type="html" xml:base="https://hivedocs.info/news/core/development/2021/04/26/9th-update-of-2021-on-blocktrades-work-on-hive-software.html">&lt;div id=&quot;content-blocktrades-9th-update-of-2021-on-blocktrades-work-on-hive-software&quot;&gt;Below is a list of Hive-related programming issues worked on by BlockTrades team during the last few weeks:
-
-# Hived work (blockchain node software)
-We finished implementing and testing the following hardfork 25 changes:
-
- [New operation and associated API calls to convert Hive→Hive dollars (HBD) as a means of improving upside pegging of Hive dollars](https://gitlab.syncad.com/hive/hive/-/merge_requests/191). For more information, see https://hive.blog/hive-102930/@blocktrades/proposed-hardfork-change-to-stabilize-hive-dollar-s-tracking-of-usd-value
-
- [Hive dollars must be stored in a savings account to earn interest](https://gitlab.syncad.com/hive/hive/-/merge_requests/201). For more information, see: https://hive.blog/hive-102930/@blocktrades/proposal-to-make-hbd-interest-payable-only-to-savings-accounts
-
-[Completed testing and created examples demonstrating functioning of new curation reward rules](https://gitlab.syncad.com/hive/hive/-/merge_requests/204)
-
- New unit tests: https://gitlab.syncad.com/hive/hive/-/merge_requests/195
-
-[Fixed small issue that caused vote expiration to happen one block later than it should](https://gitlab.syncad.com/hive/hive/-/merge_requests/212)
-
-[Allow votes on posts after they have paid out (votes  once again allowed on posts older than 7 days)](https://gitlab.syncad.com/hive/hive/-/merge_requests/189)
-
-We also reviewed @howo support for recurrent transfers in HF25 and expect to merge those changes in tomorrow.
-
-## Other work on hived
-[Simplified cmake build options for hived (eliminated various hived build configurations like LOW_MEMORY_NODE and CLEAR_VOTES that weren’t practically useful and mostly just caused confusion)](https://gitlab.syncad.com/hive/hive/-/merge_requests/196). 
-
-[Removed support for COMMENT_CONTENT_SUPPORT](https://gitlab.syncad.com/hive/hive/-/merge_requests/1930)
-
- [Improved reporting and debugging capabilities of unit tests](https://gitlab.syncad.com/hive/hive/-/merge_requests/206)
-
- [Allow running a subset of the entire suite based on a filter](https://gitlab.syncad.com/hive/hive/-/merge_requests/209)
-
- [Updated get_config API call with new configuration variables](https://gitlab.syncad.com/hive/hive/-/merge_requests/192)
-
-
-[--force-reply command-line option no longer also requires use of –replay option and it also automatically deletes the shared_memory file, eliminating that manual step](https://gitlab.syncad.com/hive/hive/-/merge_requests/190)
-
-[Proposal ids are now reported by proposal-pay virtual operation](https://gitlab.syncad.com/hive/hive/-/merge_requests/202)
-
-[Clear the memo key of hive.fund as requested by @smooth](https://gitlab.syncad.com/hive/hive/-/merge_requests/210)
-
-[Fix the version of hived reported when SMTs not enabled](https://gitlab.syncad.com/hive/hive/-/merge_requests/207)
-
-[Fix a problem with static builds and libreadline](https://gitlab.syncad.com/hive/hive/-/issues/143)
-
-[Unify the version of C++ used when building hived and refactor cmake files so that it only requires a change in one place](https://gitlab.syncad.com/hive/hive/-/merge_requests/208). 
-
-Currently we’re using C++14 for the hardfork. We tested with C++17 and found one bug, which we fixed, but decided to delay making C++17 the standard version for builds since we’re getting close to hardfork time. After the hardfork, we’ll likely move to C++17 or C++20 for future development.
-
-# Hivemind (2nd layer applications + social media middleware)
-[Fixes and improvement to community mute functionality](https://gitlab.syncad.com/hive/hivemind/-/merge_requests/490)
-
-[Fixed pagination of bridge.list_community_roles](https://gitlab.syncad.com/hive/hivemind/-/merge_requests/491)
-
-# Modular hivemind
-We’re making solid progress on modular hivemind, especially with regard to fork resolution handling. It looks like we’ll be able to avoid the need for a C extension to postgres and can instead rely on a “SQL-only” solution using “shadow tables” to save and restore changes to the tables that store data that can be changed when hived switches to a different micro-fork.
-
-# Condenser
-We made several fixes to condenser and also reviewed some new features by @quochuy and @jpphotography.
-
-# Upcoming work
-## Hived code freeze and launch of testnet
-We plan to merge in the remaining hived code changes (a few minor fixes + recurrent transfers support) tomorrow, then assist in launch of testnet on Wednesday. 
-
-We’ll test for two weeks, then hopefully be ready to merge the release candidate into the master branch, at which point we’ll give exchanges at least 30 days notice to update. 
-
-So if no problems, we can expect the hardfork in about six weeks from Wednesday.
-
-## Test latest hivemind changes
-We’ll be running a full sync of hivemind with the latest changes, then test real world performance in a production environment on api.hive.blog, followed by a production release to the API nodes next week if no problems are found.
-
-## SQL Account history plugin for hived
-We plan to complete the changes to the SQL account history plugin that pushes data to postgres (eliminating the need for hivemind to pull the data via RPC calls) in the new couple of days.
-
-After the plugin changes are completed, we’ll run a simultaneous replay of hived with a full sync of hivemind to measure the speedup, and see if it matches our expected improvement in hivemind full sync time (we expect 2 days versus the current 4 days required).&lt;/div&gt;
-&lt;script crossorigin=&quot;anonymous&quot; integrity=&quot;sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=&quot; src=&quot;https://code.jquery.com/jquery-3.5.1.slim.min.js&quot;&gt;&lt;/script&gt;
-
-&lt;script src=&quot;https://unpkg.com/steem-content-renderer&quot;&gt;&lt;/script&gt;
-
-&lt;!-- &lt;script src=&quot;https://cdn.jsdelivr.net/npm/hive-content-renderer/dist/hive-content-renderer.min.js&quot;&gt;&lt;/script&gt; --&gt;
-&lt;script&gt;
-  $(document).ready(function() {
-    try {
-      const renderer = new SteemContentRenderer.DefaultRenderer({
-      // const renderer = new HiveContentRenderer({
-        baseUrl: &quot;https://hive.blog/&quot;,
-        breaks: true,
-        skipSanitization: false,
-        allowInsecureScriptTags: false,
-        addNofollowToLinks: true,
-        doNotShowImages: false,
-        ipfsPrefix: &quot;&quot;,
-        assetsWidth: 640,
-        assetsHeight: 480,
-        imageProxyFn: (url) =&gt; url,
-        usertagUrlFn: (account) =&gt; &quot;/@blocktrades&quot;,
-        hashtagUrlFn: (hashtag) =&gt; &quot;/9th-update-of-2021-on-blocktrades-work-on-hive-software&quot;,
-        isLinkSafeFn: (url) =&gt; true,
-      });
-      
-      const inputElem = $('#content-blocktrades-9th-update-of-2021-on-blocktrades-work-on-hive-software').html();
-      const outputElem = $('#content-blocktrades-9th-update-of-2021-on-blocktrades-work-on-hive-software');
-      const output = renderer.render(inputElem);
-      
-      outputElem.html(output);
-    } catch(e) {
-      console.log(e);
-    }
-  });
-&lt;/script&gt;
-
-&lt;style&gt;
-  #content-blocktrades-9th-update-of-2021-on-blocktrades-work-on-hive-software {
-    padding: 0 3rem;
-    color: #444444;
-    font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif;
-    font-size: 16px;
-    line-height: 1.8;
-    text-shadow: 0 1px 0 #ffffff;
-    padding: 0.5rem;
-  }
-  #content-blocktrades-9th-update-of-2021-on-blocktrades-work-on-hive-software code {
-    background: white;
-  }
-  #content-blocktrades-9th-update-of-2021-on-blocktrades-work-on-hive-software a {
-    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
-  }
-  #content-blocktrades-9th-update-of-2021-on-blocktrades-work-on-hive-software a:hover {
-    border-bottom: 0;
-  }
-  #content-blocktrades-9th-update-of-2021-on-blocktrades-work-on-hive-software h1 {
-    font-size: 2.2em;
-  }
-  #content-blocktrades-9th-update-of-2021-on-blocktrades-work-on-hive-software h2, h3, h4, h5 {
-    margin-bottom: 0;
-  }
-  #content-blocktrades-9th-update-of-2021-on-blocktrades-work-on-hive-software header small {
-    color: #999;
-    font-size: 50%;
-  }
-  #content-blocktrades-9th-update-of-2021-on-blocktrades-work-on-hive-software img {
-    max-width: 100%;
-  }
-&lt;/style&gt;
-
-&lt;hr /&gt;
-
-&lt;p&gt;
-  See: &lt;a href=&quot;https://hive.blog/hive-139531/@blocktrades/9th-update-of-2021-on-blocktrades-work-on-hive-software&quot;&gt;9th update of 2021 on BlockTrades work on Hive software&lt;/a&gt;
-  by
-  &lt;a href=&quot;https://hive.blog/@blocktrades&quot;&gt;@blocktrades&lt;/a&gt;
-&lt;/p&gt;</content><author><name>blocktrades</name></author><category term="news" /><category term="core" /><category term="development" /><summary type="html">Below is a list of Hive-related programming issues worked on by BlockTrades team during the last few weeks: # Hived work (blockchain node software) We finished implementing and testing the following hardfork 25 changes: [New operation and associated API calls to convert Hive→Hive dollars (HBD) as a means of improving upside pegging of Hive dollars](https://gitlab.syncad.com/hive/hive/-/merge_requests/191). For more information, see https://hive.blog/hive-102930/@blocktrades/proposed-hardfork-change-to-stabilize-hive-dollar-s-tracking-of-usd-value [Hive dollars must be stored in a savings account to earn interest](https://gitlab.syncad.com/hive/hive/-/merge_requests/201). For more information, see: https://hive.blog/hive-102930/@blocktrades/proposal-to-make-hbd-interest-payable-only-to-savings-accounts [Completed testing and created examples demonstrating functioning of new curation reward rules](https://gitlab.syncad.com/hive/hive/-/merge_requests/204) New unit tests: https://gitlab.syncad.com/hive/hive/-/merge_requests/195 [Fixed small issue that caused vote expiration to happen one block later than it should](https://gitlab.syncad.com/hive/hive/-/merge_requests/212) [Allow votes on posts after they have paid out (votes once again allowed on posts older than 7 days)](https://gitlab.syncad.com/hive/hive/-/merge_requests/189) We also reviewed @howo support for recurrent transfers in HF25 and expect to merge those changes in tomorrow. ## Other work on hived [Simplified cmake build options for hived (eliminated various hived build configurations like LOW_MEMORY_NODE and CLEAR_VOTES that weren’t practically useful and mostly just caused confusion)](https://gitlab.syncad.com/hive/hive/-/merge_requests/196). [Removed support for COMMENT_CONTENT_SUPPORT](https://gitlab.syncad.com/hive/hive/-/merge_requests/1930) [Improved reporting and debugging capabilities of unit tests](https://gitlab.syncad.com/hive/hive/-/merge_requests/206) [Allow running a subset of the entire suite based on a filter](https://gitlab.syncad.com/hive/hive/-/merge_requests/209) [Updated get_config API call with new configuration variables](https://gitlab.syncad.com/hive/hive/-/merge_requests/192) [--force-reply command-line option no longer also requires use of –replay option and it also automatically deletes the shared_memory file, eliminating that manual step](https://gitlab.syncad.com/hive/hive/-/merge_requests/190) [Proposal ids are now reported by proposal-pay virtual operation](https://gitlab.syncad.com/hive/hive/-/merge_requests/202) [Clear the memo key of hive.fund as requested by @smooth](https://gitlab.syncad.com/hive/hive/-/merge_requests/210) [Fix the version of hived reported when SMTs not enabled](https://gitlab.syncad.com/hive/hive/-/merge_requests/207) [Fix a problem with static builds and libreadline](https://gitlab.syncad.com/hive/hive/-/issues/143) [Unify the version of C++ used when building hived and refactor cmake files so that it only requires a change in one place](https://gitlab.syncad.com/hive/hive/-/merge_requests/208). Currently we’re using C++14 for the hardfork. We tested with C++17 and found one bug, which we fixed, but decided to delay making C++17 the standard version for builds since we’re getting close to hardfork time. After the hardfork, we’ll likely move to C++17 or C++20 for future development. # Hivemind (2nd layer applications + social media middleware) [Fixes and improvement to community mute functionality](https://gitlab.syncad.com/hive/hivemind/-/merge_requests/490) [Fixed pagination of bridge.list_community_roles](https://gitlab.syncad.com/hive/hivemind/-/merge_requests/491) # Modular hivemind We’re making solid progress on modular hivemind, especially with regard to fork resolution handling. It looks like we’ll be able to avoid the need for a C extension to postgres and can instead rely on a “SQL-only” solution using “shadow tables” to save and restore changes to the tables that store data that can be changed when hived switches to a different micro-fork. # Condenser We made several fixes to condenser and also reviewed some new features by @quochuy and @jpphotography. # Upcoming work ## Hived code freeze and launch of testnet We plan to merge in the remaining hived code changes (a few minor fixes + recurrent transfers support) tomorrow, then assist in launch of testnet on Wednesday. We’ll test for two weeks, then hopefully be ready to merge the release candidate into the master branch, at which point we’ll give exchanges at least 30 days notice to update. So if no problems, we can expect the hardfork in about six weeks from Wednesday. ## Test latest hivemind changes We’ll be running a full sync of hivemind with the latest changes, then test real world performance in a production environment on api.hive.blog, followed by a production release to the API nodes next week if no problems are found. ## SQL Account history plugin for hived We plan to complete the changes to the SQL account history plugin that pushes data to postgres (eliminating the need for hivemind to pull the data via RPC calls) in the new couple of days. After the plugin changes are completed, we’ll run a simultaneous replay of hived with a full sync of hivemind to measure the speedup, and see if it matches our expected improvement in hivemind full sync time (we expect 2 days versus the current 4 days required). See: 9th update of 2021 on BlockTrades work on Hive software by @blocktrades</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://hivedocs.info/assets/images/favicon.png" /><media:content medium="image" url="https://hivedocs.info/assets/images/favicon.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>
+&lt;/p&gt;</content><author><name>keychain</name></author><category term="news" /><category term="projects" /><category term="hive-keychain" /><summary type="html">![social_keychainforhive.jpg](https://files.peakd.com/file/peakd-hive/keychain/xnmVXGi6-social_keychain-for-hive.jpg) Hive Keychain for mobile is now available in version 1.1.2 on both Android and iOS (the issue with Apple is finally resolved). It introduces an in-App browser that lets you use your dApps in a similar manner that on desktop, with the dApps issuing requests to Keychain, that will then sign the transactions upon approval. Here's an example of logging in on PeakD: https://files.peakd.com/file/peakd-hive/keychain/23zRyEJARgwZGS6LoYg85kwBy9n2YV9jc6MVRutVZ2tCGtVVd1Y7cjcCKACoJYTvtEs5W.gif All the major request types are already implemented, so that you can make the most of your Keychain experience on mobile : - Login methods - Generic broadcasts - Post / Comment - Vote - Transfer (with or without encrypted memo) - Hive Engine Transfer - Power up / down - Delegations - Proposal votes - Witness vote / proxy - Encode / Decode message - Sign transaction / buffer The release was delayed by one day to add browser history management and url autocomplete features. Hope you will enjoy it! Some additional requests are still missing but more rarely used, and will be added soon. Additionally, the browser will be improved with favorites and multiple tabs handling. We will also add the possibility to whitelist some requests in the future, in order to mirror the behavior that you can find on the browser extension. ## Download the Apps [](https://apps.apple.com/us/app/hive-keychain/id1552190010) [](https://play.google.com/store/apps/details?id=com.mobilekeychain) 1. The Application is still in Beta. It has been tested extensively but it should not by any means be the only place you store your keys on. 2. To import accounts quickly from your Hive Keychain extension to your mobile App, use the QR Code scanner by pressing the QR code logo: On your extension, navigate to the menu (top right button), then to `Manage Accounts` and finally click on `Show QR Code`. ## Discord To communicate with us or become an Alpha tester, join our Discord by following this link : https://discord.gg/3EM6YfRrGv Or scanning this QR Code : ![image.png](https://files.peakd.com/file/peakd-hive/keychain/BRNgvm9y-image.png) #### Core Team @stoodkev : Lead Dev - [Witness](https://hivesigner.com/sign/account-witness-vote?witness=stoodkev&amp;amp;approve=1) @nateaguila : UI/UX @yabapmatt : Founder - [Witness](https://hivesigner.com/sign/account-witness-vote?witness=yabapmatt&amp;amp;approve=1) @aggroed : Founder - [Witness](https://hivesigner.com/sign/account-witness-vote?witness=aggroed&amp;amp;approve=1) --- ### Support Hive Keychain development by voting for [our proposal](https://peakd.com/hive/@keychain/hive-keychain-development-proposal-2) on [PeakD](https://peakd.com/proposals/140) or with [HiveSigner](https://hivesigner.com/sign/update-proposal-votes?proposal_ids=%5B140%5D&amp;amp;approve=true). *100% of payout is redirected to the DAO* See: Hive Keychain Mobile 1.1 : in-App browser by @keychain</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://files.peakd.com/file/peakd-hive/keychain/xnmVXGi6-social_keychain-for-hive.jpg" /><media:content medium="image" url="https://files.peakd.com/file/peakd-hive/keychain/xnmVXGi6-social_keychain-for-hive.jpg" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>
