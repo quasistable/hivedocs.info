@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta property="og:image" content="/assets/images/sticker.png" /><!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>Making a Decentralized Game on Hive - Last part | Hive Chain Documentation</title>
+<meta name="generator" content="Jekyll v4.1.1" />
+<meta property="og:title" content="Making a Decentralized Game on Hive - Last part" />
+<meta name="author" content="mahdiyari" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="First of all, thank you for following me and making these posts available for a bigger audience by sharing them." />
+<meta property="og:description" content="First of all, thank you for following me and making these posts available for a bigger audience by sharing them." />
+<link rel="canonical" href="https://hive.blog/hive-169321/@mahdiyari/making-a-decentralized-game-on-hive-last-part" />
+<meta property="og:url" content="https://hive.blog/hive-169321/@mahdiyari/making-a-decentralized-game-on-hive-last-part" />
+<meta property="og:site_name" content="Hive Chain Documentation" />
+<meta property="og:image" content="https://images.hive.blog/DQmah3PBKL6JDe3omk8wi2RFp3Lk2X8BZgb3FUpnkRTsfap/desktop-1245714_1280.jpg" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2021-05-14T15:17:36-07:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="https://images.hive.blog/DQmah3PBKL6JDe3omk8wi2RFp3Lk2X8BZgb3FUpnkRTsfap/desktop-1245714_1280.jpg" />
+<meta property="twitter:title" content="Making a Decentralized Game on Hive - Last part" />
+<script type="application/ld+json">
+{"description":"First of all, thank you for following me and making these posts available for a bigger audience by sharing them.","image":"https://images.hive.blog/DQmah3PBKL6JDe3omk8wi2RFp3Lk2X8BZgb3FUpnkRTsfap/desktop-1245714_1280.jpg","headline":"Making a Decentralized Game on Hive - Last part","dateModified":"2021-05-14T15:17:36-07:00","datePublished":"2021-05-14T15:17:36-07:00","@type":"BlogPosting","url":"https://hive.blog/hive-169321/@mahdiyari/making-a-decentralized-game-on-hive-last-part","mainEntityOfPage":{"@type":"WebPage","@id":"https://hive.blog/hive-169321/@mahdiyari/making-a-decentralized-game-on-hive-last-part"},"author":{"@type":"Person","name":"mahdiyari"},"@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://hivedocs.info/feed.xml" title="Hive Chain Documentation" /><script>
+if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNotTrack === "yes" || navigator.msDoNotTrack === "1")) {
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-161692811-1', 'auto');
+  ga('send', 'pageview');
+}
+</script>
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+  
+  <!-- jQuery Modal -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.css" />
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/turbolinks/5.2.0/turbolinks.js" integrity="sha256-iM4Yzi/zLj/IshPWMC1IluRxTtRjMqjPGd97TZ9yYpU=" crossorigin="anonymous"></script>
+  <script src='https://unpkg.com/steem-content-renderer'></script>
+  <script>
+    (function () {
+      if (Turbolinks.supported) {
+        Turbolinks.setProgressBarDelay(500);
+      }
+    })();
+  </script>
+  <script src="/assets/javascript/universal-bridge-against-phishing.js"></script>
+  <script src="/assets/javascript/lazysizes.min.js" async=""></script>
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Cousine|Inconsolata" rel="stylesheet">
+  <link rel="shortcut icon" type="image/png" href="/assets/images/favicon.png">
+</head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Hive Chain Documentation</a>
+
+      <nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/news/">News</a><a class="page-link" href="/howto/">How To</a><a class="page-link" href="/links/">Useful Links</a><a class="page-link" href="/authors/">Authors</a><!-- HTML elements for search -->
+          <input type="text" id="search-input" placeholder="Search" />
+          
+          <ul id="results-container"></ul>
+
+          <script src="/assets/javascript/search.js"></script>
+          <script>
+            var sjs = SimpleJekyllSearch({
+              searchInput: document.getElementById('search-input'),
+              resultsContainer: document.getElementById('results-container'),
+              json: '/search.json'
+            })
+          </script>
+          <!-- <form style="float: right;" class="form-inline" method="get" action="http://www.google.com/search">
+            <input type="hidden" name="sitesearch" value="hivedocs.info" />
+            <input type="text" name="q" maxlength="255" placeholder="Search" />
+          </form> -->
+          
+          <!-- <a href="#" onclick="try { $('#authors-container').slideToggle(); } catch { document.getElementById('authors-container').style.display = 'block'; }; return false;">Authors &#187;</a>
+          <a href="#" onclick="try { $('#topics-container').slideToggle(); } catch { document.getElementById('topics-container').style.display = 'block'; }; return false;">Topics &#187;</a> -->
+          
+          <a href="#topics-container" rel="modal:open">Topics &#187;</a>
+          
+          <div id="topics-container" class="modal">
+            <h3>Topics</h3>
+            <ul><li><a class="page-link" href="/account-recovery/"><nobr>Account Recovery</nobr></a></li><li><a class="page-link" href="/core-development/"><nobr>Core Development</nobr></a></li><li><a class="page-link" href="/dapps/"><nobr>Dapps</nobr></a></li><li><a class="page-link" href="/docker/"><nobr>Docker</nobr></a></li><li><a class="page-link" href="/hardfork/"><nobr>Hardfork</nobr></a></li><li><a class="page-link" href="/hivemind/"><nobr>Hivemind</nobr></a></li><li><a class="page-link" href="/javascript/"><nobr>Javascript</nobr></a></li><li><a class="page-link" href="/multisig/"><nobr>Multisig</nobr></a></li><li><a class="page-link" href="/python/"><nobr>Python</nobr></a></li><li><a class="page-link" href="/ruby/"><nobr>Ruby</nobr></a></li><li><a class="page-link" href="/testnet/"><nobr>Testnet</nobr></a></li><li><a class="page-link" href="/tools/"><nobr>Tools</nobr></a></li><li><a class="page-link" href="/witness/"><nobr>Witness</nobr></a></li></ul>
+          </div>
+        </div>
+      </nav>
+  </div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <div class="pull-right well">
+      <img src="https://images.hive.blog/u/mahdiyari/avatar" width="128" height="128" class="lazyload" />
+    </div>
+    
+    <h1 class="post-title p-name" itemprop="name headline">Making a Decentralized Game on Hive - Last part</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2021-05-14T15:17:36-07:00" itemprop="datePublished">May 14, 2021
+      </time>• <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">
+          <a href="/authors/#author-mahdiyari">mahdiyari</a>
+        </span></span></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <div id="content-mahdiyari-making-a-decentralized-game-on-hive-last-part"><center>![desktop-pixabay.jpg](https://images.hive.blog/DQmah3PBKL6JDe3omk8wi2RFp3Lk2X8BZgb3FUpnkRTsfap/desktop-1245714_1280.jpg)</center>
+First of all, thank you for following me and making these posts available for a bigger audience by sharing them.
+
+This post took too long but finally, it's done. I think I could make 5 posts with the content of just this yet-to-be-written post. I will make it short as possible. I was going to make a few excuses for taking it too long but TBH I could deliver it maybe 2 weeks earlier if I worked on it. Lazy me is for the blame.
+
+The game itself is not important for me, the important part was writing these posts to show how easy it is to make true decentralized applications and games. Of course, it's not for everybody. But now we have something to share with other developers who want to start a game or app. It's not perfect but it's something.
+
+Anyway, it's online and it's fully functional. You can try it with a friend on [https://tic-tac-toe.mahdiyari.info/](https://tic-tac-toe.mahdiyari.info/). Create a game and the other user can join it. Then the game should start. There is no time limit on the game.
+
+Link to the GitLab repository and the previous posts are at the end of the post. Maybe you can try running your instance of the game for the experiment! It will start syncing blocks and become identical to the official website.
+
+Now moving to the development side of things. I won't drop all the codes here because it's massive. All the codes are almost 2,000 lines. I will only explain the parts that seem necessary.
+***
+#### Development
+We can use pm2 to launch our application. So let's make a config file for it.
+`ecosystem.config.js`
+```
+module.exports = {
+  apps: [
+    {
+      name: 'app-tictactoe',
+      script: 'index.js',
+      instances: 1,
+      max_memory_restart: '1G',
+      exec_mode: 'fork'
+    },
+    {
+      name: 'api-tictactoe',
+      script: 'api/server.js',
+      instances: 2,
+      max_memory_restart: '1G',
+      exec_mode: 'cluster'
+    }
+  ]
+}
+```
+This will launch the API in a cluster mode with 2 instances for better handling of the traffic. You can increase the number of instances up to the number of your CPU threads. **ONLY** the API. We can't run the main application in a cluster mode and it's not necessary at all. We set both scripts to use a maximum of 1GB RAM but in reality, both will use less than 40mb. It's just to be safe.
+
+I added the necessary scripts in the `package.json` for running the application.
+```
+"scripts": {
+    "test": "echo \"Error: no test specified\" &amp;&amp; exit 1",
+    "start": "pm2 start ecosystem.config.js",
+    "stop": "pm2 delete ecosystem.config.js",
+    "restart": "pm2 restart ecosystem.config.js",
+    "reload": "pm2 reload ecosystem.config.js",
+    "logs": "pm2 logs"
+  }
+```
+For example, for starting the app I can type `npm run start` and `npm run logs` for logs and so on. It will use the installed `pm2` with the app itself.
+***
+For the ability to sync blocks in a row one by one, we use a queue. I call this implementation `rapidQueue`. It's in pure JS and is faster than the other methods. You can check it out [on GitLab](https://gitlab.com/mahdiyari/decentralized-game-on-hive/-/blob/master/back-end/helpers/rapidQueue.js).
+
+I set the genesis block of our game to `53,886,076` just because it was the head block at the time of launch. Every time a fresh instance of the game is installed, it will go through all the blocks one by one from the genesis block until the current head block and continue listening for the future blocks.
+
+So here it is our syncing method:
+`index.js`
+```
+const start = async () =&gt; {
+  try {
+    await initDatabase()
+    stream.streamBlockNumber(async blockNum =&gt; {
+      if (!blockNum) {
+        return
+      }
+      if (firstRun) {
+        firstRun = false
+        await queueOldBlocks(blockNum)
+      }
+      queue.push(blockNum)
+    })
+    processQueue()
+  } catch (e) {
+    throw new Error(e)
+  }
+}
+```
+First, initializes database then puts into the queue not synced blocks, then puts the newly generated blocks into the back of the queue. Then call another function that will check the queue at an interval.
+
+The code below is responsible for putting not synced blocks into the queue.
+```
+const queueOldBlocks = async nowBlock =&gt; {
+  let oldestBlock
+  const latestBlock = await mysql.query(
+    'SELECT `block_number` FROM `lastblock` WHERE `id`=1'
+  )
+  if (latestBlock[0].block_number === 0) {
+    oldestBlock = genesisBlock
+  } else {
+    oldestBlock = latestBlock[0].block_number
+  }
+  if (oldestBlock &lt; nowBlock) {
+    for (let i = oldestBlock; i &lt; nowBlock; i++) {
+      queue.push(i)
+    }
+  }
+}
+```
+The following code is the part that takes block numbers one by one out of the queue. It runs every 5ms to check if the current block is processed or not. If yes, goes to the next block in the queue. `queueIndex` is the counter of the currently running `processBlock()`s. Which will be a maximum of 1.
+```
+const intervalTime = 5
+const maxI = 1
+let queueIndex = 0
+const processQueue = () =&gt; {
+  setInterval(() =&gt; {
+    const L = queue.length()
+    if (queueIndex &lt; maxI &amp;&amp; L &gt; 0) {
+      const n = maxI - queueIndex &gt; L ? L : maxI - queueIndex
+      for (let k = 0; k &lt; n; k++) {
+        const blockNum = queue.shift()
+        processBlock(blockNum)
+      }
+    }
+  }, intervalTime)
+}
+```
+You can see the counter in action:
+```
+const processBlock = async blockNum =&gt; {
+  if (!blockNum) {
+    return
+  }
+  queueIndex++
+  try {
+    const operations = await stream.getOperations(blockNum)
+    if (operations &amp;&amp; operations.length &gt; 0) {
+      for (const ops of operations) {
+        for (const op of ops) {
+          if (op &amp;&amp; op[0] === 'custom_json' &amp;&amp; op[1].id === 'tictactoe') {
+            await processData(op[1].json, op[1].required_posting_auths)
+          }
+        }
+      }
+    }
+    await updateLastblock(blockNum)
+    totalSyncedBlocks++
+  } catch (e) {}
+  queueIndex--
+}
+```
+***
+The heart of the game is the `play` function. It determines the finished games and winners. It is triggered when a player plays a move.
+```
+const play = async (data, user) =&gt; {
+  if (
+    !data ||
+    !data.id ||
+    !data.col ||
+    !data.row ||
+    isNaN(data.col) ||
+    isNaN(data.row) ||
+    data.id.length !== 20 ||
+    data.col &lt; 1 ||
+    data.col &gt; 3 ||
+    data.row &lt; 1 ||
+    data.row &gt; 3
+  ) {
+    return
+  }
+  // Validate game in database
+  const game = await mysql.query(
+    'SELECT `player1`, `player2`, `starting_player` FROM `games` WHERE `game_id`= ? AND `status`= ? AND (player1=? OR player2=?)',
+    [data.id, 'running', user, user]
+  )
+  if (!game || !Array.isArray(game) || game.length &lt; 1) {
+    return
+  }
+  // Validate the player round
+  let round = ''
+  const computedMoves = new Array(9)
+  const moves = await mysql.query(
+    'SELECT `player`, `col`, `row` FROM `moves` WHERE `game_id`= ? ORDER BY `id` ASC',
+    [data.id]
+  )
+  if (!moves || !Array.isArray(moves) || moves.length &lt; 1) {
+    round = game[0].starting_player
+  } else {
+    if (moves[moves.length - 1].player === game[0].player1) {
+      round = 'second'
+    } else {
+      round = 'first'
+    }
+  }
+  if (moves.length &gt; 8) {
+    return
+  }
+  if (round === 'first' &amp;&amp; game[0].player2 === user) {
+    return
+  }
+  if (round === 'second' &amp;&amp; game[0].player1 === user) {
+    return
+  }
+  // Play game and check winner
+  await mysql.query(
+    'INSERT INTO `moves`(`game_id`, `player`, `col`, `row`) VALUES (?,?,?,?)',
+    [data.id, user, data.col, data.row]
+  )
+  moves.push({ player: user, col: data.col, row: data.row })
+  for (let i = 0; i &lt; moves.length; i++) {
+    const move = moves[i]
+    let mark
+    if (move.player === game[0].player1) {
+      mark = 'x'
+    } else if (move.player === game[0].player2) {
+      mark = 'o'
+    } else {
+      continue
+    }
+    if (move.row === 1) {
+      computedMoves[move.col - 1] = mark
+    } else if (move.row === 2) {
+      computedMoves[move.col + 2] = mark
+    } else if (move.row === 3) {
+      computedMoves[move.col + 5] = mark
+    }
+  }
+  checkWinner(computedMoves, data.id)
+}
+```
+The `play` function validates the data, then places the played move, then checks for the game status for a possible winner or draw.
+The `checkWinner` function:
+```
+const checkWinner = async (computedMoves, id) =&gt; {
+  if (checkWinningMark(computedMoves, 'x')) {
+    await mysql.query(
+      'UPDATE `games` SET `status`=?, `winner`=? WHERE `game_id`=?',
+      ['finished', 'player1', id]
+    )
+  } else if (checkWinningMark(computedMoves, 'o')) {
+    await mysql.query(
+      'UPDATE `games` SET `status`=?, `winner`=? WHERE `game_id`=?',
+      ['finished', 'player2', id]
+    )
+  } else {
+    for (let i = 0; i &lt; 9; i++) {
+      if (!computedMoves[i]) {
+        return
+      }
+    }
+    await mysql.query(
+      'UPDATE `games` SET `status`=?, `winner`=? WHERE `game_id`=?',
+      ['finished', 'none', id]
+    )
+  }
+}
+```
+It checks for the winning of player1 or "X" and then player2 or "O" then checks for the filled board for a draw. Then the database is updated.
+`checkWinningMark()` is not interesting. It just checks each row and col for a winning pattern for the provided mark. X or O.
+***
+At the end of the file, we call the `start()` method to start the application. Then inform the user current state of sync.
+```
+start()
+console.log('Tic Tac Toe Application')
+console.log(
+  'Starting application... It is highly recommended to use a local node for syncing blocks otherwise it might take too long.'
+)
+const interval = setInterval(() =&gt; {
+  if (queue.length() &lt; 2) {
+    clearInterval(interval)
+    console.log('Sync completed. Application is running.')
+  } else {
+    console.log('Syncing blocks... Total synced blocks: ' + totalSyncedBlocks)
+  }
+}, 5000)
+```
+With a local node, it syncs ~70 blocks per second (depends on many things). It can be boosted in certain ways but it's not necessary for this project. 70 blocks/s is still impressive enough. It all depends on the latency of the connected RPC node because the syncing is done by selecting blocks in a row one by one and waiting for the one to finish before going to the next one.
+***
+### Client-side
+There are many things on the client-side. I'm not going near front-end codes. You can always check the full code on the [GitLab repository](https://gitlab.com/mahdiyari/decentralized-game-on-hive).
+
+Our game board is designed with Canvas. I don't think it's necessary to talk about those codes.
+
+Here is the function for broadcasting a move.
+`js/app.js`
+```
+const submitMove = async () =&gt; {
+  if (!userData.authorized) {
+    document.getElementById('login-button').click()
+    return
+  }
+  if (!userMove || userMove.length &lt; 2) {
+    return
+  }
+  if (!urlParams.has('id')) {
+    return
+  }
+  const error = document.getElementById('submit-move-error')
+  error.innerHTML = ''
+  loading(true)
+  const id = urlParams.get('id')
+  try {
+    const play = {
+      app: 'tictactoe/0.0.1',
+      action: 'play',
+      id,
+      col: userMove[0],
+      row: userMove[1]
+    }
+    const operations = [
+      [
+        'custom_json',
+        {
+          required_auths: [],
+          required_posting_auths: [userData.username],
+          id: 'tictactoe',
+          json: JSON.stringify(play)
+        }
+      ]
+    ]
+    const tx = new hiveTx.Transaction()
+    await tx.create(operations)
+    const privateKey = hiveTx.PrivateKey.from(userData.key)
+    tx.sign(privateKey)
+    const result = await tx.broadcastNoResult()
+    if (result &amp;&amp; result.result &amp;&amp; result.result.tx_id) {
+      setTimeout(() =&gt; getGameDetails(urlParams.get('id')), 1500)
+      oldRound = round
+      round = round === 'first' ? 'second' : 'first'
+      toggleMoveInteractions('player-waiting')
+    } else {
+      error.innerHTML = 'Error! Check console for details. Press Ctrl+Shift+J'
+      console.error(result)
+    }
+  } catch (e) {
+    error.innerHTML = 'Error! Check console for details. Press Ctrl+Shift+J'
+    console.error(e)
+  }
+  loading(false)
+}
+```
+It creates a transaction with custom_json and uses `.broadcastNoResult()` method of `hiveTx` library for the fastest possible transaction broadcast. This method doesn't return the result of the transaction (but it returns the offline generated tx_id so it's possible to check for the status of the transaction later but we don't) so it may as well fail for many reasons but we assume everything is fine. In this way, the user experience is better and smoother. Because the action goes faster.
+***
+On the game page, the application gets the game details every 5s from the API and updates the user interface. Then calls the following function to update the board with new moves and also detects the round of play.
+```
+const computeMoves = () =&gt; {
+  if (!movesData || !gameData) {
+    setTimeout(() =&gt; computeMoves(), 100)
+    return
+  }
+  clearMoves()
+  for (let i = 0; i &lt; movesData.length; i++) {
+    const move = movesData[i]
+    let mark
+    if (move.player === gameData.player1) {
+      mark = 'x'
+    } else if (move.player === gameData.player2) {
+      mark = 'o'
+    } else {
+      continue
+    }
+    placeMark(move.col, move.row, mark)
+  }
+  placeMark(userMove[0], userMove[1], userMove[2])
+  if (movesData.length &lt; 1) {
+    round = gameData.starting_player
+  } else if (movesData[movesData.length - 1].player === gameData.player1) {
+    round = 'second'
+  } else {
+    round = 'first'
+  }
+}
+```
+There are many other front-end and back-end stuff which I skip the explanation because it's not a post about teaching development in any sense. I just explained the things I thought might be necessary for running the Hive applications.
+***
+<center>![town-sign-1158387_640.jpg](https://images.hive.blog/DQmW97Q9q5wLbZ9chrtsRMGvMcHZvoYVXLfsBj4G21UthyY/town-sign-1158387_640.jpg)</center>
+
+It's 2:30 AM and I'm not sure if I missed something. I hope you accept my attempt at making this tutorial. I have another project in mind so make sure to follow me.
+
+Thank you again. Your votes, reblogs, and witness votes are much appreciated. I hope you like what I do.
+
+<sub>images source: pixabay.com</sub>
+<sub>All the codes used in this project are original. Except the `rapidQueue` method (MIT license).</sub>
+***
+The final project:
+https://tic-tac-toe.mahdiyari.info/
+https://gitlab.com/mahdiyari/decentralized-game-on-hive
+***
+Previous posts:
+[part1](https://hive.blog/hive-139531/@mahdiyari/making-a-decentralized-game-on-hive-tic-tac-toe-part-1)
+[part2](https://hive.blog/hive-139531/@mahdiyari/making-a-decentralized-game-on-hive-part-2)
+[part3](https://hive.blog/hive-139531/@mahdiyari/making-a-decentralized-game-on-hive-part-3)
+[part4](https://hive.blog/hive-169321/@mahdiyari/making-a-decentralized-game-on-hive-part-4)
+[part5](https://hive.blog/hive-169321/@mahdiyari/making-a-decentralized-game-on-hive-part-5)</div>
+<script crossorigin="anonymous" integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=" src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+
+<script src="https://unpkg.com/steem-content-renderer"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/hive-content-renderer/dist/hive-content-renderer.min.js"></script> -->
+<script>
+  $(document).ready(function() {
+    try {
+      const renderer = new SteemContentRenderer.DefaultRenderer({
+      // const renderer = new HiveContentRenderer({
+        baseUrl: "https://hive.blog/",
+        breaks: true,
+        skipSanitization: false,
+        allowInsecureScriptTags: false,
+        addNofollowToLinks: true,
+        doNotShowImages: false,
+        ipfsPrefix: "",
+        assetsWidth: 640,
+        assetsHeight: 480,
+        imageProxyFn: (url) => url,
+        usertagUrlFn: (account) => "/@mahdiyari",
+        hashtagUrlFn: (hashtag) => "/making-a-decentralized-game-on-hive-last-part",
+        isLinkSafeFn: (url) => true,
+      });
+      
+      const inputElem = $('#content-mahdiyari-making-a-decentralized-game-on-hive-last-part').html();
+      const outputElem = $('#content-mahdiyari-making-a-decentralized-game-on-hive-last-part');
+      const output = renderer.render(inputElem);
+      
+      outputElem.html(output);
+    } catch(e) {
+      console.log(e);
+    }
+  });
+</script>
+
+<style>
+  #content-mahdiyari-making-a-decentralized-game-on-hive-last-part {
+    padding: 0 3rem;
+    color: #444444;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.8;
+    text-shadow: 0 1px 0 #ffffff;
+    padding: 0.5rem;
+  }
+  #content-mahdiyari-making-a-decentralized-game-on-hive-last-part code {
+    background: white;
+  }
+  #content-mahdiyari-making-a-decentralized-game-on-hive-last-part a {
+    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
+  }
+  #content-mahdiyari-making-a-decentralized-game-on-hive-last-part a:hover {
+    border-bottom: 0;
+  }
+  #content-mahdiyari-making-a-decentralized-game-on-hive-last-part h1 {
+    font-size: 2.2em;
+  }
+  #content-mahdiyari-making-a-decentralized-game-on-hive-last-part h2, h3, h4, h5 {
+    margin-bottom: 0;
+  }
+  #content-mahdiyari-making-a-decentralized-game-on-hive-last-part header small {
+    color: #999;
+    font-size: 50%;
+  }
+  #content-mahdiyari-making-a-decentralized-game-on-hive-last-part img {
+    max-width: 100%;
+  }
+</style>
+
+<hr />
+
+<p>
+  See: <a href="https://hive.blog/hive-169321/@mahdiyari/making-a-decentralized-game-on-hive-last-part">Making a Decentralized Game on Hive - Last part</a>
+  by
+  <a href="https://hive.blog/@mahdiyari">@mahdiyari</a>
+</p>
+
+
+  </div><a class="u-url" href="/howto/nodejs/2021/05/14/making-a-decentralized-game-on-hive-last-part.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading"><a rel="author" href="/">Hive Chain Documentation</a></h2>
+    
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">site curated by: @inertia</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>Your resource for various levels of Hive Documentation.</p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+</body>
+
+</html>
