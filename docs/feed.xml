@@ -1,4 +1,139 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="https://hivedocs.info/feed.xml" rel="self" type="application/atom+xml" /><link href="https://hivedocs.info/" rel="alternate" type="text/html" /><updated>2021-05-13T10:47:28-07:00</updated><id>https://hivedocs.info/feed.xml</id><title type="html">Hive Chain Documentation</title><subtitle>Your resource for various levels of Hive Documentation.</subtitle><author><name>site curated by: @inertia</name></author><entry><title type="html">HF25 Public Testnet (RC1)</title><link href="https://hivedocs.info/news/projects/testnet/2021/05/13/hf25-public-testnet-rc1.html" rel="alternate" type="text/html" title="HF25 Public Testnet (RC1)" /><published>2021-05-13T04:17:42-07:00</published><updated>2021-05-13T04:17:42-07:00</updated><id>https://hivedocs.info/news/projects/testnet/2021/05/13/hf25-public-testnet-rc1</id><content type="html" xml:base="https://hivedocs.info/news/projects/testnet/2021/05/13/hf25-public-testnet-rc1.html">&lt;div id=&quot;content-gtg-hf25-public-testnet-rc1&quot;&gt;This is a back-of-the-envelope-notes kind of a thread, so don't expect high quality write-ups here.
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="https://hivedocs.info/feed.xml" rel="self" type="application/atom+xml" /><link href="https://hivedocs.info/" rel="alternate" type="text/html" /><updated>2021-05-14T11:18:14-07:00</updated><id>https://hivedocs.info/feed.xml</id><title type="html">Hive Chain Documentation</title><subtitle>Your resource for various levels of Hive Documentation.</subtitle><author><name>site curated by: @inertia</name></author><entry><title type="html">HiveSQL Upate - Changes to the Internal Market tables</title><link href="https://hivedocs.info/news/sql/database/2021/05/14/hivesql-upate-20210514.html" rel="alternate" type="text/html" title="HiveSQL Upate - Changes to the Internal Market tables" /><published>2021-05-14T06:47:57-07:00</published><updated>2021-05-14T06:47:57-07:00</updated><id>https://hivedocs.info/news/sql/database/2021/05/14/hivesql-upate-20210514</id><content type="html" xml:base="https://hivedocs.info/news/sql/database/2021/05/14/hivesql-upate-20210514.html">&lt;div id=&quot;content-arcange-hivesql-upate-20210514&quot;&gt;![](https://i.imgur.com/E2xbX8S.png)
+
+I am actively continuing the work of [reorganizing the HiveSQL database](/hive-139531/@arcange/hivesql-update-20210511) that I started a few days ago. Lately, I tackled the tables related to the internal market.
+
+There are two operations associated with it: the creation of orders (buy or sell) and their cancellation. However, until now, these two operations were grouped together in a single table, which could cause confusion, but also wasted storage resources.
+
+### What changed?
+
+* A new `TxLimitOrdersCancels` table has been created and cancel orders have been moved from the table `TxLimitOrders` to `TxLimitOrdersCancels`
+* The table `TxLimitOrders` (purged from the cancel orders) has been renamed to `TxLimitOrdersCreates`
+  
+Therefore, we now have two new tables available:
+
+**TxLimitOrdersCreates**
+
+This table contains operations broadcasted to the blockchain when users want to buy or sell assets on the internal market.
+
+|Column|Description|
+|-|-|
+|owner|account who filled a limit order|
+|orderid|an order ID defined by the owner. It must be unique|
+|amount_to_sell|amount of asset|
+|amount_to_sell_symbol|symbol of the asset|
+|min_to_receive|The target asset expected price (limit_order_create operation)|
+|min_to_receive_symbol|The target asset expected symbol (limit_order_create only)|
+|exchange_rate|The target asset expected price (limit_order_create2 operation)|
+fill_or_kill|flag to specify if the order should be killed (removed) from the order book if it cannot be filled|
+|expiration|expiration time for the order|
+
+**TxLimitOrdersCancels**
+
+This table contains operations broadcasted to the blockchain when users want to cancel orders created on the internal market.
+
+|Column|Description|
+|-|-|
+|owner|account who filled a limit order|
+|orderid|an order ID defined by the owner|
+
+## Support
+
+If you have any questions or remarks, support is provided on the [HiveSQL Discord Channel](https://discord.gg/kyEFDfT).
+
+Thank you for reading.
+
+---
+**Let's keep HiveSQL free to use - Support its proposals**!
+|HiveSQL|HiveBuzz|
+|-|-|
+|[Vote for the proposal on PeakD](https://peakd.com/me/proposals/138)&lt;br /&gt;[Vote for the proposal on Ecency](https://ecency.com/proposals/138)&lt;br /&gt;[Vote for the proposal using HiveSigner](https://hivesigner.com/sign/update_proposal_votes?proposal_ids=%5B%22138%22%5D&amp;amp;approve=true)|[Vote for the proposal on PeakD](https://peakd.com/me/proposals/147)&lt;br /&gt;[Vote for the proposal on Ecency](https://ecency.com/proposals/147)&lt;br /&gt;[Vote for the proposal using HiveSigner](https://hivesigner.com/sign/update_proposal_votes?proposal_ids=%5B%22147%22%5D&amp;amp;approve=true)|
+
+---
+&lt;center&gt;
+
+### Check out my apps and services
+&lt;a href=&quot;/hive/@hive.engage/stay-connected-with-your-hive-audience-and-catch-attention&quot;&gt;&lt;img src=&quot;https://i.imgur.com/GiNJqlm.png&quot; /&gt;&lt;/a&gt;&lt;a href=&quot;/@hivebuzz&quot;&gt;&lt;img src=&quot;https://i.imgur.com/B4UTun2.png&quot; /&gt;&lt;/a&gt;&lt;a href=&quot;/@hivesql&quot;&gt;&lt;img src=&quot;https://i.imgur.com/EPN8RW6.png&quot; /&gt;&lt;/a&gt;&lt;a href=&quot;/hive/@arcange/introducing-hive-account-recovery&quot;&gt;&lt;img src=&quot;https://i.imgur.com/6TWeW7V.png&quot; /&gt;&lt;/a&gt;&lt;a href=&quot;/@hive.autoclaim&quot;&gt;&lt;img src=&quot;https://i.imgur.com/ih2pEOw.png&quot; /&gt;&lt;/a&gt;&lt;/center&gt;
+&lt;center&gt;
+
+### [Vote for me as a witness ![](https://i.imgur.com/2bi4SnT.png)](https://hivesigner.com/sign/account-witness-vote?witness=arcange&amp;amp;approve=1)
+&lt;/center&gt;&lt;/div&gt;
+&lt;script crossorigin=&quot;anonymous&quot; integrity=&quot;sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=&quot; src=&quot;https://code.jquery.com/jquery-3.5.1.slim.min.js&quot;&gt;&lt;/script&gt;
+
+&lt;script src=&quot;https://unpkg.com/steem-content-renderer&quot;&gt;&lt;/script&gt;
+
+&lt;!-- &lt;script src=&quot;https://cdn.jsdelivr.net/npm/hive-content-renderer/dist/hive-content-renderer.min.js&quot;&gt;&lt;/script&gt; --&gt;
+&lt;script&gt;
+  $(document).ready(function() {
+    try {
+      const renderer = new SteemContentRenderer.DefaultRenderer({
+      // const renderer = new HiveContentRenderer({
+        baseUrl: &quot;https://hive.blog/&quot;,
+        breaks: true,
+        skipSanitization: false,
+        allowInsecureScriptTags: false,
+        addNofollowToLinks: true,
+        doNotShowImages: false,
+        ipfsPrefix: &quot;&quot;,
+        assetsWidth: 640,
+        assetsHeight: 480,
+        imageProxyFn: (url) =&gt; url,
+        usertagUrlFn: (account) =&gt; &quot;/@arcange&quot;,
+        hashtagUrlFn: (hashtag) =&gt; &quot;/hivesql-upate-20210514&quot;,
+        isLinkSafeFn: (url) =&gt; true,
+      });
+      
+      const inputElem = $('#content-arcange-hivesql-upate-20210514').html();
+      const outputElem = $('#content-arcange-hivesql-upate-20210514');
+      const output = renderer.render(inputElem);
+      
+      outputElem.html(output);
+    } catch(e) {
+      console.log(e);
+    }
+  });
+&lt;/script&gt;
+
+&lt;style&gt;
+  #content-arcange-hivesql-upate-20210514 {
+    padding: 0 3rem;
+    color: #444444;
+    font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.8;
+    text-shadow: 0 1px 0 #ffffff;
+    padding: 0.5rem;
+  }
+  #content-arcange-hivesql-upate-20210514 code {
+    background: white;
+  }
+  #content-arcange-hivesql-upate-20210514 a {
+    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
+  }
+  #content-arcange-hivesql-upate-20210514 a:hover {
+    border-bottom: 0;
+  }
+  #content-arcange-hivesql-upate-20210514 h1 {
+    font-size: 2.2em;
+  }
+  #content-arcange-hivesql-upate-20210514 h2, h3, h4, h5 {
+    margin-bottom: 0;
+  }
+  #content-arcange-hivesql-upate-20210514 header small {
+    color: #999;
+    font-size: 50%;
+  }
+  #content-arcange-hivesql-upate-20210514 img {
+    max-width: 100%;
+  }
+&lt;/style&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;
+  See: &lt;a href=&quot;https://peakd.com/hive-139531/@arcange/hivesql-upate-20210514&quot;&gt;HiveSQL Upate - Changes to the Internal Market tables&lt;/a&gt;
+  by
+  &lt;a href=&quot;https://hive.blog/@arcange&quot;&gt;@arcange&lt;/a&gt;
+&lt;/p&gt;</content><author><name>arcange</name></author><category term="news" /><category term="sql" /><category term="database" /><summary type="html">![](https://i.imgur.com/E2xbX8S.png) I am actively continuing the work of [reorganizing the HiveSQL database](/hive-139531/@arcange/hivesql-update-20210511) that I started a few days ago. Lately, I tackled the tables related to the internal market. There are two operations associated with it: the creation of orders (buy or sell) and their cancellation. However, until now, these two operations were grouped together in a single table, which could cause confusion, but also wasted storage resources. ### What changed? * A new `TxLimitOrdersCancels` table has been created and cancel orders have been moved from the table `TxLimitOrders` to `TxLimitOrdersCancels` * The table `TxLimitOrders` (purged from the cancel orders) has been renamed to `TxLimitOrdersCreates` Therefore, we now have two new tables available: **TxLimitOrdersCreates** This table contains operations broadcasted to the blockchain when users want to buy or sell assets on the internal market. |Column|Description| |-|-| |owner|account who filled a limit order| |orderid|an order ID defined by the owner. It must be unique| |amount_to_sell|amount of asset| |amount_to_sell_symbol|symbol of the asset| |min_to_receive|The target asset expected price (limit_order_create operation)| |min_to_receive_symbol|The target asset expected symbol (limit_order_create only)| |exchange_rate|The target asset expected price (limit_order_create2 operation)| fill_or_kill|flag to specify if the order should be killed (removed) from the order book if it cannot be filled| |expiration|expiration time for the order| **TxLimitOrdersCancels** This table contains operations broadcasted to the blockchain when users want to cancel orders created on the internal market. |Column|Description| |-|-| |owner|account who filled a limit order| |orderid|an order ID defined by the owner| ## Support If you have any questions or remarks, support is provided on the [HiveSQL Discord Channel](https://discord.gg/kyEFDfT). Thank you for reading. --- **Let's keep HiveSQL free to use - Support its proposals**! |HiveSQL|HiveBuzz| |-|-| |[Vote for the proposal on PeakD](https://peakd.com/me/proposals/138)[Vote for the proposal on Ecency](https://ecency.com/proposals/138)[Vote for the proposal using HiveSigner](https://hivesigner.com/sign/update_proposal_votes?proposal_ids=%5B%22138%22%5D&amp;amp;approve=true)|[Vote for the proposal on PeakD](https://peakd.com/me/proposals/147)[Vote for the proposal on Ecency](https://ecency.com/proposals/147)[Vote for the proposal using HiveSigner](https://hivesigner.com/sign/update_proposal_votes?proposal_ids=%5B%22147%22%5D&amp;amp;approve=true)| --- ### Check out my apps and services ### [Vote for me as a witness ![](https://i.imgur.com/2bi4SnT.png)](https://hivesigner.com/sign/account-witness-vote?witness=arcange&amp;amp;approve=1) See: HiveSQL Upate - Changes to the Internal Market tables by @arcange</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://i.imgur.com/E2xbX8S.png" /><media:content medium="image" url="https://i.imgur.com/E2xbX8S.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">HF25 Public Testnet (RC1)</title><link href="https://hivedocs.info/news/projects/testnet/2021/05/13/hf25-public-testnet-rc1.html" rel="alternate" type="text/html" title="HF25 Public Testnet (RC1)" /><published>2021-05-13T04:17:42-07:00</published><updated>2021-05-13T04:17:42-07:00</updated><id>https://hivedocs.info/news/projects/testnet/2021/05/13/hf25-public-testnet-rc1</id><content type="html" xml:base="https://hivedocs.info/news/projects/testnet/2021/05/13/hf25-public-testnet-rc1.html">&lt;div id=&quot;content-gtg-hf25-public-testnet-rc1&quot;&gt;This is a back-of-the-envelope-notes kind of a thread, so don't expect high quality write-ups here.
 For this reason 50% beneficiary for top level post and 100% of my comments here are going to be set to @hbd.funder
 I encourage all who comment to do the same so we can push up the most relevant content while giving profits for entire platform as a side effect.
 
@@ -1208,200 +1343,4 @@ I believe we still need to do more testnet-based testing before notifying exchan
   See: &lt;a href=&quot;https://hive.blog/hive-139531/@blocktrades/10th-update-of-2021-on-blocktrades-work-on-hive-software&quot;&gt;10th update of 2021 on BlockTrades work on Hive software&lt;/a&gt;
   by
   &lt;a href=&quot;https://hive.blog/@blocktrades&quot;&gt;@blocktrades&lt;/a&gt;
-&lt;/p&gt;</content><author><name>blocktrades</name></author><category term="news" /><category term="core" /><category term="development" /><summary type="html">Below is a list of Hive-related programming issues worked on by BlockTrades team during the last week: # Hived work (blockchain node software) We launched the first testnet of hived for hardfork 25 last Wednesday and have been experimenting with configuring tinman for it. [Tinman](https://gitlab.syncad.com/hive/tinman) is a testnet management tool for hived that can create accounts and inject various forms of test data into a hived node. During some of our testing, we found a problem with hived where it would eat up 100% CPU of a core if a hived was launched without a valid seed node because the blockchain code was stuck in a tight loop polling for transactions and blocks that never show up (because the node has no peers to get data from). Even more problematically, no reasonable diagnostic information was reported in this situation, so it took a little while for us to identify the real problem. We’re currently working on a fix for this issue that lowers the CPU overhead in this case, and also adds warning messages to identify the problem. We found a problem with beem (the python-based API library for Hive) used for running API tests on hived. @howo provided a quick patch and we’re working on a long term fix now (should be fixed tomorrow). @howo also made updates to the recurrent transfers function based on specification change requests by our devs, and we are planning a final review of those changes tomorrow, with the plan to merge it into the develop branch for deployment in the next testnet launch. # Jussi caching optimization Over the weekend, I observed that our hivemind was loaded much more heavily than normal (this was initially noticeable on hive.blog where it was taking longer to open a post to read). Eventually I found that our node is getting hit with a dramatic increase in the number of bridge.get_discussion API calls (these calls are made when you navigate to a user's post on a site like peakd or hive.blog) and this led to a CPU bottleneck in the python code that process API calls. It turns out there's a new site that allows for browsing Hive posts, but unfortunately it is currently coded to make this call every second or so (I suspect to detect new comments on the post) and this resulted in a large increase in the number of API calls our hivemind had to process. The ultimate solution was fairly simple: we reconfigured our Jussi process to cache results of this call for 1 second (previous we had no caching configured for this call). All API calls first go to Jussi before being passed to hivemind, and if Jussi has cached the answer to a previous API call, then it can just return the previous answer instead of asking hivemind again. Up till now, we haven't enabled a lot of caching on api.hive.blog other than a few basic things so that we could identify which calls are expensive for hivemind to process, and then optimize the processing of those calls. But now that optimization work is mostly complete, so we'll be taking a look soon at ways to optimize our Jussi caching to reduce load on hivemind and hived, as this should allow for a substantial scaling increase for our node. # Hivemind (2nd layer applications + social media middleware) We isolated the cause of the memory leak in hivemind: it appears to be a case where python isn’t releasing memory from dictionaries when the data in the dictionary is cleared. We’ve added code to do a “deep clean” of those dictionaries. We'll likely have performance measurements late next week on how much memory this saves at the current block height. As a side note, I believe current nodes can recover this memory prior to obtaining our fix by stopping and restarting their hivemind instance. We’ve also been making some changes to hivemind tests based on the change in the way community muting is being implemented, and those changes will probably be merged into the develop branch tomorrow. We’ve been running full hivemind syncs on several systems to benchmark performance under different hivemind configurations. We found a slowdown on one machine running with one new hivemind command-line option and we’re trying to analyze if it is due to the use of the new command-line option or some other configuration issue on that system (e.g. hardware or database configuration). At this point, we’re trying various experiments to isolate the root problem on that system. # Modular hivemind (framework for hive applications) This week, we completed the first pass work on the fork resolution code for modular hivemind using a fully SQL-based solution relying on shadow tables that save changes that need to be undone in the case of a fork switch. We’re currently creating an architecture document to describe how the fork resolution code works and how to use it to create a Hive-based application. # Updating hived testnet We’re planning to launch an updated testnet on Thursday with the latest fixes to hived discussed above. That will be followed by a launch of an API node configured to draw data from the testnet (probably on Friday, if all goes well). This API node will allow Hive applications to begin adding code changes to support new features added by the hardfork, such as vote expiration reporting. # New hivemind release planned soon In the next week we’ll continue testing the latest changes to hivemind: first more performance testing of hivemind sync, then real-world performance testing on api.hive.blog. If all that testing goes well, we may be able to release a new version of hivemind to API node operators by the end of next week. This release would contain the various bug fixes and performance optimizations reported in previous posts. # SQL Account history plugin for hived (requirement for modular hivemind) We planned to get to this task last week, but unfortunately it was delayed by other tasks. But we hope to complete the changes to the SQL account history plugin that pushes data to postgres (eliminating the need for hivemind to pull the data via RPC calls) in the new couple of days. After the plugin changes are completed, we’ll run a simultaneous replay of hived with a full sync of hivemind to measure the speedup, and see if it matches our expected improvement in hivemind full sync time (we expect 2 days versus the current 4 days required). # Anticipated hardfork date I believe we still need to do more testnet-based testing before notifying exchanges of the new version of the code, and since we want to give them approximately 30 days to update after we have a well-tested code release, I think we're still at least 1.5 months out from a possible hardfork date. See: 10th update of 2021 on BlockTrades work on Hive software by @blocktrades</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://hivedocs.info/assets/images/favicon.png" /><media:content medium="image" url="https://hivedocs.info/assets/images/favicon.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Curated Content Collections, Hive Engine Wallet Updates and More</title><link href="https://hivedocs.info/news/projects/peakd/2021/04/27/curated-content-collections-hive-engine-wallet-updates-and-more.html" rel="alternate" type="text/html" title="Curated Content Collections, Hive Engine Wallet Updates and More" /><published>2021-04-27T02:40:15-07:00</published><updated>2021-04-27T02:40:15-07:00</updated><id>https://hivedocs.info/news/projects/peakd/2021/04/27/curated-content-collections-hive-engine-wallet-updates-and-more</id><content type="html" xml:base="https://hivedocs.info/news/projects/peakd/2021/04/27/curated-content-collections-hive-engine-wallet-updates-and-more.html">&lt;div id=&quot;content-peakd-curated-content-collections-hive-engine-wallet-updates-and-more&quot;&gt;A new release of [peakd.com](https://peakd.com) is now available. Keep reading to discover the new features and check the full list of improvements ;)
-
-&lt;center&gt;&lt;h4&gt;The new release is now live at https://peakd.com&lt;/h4&gt;&lt;/center&gt;
-
-![release_cover_2021_04_27.jpg](https://files.peakd.com/file/peakd-hive/peakd/23tvCw8qNqAn6wxZKhC1YXDEpoiXGbJskMY4VkvqEDcrF5qLk7ErxxWdMkts9dC7Dzvpc.jpg)
-
-
-#### 1. Introduce Curated Content Collections (CCC)
-
-Curated Content Collections (CCC shorthand) is by far the biggest feature introduced in this release. This is something we have discussed for quite some time in the past months and finally we have found a way to implement and support this feature in a way we hope you will enjoy.
-
-With CCC you can now share a curated list of posts in a nice and simple way. And you can also add a small comment to each link you add to the collection.
-If you are used to write posts on [peakd.com](https://peakd.com) it will be easy to create a new collection. Because collections are fully decentralized and backed by a normal post that you can share in your blog or in a community (we created a community in case you don't know where to post it) and showcase in your profile. To create a collection there is an option directly in the top bar or in the post 'advanced' settings.
-
-If you want to have a look we have created a few collections beforehand:
-https://peakd.com/ccc/jarvie/amazing-locations-of-utah
-https://peakd.com/ccc/jarvie/hive-hardfork-25
-
-
-![image.png](https://files.peakd.com/file/peakd-hive/peakd/23wMmD3qYqE1F6XdsaDvkuP8jM7LatkqJ964Dxm3bMavQ6E7qprjUnqz6vEuQu8WvbhwA.png)
-
-
-But collections are just simple posts so you can also view with the standard layout, but with some new embedded content 😉
-
-![CCC when opened as a post](https://files.peakd.com/file/peakd-hive/asgarth-dev/23tcNhnr57dfCQzTbJ8UXv6XPTzppzH7XRZWqBAM8LrQ1vZcEuwndQHrSSQJyneg6JyLY.png)
-
-
-Of course those collections can be seen in the user profile on a dedicated page: https://peakd.com/@jarvie/collections
-
-
-![image.png](https://files.peakd.com/file/peakd-hive/peakd/EoKAEtkkYqsCCNeJKUJY95qeDKwkm21kYukNvMFP5WPSKTjyNkKGMq2iDstqYRuXrbW.png)
-
-
-And there is a [new badge](https://peakd.com/b/badge-000333) automatically assigned to users (curators) that publish a new collection.
-
-!['Curator' Badge](https://files.peakd.com/file/peakd-hive/peakd/242NetMSjPwg8hsZqF5MQ6BFLDB6vUqVjHWrKd5UcQnWfr4ZRkY6KGBiyjzLzjEQ4p8w6.png)
-
-
-#### 2. Hive Engine wallet improvements
-
-The second large update in this release is a complete rework of the Hive Engine wallet section to provide more options and more details.
-
-![HE wallet](https://files.peakd.com/file/peakd-hive/asgarth-dev/23uFweCqWKH4K4t4gt6Tm34CwMrYArq3oiVdDQUX2vqkFp2eaLdibV5BrhxAdLYtekqBz.png)
-
-New supported operations:
-- Stake
-- Unstake
-- Delegate
-- Undelegate
-- View your delegations and update them.
-
-Also we integrated a few different API to provide a clear and complete overview of the value of those tokens on HE market, Diesel Pools and (if available) standard price provided by @coingecko.
-
-#### 3. Accumulated HBD interest in Wallet and option to trigger a 'claim'
-
-The Hive wallet now include an estimation of the HBD interests from the last payment. It's possible to trigger a payment with a small HBD transaction to yourself.
-
-![image.png](https://files.peakd.com/file/peakd-hive/asgarth-dev/23viTUFX1HKoT9rEr83PMcbBxLooq7shLgFrDEr4oqk54sboSrE4oMRAc6ZECYqsA5aHr.png)
-
-
-#### 4. A Bunch of other improvements worth a mention
-
-A full list of minor updates and fixes is available in the next paragraph, but some of them are worth a small paragraph and explanation.
-
-**Temporary save draft for comments/replies in the browser storage**
-
-When you start writing a comment or reply the text is now temporary saved in your browser cache. This does not work as the drafts for your posts, but should be a convenient way to avoid losing an import or long message by mistake.
-
-**Support 'Truvvl' embeds**
-
-Truvvl is a new app by the @travelfeed team released a few days ago. Embedded content is now supported on [peakd.com](https://peakd.com).
-
-**Support odysee.com (lbry.tv) embeds**
-
-Support for [odysee.com](https://odysee.com) embeds is now available and old [lbry.tv](https://lbry.tv) frames are automatically rewritten. Keep in mind that this only works when embedding the `iframe` directly, and not with a simple link.
-
-#### 5. Some minor improvements and bug fixes
-
-As always some minor improvements, updates and fixes across the website. You can check the full release notes here: **https://peakd.com/about/changelog**.
-
-```
-# Improvements and Fixes
-------------------------------
-
-[update] Quickly submit comments/replies with CTRL+ENTER
-[update] Automatically filter low amount transfers in Wallet transactions
-[fix] Power Up/Down pop-ups layout on mobile
-[fix] Hive Engine tokens transfer when logged in with Hivesigner
-[fix] Fix loading error in Proposals page that prevent proposals from loading
-[fix] Rendering issue on un-supported &amp;lt;iframe&amp;gt; embeds
-[fix] Avoid autoplay for Theta.Tv embeds in the feed
-[fix] Small visual bug with featured community ribbons on top of chat panel
-[fix] Opening peakd.com links with query string parameters
-```
-
----
-
-## Support the @peakd project
-
-Now is probably a nice time to remind you of the ways you can support the development of @peakd.
-
-![Selection_298.png](https://files.peakd.com/file/peakd-hive/peakd/w36DQpO7-Selection_298.png)
-
-We have a proposal on the Decentralized Hive Fund. You can review the proposal [here](/proposals/52).
-If you agree to the proposal and you think the points mentioned add value to the Hive Blockchain consider supporting it using the above links or directly with **[this link](https://hivesigner.com/sign/update-proposal-votes?proposal_ids=[52]&amp;amp;approve=true)**.
-
----
-
-We also run a witness server to help produce the blocks for the Hive Blockchain. You can vote for our witness so we are in a position to process more of them.
-
-Vote on the witness page: https://peakd.com/witnesses
-
-- Using Keychain: You just have to click and approve the transaction
-- Using HiveSigner: You'll need access to confirm the transaction with your Active Key at least
-
----
-
-###### *The PeakD Team*
-_About us: https://peakd.com/about_
-_Join us on Discord: https://discord.gg/Fy3bca5_&lt;/div&gt;
-&lt;script crossorigin=&quot;anonymous&quot; integrity=&quot;sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=&quot; src=&quot;https://code.jquery.com/jquery-3.5.1.slim.min.js&quot;&gt;&lt;/script&gt;
-
-&lt;script src=&quot;https://unpkg.com/steem-content-renderer&quot;&gt;&lt;/script&gt;
-
-&lt;!-- &lt;script src=&quot;https://cdn.jsdelivr.net/npm/hive-content-renderer/dist/hive-content-renderer.min.js&quot;&gt;&lt;/script&gt; --&gt;
-&lt;script&gt;
-  $(document).ready(function() {
-    try {
-      const renderer = new SteemContentRenderer.DefaultRenderer({
-      // const renderer = new HiveContentRenderer({
-        baseUrl: &quot;https://hive.blog/&quot;,
-        breaks: true,
-        skipSanitization: false,
-        allowInsecureScriptTags: false,
-        addNofollowToLinks: true,
-        doNotShowImages: false,
-        ipfsPrefix: &quot;&quot;,
-        assetsWidth: 640,
-        assetsHeight: 480,
-        imageProxyFn: (url) =&gt; url,
-        usertagUrlFn: (account) =&gt; &quot;/@peakd&quot;,
-        hashtagUrlFn: (hashtag) =&gt; &quot;/curated-content-collections-hive-engine-wallet-updates-and-more&quot;,
-        isLinkSafeFn: (url) =&gt; true,
-      });
-      
-      const inputElem = $('#content-peakd-curated-content-collections-hive-engine-wallet-updates-and-more').html();
-      const outputElem = $('#content-peakd-curated-content-collections-hive-engine-wallet-updates-and-more');
-      const output = renderer.render(inputElem);
-      
-      outputElem.html(output);
-    } catch(e) {
-      console.log(e);
-    }
-  });
-&lt;/script&gt;
-
-&lt;style&gt;
-  #content-peakd-curated-content-collections-hive-engine-wallet-updates-and-more {
-    padding: 0 3rem;
-    color: #444444;
-    font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif;
-    font-size: 16px;
-    line-height: 1.8;
-    text-shadow: 0 1px 0 #ffffff;
-    padding: 0.5rem;
-  }
-  #content-peakd-curated-content-collections-hive-engine-wallet-updates-and-more code {
-    background: white;
-  }
-  #content-peakd-curated-content-collections-hive-engine-wallet-updates-and-more a {
-    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
-  }
-  #content-peakd-curated-content-collections-hive-engine-wallet-updates-and-more a:hover {
-    border-bottom: 0;
-  }
-  #content-peakd-curated-content-collections-hive-engine-wallet-updates-and-more h1 {
-    font-size: 2.2em;
-  }
-  #content-peakd-curated-content-collections-hive-engine-wallet-updates-and-more h2, h3, h4, h5 {
-    margin-bottom: 0;
-  }
-  #content-peakd-curated-content-collections-hive-engine-wallet-updates-and-more header small {
-    color: #999;
-    font-size: 50%;
-  }
-  #content-peakd-curated-content-collections-hive-engine-wallet-updates-and-more img {
-    max-width: 100%;
-  }
-&lt;/style&gt;
-
-&lt;hr /&gt;
-
-&lt;p&gt;
-  See: &lt;a href=&quot;https://peakd.com/hive-163399/@peakd/curated-content-collections-hive-engine-wallet-updates-and-more&quot;&gt;Curated Content Collections, Hive Engine Wallet Updates and More&lt;/a&gt;
-  by
-  &lt;a href=&quot;https://hive.blog/@peakd&quot;&gt;@peakd&lt;/a&gt;
-&lt;/p&gt;</content><author><name>peakd</name></author><category term="news" /><category term="projects" /><category term="peakd" /><summary type="html">A new release of [peakd.com](https://peakd.com) is now available. Keep reading to discover the new features and check the full list of improvements ;) The new release is now live at https://peakd.com ![release_cover_2021_04_27.jpg](https://files.peakd.com/file/peakd-hive/peakd/23tvCw8qNqAn6wxZKhC1YXDEpoiXGbJskMY4VkvqEDcrF5qLk7ErxxWdMkts9dC7Dzvpc.jpg) #### 1. Introduce Curated Content Collections (CCC) Curated Content Collections (CCC shorthand) is by far the biggest feature introduced in this release. This is something we have discussed for quite some time in the past months and finally we have found a way to implement and support this feature in a way we hope you will enjoy. With CCC you can now share a curated list of posts in a nice and simple way. And you can also add a small comment to each link you add to the collection. If you are used to write posts on [peakd.com](https://peakd.com) it will be easy to create a new collection. Because collections are fully decentralized and backed by a normal post that you can share in your blog or in a community (we created a community in case you don't know where to post it) and showcase in your profile. To create a collection there is an option directly in the top bar or in the post 'advanced' settings. If you want to have a look we have created a few collections beforehand: https://peakd.com/ccc/jarvie/amazing-locations-of-utah https://peakd.com/ccc/jarvie/hive-hardfork-25 ![image.png](https://files.peakd.com/file/peakd-hive/peakd/23wMmD3qYqE1F6XdsaDvkuP8jM7LatkqJ964Dxm3bMavQ6E7qprjUnqz6vEuQu8WvbhwA.png) But collections are just simple posts so you can also view with the standard layout, but with some new embedded content 😉 ![CCC when opened as a post](https://files.peakd.com/file/peakd-hive/asgarth-dev/23tcNhnr57dfCQzTbJ8UXv6XPTzppzH7XRZWqBAM8LrQ1vZcEuwndQHrSSQJyneg6JyLY.png) Of course those collections can be seen in the user profile on a dedicated page: https://peakd.com/@jarvie/collections ![image.png](https://files.peakd.com/file/peakd-hive/peakd/EoKAEtkkYqsCCNeJKUJY95qeDKwkm21kYukNvMFP5WPSKTjyNkKGMq2iDstqYRuXrbW.png) And there is a [new badge](https://peakd.com/b/badge-000333) automatically assigned to users (curators) that publish a new collection. !['Curator' Badge](https://files.peakd.com/file/peakd-hive/peakd/242NetMSjPwg8hsZqF5MQ6BFLDB6vUqVjHWrKd5UcQnWfr4ZRkY6KGBiyjzLzjEQ4p8w6.png) #### 2. Hive Engine wallet improvements The second large update in this release is a complete rework of the Hive Engine wallet section to provide more options and more details. ![HE wallet](https://files.peakd.com/file/peakd-hive/asgarth-dev/23uFweCqWKH4K4t4gt6Tm34CwMrYArq3oiVdDQUX2vqkFp2eaLdibV5BrhxAdLYtekqBz.png) New supported operations: - Stake - Unstake - Delegate - Undelegate - View your delegations and update them. Also we integrated a few different API to provide a clear and complete overview of the value of those tokens on HE market, Diesel Pools and (if available) standard price provided by @coingecko. #### 3. Accumulated HBD interest in Wallet and option to trigger a 'claim' The Hive wallet now include an estimation of the HBD interests from the last payment. It's possible to trigger a payment with a small HBD transaction to yourself. ![image.png](https://files.peakd.com/file/peakd-hive/asgarth-dev/23viTUFX1HKoT9rEr83PMcbBxLooq7shLgFrDEr4oqk54sboSrE4oMRAc6ZECYqsA5aHr.png) #### 4. A Bunch of other improvements worth a mention A full list of minor updates and fixes is available in the next paragraph, but some of them are worth a small paragraph and explanation. **Temporary save draft for comments/replies in the browser storage** When you start writing a comment or reply the text is now temporary saved in your browser cache. This does not work as the drafts for your posts, but should be a convenient way to avoid losing an import or long message by mistake. **Support 'Truvvl' embeds** Truvvl is a new app by the @travelfeed team released a few days ago. Embedded content is now supported on [peakd.com](https://peakd.com). **Support odysee.com (lbry.tv) embeds** Support for [odysee.com](https://odysee.com) embeds is now available and old [lbry.tv](https://lbry.tv) frames are automatically rewritten. Keep in mind that this only works when embedding the `iframe` directly, and not with a simple link. #### 5. Some minor improvements and bug fixes As always some minor improvements, updates and fixes across the website. You can check the full release notes here: **https://peakd.com/about/changelog**. ``` # Improvements and Fixes ------------------------------ [update] Quickly submit comments/replies with CTRL+ENTER [update] Automatically filter low amount transfers in Wallet transactions [fix] Power Up/Down pop-ups layout on mobile [fix] Hive Engine tokens transfer when logged in with Hivesigner [fix] Fix loading error in Proposals page that prevent proposals from loading [fix] Rendering issue on un-supported &amp;lt;iframe&amp;gt; embeds [fix] Avoid autoplay for Theta.Tv embeds in the feed [fix] Small visual bug with featured community ribbons on top of chat panel [fix] Opening peakd.com links with query string parameters ``` --- ## Support the @peakd project Now is probably a nice time to remind you of the ways you can support the development of @peakd. ![Selection_298.png](https://files.peakd.com/file/peakd-hive/peakd/w36DQpO7-Selection_298.png) We have a proposal on the Decentralized Hive Fund. You can review the proposal [here](/proposals/52). If you agree to the proposal and you think the points mentioned add value to the Hive Blockchain consider supporting it using the above links or directly with **[this link](https://hivesigner.com/sign/update-proposal-votes?proposal_ids=[52]&amp;amp;approve=true)**. --- We also run a witness server to help produce the blocks for the Hive Blockchain. You can vote for our witness so we are in a position to process more of them. Vote on the witness page: https://peakd.com/witnesses - Using Keychain: You just have to click and approve the transaction - Using HiveSigner: You'll need access to confirm the transaction with your Active Key at least --- ###### *The PeakD Team* _About us: https://peakd.com/about_ _Join us on Discord: https://discord.gg/Fy3bca5_ See: Curated Content Collections, Hive Engine Wallet Updates and More by @peakd</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://files.peakd.com/file/peakd-hive/peakd/23tvCw8qNqAn6wxZKhC1YXDEpoiXGbJskMY4VkvqEDcrF5qLk7ErxxWdMkts9dC7Dzvpc.jpg" /><media:content medium="image" url="https://files.peakd.com/file/peakd-hive/peakd/23tvCw8qNqAn6wxZKhC1YXDEpoiXGbJskMY4VkvqEDcrF5qLk7ErxxWdMkts9dC7Dzvpc.jpg" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>
+&lt;/p&gt;</content><author><name>blocktrades</name></author><category term="news" /><category term="core" /><category term="development" /><summary type="html">Below is a list of Hive-related programming issues worked on by BlockTrades team during the last week: # Hived work (blockchain node software) We launched the first testnet of hived for hardfork 25 last Wednesday and have been experimenting with configuring tinman for it. [Tinman](https://gitlab.syncad.com/hive/tinman) is a testnet management tool for hived that can create accounts and inject various forms of test data into a hived node. During some of our testing, we found a problem with hived where it would eat up 100% CPU of a core if a hived was launched without a valid seed node because the blockchain code was stuck in a tight loop polling for transactions and blocks that never show up (because the node has no peers to get data from). Even more problematically, no reasonable diagnostic information was reported in this situation, so it took a little while for us to identify the real problem. We’re currently working on a fix for this issue that lowers the CPU overhead in this case, and also adds warning messages to identify the problem. We found a problem with beem (the python-based API library for Hive) used for running API tests on hived. @howo provided a quick patch and we’re working on a long term fix now (should be fixed tomorrow). @howo also made updates to the recurrent transfers function based on specification change requests by our devs, and we are planning a final review of those changes tomorrow, with the plan to merge it into the develop branch for deployment in the next testnet launch. # Jussi caching optimization Over the weekend, I observed that our hivemind was loaded much more heavily than normal (this was initially noticeable on hive.blog where it was taking longer to open a post to read). Eventually I found that our node is getting hit with a dramatic increase in the number of bridge.get_discussion API calls (these calls are made when you navigate to a user's post on a site like peakd or hive.blog) and this led to a CPU bottleneck in the python code that process API calls. It turns out there's a new site that allows for browsing Hive posts, but unfortunately it is currently coded to make this call every second or so (I suspect to detect new comments on the post) and this resulted in a large increase in the number of API calls our hivemind had to process. The ultimate solution was fairly simple: we reconfigured our Jussi process to cache results of this call for 1 second (previous we had no caching configured for this call). All API calls first go to Jussi before being passed to hivemind, and if Jussi has cached the answer to a previous API call, then it can just return the previous answer instead of asking hivemind again. Up till now, we haven't enabled a lot of caching on api.hive.blog other than a few basic things so that we could identify which calls are expensive for hivemind to process, and then optimize the processing of those calls. But now that optimization work is mostly complete, so we'll be taking a look soon at ways to optimize our Jussi caching to reduce load on hivemind and hived, as this should allow for a substantial scaling increase for our node. # Hivemind (2nd layer applications + social media middleware) We isolated the cause of the memory leak in hivemind: it appears to be a case where python isn’t releasing memory from dictionaries when the data in the dictionary is cleared. We’ve added code to do a “deep clean” of those dictionaries. We'll likely have performance measurements late next week on how much memory this saves at the current block height. As a side note, I believe current nodes can recover this memory prior to obtaining our fix by stopping and restarting their hivemind instance. We’ve also been making some changes to hivemind tests based on the change in the way community muting is being implemented, and those changes will probably be merged into the develop branch tomorrow. We’ve been running full hivemind syncs on several systems to benchmark performance under different hivemind configurations. We found a slowdown on one machine running with one new hivemind command-line option and we’re trying to analyze if it is due to the use of the new command-line option or some other configuration issue on that system (e.g. hardware or database configuration). At this point, we’re trying various experiments to isolate the root problem on that system. # Modular hivemind (framework for hive applications) This week, we completed the first pass work on the fork resolution code for modular hivemind using a fully SQL-based solution relying on shadow tables that save changes that need to be undone in the case of a fork switch. We’re currently creating an architecture document to describe how the fork resolution code works and how to use it to create a Hive-based application. # Updating hived testnet We’re planning to launch an updated testnet on Thursday with the latest fixes to hived discussed above. That will be followed by a launch of an API node configured to draw data from the testnet (probably on Friday, if all goes well). This API node will allow Hive applications to begin adding code changes to support new features added by the hardfork, such as vote expiration reporting. # New hivemind release planned soon In the next week we’ll continue testing the latest changes to hivemind: first more performance testing of hivemind sync, then real-world performance testing on api.hive.blog. If all that testing goes well, we may be able to release a new version of hivemind to API node operators by the end of next week. This release would contain the various bug fixes and performance optimizations reported in previous posts. # SQL Account history plugin for hived (requirement for modular hivemind) We planned to get to this task last week, but unfortunately it was delayed by other tasks. But we hope to complete the changes to the SQL account history plugin that pushes data to postgres (eliminating the need for hivemind to pull the data via RPC calls) in the new couple of days. After the plugin changes are completed, we’ll run a simultaneous replay of hived with a full sync of hivemind to measure the speedup, and see if it matches our expected improvement in hivemind full sync time (we expect 2 days versus the current 4 days required). # Anticipated hardfork date I believe we still need to do more testnet-based testing before notifying exchanges of the new version of the code, and since we want to give them approximately 30 days to update after we have a well-tested code release, I think we're still at least 1.5 months out from a possible hardfork date. See: 10th update of 2021 on BlockTrades work on Hive software by @blocktrades</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://hivedocs.info/assets/images/favicon.png" /><media:content medium="image" url="https://hivedocs.info/assets/images/favicon.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>
