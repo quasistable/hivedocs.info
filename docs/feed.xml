@@ -1,4 +1,145 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="https://hivedocs.info/feed.xml" rel="self" type="application/atom+xml" /><link href="https://hivedocs.info/" rel="alternate" type="text/html" /><updated>2021-05-14T15:21:33-07:00</updated><id>https://hivedocs.info/feed.xml</id><title type="html">Hive Chain Documentation</title><subtitle>Your resource for various levels of Hive Documentation.</subtitle><author><name>site curated by: @inertia</name></author><entry><title type="html">Making a Decentralized Game on Hive - Last part</title><link href="https://hivedocs.info/howto/nodejs/2021/05/14/making-a-decentralized-game-on-hive-last-part.html" rel="alternate" type="text/html" title="Making a Decentralized Game on Hive - Last part" /><published>2021-05-14T15:17:36-07:00</published><updated>2021-05-14T15:17:36-07:00</updated><id>https://hivedocs.info/howto/nodejs/2021/05/14/making-a-decentralized-game-on-hive-last-part</id><content type="html" xml:base="https://hivedocs.info/howto/nodejs/2021/05/14/making-a-decentralized-game-on-hive-last-part.html">&lt;div id=&quot;content-mahdiyari-making-a-decentralized-game-on-hive-last-part&quot;&gt;&lt;center&gt;![desktop-pixabay.jpg](https://images.hive.blog/DQmah3PBKL6JDe3omk8wi2RFp3Lk2X8BZgb3FUpnkRTsfap/desktop-1245714_1280.jpg)&lt;/center&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="https://hivedocs.info/feed.xml" rel="self" type="application/atom+xml" /><link href="https://hivedocs.info/" rel="alternate" type="text/html" /><updated>2021-05-17T10:00:47-07:00</updated><id>https://hivedocs.info/feed.xml</id><title type="html">Hive Chain Documentation</title><subtitle>Your resource for various levels of Hive Documentation.</subtitle><author><name>site curated by: @inertia</name></author><entry><title type="html">HiveSQL Upate - New Virtual Operation tables</title><link href="https://hivedocs.info/news/sql/database/2021/05/17/hivesql-upate-20210517.html" rel="alternate" type="text/html" title="HiveSQL Upate - New Virtual Operation tables" /><published>2021-05-17T07:53:39-07:00</published><updated>2021-05-17T07:53:39-07:00</updated><id>https://hivedocs.info/news/sql/database/2021/05/17/hivesql-upate-20210517</id><content type="html" xml:base="https://hivedocs.info/news/sql/database/2021/05/17/hivesql-upate-20210517.html">&lt;div id=&quot;content-arcange-hivesql-upate-20210517&quot;&gt;![](https://i.imgur.com/FE9D32t.png)
+
+I am finalizing a consequent work I started weeks ago to create the HiveSQL documentation, which should be available soon. While performing this job, I realized that the database was missing a few Virtual Operations tables. Therefore, I hastened to add them so that the database content is as complete as possible.
+
+### What new?
+
+Two new tables are now available:
+ 
+**VOClearNullAccountBalances**
+
+This table contains virtual operations created by the blockchain when the @null account balances need to be zeroed.
+
+|Column|Description|
+|-|-|
+|total_cleared|a JSON array with the assets that have been burned|
+
+**VOSPSConverts**
+
+This table contains virtual operations issued when a Proposals Fund (DHF) conversion from HIVE to HBD occurs.
+
+|Column|Description|
+|-|-|
+|fund_account|DHF account|
+|hive_amount_in|amount of HIVE burned|
+|hbd_amount_out|amount of HBD created|
+
+**VODelayedVotings**
+
+This table contains virtual operations issued when newly powered up VESTS (Hive Power) become counted towards witnesses and DHF proposals votes (after a 30 days delay is complete - HF24).
+
+|Column|Description|
+|-|-|
+|voter|account who performed a power-up and whose votes will be impacted|
+|votes|amount of additional VESTS to take into account for votes|
+
+### What else?
+
+**&lt;div class=&quot;phishy&quot;&gt;I made a major change&lt;/div&gt;** to the `TxCustoms` table which contains all the `custom_json` operation broadcasted to the blockchain.
+
+Its `json_metadata` column has been renamed to `json` to match the blockchain field name (and because it does not contain &quot;metadata&quot;).
+
+However, in order not to break (d)Apps and processes that currently use `json_metadata`, **the two column [names] will stay available for another month**. This will give applications ample time to adapt. After that, `json_metadata` will be permanently removed.
+
+
+## Support
+
+If you have any questions or remarks, support is provided on the [HiveSQL Discord Channel](https://discord.gg/kyEFDfT).
+
+Thank you for reading.
+
+---
+**Let's keep HiveSQL free to use - Support its proposals**!
+|HiveSQL|HiveBuzz|
+|-|-|
+|[Vote for the proposal on PeakD](https://peakd.com/me/proposals/138)&lt;br /&gt;[Vote for the proposal on Ecency](https://ecency.com/proposals/138)&lt;br /&gt;[Vote for the proposal using HiveSigner](https://hivesigner.com/sign/update_proposal_votes?proposal_ids=%5B%22138%22%5D&amp;amp;approve=true)|[Vote for the proposal on PeakD](https://peakd.com/me/proposals/147)&lt;br /&gt;[Vote for the proposal on Ecency](https://ecency.com/proposals/147)&lt;br /&gt;[Vote for the proposal using HiveSigner](https://hivesigner.com/sign/update_proposal_votes?proposal_ids=%5B%22147%22%5D&amp;amp;approve=true)|
+
+---
+&lt;center&gt;
+
+### Check out my apps and services
+&lt;a href=&quot;/hive/@hive.engage/stay-connected-with-your-hive-audience-and-catch-attention&quot;&gt;&lt;img src=&quot;https://i.imgur.com/GiNJqlm.png&quot; /&gt;&lt;/a&gt;&lt;a href=&quot;/@hivebuzz&quot;&gt;&lt;img src=&quot;https://i.imgur.com/B4UTun2.png&quot; /&gt;&lt;/a&gt;&lt;a href=&quot;/@hivesql&quot;&gt;&lt;img src=&quot;https://i.imgur.com/EPN8RW6.png&quot; /&gt;&lt;/a&gt;&lt;a href=&quot;/hive/@arcange/introducing-hive-account-recovery&quot;&gt;&lt;img src=&quot;https://i.imgur.com/6TWeW7V.png&quot; /&gt;&lt;/a&gt;&lt;a href=&quot;/@hive.autoclaim&quot;&gt;&lt;img src=&quot;https://i.imgur.com/ih2pEOw.png&quot; /&gt;&lt;/a&gt;&lt;/center&gt;
+&lt;center&gt;
+
+### [Vote for me as a witness ![](https://i.imgur.com/2bi4SnT.png)](https://hivesigner.com/sign/account-witness-vote?witness=arcange&amp;amp;approve=1)
+&lt;/center&gt;&lt;/div&gt;
+&lt;script crossorigin=&quot;anonymous&quot; integrity=&quot;sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=&quot; src=&quot;https://code.jquery.com/jquery-3.5.1.slim.min.js&quot;&gt;&lt;/script&gt;
+
+&lt;script src=&quot;https://unpkg.com/steem-content-renderer&quot;&gt;&lt;/script&gt;
+
+&lt;!-- &lt;script src=&quot;https://cdn.jsdelivr.net/npm/hive-content-renderer/dist/hive-content-renderer.min.js&quot;&gt;&lt;/script&gt; --&gt;
+&lt;script&gt;
+  $(document).ready(function() {
+    try {
+      const renderer = new SteemContentRenderer.DefaultRenderer({
+      // const renderer = new HiveContentRenderer({
+        baseUrl: &quot;https://hive.blog/&quot;,
+        breaks: true,
+        skipSanitization: false,
+        allowInsecureScriptTags: false,
+        addNofollowToLinks: true,
+        doNotShowImages: false,
+        ipfsPrefix: &quot;&quot;,
+        assetsWidth: 640,
+        assetsHeight: 480,
+        imageProxyFn: (url) =&gt; url,
+        usertagUrlFn: (account) =&gt; &quot;/@arcange&quot;,
+        hashtagUrlFn: (hashtag) =&gt; &quot;/hivesql-upate-20210517&quot;,
+        isLinkSafeFn: (url) =&gt; true,
+      });
+      
+      const inputElem = $('#content-arcange-hivesql-upate-20210517').html();
+      const outputElem = $('#content-arcange-hivesql-upate-20210517');
+      const output = renderer.render(inputElem);
+      
+      outputElem.html(output);
+    } catch(e) {
+      console.log(e);
+    }
+  });
+&lt;/script&gt;
+
+&lt;style&gt;
+  #content-arcange-hivesql-upate-20210517 {
+    padding: 0 3rem;
+    color: #444444;
+    font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.8;
+    text-shadow: 0 1px 0 #ffffff;
+    padding: 0.5rem;
+  }
+  #content-arcange-hivesql-upate-20210517 code {
+    background: white;
+  }
+  #content-arcange-hivesql-upate-20210517 a {
+    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
+  }
+  #content-arcange-hivesql-upate-20210517 a:hover {
+    border-bottom: 0;
+  }
+  #content-arcange-hivesql-upate-20210517 h1 {
+    font-size: 2.2em;
+  }
+  #content-arcange-hivesql-upate-20210517 h2, h3, h4, h5 {
+    margin-bottom: 0;
+  }
+  #content-arcange-hivesql-upate-20210517 header small {
+    color: #999;
+    font-size: 50%;
+  }
+  #content-arcange-hivesql-upate-20210517 img {
+    max-width: 100%;
+  }
+&lt;/style&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;
+  See: &lt;a href=&quot;https://peakd.com/hive-139531/@arcange/hivesql-upate-20210517&quot;&gt;HiveSQL Upate - New Virtual Operation tables&lt;/a&gt;
+  by
+  &lt;a href=&quot;https://hive.blog/@arcange&quot;&gt;@arcange&lt;/a&gt;
+&lt;/p&gt;</content><author><name>arcange</name></author><category term="news" /><category term="sql" /><category term="database" /><summary type="html">![](https://i.imgur.com/FE9D32t.png) I am finalizing a consequent work I started weeks ago to create the HiveSQL documentation, which should be available soon. While performing this job, I realized that the database was missing a few Virtual Operations tables. Therefore, I hastened to add them so that the database content is as complete as possible. ### What new? Two new tables are now available: **VOClearNullAccountBalances** This table contains virtual operations created by the blockchain when the @null account balances need to be zeroed. |Column|Description| |-|-| |total_cleared|a JSON array with the assets that have been burned| **VOSPSConverts** This table contains virtual operations issued when a Proposals Fund (DHF) conversion from HIVE to HBD occurs. |Column|Description| |-|-| |fund_account|DHF account| |hive_amount_in|amount of HIVE burned| |hbd_amount_out|amount of HBD created| **VODelayedVotings** This table contains virtual operations issued when newly powered up VESTS (Hive Power) become counted towards witnesses and DHF proposals votes (after a 30 days delay is complete - HF24). |Column|Description| |-|-| |voter|account who performed a power-up and whose votes will be impacted| |votes|amount of additional VESTS to take into account for votes| ### What else? **I made a major change** to the `TxCustoms` table which contains all the `custom_json` operation broadcasted to the blockchain. Its `json_metadata` column has been renamed to `json` to match the blockchain field name (and because it does not contain &quot;metadata&quot;). However, in order not to break (d)Apps and processes that currently use `json_metadata`, **the two column [names] will stay available for another month**. This will give applications ample time to adapt. After that, `json_metadata` will be permanently removed. ## Support If you have any questions or remarks, support is provided on the [HiveSQL Discord Channel](https://discord.gg/kyEFDfT). Thank you for reading. --- **Let's keep HiveSQL free to use - Support its proposals**! |HiveSQL|HiveBuzz| |-|-| |[Vote for the proposal on PeakD](https://peakd.com/me/proposals/138)[Vote for the proposal on Ecency](https://ecency.com/proposals/138)[Vote for the proposal using HiveSigner](https://hivesigner.com/sign/update_proposal_votes?proposal_ids=%5B%22138%22%5D&amp;amp;approve=true)|[Vote for the proposal on PeakD](https://peakd.com/me/proposals/147)[Vote for the proposal on Ecency](https://ecency.com/proposals/147)[Vote for the proposal using HiveSigner](https://hivesigner.com/sign/update_proposal_votes?proposal_ids=%5B%22147%22%5D&amp;amp;approve=true)| --- ### Check out my apps and services ### [Vote for me as a witness ![](https://i.imgur.com/2bi4SnT.png)](https://hivesigner.com/sign/account-witness-vote?witness=arcange&amp;amp;approve=1) See: HiveSQL Upate - New Virtual Operation tables by @arcange</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://i.imgur.com/FE9D32t.png" /><media:content medium="image" url="https://i.imgur.com/FE9D32t.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Making a Decentralized Game on Hive - Last part</title><link href="https://hivedocs.info/howto/nodejs/2021/05/14/making-a-decentralized-game-on-hive-last-part.html" rel="alternate" type="text/html" title="Making a Decentralized Game on Hive - Last part" /><published>2021-05-14T15:17:36-07:00</published><updated>2021-05-14T15:17:36-07:00</updated><id>https://hivedocs.info/howto/nodejs/2021/05/14/making-a-decentralized-game-on-hive-last-part</id><content type="html" xml:base="https://hivedocs.info/howto/nodejs/2021/05/14/making-a-decentralized-game-on-hive-last-part.html">&lt;div id=&quot;content-mahdiyari-making-a-decentralized-game-on-hive-last-part&quot;&gt;&lt;center&gt;![desktop-pixabay.jpg](https://images.hive.blog/DQmah3PBKL6JDe3omk8wi2RFp3Lk2X8BZgb3FUpnkRTsfap/desktop-1245714_1280.jpg)&lt;/center&gt;
 First of all, thank you for following me and making these posts available for a bigger audience by sharing them.
 
 This post took too long but finally, it's done. I think I could make 5 posts with the content of just this yet-to-be-written post. I will make it short as possible. I was going to make a few excuses for taking it too long but TBH I could deliver it maybe 2 weeks earlier if I worked on it. Lazy me is for the blame.
@@ -1560,106 +1701,4 @@ What are your thoughts ?&lt;/div&gt;
   See: &lt;a href=&quot;https://peakd.com/rc/@howo/direct-rc-delegations-vs-rc-pools-and-tentative-direct-rc-delegations-spec&quot;&gt;Direct RC delegations vs RC pools and tentative direct rc delegations spec&lt;/a&gt;
   by
   &lt;a href=&quot;https://hive.blog/@howo&quot;&gt;@howo&lt;/a&gt;
-&lt;/p&gt;</content><author><name>howo</name></author><category term="news" /><category term="core" /><category term="development" /><summary type="html">![image.png](https://files.peakd.com/file/peakd-hive/howo/23xLL8qDDTTeLahePNVpwjjgTxQjQd5spVivJncMvRrCXw5iM6bhLMoTNsSrvbPyeKo2L.png) Hello, First let's settle on the terms, when I say &quot;RC pools&quot;, it refers to the implementation where everyone can delegate to pools and then pools can delegate to users, with more notions like overdelegation (you can delegate more RC than there is available in the pool) etc, we'll get back to it later. When I say &quot;direct RC delegations&quot;, it's enabling users to delegate RC directly from one to another instead. Which would remove all the compexity of RC pools while retaining most of its features tl;dr: Direct RC delegations = user to user RC delegation RC pool = more feature complete version In the recent [dev meeting](https://peakd.com/meeting/@howo/hive-core-developer-meeting-22) we discussed RC delegations/pools a bit. Basically there is some concerns from @blocktrades's team regarding the complexity of RC pools, both in terms of complexity (risk of unforseen edge cases or bugs) and performance (could cost too much in processing power/memory to node operators). This also comes from the fact the RC system while functional still has some kinks to be worked out, it could be dangerous to build a complex system on something that is not rock solid. This post aims to start a discussion and discuss around the fact that maybe we don't need RC pools as simple rc delegations cover most of the use cases. ## Proposed direct RC delegations feature Set some more terms: max rc is the maximum amount of RC that the account can have current RC is the amount of RC that the account currently have, current RC regenerates over time to match max RC if not used. You can see the spec (and discussion from other core devs) here: https://gitlab.syncad.com/hive/hive/-/issues/152 I very much encourage you to read the link before continuing. Direct RC delegations are super straightworward, just delegate 50 RC, your account now loses 50 max RC and the user you delegate to has an extra 50 max RC, I say max RC, because RC regenerates, so if the user you delegate to uses the 50 rc, it will come back eventually. Advantages are: - Pretty easy to code (writting it from scratch and could be as fast or even faster as finishing RC pools) - Very simple so very small performance and memory footprint, less bug risks - Simple UX-wise and easy for front ends to implement ## RC pools if you want to know how RC pools work look here : https://peakd.com/test/@howo/wanna-help-test-rc-delegations-heres-all-you-need-to-know tl;dr: With the RC pool implementation, everyone can contribute to a pool, then a pool can delegate to multiple accoutns, there is a notion of &quot;oversubscription&quot; meaning that you delegate &quot;drc&quot; or delegated RC to an user not actual RC, drc basically allow you to spend the RC that is inside of the pool at a 1:1 ratio, but if the pool is empty and you got 50 drc, you can't get any RC. The main advantage of this approach is: - Multiple users can contribute to the same pool - You don't have to guess what the user will consume to distribute RC, you just allows people to use at most, x RC. - Already coded, lots of tests but need further reviewed and tested in a proper testnet disadvantage is obviously added complexity both in the chain and UX-wise (with the slot system, read up on it int he post above) that may not be worth it. ## comparaison of various use cases ### Account creation Probably the biggest use case for direct RC delegations/pools. We create an account and transfer RC to it so it can transact comfortably. Today this is done by delegating hive power, but HP has many problems namely abuse and limitations. #### Direct RC delegations Direct RC delegations cover this use case, it would be an almost drop-in replacement for hive power delegation, take how much hp you used to delegate to new users and replace this with RC. Of course we run into issues when we want to do this more at scale where you have to give the maximum RC an account usually use so if everyone uses 30 RC, but bob uses 100 because he's so excited about the platform, bob would be stuck, although with RC being &quot;free&quot;, bob could ask for a second delegation via an &quot;RC faucet&quot; or something. The second problem is that this implies that the account creation account has a lot of RC, so if you want to onboard 10k users, you may run into problems, and it would be complicated to coordinate with other whales who might want to help (because direct RC delegations delegations would require active authority, whales probably won't give that auth to allow for automatic direct RC delegations). Delegating delegated RC (a whale could delegate to an account creation service who would redelegate RC) is a no go I think because it creates a ton of new edge cases. But it wouldn't be too hard to create a system where you &quot;trail&quot; delegations, so if you're a whale and you see a service delegating 30 RC, you can delegate 10 RC too on top of it. It would be pretty easy. But once again not easily automatable since it touches the active authority. Ultimately direct RC delegations would cover the use case as well as HP delegations, not the best but still a massive improvement IMHO. While I'm at it, direct RC delegations could be done using posting auth to make it way easier to manage and automate everything, there is no technical limitations to this, interested to hear your thoughts. The only risk is that someone dapp could then empty the RC in your account and prevent you from transacting. #### RC pools RC pools cover this case as well, It doesn't run into the same issues as direct RC delegations you can delegate 100 RC to everyone and just let people use RC as they go, if everyone uses 30 out of their 100 that's fine, and bob won't be restricted. This would allow account creation services to be way less strict in the way they manage RC, they could delegate a lot of RC to make sure newcomers are never running out of RC when doing the first basic things (voting posts/posting etc) as long as the pools are flowing thanks to delegations to the pools themselves. ### Delegate to a user who doesn't have RC left This is IMHO, the second biggest use case for direct RC delegations, the user used up all of his RC and we want him to continue to use hive, he could request an RC deleations from any RC faucet (I expect those to pop up once direct RC delegations make it to the chain) or a friend to give him some RC. Right now this is covered by HP delegations but no such faucets really exist for obvious abuse reasons. #### direct RC delegations This is a case where direct RC delegations work great, pretty easy to send an extra 500 RC to a user if he asks for it, and then maybe remove it a month later. You still have the same pain points outlined in the account creation use case though: - you are bound to run out of RC if you delegate too much, so you're forced to be more conservative in your delegations - Others can't &quot;fund&quot; you with RC to help you #### RC pools While RC pools can do it and be great at it thank to the delegated RC system, there is an important caveat: with RC pools you cannot get RC from a pool unless you set a slot to point to it first, this means that you can end up in these awkward situations where you can't set a slot to get RC from a pool because you're out of RC and cannot get RC from a pool because you didn't set your slot to point to the pool. Although this scenario is relatively unlikely because a set_slot operation is a custom_json which costs very little. ## conclusion: I think both approaches are valid but I think the extra weight and risk on the chain of RC pools make me lean towards implementing direct RC delegations with posting auth (even though I'll have to redo everything haha) along with a tool for people to &quot;trail&quot; other people's delegations. The UX benefits are also non negligible. What are your thoughts ? See: Direct RC delegations vs RC pools and tentative direct rc delegations spec by @howo</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://files.peakd.com/file/peakd-hive/howo/23xLL8qDDTTeLahePNVpwjjgTxQjQd5spVivJncMvRrCXw5iM6bhLMoTNsSrvbPyeKo2L.png" /><media:content medium="image" url="https://files.peakd.com/file/peakd-hive/howo/23xLL8qDDTTeLahePNVpwjjgTxQjQd5spVivJncMvRrCXw5iM6bhLMoTNsSrvbPyeKo2L.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">RocketChat Webhooks Are Powerful</title><link href="https://hivedocs.info/news/projects/rocketchat/2021/05/05/rocketchat-webhooks-are-powerufl.html" rel="alternate" type="text/html" title="RocketChat Webhooks Are Powerful" /><published>2021-05-05T12:08:54-07:00</published><updated>2021-05-05T12:08:54-07:00</updated><id>https://hivedocs.info/news/projects/rocketchat/2021/05/05/rocketchat-webhooks-are-powerufl</id><content type="html" xml:base="https://hivedocs.info/news/projects/rocketchat/2021/05/05/rocketchat-webhooks-are-powerufl.html">&lt;div id=&quot;content-rishi556-rocketchat-webhooks-are-powerufl&quot;&gt;A little while ago I took a look at Rocketchat's documentation on webhooks for a little something that should be coming out soon™. While I ended up not using it, I found some pretty awesome stuff with it and thought I'd like to share it with you guys. If you have no interaction with rocketchat, it's basically a chat application that you can self host. Hive has one running at http://openhive.chat/ thanks to @gtg. I didn't really use it(other than EARLY ~~steem~~ days, 2016 when it was still steem.chat) but honestly, seeing some of its capabilities, I might run an instance of my own for some of my chats and mostly playing around. 
-
-This is the documentation that I was reading: https://docs.rocket.chat/guides/administrator-guides/administration/integrations-1. I did give it a go and it didn't end up working for my purposes, but I know it can work great for lots of other use cases. 
-
-What I love most about it is that you can have scripts on both incoming and outgoing webhooks(YES 2 WAY WEBHOOKS) run right on the server hosting the chat. This can be used to save a lot of processing or network calls elsewhere. 
-
-&lt;hr /&gt;
-
-Let's take a look at an example with outgoing. A lot of bots have a help menu. That's something static and doesn't change at all between users who use it, and as such, it's something that can be saved right on the server and sent as a response form there.
-
-Here's how a bot on discord would handle a help command(because discord doesn't have 2 way webhooks, only incoming, you'd have to setup a bot account there):
-```
-User Sends Message -&amp;gt; Discord Server -&amp;gt; Bot Server -&amp;gt; Discord Server -&amp;gt; User's UI
-```
-
-We had 4 hops on that one to go from start to finish. Now lets see how we can do it with outgoing scripts on rocketchat:
-```
-User Sends Message -&amp;gt; Rocketchat Server -&amp;gt; User's UI
-```
-Look at that, only 2 hops. This really is a benefit of the self hosted aspect of rocketchat, as this wouldn't be something that discord would want to bring(who wants to let anyone run arbitrary code on their server?).
-
-All those little jumps will save a little bit of network time, and while a user probably won't see the difference(unless your bot's server is far far away from everything else) don't we all just love to optimize? Save that tiny bit of milliseconds wherever we can? While this only works for static content(if you want to access a database or something you'd still want to allow the request onto its final destination for processing), it's still a major benefit. The best part is that these scripts are just written in JS so you don't even have to learn a new language.
-
-Outgoing webhooks are awesome in so many ways. It's so much easier to just listen for an incoming request than setup an entire discord bot to look for incoming commands to do certain actions. Plus you can use scripts to handle stuff like routing right when its being sent so you don't even need to worry about that on your backend. 
-
-What I think the best part about rocketchat is the fact that it is open source and so you can customize it how you want. https://github.com/RocketChat/Rocket.Chat Just look at openhive.chat. It uses your hive account to sign in. That's not something that you can get on Discord(which isn't a bad platform, discord still has MANY MANY benefits over rocketchat) and never will be.&lt;/div&gt;
-&lt;script crossorigin=&quot;anonymous&quot; integrity=&quot;sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=&quot; src=&quot;https://code.jquery.com/jquery-3.5.1.slim.min.js&quot;&gt;&lt;/script&gt;
-
-&lt;script src=&quot;https://unpkg.com/steem-content-renderer&quot;&gt;&lt;/script&gt;
-
-&lt;!-- &lt;script src=&quot;https://cdn.jsdelivr.net/npm/hive-content-renderer/dist/hive-content-renderer.min.js&quot;&gt;&lt;/script&gt; --&gt;
-&lt;script&gt;
-  $(document).ready(function() {
-    try {
-      const renderer = new SteemContentRenderer.DefaultRenderer({
-      // const renderer = new HiveContentRenderer({
-        baseUrl: &quot;https://hive.blog/&quot;,
-        breaks: true,
-        skipSanitization: false,
-        allowInsecureScriptTags: false,
-        addNofollowToLinks: true,
-        doNotShowImages: false,
-        ipfsPrefix: &quot;&quot;,
-        assetsWidth: 640,
-        assetsHeight: 480,
-        imageProxyFn: (url) =&gt; url,
-        usertagUrlFn: (account) =&gt; &quot;/@rishi556&quot;,
-        hashtagUrlFn: (hashtag) =&gt; &quot;/rocketchat-webhooks-are-powerufl&quot;,
-        isLinkSafeFn: (url) =&gt; true,
-      });
-      
-      const inputElem = $('#content-rishi556-rocketchat-webhooks-are-powerufl').html();
-      const outputElem = $('#content-rishi556-rocketchat-webhooks-are-powerufl');
-      const output = renderer.render(inputElem);
-      
-      outputElem.html(output);
-    } catch(e) {
-      console.log(e);
-    }
-  });
-&lt;/script&gt;
-
-&lt;style&gt;
-  #content-rishi556-rocketchat-webhooks-are-powerufl {
-    padding: 0 3rem;
-    color: #444444;
-    font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif;
-    font-size: 16px;
-    line-height: 1.8;
-    text-shadow: 0 1px 0 #ffffff;
-    padding: 0.5rem;
-  }
-  #content-rishi556-rocketchat-webhooks-are-powerufl code {
-    background: white;
-  }
-  #content-rishi556-rocketchat-webhooks-are-powerufl a {
-    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
-  }
-  #content-rishi556-rocketchat-webhooks-are-powerufl a:hover {
-    border-bottom: 0;
-  }
-  #content-rishi556-rocketchat-webhooks-are-powerufl h1 {
-    font-size: 2.2em;
-  }
-  #content-rishi556-rocketchat-webhooks-are-powerufl h2, h3, h4, h5 {
-    margin-bottom: 0;
-  }
-  #content-rishi556-rocketchat-webhooks-are-powerufl header small {
-    color: #999;
-    font-size: 50%;
-  }
-  #content-rishi556-rocketchat-webhooks-are-powerufl img {
-    max-width: 100%;
-  }
-&lt;/style&gt;
-
-&lt;hr /&gt;
-
-&lt;p&gt;
-  See: &lt;a href=&quot;https://peakd.com/hive-169321/@rishi556/rocketchat-webhooks-are-powerufl&quot;&gt;RocketChat Webhooks Are Powerful&lt;/a&gt;
-  by
-  &lt;a href=&quot;https://hive.blog/@rishi556&quot;&gt;@rishi556&lt;/a&gt;
-&lt;/p&gt;</content><author><name>rishi556</name></author><category term="news" /><category term="projects" /><category term="rocketchat" /><summary type="html">A little while ago I took a look at Rocketchat's documentation on webhooks for a little something that should be coming out soon™. While I ended up not using it, I found some pretty awesome stuff with it and thought I'd like to share it with you guys. If you have no interaction with rocketchat, it's basically a chat application that you can self host. Hive has one running at http://openhive.chat/ thanks to @gtg. I didn't really use it(other than EARLY ~~steem~~ days, 2016 when it was still steem.chat) but honestly, seeing some of its capabilities, I might run an instance of my own for some of my chats and mostly playing around. This is the documentation that I was reading: https://docs.rocket.chat/guides/administrator-guides/administration/integrations-1. I did give it a go and it didn't end up working for my purposes, but I know it can work great for lots of other use cases. What I love most about it is that you can have scripts on both incoming and outgoing webhooks(YES 2 WAY WEBHOOKS) run right on the server hosting the chat. This can be used to save a lot of processing or network calls elsewhere. Let's take a look at an example with outgoing. A lot of bots have a help menu. That's something static and doesn't change at all between users who use it, and as such, it's something that can be saved right on the server and sent as a response form there. Here's how a bot on discord would handle a help command(because discord doesn't have 2 way webhooks, only incoming, you'd have to setup a bot account there): ``` User Sends Message -&amp;gt; Discord Server -&amp;gt; Bot Server -&amp;gt; Discord Server -&amp;gt; User's UI ``` We had 4 hops on that one to go from start to finish. Now lets see how we can do it with outgoing scripts on rocketchat: ``` User Sends Message -&amp;gt; Rocketchat Server -&amp;gt; User's UI ``` Look at that, only 2 hops. This really is a benefit of the self hosted aspect of rocketchat, as this wouldn't be something that discord would want to bring(who wants to let anyone run arbitrary code on their server?). All those little jumps will save a little bit of network time, and while a user probably won't see the difference(unless your bot's server is far far away from everything else) don't we all just love to optimize? Save that tiny bit of milliseconds wherever we can? While this only works for static content(if you want to access a database or something you'd still want to allow the request onto its final destination for processing), it's still a major benefit. The best part is that these scripts are just written in JS so you don't even have to learn a new language. Outgoing webhooks are awesome in so many ways. It's so much easier to just listen for an incoming request than setup an entire discord bot to look for incoming commands to do certain actions. Plus you can use scripts to handle stuff like routing right when its being sent so you don't even need to worry about that on your backend. What I think the best part about rocketchat is the fact that it is open source and so you can customize it how you want. https://github.com/RocketChat/Rocket.Chat Just look at openhive.chat. It uses your hive account to sign in. That's not something that you can get on Discord(which isn't a bad platform, discord still has MANY MANY benefits over rocketchat) and never will be. See: RocketChat Webhooks Are Powerful by @rishi556</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://hivedocs.info/assets/images/favicon.png" /><media:content medium="image" url="https://hivedocs.info/assets/images/favicon.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>
+&lt;/p&gt;</content><author><name>howo</name></author><category term="news" /><category term="core" /><category term="development" /><summary type="html">![image.png](https://files.peakd.com/file/peakd-hive/howo/23xLL8qDDTTeLahePNVpwjjgTxQjQd5spVivJncMvRrCXw5iM6bhLMoTNsSrvbPyeKo2L.png) Hello, First let's settle on the terms, when I say &quot;RC pools&quot;, it refers to the implementation where everyone can delegate to pools and then pools can delegate to users, with more notions like overdelegation (you can delegate more RC than there is available in the pool) etc, we'll get back to it later. When I say &quot;direct RC delegations&quot;, it's enabling users to delegate RC directly from one to another instead. Which would remove all the compexity of RC pools while retaining most of its features tl;dr: Direct RC delegations = user to user RC delegation RC pool = more feature complete version In the recent [dev meeting](https://peakd.com/meeting/@howo/hive-core-developer-meeting-22) we discussed RC delegations/pools a bit. Basically there is some concerns from @blocktrades's team regarding the complexity of RC pools, both in terms of complexity (risk of unforseen edge cases or bugs) and performance (could cost too much in processing power/memory to node operators). This also comes from the fact the RC system while functional still has some kinks to be worked out, it could be dangerous to build a complex system on something that is not rock solid. This post aims to start a discussion and discuss around the fact that maybe we don't need RC pools as simple rc delegations cover most of the use cases. ## Proposed direct RC delegations feature Set some more terms: max rc is the maximum amount of RC that the account can have current RC is the amount of RC that the account currently have, current RC regenerates over time to match max RC if not used. You can see the spec (and discussion from other core devs) here: https://gitlab.syncad.com/hive/hive/-/issues/152 I very much encourage you to read the link before continuing. Direct RC delegations are super straightworward, just delegate 50 RC, your account now loses 50 max RC and the user you delegate to has an extra 50 max RC, I say max RC, because RC regenerates, so if the user you delegate to uses the 50 rc, it will come back eventually. Advantages are: - Pretty easy to code (writting it from scratch and could be as fast or even faster as finishing RC pools) - Very simple so very small performance and memory footprint, less bug risks - Simple UX-wise and easy for front ends to implement ## RC pools if you want to know how RC pools work look here : https://peakd.com/test/@howo/wanna-help-test-rc-delegations-heres-all-you-need-to-know tl;dr: With the RC pool implementation, everyone can contribute to a pool, then a pool can delegate to multiple accoutns, there is a notion of &quot;oversubscription&quot; meaning that you delegate &quot;drc&quot; or delegated RC to an user not actual RC, drc basically allow you to spend the RC that is inside of the pool at a 1:1 ratio, but if the pool is empty and you got 50 drc, you can't get any RC. The main advantage of this approach is: - Multiple users can contribute to the same pool - You don't have to guess what the user will consume to distribute RC, you just allows people to use at most, x RC. - Already coded, lots of tests but need further reviewed and tested in a proper testnet disadvantage is obviously added complexity both in the chain and UX-wise (with the slot system, read up on it int he post above) that may not be worth it. ## comparaison of various use cases ### Account creation Probably the biggest use case for direct RC delegations/pools. We create an account and transfer RC to it so it can transact comfortably. Today this is done by delegating hive power, but HP has many problems namely abuse and limitations. #### Direct RC delegations Direct RC delegations cover this use case, it would be an almost drop-in replacement for hive power delegation, take how much hp you used to delegate to new users and replace this with RC. Of course we run into issues when we want to do this more at scale where you have to give the maximum RC an account usually use so if everyone uses 30 RC, but bob uses 100 because he's so excited about the platform, bob would be stuck, although with RC being &quot;free&quot;, bob could ask for a second delegation via an &quot;RC faucet&quot; or something. The second problem is that this implies that the account creation account has a lot of RC, so if you want to onboard 10k users, you may run into problems, and it would be complicated to coordinate with other whales who might want to help (because direct RC delegations delegations would require active authority, whales probably won't give that auth to allow for automatic direct RC delegations). Delegating delegated RC (a whale could delegate to an account creation service who would redelegate RC) is a no go I think because it creates a ton of new edge cases. But it wouldn't be too hard to create a system where you &quot;trail&quot; delegations, so if you're a whale and you see a service delegating 30 RC, you can delegate 10 RC too on top of it. It would be pretty easy. But once again not easily automatable since it touches the active authority. Ultimately direct RC delegations would cover the use case as well as HP delegations, not the best but still a massive improvement IMHO. While I'm at it, direct RC delegations could be done using posting auth to make it way easier to manage and automate everything, there is no technical limitations to this, interested to hear your thoughts. The only risk is that someone dapp could then empty the RC in your account and prevent you from transacting. #### RC pools RC pools cover this case as well, It doesn't run into the same issues as direct RC delegations you can delegate 100 RC to everyone and just let people use RC as they go, if everyone uses 30 out of their 100 that's fine, and bob won't be restricted. This would allow account creation services to be way less strict in the way they manage RC, they could delegate a lot of RC to make sure newcomers are never running out of RC when doing the first basic things (voting posts/posting etc) as long as the pools are flowing thanks to delegations to the pools themselves. ### Delegate to a user who doesn't have RC left This is IMHO, the second biggest use case for direct RC delegations, the user used up all of his RC and we want him to continue to use hive, he could request an RC deleations from any RC faucet (I expect those to pop up once direct RC delegations make it to the chain) or a friend to give him some RC. Right now this is covered by HP delegations but no such faucets really exist for obvious abuse reasons. #### direct RC delegations This is a case where direct RC delegations work great, pretty easy to send an extra 500 RC to a user if he asks for it, and then maybe remove it a month later. You still have the same pain points outlined in the account creation use case though: - you are bound to run out of RC if you delegate too much, so you're forced to be more conservative in your delegations - Others can't &quot;fund&quot; you with RC to help you #### RC pools While RC pools can do it and be great at it thank to the delegated RC system, there is an important caveat: with RC pools you cannot get RC from a pool unless you set a slot to point to it first, this means that you can end up in these awkward situations where you can't set a slot to get RC from a pool because you're out of RC and cannot get RC from a pool because you didn't set your slot to point to the pool. Although this scenario is relatively unlikely because a set_slot operation is a custom_json which costs very little. ## conclusion: I think both approaches are valid but I think the extra weight and risk on the chain of RC pools make me lean towards implementing direct RC delegations with posting auth (even though I'll have to redo everything haha) along with a tool for people to &quot;trail&quot; other people's delegations. The UX benefits are also non negligible. What are your thoughts ? See: Direct RC delegations vs RC pools and tentative direct rc delegations spec by @howo</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://files.peakd.com/file/peakd-hive/howo/23xLL8qDDTTeLahePNVpwjjgTxQjQd5spVivJncMvRrCXw5iM6bhLMoTNsSrvbPyeKo2L.png" /><media:content medium="image" url="https://files.peakd.com/file/peakd-hive/howo/23xLL8qDDTTeLahePNVpwjjgTxQjQd5spVivJncMvRrCXw5iM6bhLMoTNsSrvbPyeKo2L.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>
