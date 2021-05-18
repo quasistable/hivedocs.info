@@ -1,4 +1,144 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="https://hivedocs.info/feed.xml" rel="self" type="application/atom+xml" /><link href="https://hivedocs.info/" rel="alternate" type="text/html" /><updated>2021-05-17T10:00:47-07:00</updated><id>https://hivedocs.info/feed.xml</id><title type="html">Hive Chain Documentation</title><subtitle>Your resource for various levels of Hive Documentation.</subtitle><author><name>site curated by: @inertia</name></author><entry><title type="html">HiveSQL Upate - New Virtual Operation tables</title><link href="https://hivedocs.info/news/sql/database/2021/05/17/hivesql-upate-20210517.html" rel="alternate" type="text/html" title="HiveSQL Upate - New Virtual Operation tables" /><published>2021-05-17T07:53:39-07:00</published><updated>2021-05-17T07:53:39-07:00</updated><id>https://hivedocs.info/news/sql/database/2021/05/17/hivesql-upate-20210517</id><content type="html" xml:base="https://hivedocs.info/news/sql/database/2021/05/17/hivesql-upate-20210517.html">&lt;div id=&quot;content-arcange-hivesql-upate-20210517&quot;&gt;![](https://i.imgur.com/FE9D32t.png)
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="https://hivedocs.info/feed.xml" rel="self" type="application/atom+xml" /><link href="https://hivedocs.info/" rel="alternate" type="text/html" /><updated>2021-05-17T17:51:13-07:00</updated><id>https://hivedocs.info/feed.xml</id><title type="html">Hive Chain Documentation</title><subtitle>Your resource for various levels of Hive Documentation.</subtitle><author><name>site curated by: @inertia</name></author><entry><title type="html">12th update of 2021 on BlockTrades work on Hive software</title><link href="https://hivedocs.info/news/sql/database/2021/05/17/12th-update-of-2021-on-blocktrades-work-on-hive-software.html" rel="alternate" type="text/html" title="12th update of 2021 on BlockTrades work on Hive software" /><published>2021-05-17T16:04:24-07:00</published><updated>2021-05-17T16:04:24-07:00</updated><id>https://hivedocs.info/news/sql/database/2021/05/17/12th-update-of-2021-on-blocktrades-work-on-hive-software</id><content type="html" xml:base="https://hivedocs.info/news/sql/database/2021/05/17/12th-update-of-2021-on-blocktrades-work-on-hive-software.html">&lt;div id=&quot;content-blocktrades-12th-update-of-2021-on-blocktrades-work-on-hive-software&quot;&gt;![blocktrades update.png](https://images.hive.blog/DQmSihw8Kz4U7TuCQa98DDdCzqbqPFRumuVWAbareiYZW1Z/blocktrades%20update.png)
+
+Below is a list of Hive-related programming issues worked on by the BlockTrades team during the last week:
+
+# Hived work (blockchain node software)
+
+This week we’ve been testing the first release candidate for hardfork 25.  In addition to manual testing of node operation, we're also writing a few more tests to test consensus changes under stress conditions.
+
+Although we haven’t found any bugs in the new consensus changes yet, we have made several fixes to long-standing bugs that we found as part of our manual node testing. Most of the bugs are related to startup issues and confusing log messages that might mislead a node operator:
+
+* We fixed an error message that erroneously reported that a peer node was on an irreversible fork when it most likely was just ahead of the user’s node.
+* We fixed a long-standing error that could cause a crash at startup if a node started receiving API requests before the node had fully initialized.
+* hived now reports the peer count in warning messages when the blockchain thread is warning that it hasn’t received any transactions or blocks from the P2P thread in the last 30 seconds.
+* Hived now delays connecting to seed nodes until the P2P network is initialized and ready to process peer requests. This prevent seed nodes from disconnecting because the user's node doesn't respond to them in a timely manner.
+* ulog messages are now logged to stderr (console) for the node. Ulog messages are used by the P2P thread to report important issues that should be seen by node operators. In particular, the user now receives a console warning when the node startup is delayed while the P2P thread is trying to get access to the P2P port from the operating system (when a node is shutdown via Ctrl-C, the OS may take up to 1 minute to release the port, delaying recapture of the port when the node is restarted).
+
+We’ve also updated hived nodes to begin reporting the Hive chainid of BEEABODE at startup (as a temporary measure, the node used to report a chainid of 0 at startup, then swap to reporting BEEABODE after they hit the genesis fork for Hive). 
+
+For the initial release of hardfork 25, hived nodes will still continue to allow connections from nodes with chainid of 0, despite reporting the new chainid, but after all Hive nodes have updated to the hardfork 25 code, we’ll change the code to reject connections from older nodes.
+
+## Second release candidate for hived soon
+
+We’ll likely be publishing a second release candidate of hived in the next couple of days that contains the diagnostics and fixes discussed above (those changes have already been merged into the develop branch, so you can get them now for testing), plus one or two more small improvements that are still pending review.
+
+# Hivemind (2nd layer applications + social media middleware)
+
+We’re continuing to work on a few hivemind tests, running performance tests, and preparing database migration scripts in preparation for a new hivemind release (should be sometime this week).
+
+# Modular hivemind (framework for hive applications)
+
+We still didn’t have time to make the changes for the sql serializer last week due to the time spent fixing the various issues discussed in this post, but we will likely? complete that work in the coming week. Then we’ll be able to do a full performance test of the sql serializer in combination with a full sync of hivemind.
+
+In the meantime, we’re doing preparatory work to create an example modular hivemind-based application that just supports the account history API.
+
+# Condenser (code base for https://hive.blog)
+
+We’re testing condenser code against the testnet. We had some problems with condenser being able to broadcast transactions to the testnest which were ultimately traced to condenser using an older version of the hive-js package. It’s being updated currently and testing will continue. The same change will also be applied to the condenser wallet.
+
+# Hived testnet
+
+We launched and began testing the new public testnet based on release candidate 1. 
+
+We’ve also setup an API node configured to draw data from the testnet. This API node should be used by Hive applications to begin adding code changes to support new features added by the hardfork, such as vote expiration reporting.
+
+If you want to add a node to the public testnet, use this seednode:
+`p2p-seed-node = testnet.openhive.network:2001`
+
+To use the API node for the testnet:
+
+API endpoint via jussi:  https://testnet.openhive.network
+hived direct http server:  http://testnet.openhive.network:8091
+hived direct websocket server:  ws://testnet.openhive.network:8090
+hivemind server direct server:  http://testnet.openhive.network:8080 
+
+As mentioned previously, we’ve begun testing this testnet API node with condenser. You can visit it here: https://testblog.openhive.network 
+
+ We will also setup a block explorer and a condenser-based wallet for the testnet soon.
+Update: @ausbitbank added block explorer for testnet https://test.ausbit.dev/
+
+We plan to leave this testnet running as a permanent testnet that apps can use to test against prior to making changes to their app operating on the mainnet. So Hive app devs are strongly urged to take advantage of this opportunity. As a side note, when doing so, please make sure to use the latest version of hive-js to make sure it's compatible with the testnet API node. We've also tested beempy successfully against the testnet API node.
+
+# Planned date for hardfork 25
+
+I’m still projecting the hardfork will be in the latter part of June, probably in the last week.&lt;/div&gt;
+&lt;script crossorigin=&quot;anonymous&quot; integrity=&quot;sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=&quot; src=&quot;https://code.jquery.com/jquery-3.5.1.slim.min.js&quot;&gt;&lt;/script&gt;
+
+&lt;script src=&quot;https://unpkg.com/steem-content-renderer&quot;&gt;&lt;/script&gt;
+
+&lt;!-- &lt;script src=&quot;https://cdn.jsdelivr.net/npm/hive-content-renderer/dist/hive-content-renderer.min.js&quot;&gt;&lt;/script&gt; --&gt;
+&lt;script&gt;
+  $(document).ready(function() {
+    try {
+      const renderer = new SteemContentRenderer.DefaultRenderer({
+      // const renderer = new HiveContentRenderer({
+        baseUrl: &quot;https://hive.blog/&quot;,
+        breaks: true,
+        skipSanitization: false,
+        allowInsecureScriptTags: false,
+        addNofollowToLinks: true,
+        doNotShowImages: false,
+        ipfsPrefix: &quot;&quot;,
+        assetsWidth: 640,
+        assetsHeight: 480,
+        imageProxyFn: (url) =&gt; url,
+        usertagUrlFn: (account) =&gt; &quot;/@blocktrades&quot;,
+        hashtagUrlFn: (hashtag) =&gt; &quot;/12th-update-of-2021-on-blocktrades-work-on-hive-software&quot;,
+        isLinkSafeFn: (url) =&gt; true,
+      });
+      
+      const inputElem = $('#content-blocktrades-12th-update-of-2021-on-blocktrades-work-on-hive-software').html();
+      const outputElem = $('#content-blocktrades-12th-update-of-2021-on-blocktrades-work-on-hive-software');
+      const output = renderer.render(inputElem);
+      
+      outputElem.html(output);
+    } catch(e) {
+      console.log(e);
+    }
+  });
+&lt;/script&gt;
+
+&lt;style&gt;
+  #content-blocktrades-12th-update-of-2021-on-blocktrades-work-on-hive-software {
+    padding: 0 3rem;
+    color: #444444;
+    font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.8;
+    text-shadow: 0 1px 0 #ffffff;
+    padding: 0.5rem;
+  }
+  #content-blocktrades-12th-update-of-2021-on-blocktrades-work-on-hive-software code {
+    background: white;
+  }
+  #content-blocktrades-12th-update-of-2021-on-blocktrades-work-on-hive-software a {
+    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
+  }
+  #content-blocktrades-12th-update-of-2021-on-blocktrades-work-on-hive-software a:hover {
+    border-bottom: 0;
+  }
+  #content-blocktrades-12th-update-of-2021-on-blocktrades-work-on-hive-software h1 {
+    font-size: 2.2em;
+  }
+  #content-blocktrades-12th-update-of-2021-on-blocktrades-work-on-hive-software h2, h3, h4, h5 {
+    margin-bottom: 0;
+  }
+  #content-blocktrades-12th-update-of-2021-on-blocktrades-work-on-hive-software header small {
+    color: #999;
+    font-size: 50%;
+  }
+  #content-blocktrades-12th-update-of-2021-on-blocktrades-work-on-hive-software img {
+    max-width: 100%;
+  }
+&lt;/style&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;
+  See: &lt;a href=&quot;https://hive.blog/hive-139531/@blocktrades/12th-update-of-2021-on-blocktrades-work-on-hive-software&quot;&gt;12th update of 2021 on BlockTrades work on Hive software&lt;/a&gt;
+  by
+  &lt;a href=&quot;https://hive.blog/@blocktrades&quot;&gt;@blocktrades&lt;/a&gt;
+&lt;/p&gt;</content><author><name>blocktrades</name></author><category term="news" /><category term="sql" /><category term="database" /><summary type="html">![blocktrades update.png](https://images.hive.blog/DQmSihw8Kz4U7TuCQa98DDdCzqbqPFRumuVWAbareiYZW1Z/blocktrades%20update.png) Below is a list of Hive-related programming issues worked on by the BlockTrades team during the last week: # Hived work (blockchain node software) This week we’ve been testing the first release candidate for hardfork 25. In addition to manual testing of node operation, we're also writing a few more tests to test consensus changes under stress conditions. Although we haven’t found any bugs in the new consensus changes yet, we have made several fixes to long-standing bugs that we found as part of our manual node testing. Most of the bugs are related to startup issues and confusing log messages that might mislead a node operator: * We fixed an error message that erroneously reported that a peer node was on an irreversible fork when it most likely was just ahead of the user’s node. * We fixed a long-standing error that could cause a crash at startup if a node started receiving API requests before the node had fully initialized. * hived now reports the peer count in warning messages when the blockchain thread is warning that it hasn’t received any transactions or blocks from the P2P thread in the last 30 seconds. * Hived now delays connecting to seed nodes until the P2P network is initialized and ready to process peer requests. This prevent seed nodes from disconnecting because the user's node doesn't respond to them in a timely manner. * ulog messages are now logged to stderr (console) for the node. Ulog messages are used by the P2P thread to report important issues that should be seen by node operators. In particular, the user now receives a console warning when the node startup is delayed while the P2P thread is trying to get access to the P2P port from the operating system (when a node is shutdown via Ctrl-C, the OS may take up to 1 minute to release the port, delaying recapture of the port when the node is restarted). We’ve also updated hived nodes to begin reporting the Hive chainid of BEEABODE at startup (as a temporary measure, the node used to report a chainid of 0 at startup, then swap to reporting BEEABODE after they hit the genesis fork for Hive). For the initial release of hardfork 25, hived nodes will still continue to allow connections from nodes with chainid of 0, despite reporting the new chainid, but after all Hive nodes have updated to the hardfork 25 code, we’ll change the code to reject connections from older nodes. ## Second release candidate for hived soon We’ll likely be publishing a second release candidate of hived in the next couple of days that contains the diagnostics and fixes discussed above (those changes have already been merged into the develop branch, so you can get them now for testing), plus one or two more small improvements that are still pending review. # Hivemind (2nd layer applications + social media middleware) We’re continuing to work on a few hivemind tests, running performance tests, and preparing database migration scripts in preparation for a new hivemind release (should be sometime this week). # Modular hivemind (framework for hive applications) We still didn’t have time to make the changes for the sql serializer last week due to the time spent fixing the various issues discussed in this post, but we will likely? complete that work in the coming week. Then we’ll be able to do a full performance test of the sql serializer in combination with a full sync of hivemind. In the meantime, we’re doing preparatory work to create an example modular hivemind-based application that just supports the account history API. # Condenser (code base for https://hive.blog) We’re testing condenser code against the testnet. We had some problems with condenser being able to broadcast transactions to the testnest which were ultimately traced to condenser using an older version of the hive-js package. It’s being updated currently and testing will continue. The same change will also be applied to the condenser wallet. # Hived testnet We launched and began testing the new public testnet based on release candidate 1. We’ve also setup an API node configured to draw data from the testnet. This API node should be used by Hive applications to begin adding code changes to support new features added by the hardfork, such as vote expiration reporting. If you want to add a node to the public testnet, use this seednode: `p2p-seed-node = testnet.openhive.network:2001` To use the API node for the testnet: API endpoint via jussi:  https://testnet.openhive.network hived direct http server:  http://testnet.openhive.network:8091 hived direct websocket server: ws://testnet.openhive.network:8090 hivemind server direct server:  http://testnet.openhive.network:8080 As mentioned previously, we’ve begun testing this testnet API node with condenser. You can visit it here: https://testblog.openhive.network We will also setup a block explorer and a condenser-based wallet for the testnet soon. Update: @ausbitbank added block explorer for testnet https://test.ausbit.dev/ We plan to leave this testnet running as a permanent testnet that apps can use to test against prior to making changes to their app operating on the mainnet. So Hive app devs are strongly urged to take advantage of this opportunity. As a side note, when doing so, please make sure to use the latest version of hive-js to make sure it's compatible with the testnet API node. We've also tested beempy successfully against the testnet API node. # Planned date for hardfork 25 I’m still projecting the hardfork will be in the latter part of June, probably in the last week. See: 12th update of 2021 on BlockTrades work on Hive software by @blocktrades</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://images.hive.blog/DQmSihw8Kz4U7TuCQa98DDdCzqbqPFRumuVWAbareiYZW1Z/blocktrades%20update.png" /><media:content medium="image" url="https://images.hive.blog/DQmSihw8Kz4U7TuCQa98DDdCzqbqPFRumuVWAbareiYZW1Z/blocktrades%20update.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">HiveSQL Upate - New Virtual Operation tables</title><link href="https://hivedocs.info/news/sql/database/2021/05/17/hivesql-upate-20210517.html" rel="alternate" type="text/html" title="HiveSQL Upate - New Virtual Operation tables" /><published>2021-05-17T07:53:39-07:00</published><updated>2021-05-17T07:53:39-07:00</updated><id>https://hivedocs.info/news/sql/database/2021/05/17/hivesql-upate-20210517</id><content type="html" xml:base="https://hivedocs.info/news/sql/database/2021/05/17/hivesql-upate-20210517.html">&lt;div id=&quot;content-arcange-hivesql-upate-20210517&quot;&gt;![](https://i.imgur.com/FE9D32t.png)
 
 I am finalizing a consequent work I started weeks ago to create the HiveSQL documentation, which should be available soon. While performing this job, I realized that the database was missing a few Virtual Operations tables. Therefore, I hastened to add them so that the database content is as complete as possible.
 
@@ -1535,170 +1675,4 @@ Thank you for reading.
   &lt;a href=&quot;https://hive.blog/@arcange&quot;&gt;@arcange&lt;/a&gt;
 &lt;/p&gt;
 
-&lt;/center&gt;&lt;/div&gt;</content><author><name>arcange</name></author><category term="news" /><category term="sql" /><category term="database" /><summary type="html">![](https://i.imgur.com/HbmjGRG.png) Every day, HiveSQL provides its services to dozens of users and (d)Apps that hammer the server with thousands of queries. At the same time, it also has to process all the new blocks, split the data into different tables, update indexes, update non-transactional tables, etc… **HiveSQL is close to real-time synced with the blockchain** for transactional tables. But with all this work to do and the ever-growing number of transactions per day, it sometimes happens that it struggles a bit to sustain the pace, especially when it has to process some resource-intensive queries at peak time. So, it can sometimes happen that HiveSQL is a little late by a few seconds on the blockchain. ### How to check if HiveSQL in sync with the blockchain? To enable users to monitor HiveSQL, I created a new [HiveSQL status page](https://hivesql/status). The page is available from [HiveSQL website](https://hivesql.io) or using the following link: **https://hivesql.io/status** The page will display the following information: ![](https://i.imgur.com/PyJqK0W.png) * The status of the server: ***Online:*** the server is running and available for users to issue queries ***Offline:*** the server has been shut down for maintenance * The last irreversible block number from the blockchain * The last block number in the database * The sync difference between the blockchain and the database ### Detailed tables information The status page will also display some information for each table into the database: * the name of the table * the number of rows into the table * the size of the table (data + indexes) This will give you a good idea of the amount of data HiveSQL has to manage (more than 2TB as of today) and how many rows each table contains. As you will see, some tables contain several hundred million records. The `Transactions` table even contains **over 1.365 billion rows**! This is why it is important to carefully write your SQL queries and optimize them. It is a subject on which I will come back later. Meantime, enjoy this new monitoring tool. ## Support If you have any questions or remarks, support is provided on the [HiveSQL Discord Channel](https://discord.gg/kyEFDfT). Thank you for reading. --- **Let's keep HiveSQL free to use - Support its proposals**! |HiveSQL|HiveBuzz| |-|-| |[Vote for the proposal on PeakD](https://peakd.com/me/proposals/138)[Vote for the proposal on Ecency](https://ecency.com/proposals/138)[Vote for the proposal using HiveSigner](https://hivesigner.com/sign/update_proposal_votes?proposal_ids=%5B%22138%22%5D&amp;amp;approve=true)|[Vote for the proposal on PeakD](https://peakd.com/me/proposals/147)[Vote for the proposal on Ecency](https://ecency.com/proposals/147)[Vote for the proposal using HiveSigner](https://hivesigner.com/sign/update_proposal_votes?proposal_ids=%5B%22147%22%5D&amp;amp;approve=true)| --- ### Check out my apps and services ### [Vote for me as a witness ![](https://i.imgur.com/2bi4SnT.png)](https://hivesigner.com/sign/account-witness-vote?witness=arcange&amp;amp;approve=1)&amp;lt;/div&amp;gt; See: HiveSQL Update - New Status Page by @arcange</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://i.imgur.com/HbmjGRG.png" /><media:content medium="image" url="https://i.imgur.com/HbmjGRG.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Direct RC delegations vs RC pools and tentative direct rc delegations spec</title><link href="https://hivedocs.info/news/core/development/2021/05/05/direct-rc-delegations-vs-rc-pools-and-tentative-direct-rc-delegations-spec.html" rel="alternate" type="text/html" title="Direct RC delegations vs RC pools and tentative direct rc delegations spec" /><published>2021-05-05T17:02:18-07:00</published><updated>2021-05-05T17:02:18-07:00</updated><id>https://hivedocs.info/news/core/development/2021/05/05/direct-rc-delegations-vs-rc-pools-and-tentative-direct-rc-delegations-spec</id><content type="html" xml:base="https://hivedocs.info/news/core/development/2021/05/05/direct-rc-delegations-vs-rc-pools-and-tentative-direct-rc-delegations-spec.html">&lt;div id=&quot;content-howo-direct-rc-delegations-vs-rc-pools-and-tentative-direct-rc-delegations-spec&quot;&gt;
-![image.png](https://files.peakd.com/file/peakd-hive/howo/23xLL8qDDTTeLahePNVpwjjgTxQjQd5spVivJncMvRrCXw5iM6bhLMoTNsSrvbPyeKo2L.png)
-
-Hello, 
-
-First let's settle on the terms, when I say &quot;RC pools&quot;, it refers to the implementation where everyone can delegate to pools and then pools can delegate to users, with more notions like overdelegation (you can delegate more RC than there is available in the pool) etc, we'll get back to it later.
-When I say &quot;direct RC delegations&quot;, it's enabling users to delegate RC directly from one to another instead. Which would remove all the compexity of RC pools while retaining most of its features
-
-tl;dr:
-Direct RC delegations = user to user RC delegation
-RC pool = more feature complete version
-
-In the recent [dev meeting](https://peakd.com/meeting/@howo/hive-core-developer-meeting-22) we discussed RC delegations/pools a bit. Basically there is some concerns from @blocktrades's team regarding the complexity of RC pools, both in terms of complexity (risk of unforseen edge cases or bugs) and performance (could cost too much in processing power/memory to node operators). This also comes from the fact the RC system while functional still has some kinks to be worked out, it could be dangerous to build a complex system on something that is not rock solid.
-
-This post aims to start a discussion and discuss around the fact that maybe we don't need RC pools as simple rc delegations cover most of the use cases. 
-
-## Proposed direct RC delegations feature Set
-
-some more terms:
-max rc is the maximum amount of RC that the account can have 
-current RC is the amount of RC that the account currently have, current RC regenerates over time to match max RC if not used.
-
-You can see the spec (and discussion from other core devs) here: https://gitlab.syncad.com/hive/hive/-/issues/152 
-I very much encourage you to read the link before continuing.
-
-Direct RC delegations are super straightworward, just delegate 50 RC, your account now loses 50 max RC and the user you delegate to has an extra 50 max RC, I say max RC, because RC regenerates, so if the user you delegate to uses the 50 rc, it will come back eventually.
-
-Advantages are:
-
-- Pretty easy to code (writting it from scratch and could be as fast or even faster as finishing RC pools)
-- Very simple so very small performance and memory footprint, less bug risks
-- Simple UX-wise and easy for front ends to implement 
-
-## RC pools 
-
-if you want to know how RC pools work look here : https://peakd.com/test/@howo/wanna-help-test-rc-delegations-heres-all-you-need-to-know
-tl;dr:
-With the RC pool implementation, everyone can contribute to a pool, then a pool can delegate to multiple accoutns, there is a notion of &quot;oversubscription&quot; meaning that you delegate &quot;drc&quot; or delegated RC to an user not actual RC, drc basically allow you to spend the RC that is inside of the pool at a 1:1 ratio, but if the pool is empty and you got 50 drc, you can't get any RC. The main advantage of this approach is:
-
-- Multiple users can contribute to the same pool 
-- You don't have to guess what the user will consume to distribute RC, you just allows people to use at most, x RC.
-- Already coded, lots of tests but need further reviewed and tested in a proper testnet 
-
-disadvantage is obviously added complexity both in the chain and UX-wise (with the slot system, read up on it int he post above) that may not be worth it.
-
-## comparaison of various use cases 
-
-### Account creation 
-
-Probably the biggest use case for direct RC delegations/pools. We create an account and transfer RC to it so it can transact comfortably. Today this is done by delegating hive power, but HP has many problems namely abuse and limitations.
-
-#### Direct RC delegations
-
-Direct RC delegations cover this use case, it would be an almost drop-in replacement for hive power delegation, take how much hp you used to delegate to new users and replace this with RC.
-
-Of course we run into issues when we want to do this more at scale where you have to give the maximum RC an account usually use so if everyone uses 30 RC, but bob uses 100 because he's so excited about the platform, bob would be stuck, although with RC being &quot;free&quot;, bob could ask for a second delegation via an &quot;RC faucet&quot; or something.
-
-The second problem is that this implies that the account creation account has a lot of RC, so if you want to onboard 10k users, you may run into problems, and it would be complicated to coordinate with other whales who might want to help (because direct RC delegations delegations would require active authority, whales probably won't give that auth to allow for automatic direct RC delegations). Delegating delegated RC (a whale could delegate to an account creation service who would redelegate RC) is a no go I think because it creates a ton of new edge cases.
-
-But it wouldn't be too hard to create a system where you &quot;trail&quot; delegations, so if you're a whale and you see a service delegating 30 RC, you can delegate 10 RC too on top of it. It would be pretty easy. But once again not easily automatable since it touches the active authority. 
-
-Ultimately direct RC delegations would cover the use case as well as HP delegations, not the best but still a massive improvement IMHO.
-
-While I'm at it, direct RC delegations could be done using posting auth to make it way easier to manage and automate everything, there is no technical limitations to this, interested to hear your thoughts. The only risk is that someone dapp could then empty the RC in your account and prevent you from transacting.
-
-#### RC pools
-
-RC pools cover this case as well, It doesn't run into the same issues as direct RC delegations you can delegate 100 RC to everyone and just let people use RC as they go, if everyone uses 30 out of their 100 that's fine, and bob won't be restricted. This would allow account creation services to be way less strict in the way they manage RC, they could delegate a lot of RC to make sure newcomers are never running out of RC when doing the first basic things (voting posts/posting etc) as long as the pools are flowing thanks to delegations to the pools themselves.
-
-### Delegate to a user who doesn't have RC left 
-
-This is IMHO, the second biggest use case for direct RC delegations, the user used up all of his RC and we want him to continue to use hive, he could request an RC deleations from any RC faucet (I expect those to pop up once direct RC delegations make it to the chain) or a friend to give him some RC. Right now this is covered by HP delegations but no such faucets really exist for obvious abuse reasons.
-
-#### direct RC delegations
-
-This is a case where direct RC delegations work great, pretty easy to send an extra 500 RC to a user if he asks for it, and then maybe remove it a month later. You still have the same pain points outlined in the account creation use case though:
-
-- you are bound to run out of RC if you delegate too much, so you're forced to be more conservative in your delegations 
-- Others can't &quot;fund&quot; you with RC to help you 
-
-#### RC pools
-
-While RC pools can do it and be great at it thank to the delegated RC system, there is an important caveat: with RC pools you cannot get RC from a pool unless you set a slot to point to it first, this means that you can end up in these awkward situations where you can't set a slot to get RC from a pool because you're out of RC and cannot get RC from a pool because you didn't set your slot to point to the pool.
-Although this scenario is relatively unlikely because a set_slot operation is a custom_json which costs very little.
-
-## conclusion:
-
-I think both approaches are valid but I think the extra weight and risk on the chain of RC pools make me lean towards implementing direct RC delegations with posting auth (even though I'll have to redo everything haha) along with a tool for people to &quot;trail&quot; other people's delegations. The UX benefits are also non negligible.
-
-What are your thoughts ?&lt;/div&gt;
-&lt;script crossorigin=&quot;anonymous&quot; integrity=&quot;sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=&quot; src=&quot;https://code.jquery.com/jquery-3.5.1.slim.min.js&quot;&gt;&lt;/script&gt;
-
-&lt;script src=&quot;https://unpkg.com/steem-content-renderer&quot;&gt;&lt;/script&gt;
-
-&lt;!-- &lt;script src=&quot;https://cdn.jsdelivr.net/npm/hive-content-renderer/dist/hive-content-renderer.min.js&quot;&gt;&lt;/script&gt; --&gt;
-&lt;script&gt;
-  $(document).ready(function() {
-    try {
-      const renderer = new SteemContentRenderer.DefaultRenderer({
-      // const renderer = new HiveContentRenderer({
-        baseUrl: &quot;https://hive.blog/&quot;,
-        breaks: true,
-        skipSanitization: false,
-        allowInsecureScriptTags: false,
-        addNofollowToLinks: true,
-        doNotShowImages: false,
-        ipfsPrefix: &quot;&quot;,
-        assetsWidth: 640,
-        assetsHeight: 480,
-        imageProxyFn: (url) =&gt; url,
-        usertagUrlFn: (account) =&gt; &quot;/@howo&quot;,
-        hashtagUrlFn: (hashtag) =&gt; &quot;/direct-rc-delegations-vs-rc-pools-and-tentative-direct-rc-delegations-spec&quot;,
-        isLinkSafeFn: (url) =&gt; true,
-      });
-      
-      const inputElem = $('#content-howo-direct-rc-delegations-vs-rc-pools-and-tentative-direct-rc-delegations-spec').html();
-      const outputElem = $('#content-howo-direct-rc-delegations-vs-rc-pools-and-tentative-direct-rc-delegations-spec');
-      const output = renderer.render(inputElem);
-      
-      outputElem.html(output);
-    } catch(e) {
-      console.log(e);
-    }
-  });
-&lt;/script&gt;
-
-&lt;style&gt;
-  #content-howo-direct-rc-delegations-vs-rc-pools-and-tentative-direct-rc-delegations-spec {
-    padding: 0 3rem;
-    color: #444444;
-    font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif;
-    font-size: 16px;
-    line-height: 1.8;
-    text-shadow: 0 1px 0 #ffffff;
-    padding: 0.5rem;
-  }
-  #content-howo-direct-rc-delegations-vs-rc-pools-and-tentative-direct-rc-delegations-spec code {
-    background: white;
-  }
-  #content-howo-direct-rc-delegations-vs-rc-pools-and-tentative-direct-rc-delegations-spec a {
-    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
-  }
-  #content-howo-direct-rc-delegations-vs-rc-pools-and-tentative-direct-rc-delegations-spec a:hover {
-    border-bottom: 0;
-  }
-  #content-howo-direct-rc-delegations-vs-rc-pools-and-tentative-direct-rc-delegations-spec h1 {
-    font-size: 2.2em;
-  }
-  #content-howo-direct-rc-delegations-vs-rc-pools-and-tentative-direct-rc-delegations-spec h2, h3, h4, h5 {
-    margin-bottom: 0;
-  }
-  #content-howo-direct-rc-delegations-vs-rc-pools-and-tentative-direct-rc-delegations-spec header small {
-    color: #999;
-    font-size: 50%;
-  }
-  #content-howo-direct-rc-delegations-vs-rc-pools-and-tentative-direct-rc-delegations-spec img {
-    max-width: 100%;
-  }
-&lt;/style&gt;
-
-&lt;hr /&gt;
-
-&lt;p&gt;
-  See: &lt;a href=&quot;https://peakd.com/rc/@howo/direct-rc-delegations-vs-rc-pools-and-tentative-direct-rc-delegations-spec&quot;&gt;Direct RC delegations vs RC pools and tentative direct rc delegations spec&lt;/a&gt;
-  by
-  &lt;a href=&quot;https://hive.blog/@howo&quot;&gt;@howo&lt;/a&gt;
-&lt;/p&gt;</content><author><name>howo</name></author><category term="news" /><category term="core" /><category term="development" /><summary type="html">![image.png](https://files.peakd.com/file/peakd-hive/howo/23xLL8qDDTTeLahePNVpwjjgTxQjQd5spVivJncMvRrCXw5iM6bhLMoTNsSrvbPyeKo2L.png) Hello, First let's settle on the terms, when I say &quot;RC pools&quot;, it refers to the implementation where everyone can delegate to pools and then pools can delegate to users, with more notions like overdelegation (you can delegate more RC than there is available in the pool) etc, we'll get back to it later. When I say &quot;direct RC delegations&quot;, it's enabling users to delegate RC directly from one to another instead. Which would remove all the compexity of RC pools while retaining most of its features tl;dr: Direct RC delegations = user to user RC delegation RC pool = more feature complete version In the recent [dev meeting](https://peakd.com/meeting/@howo/hive-core-developer-meeting-22) we discussed RC delegations/pools a bit. Basically there is some concerns from @blocktrades's team regarding the complexity of RC pools, both in terms of complexity (risk of unforseen edge cases or bugs) and performance (could cost too much in processing power/memory to node operators). This also comes from the fact the RC system while functional still has some kinks to be worked out, it could be dangerous to build a complex system on something that is not rock solid. This post aims to start a discussion and discuss around the fact that maybe we don't need RC pools as simple rc delegations cover most of the use cases. ## Proposed direct RC delegations feature Set some more terms: max rc is the maximum amount of RC that the account can have current RC is the amount of RC that the account currently have, current RC regenerates over time to match max RC if not used. You can see the spec (and discussion from other core devs) here: https://gitlab.syncad.com/hive/hive/-/issues/152 I very much encourage you to read the link before continuing. Direct RC delegations are super straightworward, just delegate 50 RC, your account now loses 50 max RC and the user you delegate to has an extra 50 max RC, I say max RC, because RC regenerates, so if the user you delegate to uses the 50 rc, it will come back eventually. Advantages are: - Pretty easy to code (writting it from scratch and could be as fast or even faster as finishing RC pools) - Very simple so very small performance and memory footprint, less bug risks - Simple UX-wise and easy for front ends to implement ## RC pools if you want to know how RC pools work look here : https://peakd.com/test/@howo/wanna-help-test-rc-delegations-heres-all-you-need-to-know tl;dr: With the RC pool implementation, everyone can contribute to a pool, then a pool can delegate to multiple accoutns, there is a notion of &quot;oversubscription&quot; meaning that you delegate &quot;drc&quot; or delegated RC to an user not actual RC, drc basically allow you to spend the RC that is inside of the pool at a 1:1 ratio, but if the pool is empty and you got 50 drc, you can't get any RC. The main advantage of this approach is: - Multiple users can contribute to the same pool - You don't have to guess what the user will consume to distribute RC, you just allows people to use at most, x RC. - Already coded, lots of tests but need further reviewed and tested in a proper testnet disadvantage is obviously added complexity both in the chain and UX-wise (with the slot system, read up on it int he post above) that may not be worth it. ## comparaison of various use cases ### Account creation Probably the biggest use case for direct RC delegations/pools. We create an account and transfer RC to it so it can transact comfortably. Today this is done by delegating hive power, but HP has many problems namely abuse and limitations. #### Direct RC delegations Direct RC delegations cover this use case, it would be an almost drop-in replacement for hive power delegation, take how much hp you used to delegate to new users and replace this with RC. Of course we run into issues when we want to do this more at scale where you have to give the maximum RC an account usually use so if everyone uses 30 RC, but bob uses 100 because he's so excited about the platform, bob would be stuck, although with RC being &quot;free&quot;, bob could ask for a second delegation via an &quot;RC faucet&quot; or something. The second problem is that this implies that the account creation account has a lot of RC, so if you want to onboard 10k users, you may run into problems, and it would be complicated to coordinate with other whales who might want to help (because direct RC delegations delegations would require active authority, whales probably won't give that auth to allow for automatic direct RC delegations). Delegating delegated RC (a whale could delegate to an account creation service who would redelegate RC) is a no go I think because it creates a ton of new edge cases. But it wouldn't be too hard to create a system where you &quot;trail&quot; delegations, so if you're a whale and you see a service delegating 30 RC, you can delegate 10 RC too on top of it. It would be pretty easy. But once again not easily automatable since it touches the active authority. Ultimately direct RC delegations would cover the use case as well as HP delegations, not the best but still a massive improvement IMHO. While I'm at it, direct RC delegations could be done using posting auth to make it way easier to manage and automate everything, there is no technical limitations to this, interested to hear your thoughts. The only risk is that someone dapp could then empty the RC in your account and prevent you from transacting. #### RC pools RC pools cover this case as well, It doesn't run into the same issues as direct RC delegations you can delegate 100 RC to everyone and just let people use RC as they go, if everyone uses 30 out of their 100 that's fine, and bob won't be restricted. This would allow account creation services to be way less strict in the way they manage RC, they could delegate a lot of RC to make sure newcomers are never running out of RC when doing the first basic things (voting posts/posting etc) as long as the pools are flowing thanks to delegations to the pools themselves. ### Delegate to a user who doesn't have RC left This is IMHO, the second biggest use case for direct RC delegations, the user used up all of his RC and we want him to continue to use hive, he could request an RC deleations from any RC faucet (I expect those to pop up once direct RC delegations make it to the chain) or a friend to give him some RC. Right now this is covered by HP delegations but no such faucets really exist for obvious abuse reasons. #### direct RC delegations This is a case where direct RC delegations work great, pretty easy to send an extra 500 RC to a user if he asks for it, and then maybe remove it a month later. You still have the same pain points outlined in the account creation use case though: - you are bound to run out of RC if you delegate too much, so you're forced to be more conservative in your delegations - Others can't &quot;fund&quot; you with RC to help you #### RC pools While RC pools can do it and be great at it thank to the delegated RC system, there is an important caveat: with RC pools you cannot get RC from a pool unless you set a slot to point to it first, this means that you can end up in these awkward situations where you can't set a slot to get RC from a pool because you're out of RC and cannot get RC from a pool because you didn't set your slot to point to the pool. Although this scenario is relatively unlikely because a set_slot operation is a custom_json which costs very little. ## conclusion: I think both approaches are valid but I think the extra weight and risk on the chain of RC pools make me lean towards implementing direct RC delegations with posting auth (even though I'll have to redo everything haha) along with a tool for people to &quot;trail&quot; other people's delegations. The UX benefits are also non negligible. What are your thoughts ? See: Direct RC delegations vs RC pools and tentative direct rc delegations spec by @howo</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://files.peakd.com/file/peakd-hive/howo/23xLL8qDDTTeLahePNVpwjjgTxQjQd5spVivJncMvRrCXw5iM6bhLMoTNsSrvbPyeKo2L.png" /><media:content medium="image" url="https://files.peakd.com/file/peakd-hive/howo/23xLL8qDDTTeLahePNVpwjjgTxQjQd5spVivJncMvRrCXw5iM6bhLMoTNsSrvbPyeKo2L.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>
+&lt;/center&gt;&lt;/div&gt;</content><author><name>arcange</name></author><category term="news" /><category term="sql" /><category term="database" /><summary type="html">![](https://i.imgur.com/HbmjGRG.png) Every day, HiveSQL provides its services to dozens of users and (d)Apps that hammer the server with thousands of queries. At the same time, it also has to process all the new blocks, split the data into different tables, update indexes, update non-transactional tables, etc… **HiveSQL is close to real-time synced with the blockchain** for transactional tables. But with all this work to do and the ever-growing number of transactions per day, it sometimes happens that it struggles a bit to sustain the pace, especially when it has to process some resource-intensive queries at peak time. So, it can sometimes happen that HiveSQL is a little late by a few seconds on the blockchain. ### How to check if HiveSQL in sync with the blockchain? To enable users to monitor HiveSQL, I created a new [HiveSQL status page](https://hivesql/status). The page is available from [HiveSQL website](https://hivesql.io) or using the following link: **https://hivesql.io/status** The page will display the following information: ![](https://i.imgur.com/PyJqK0W.png) * The status of the server: ***Online:*** the server is running and available for users to issue queries ***Offline:*** the server has been shut down for maintenance * The last irreversible block number from the blockchain * The last block number in the database * The sync difference between the blockchain and the database ### Detailed tables information The status page will also display some information for each table into the database: * the name of the table * the number of rows into the table * the size of the table (data + indexes) This will give you a good idea of the amount of data HiveSQL has to manage (more than 2TB as of today) and how many rows each table contains. As you will see, some tables contain several hundred million records. The `Transactions` table even contains **over 1.365 billion rows**! This is why it is important to carefully write your SQL queries and optimize them. It is a subject on which I will come back later. Meantime, enjoy this new monitoring tool. ## Support If you have any questions or remarks, support is provided on the [HiveSQL Discord Channel](https://discord.gg/kyEFDfT). Thank you for reading. --- **Let's keep HiveSQL free to use - Support its proposals**! |HiveSQL|HiveBuzz| |-|-| |[Vote for the proposal on PeakD](https://peakd.com/me/proposals/138)[Vote for the proposal on Ecency](https://ecency.com/proposals/138)[Vote for the proposal using HiveSigner](https://hivesigner.com/sign/update_proposal_votes?proposal_ids=%5B%22138%22%5D&amp;amp;approve=true)|[Vote for the proposal on PeakD](https://peakd.com/me/proposals/147)[Vote for the proposal on Ecency](https://ecency.com/proposals/147)[Vote for the proposal using HiveSigner](https://hivesigner.com/sign/update_proposal_votes?proposal_ids=%5B%22147%22%5D&amp;amp;approve=true)| --- ### Check out my apps and services ### [Vote for me as a witness ![](https://i.imgur.com/2bi4SnT.png)](https://hivesigner.com/sign/account-witness-vote?witness=arcange&amp;amp;approve=1)&amp;lt;/div&amp;gt; See: HiveSQL Update - New Status Page by @arcange</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://i.imgur.com/HbmjGRG.png" /><media:content medium="image" url="https://i.imgur.com/HbmjGRG.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>
