@@ -22,7 +22,7 @@ end
 desc 'Grab a post.'
 task :grab, :url do |t, args|
   url = args[:url] || abort('Url required.')
-  api = Hive::Api.new(url: 'https://anyx.io')
+  api = Hive::Api.new(url: 'https://api.openhive.network')
   author, permlink = url.split('@').last.split('/')
   
   api.get_content(author, permlink) do |content|
