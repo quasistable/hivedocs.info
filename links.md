@@ -15,4 +15,5 @@ permalink: /links/
 * [hivedscan.com](https://hivedscan.com/) - Budgets for talented entrepreneurs to grow the ecosystem.
 * [hive.wiki](https://www.hive.wiki/) - Are you just getting started with Hive?  Check out the wiki.
 * [Peak FAQ Project](https://peakd.com/c/198327/) - Popular questions for PeakD.com and General Blockchain.
+* [HiveSQL documentation](https://docs.hivesql.io/) - For all operations, virtual operations and state tables, each column of each table is described.
 <!-- * [](https:///) -  -->
