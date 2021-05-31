@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta property="og:image" content="/assets/images/sticker.png" /><!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>How to run a witness node on the hf25 testnet | Hive Chain Documentation</title>
+<meta name="generator" content="Jekyll v4.1.1" />
+<meta property="og:title" content="How to run a witness node on the hf25 testnet" />
+<meta name="author" content="howo" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Hi ! the testnet phase for HF25 is now in full swing …" />
+<meta property="og:description" content="Hi ! the testnet phase for HF25 is now in full swing …" />
+<link rel="canonical" href="https://peakd.com/guide/@howo/how-to-run-a-witness-node-on-the-hf25-testnet" />
+<meta property="og:url" content="https://peakd.com/guide/@howo/how-to-run-a-witness-node-on-the-hf25-testnet" />
+<meta property="og:site_name" content="Hive Chain Documentation" />
+<meta property="og:image" content="https://files.peakd.com/file/peakd-hive/howo/23xe7eZsnrPcykgbjNqyAudjuQ8nfGfqRzVCpTShns5vRs2J9gcknbewso9v32YFhw54x.png" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2021-05-31T06:51:27-07:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="https://files.peakd.com/file/peakd-hive/howo/23xe7eZsnrPcykgbjNqyAudjuQ8nfGfqRzVCpTShns5vRs2J9gcknbewso9v32YFhw54x.png" />
+<meta property="twitter:title" content="How to run a witness node on the hf25 testnet" />
+<script type="application/ld+json">
+{"description":"Hi ! the testnet phase for HF25 is now in full swing …","image":"https://files.peakd.com/file/peakd-hive/howo/23xe7eZsnrPcykgbjNqyAudjuQ8nfGfqRzVCpTShns5vRs2J9gcknbewso9v32YFhw54x.png","headline":"How to run a witness node on the hf25 testnet","dateModified":"2021-05-31T06:51:27-07:00","datePublished":"2021-05-31T06:51:27-07:00","@type":"BlogPosting","url":"https://peakd.com/guide/@howo/how-to-run-a-witness-node-on-the-hf25-testnet","mainEntityOfPage":{"@type":"WebPage","@id":"https://peakd.com/guide/@howo/how-to-run-a-witness-node-on-the-hf25-testnet"},"author":{"@type":"Person","name":"howo"},"@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://hivedocs.info/feed.xml" title="Hive Chain Documentation" /><script>
+if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNotTrack === "yes" || navigator.msDoNotTrack === "1")) {
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-161692811-1', 'auto');
+  ga('send', 'pageview');
+}
+</script>
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+  
+  <!-- jQuery Modal -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.css" />
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/turbolinks/5.2.0/turbolinks.js" integrity="sha256-iM4Yzi/zLj/IshPWMC1IluRxTtRjMqjPGd97TZ9yYpU=" crossorigin="anonymous"></script>
+  <script src='https://unpkg.com/steem-content-renderer'></script>
+  <script>
+    (function () {
+      if (Turbolinks.supported) {
+        Turbolinks.setProgressBarDelay(500);
+      }
+    })();
+  </script>
+  <script src="/assets/javascript/universal-bridge-against-phishing.js"></script>
+  <script src="/assets/javascript/lazysizes.min.js" async=""></script>
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Cousine|Inconsolata" rel="stylesheet">
+  <link rel="shortcut icon" type="image/png" href="/assets/images/favicon.png">
+</head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Hive Chain Documentation</a>
+
+      <nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/news/">News</a><a class="page-link" href="/howto/">How To</a><a class="page-link" href="/links/">Useful Links</a><a class="page-link" href="/authors/">Authors</a><!-- HTML elements for search -->
+          <input type="text" id="search-input" placeholder="Search" />
+          
+          <ul id="results-container"></ul>
+
+          <script src="/assets/javascript/search.js"></script>
+          <script>
+            var sjs = SimpleJekyllSearch({
+              searchInput: document.getElementById('search-input'),
+              resultsContainer: document.getElementById('results-container'),
+              json: '/search.json'
+            })
+          </script>
+          <!-- <form style="float: right;" class="form-inline" method="get" action="http://www.google.com/search">
+            <input type="hidden" name="sitesearch" value="hivedocs.info" />
+            <input type="text" name="q" maxlength="255" placeholder="Search" />
+          </form> -->
+          
+          <!-- <a href="#" onclick="try { $('#authors-container').slideToggle(); } catch { document.getElementById('authors-container').style.display = 'block'; }; return false;">Authors &#187;</a>
+          <a href="#" onclick="try { $('#topics-container').slideToggle(); } catch { document.getElementById('topics-container').style.display = 'block'; }; return false;">Topics &#187;</a> -->
+          
+          <a href="#topics-container" rel="modal:open">Topics &#187;</a>
+          
+          <div id="topics-container" class="modal">
+            <h3>Topics</h3>
+            <ul><li><a class="page-link" href="/account-recovery/"><nobr>Account Recovery</nobr></a></li><li><a class="page-link" href="/core-development/"><nobr>Core Development</nobr></a></li><li><a class="page-link" href="/dapps/"><nobr>Dapps</nobr></a></li><li><a class="page-link" href="/docker/"><nobr>Docker</nobr></a></li><li><a class="page-link" href="/hardfork/"><nobr>Hardfork</nobr></a></li><li><a class="page-link" href="/hivemind/"><nobr>Hivemind</nobr></a></li><li><a class="page-link" href="/javascript/"><nobr>Javascript</nobr></a></li><li><a class="page-link" href="/multisig/"><nobr>Multisig</nobr></a></li><li><a class="page-link" href="/python/"><nobr>Python</nobr></a></li><li><a class="page-link" href="/ruby/"><nobr>Ruby</nobr></a></li><li><a class="page-link" href="/testnet/"><nobr>Testnet</nobr></a></li><li><a class="page-link" href="/tools/"><nobr>Tools</nobr></a></li><li><a class="page-link" href="/witness/"><nobr>Witness</nobr></a></li></ul>
+          </div>
+        </div>
+      </nav>
+  </div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <div class="pull-right well">
+      <img src="https://images.hive.blog/u/howo/avatar" width="128" height="128" class="lazyload" />
+    </div>
+    
+    <h1 class="post-title p-name" itemprop="name headline">How to run a witness node on the hf25 testnet</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2021-05-31T06:51:27-07:00" itemprop="datePublished">May 31, 2021
+      </time>• <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">
+          <a href="/authors/#author-howo">howo</a>
+        </span></span></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <div id="content-howo-how-to-run-a-witness-node-on-the-hf25-testnet">![image.png](https://files.peakd.com/file/peakd-hive/howo/23xe7eZsnrPcykgbjNqyAudjuQ8nfGfqRzVCpTShns5vRs2J9gcknbewso9v32YFhw54x.png)
+
+Hi ! the testnet phase for HF25 is now in full swing, here's some info on it from @gtg https://peakd.com/@gtg/hf25-public-testnet-reloaded-rc2
+
+One important thing to understand about the testnet is much more lightweight than the main net (because the chain is brand new) so you can actually get it running on a super small machine, to prove my point I'm going to write this tutorial using the 6$ a month doplet (1 core, 25gb storage) from digitalocean. I recommend ubuntu 18.04 LTS, 20.04 is also supported by hive but it can be more tricky depending on the versions of GCC+boost+cmake that are provided with it.
+
+If you participated in the last testnet you will find this guide very similar to the previous one https://peakd.com/hive/@howo/how-to-participate-in-the-tesntets-this-week-full-guide but I felt like making a new one was better than telling you  "follow the outdated guide and at step 35 do this instead" 
+
+### step 1: Build hive or download binaries
+
+#### download binaries
+
+If you're on a low end hardware compiling may take a while, so it's faster to let someone compile the binaries for you so you can just run them instead.
+
+@gtg offers pre-built binaries at https://gtg.openhive.network/get/testnet/bin/ just download both hived and cli_wallet and you're good to go:
+
+```
+mkdir programs
+cd programs
+wget https://gtg.openhive.network/get/testnet/bin/cli_wallet-v1.25.0rc2
+wget https://gtg.openhive.network/get/testnet/bin/hived-v1.25.0rc2
+chmod +x *
+```
+
+This is a hassle-free solution but binaries may not always be available and it's generally better security-wise to compile it yourself.
+
+### build hive
+
+If you are running on low end hardware like me, you will probably need to setup some swap to compile hive:  https://linuxize.com/post/how-to-add-swap-space-on-ubuntu-18-04/ I personally added 16GB of swap. I don't know how much is actually needed I just figured that it would be enough, feel free to tell me in the comments if you experiment with it.
+
+
+Let's install the dependencies first:
+```
+apt-get install -y \
+        autoconf \
+        automake \
+        autotools-dev \
+        build-essential \
+        cmake \
+        doxygen \
+        git \
+        libboost-all-dev \
+        libyajl-dev \
+        libreadline-dev \
+        libssl-dev \
+        libtool \
+        liblz4-tool \
+        ncurses-dev \
+        python3 \
+        python3-dev \
+        python3-jinja2 \
+        python3-pip \
+        libgflags-dev \
+        libsnappy-dev \
+        zlib1g-dev \
+        libbz2-dev \
+        liblz4-dev \
+        libzstd-dev
+```
+
+Then get hive and compile it, change `v1.25.0rc2` to whatever is the current release tag, follow @gtg he is usually the one announcing the release notes, alternatively you can look on https://gitlab.syncad.com/hive/hive/-/tags and look at the most recent tags.  
+
+```
+git clone git@gitlab.syncad.com:hive/hive.git
+cd hive
+git checkout v1.25.0rc2
+git submodule update --init --recursive
+mkdir build
+cd build
+
+cmake -DENABLE_COVERAGE_TESTING=ON -DBUILD_HIVE_TESTNET=ON -DLOW_MEMORY_NODE=ON ..
+
+make -j$(nproc) hived cli_wallet
+```
+
+Compiling may take a while if you are on low end hardware it could take up to a few hours if not more, I forgot to measure it when I did it myself so 🤷‍. On high end hardware you can expect 3-5 minutes.
+ 
+## Run the node
+
+I am using the directory structure and binary names that you get when you compile hive so straight copy paste may not work if you use binaries but everything else works the same you just have to use the right paths and right binary names.
+
+
+Run the node a few seconds and then exit hived like so
+
+`./programs/hive/hived -d testnet/`
+
+this will create a testnet directory with the default config file.
+
+open the config.ini file
+
+nano testnet/config.ini
+
+replace the config.ini with this one:
+
+```
+# tells the node which seeds he should listen to to get blocks
+p2p-seed-node = testnet.openhive.network:2001
+
+# Local http endpoint for webserver requests.
+webserver-http-endpoint = 127.0.0.1:8090
+
+# Local websocket endpoint for webserver requests.
+webserver-ws-endpoint =127.0.0.1:8091
+
+log-appender = {"appender":"stderr","stream":"std_error"}
+log-logger = {"name":"default","level":"info","appender":"stderr"}
+
+backtrace = yes
+
+plugin = webserver p2p json_rpc
+plugin = database_api condenser_api
+
+plugin = witness
+plugin = rc
+
+plugin = market_history
+plugin = market_history_api
+
+plugin = account_history_rocksdb
+plugin = account_history_api
+
+plugin = transaction_status
+plugin = transaction_status_api
+
+plugin = account_by_key
+plugin = account_by_key_api
+
+plugin = reputation
+plugin = reputation_api
+
+plugin = block_api network_broadcast_api rc_api
+
+account-history-rocksdb-path = "blockchain/account-history-rocksdb-storage"
+
+shared-file-size = 10G
+
+shared-file-full-threshold = 9500
+shared-file-scale-rate = 1000
+
+flush-state-interval = 0
+
+market-history-bucket-size = [15,60,300,3600,86400]
+market-history-buckets-per-size = 5760
+
+p2p-endpoint = 0.0.0.0:2001
+
+transaction-status-block-depth = 64000
+transaction-status-track-after-block = 46000000
+
+webserver-thread-pool-size = 256
+```
+
+Then run hived again, this time we want it to stay up so setup a way for it to persist even if you log out, like screen. I personally use pm2 for the testnets just because it's convenient. This is not optimal for a production setup but it's fine for those testnets. (see https://pm2.keymetrics.io/docs/usage/quick-start/)
+
+for the testnet I run hived like this with pm2:
+
+pm2 start --name testnet ./programs/hived/hived -- -d testnet
+
+
+It will take some time (a few minutes to a few hours) before you get your blocks.
+You can look at https://test.ausbit.dev/ to see what is the head block to get a sense of how far you are.
+When you are synched with the testnet and you should see messages like this:
+
+```
+3|hf23     | 1526617ms p2p_plugin.cpp:212            handle_block         ] Got 0 transactions on block 4415 by howo -- Block Time Offset: -382 ms
+3|hf23     | 1532618ms p2p_plugin.cpp:212            handle_block         ] Got 0 transactions on block 4416 by howo -- Block Time Offset: -381 ms
+3|hf23     | 1538612ms p2p_plugin.cpp:212            handle_block         ] Got 0 transactions on block 4417 by howo -- Block Time Offset: -387 ms
+3|hf23     | 1544620ms p2p_plugin.cpp:212            handle_block         ] Got 0 transactions on block 4418 by howo -- Block Time Offset: -379 ms
+3|hf23     | 1550615ms p2p_plugin.cpp:212            handle_block         ] Got 0 transactions on block 4419 by howo -- Block Time Offset: -384 ms
+
+```
+
+now your node is running ! So that's great, but it's not producing.
+
+So you need to setup your witness.
+
+## Setting up your witness 
+
+### cli_wallet 
+
+Open up the cli wallet:
+
+`./programs/cli_wallet/cli_wallet --server-rpc-endpoint="ws://127.0.0.1:8091"`
+
+it'll ask for a password, so execute:
+
+`set_password yourpassword`
+
+then unlock it using:
+
+`unlock yourpassword`
+
+Now execute those commands:
+
+import your active key to do various actions, note that the keys on the testnet are the same than the keys on main net (they have been ported) so you can just use your account  
+`import_key 5JNHfZYKGaomSFvd4NUdQ9qMcEAC43kujbfjueTHpVapX1Kzq2n`
+
+then generate keys for your witness:
+`suggest_brain_key`
+
+it'll be something like this:
+```
+{
+  "brain_priv_key": "STRANGE ROADWAY TWASOME MOLER CENTIMO THOFT COMPORT VARIANT OUTSWIM EGGER SCRIBE GLAVER CROWDED DOLLIER AWNED DOPPER",
+  "wif_priv_key": "5KJUxvUSdAV6H7LiutRJMVwEVptmoaDhM73Cg1itzYjG8zs7tWF",
+  "pub_key": "TST71oeHrdBZEKDG1GaC75VKDaRGcXk2R8htD8J6wkP6p1zDRPzFZ"
+}
+```
+Save these for later !
+
+Then set yourself as a witness (notice how I used the pub_key generated above)
+```
+update_witness "yourusername" "http://example.org" "TST71oeHrdBZEKDG1GaC75VKDaRGcXk2R8htD8J6wkP6p1zDRPzFZ" {"account_creation_fee":"0.000 TESTS","maximum_block_size":65536,"hbd_interest_rate":300} true
+```
+
+then request some test hive via https://hivetestnetfaucet.org/
+
+and power it up, this is important to do even if you already have hp. Because of the power up delay introduced in hf24, your initial HP don't have any effect:
+
+`transfer_to_vesting "yourusername" "yourusername" "10.000 TESTS" true`
+
+and finally vote for yourself so you get scheduled for blocks. If you don't have stake feel free to request some via https://hivetestnetfaucet.org/
+
+`vote_for_witness "yourusername" "yourusername" true true`
+
+and we are done with cli_wallet ! but not with the setup.
+
+### final config
+
+Open the config one final time to set yourself as a witness by adding these fields:
+
+I use the private key that you generated with the cli above not the one that I put here. I put one here to show that you don't put quotes around the private key.
+```
+witness = "yourusername"
+
+# WIF PRIVATE KEY to be used by one or more witnesses or miners
+private-key = 5KJUxvUSdAV6H7LiutRJMVwEVptmoaDhM73Cg1itzYjG8zs7tWF
+```
+
+restart the node and you should be producing blocks, the logs should look something like this:
+
+```
+3|hf23     | 2687621ms p2p_plugin.cpp:212            handle_block         ] Got 0 transactions on block 4595 by howo -- Block Time Offset: -378 ms
+3|hf23     | 2690613ms witness_plugin.cpp:343        block_production_loo ] Generated block #4596 with timestamp 2020-08-25T19:44:51 at time 2020-08-25T19:44:51
+```
+
+## Seed node
+
+Go the extra mile and setup a seed node ! this is quite important as the testnet have very few seed nodes, so it helps a lot if you make one.
+
+Your node is already configured to be a seed node so you just need to open the corresponding port:
+(note that this command may vary depending on the firewall setup of your computer)
+```
+sudo iptables -A INPUT -m state --state NEW -m tcp -p tcp --dport 2001 -j ACCEPT
+```
+
+And now you can communicate the new seed node to everyone. Please post your ip as a comment of that post so that I can update this link to use your seed as well :).
+
+Thank you for reading.
+
+If you liked this writeup, please consider voting for @steempress it's the witness that I co-manage with @fredrikaa:
+![](https://i.imgur.com/oPJ63jA.png)
+<center><sup>You can vote for our witness directly using Hivesigner <a href="https://hivesigner.com/sign/account-witness-vote?witness=steempress&amp;approve=1">here</a>.</sup></center></div>
+<script crossorigin="anonymous" integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=" src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+
+<script src="https://unpkg.com/steem-content-renderer"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/hive-content-renderer/dist/hive-content-renderer.min.js"></script> -->
+<script>
+  $(document).ready(function() {
+    try {
+      const renderer = new SteemContentRenderer.DefaultRenderer({
+      // const renderer = new HiveContentRenderer({
+        baseUrl: "https://hive.blog/",
+        breaks: true,
+        skipSanitization: false,
+        allowInsecureScriptTags: false,
+        addNofollowToLinks: true,
+        doNotShowImages: false,
+        ipfsPrefix: "",
+        assetsWidth: 640,
+        assetsHeight: 480,
+        imageProxyFn: (url) => url,
+        usertagUrlFn: (account) => "/@howo",
+        hashtagUrlFn: (hashtag) => "/how-to-run-a-witness-node-on-the-hf25-testnet",
+        isLinkSafeFn: (url) => true,
+      });
+      
+      const inputElem = $('#content-howo-how-to-run-a-witness-node-on-the-hf25-testnet').html();
+      const outputElem = $('#content-howo-how-to-run-a-witness-node-on-the-hf25-testnet');
+      const output = renderer.render(inputElem);
+      
+      outputElem.html(output);
+    } catch(e) {
+      console.log(e);
+    }
+  });
+</script>
+
+<style>
+  #content-howo-how-to-run-a-witness-node-on-the-hf25-testnet {
+    padding: 0 3rem;
+    color: #444444;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.8;
+    text-shadow: 0 1px 0 #ffffff;
+    padding: 0.5rem;
+  }
+  #content-howo-how-to-run-a-witness-node-on-the-hf25-testnet code {
+    background: white;
+  }
+  #content-howo-how-to-run-a-witness-node-on-the-hf25-testnet a {
+    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
+  }
+  #content-howo-how-to-run-a-witness-node-on-the-hf25-testnet a:hover {
+    border-bottom: 0;
+  }
+  #content-howo-how-to-run-a-witness-node-on-the-hf25-testnet h1 {
+    font-size: 2.2em;
+  }
+  #content-howo-how-to-run-a-witness-node-on-the-hf25-testnet h2, h3, h4, h5 {
+    margin-bottom: 0;
+  }
+  #content-howo-how-to-run-a-witness-node-on-the-hf25-testnet header small {
+    color: #999;
+    font-size: 50%;
+  }
+  #content-howo-how-to-run-a-witness-node-on-the-hf25-testnet img {
+    max-width: 100%;
+  }
+</style>
+
+<hr />
+
+<p>
+  See: <a href="https://peakd.com/guide/@howo/how-to-run-a-witness-node-on-the-hf25-testnet">How to run a witness node on the hf25 testnet</a>
+  by
+  <a href="https://hive.blog/@howo">@howo</a>
+</p>
+
+
+  </div><a class="u-url" href="/howto/witness/testnet/2021/05/31/how-to-run-a-witness-node-on-the-hf25-testnet.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading"><a rel="author" href="/">Hive Chain Documentation</a></h2>
+    
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">site curated by: @inertia</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>Your resource for various levels of Hive Documentation.</p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+</body>
+
+</html>
