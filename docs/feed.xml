@@ -1,4 +1,101 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="https://hivedocs.info/feed.xml" rel="self" type="application/atom+xml" /><link href="https://hivedocs.info/" rel="alternate" type="text/html" /><updated>2021-06-03T08:09:43-07:00</updated><id>https://hivedocs.info/feed.xml</id><title type="html">Hive Chain Documentation</title><subtitle>Your resource for various levels of Hive Documentation.</subtitle><author><name>site curated by: @inertia</name></author><entry><title type="html">14th update of 2021 on BlockTrades work on Hive software</title><link href="https://hivedocs.info/news/core/development/2021/06/02/14th-update-of-2021-on-blocktrades-work-on-hive-software.html" rel="alternate" type="text/html" title="14th update of 2021 on BlockTrades work on Hive software" /><published>2021-06-02T17:21:12-07:00</published><updated>2021-06-02T17:21:12-07:00</updated><id>https://hivedocs.info/news/core/development/2021/06/02/14th-update-of-2021-on-blocktrades-work-on-hive-software</id><content type="html" xml:base="https://hivedocs.info/news/core/development/2021/06/02/14th-update-of-2021-on-blocktrades-work-on-hive-software.html">&lt;div id=&quot;content-blocktrades-14th-update-of-2021-on-blocktrades-work-on-hive-software&quot;&gt;![blocktrades update.png](https://images.hive.blog/DQmSihw8Kz4U7TuCQa98DDdCzqbqPFRumuVWAbareiYZW1Z/blocktrades%20update.png)
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="https://hivedocs.info/feed.xml" rel="self" type="application/atom+xml" /><link href="https://hivedocs.info/" rel="alternate" type="text/html" /><updated>2021-06-04T20:34:28-07:00</updated><id>https://hivedocs.info/feed.xml</id><title type="html">Hive Chain Documentation</title><subtitle>Your resource for various levels of Hive Documentation.</subtitle><author><name>site curated by: @inertia</name></author><entry><title type="html">Vessel Testnet Support</title><link href="https://hivedocs.info/news/vessel/testnet/2021/06/04/vessel-testnet-support.html" rel="alternate" type="text/html" title="Vessel Testnet Support" /><published>2021-06-04T20:26:39-07:00</published><updated>2021-06-04T20:26:39-07:00</updated><id>https://hivedocs.info/news/vessel/testnet/2021/06/04/vessel-testnet-support</id><content type="html" xml:base="https://hivedocs.info/news/vessel/testnet/2021/06/04/vessel-testnet-support.html">&lt;div id=&quot;content-rishi556-vessel-testnet-support&quot;&gt;Recently I updated Vessel to work with the testnet as well. Its quite nice stuff and has made my testing with the testnet a bit easier. It's pretty important to make sure what we've got work with future forks, and the testnet is a great way to do so. Nothing affecting vessel was changed so as long as you are on v0.5.0 you should be fine and not need to update, but if you'd like to checkout the testnet, you get the latest version from here: https://gitlab.syncad.com/hive/vessel/-/releases.
+
+To get onto the testnet with vessel, all you have to do is supply it with a proper testnet node. Right now we have https://testnet.openhive.network. You can set that over on the settings page on vessel, or when first importing your account. With this instance, most accounts should already be exported with the same keys so you can just use it with no problems.
+
+
+![Screen Shot 2021-06-04 at 10.21.16 PM.png](https://files.peakd.com/file/peakd-hive/rishi556/23tcJe3m31RYHtSGU6FA2ecc1E8FwXnKzjsMwPRvX71LeDjbe9ue6tWPbG6rJTzTq9tBw.png)
+
+Switching to the testnet also gets your vessel to change its color to a lovely pink and some of the pages will show the testnet symbols instead of the mainnet one to signify that you are on it. 
+
+I hope that this makes things easier for those of you use participate on the testnet.
+
+I also did upgrade someguy's hivefeed-js(https://github.com/someguy123/hivefeed-js) to support the testnet as well. Just set the network to `testnet` in the config and you'll be good to go. Having more of our apps supporting the testnet will be awesome to make testing even easier and to make sure they function without problems once the fork comes around. 
+
+&lt;hr /&gt;
+
+Nerdier part starts here
+
+The main change that needed to be done was just changing Hive and HBD to the proper testnet symbols(though the latest hive-js version does this automatically so if I waited could have done less work haha), that can be seen on this commit https://gitlab.syncad.com/hive/vessel/-/commit/36b366d375cffb371f04a56b97a81de9d43d4d38. It was just a simple replacement of `HIVE` to `TESTS` and `HBD` to `TBD`.
+
+The other part was to set the chainid and prefix to the correct values, which can be seen here: https://gitlab.syncad.com/hive/vessel/-/commit/67a395539180fba62f4c849418982706e5a07c2f. @mahdiyari actually gave me a really great way on how to do this without needing user input at all. Initially I thought I would need to have user input in the chain id themselves, or check a box to signify that it's a testnet. Instead @mahdiyari proposed that I just pull the chain id and prefix right from the api node that the user supplied. That worked beautifully. 
+&lt;/div&gt;
+&lt;script crossorigin=&quot;anonymous&quot; integrity=&quot;sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=&quot; src=&quot;https://code.jquery.com/jquery-3.5.1.slim.min.js&quot;&gt;&lt;/script&gt;
+
+&lt;script src=&quot;https://unpkg.com/steem-content-renderer&quot;&gt;&lt;/script&gt;
+
+&lt;!-- &lt;script src=&quot;https://cdn.jsdelivr.net/npm/hive-content-renderer/dist/hive-content-renderer.min.js&quot;&gt;&lt;/script&gt; --&gt;
+&lt;script&gt;
+  $(document).ready(function() {
+    try {
+      const renderer = new SteemContentRenderer.DefaultRenderer({
+      // const renderer = new HiveContentRenderer({
+        baseUrl: &quot;https://hive.blog/&quot;,
+        breaks: true,
+        skipSanitization: false,
+        allowInsecureScriptTags: false,
+        addNofollowToLinks: true,
+        doNotShowImages: false,
+        ipfsPrefix: &quot;&quot;,
+        assetsWidth: 640,
+        assetsHeight: 480,
+        imageProxyFn: (url) =&gt; url,
+        usertagUrlFn: (account) =&gt; &quot;/@rishi556&quot;,
+        hashtagUrlFn: (hashtag) =&gt; &quot;/vessel-testnet-support&quot;,
+        isLinkSafeFn: (url) =&gt; true,
+      });
+      
+      const inputElem = $('#content-rishi556-vessel-testnet-support').html();
+      const outputElem = $('#content-rishi556-vessel-testnet-support');
+      const output = renderer.render(inputElem);
+      
+      outputElem.html(output);
+    } catch(e) {
+      console.log(e);
+    }
+  });
+&lt;/script&gt;
+
+&lt;style&gt;
+  #content-rishi556-vessel-testnet-support {
+    padding: 0 3rem;
+    color: #444444;
+    font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.8;
+    text-shadow: 0 1px 0 #ffffff;
+    padding: 0.5rem;
+  }
+  #content-rishi556-vessel-testnet-support code {
+    background: white;
+  }
+  #content-rishi556-vessel-testnet-support a {
+    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
+  }
+  #content-rishi556-vessel-testnet-support a:hover {
+    border-bottom: 0;
+  }
+  #content-rishi556-vessel-testnet-support h1 {
+    font-size: 2.2em;
+  }
+  #content-rishi556-vessel-testnet-support h2, h3, h4, h5 {
+    margin-bottom: 0;
+  }
+  #content-rishi556-vessel-testnet-support header small {
+    color: #999;
+    font-size: 50%;
+  }
+  #content-rishi556-vessel-testnet-support img {
+    max-width: 100%;
+  }
+&lt;/style&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;
+  See: &lt;a href=&quot;https://peakd.com/hive-139531/@rishi556/vessel-testnet-support&quot;&gt;Vessel Testnet Support&lt;/a&gt;
+  by
+  &lt;a href=&quot;https://hive.blog/@rishi556&quot;&gt;@rishi556&lt;/a&gt;
+&lt;/p&gt;</content><author><name>rishi556</name></author><category term="news" /><category term="vessel" /><category term="testnet" /><summary type="html">Recently I updated Vessel to work with the testnet as well. Its quite nice stuff and has made my testing with the testnet a bit easier. It's pretty important to make sure what we've got work with future forks, and the testnet is a great way to do so. Nothing affecting vessel was changed so as long as you are on v0.5.0 you should be fine and not need to update, but if you'd like to checkout the testnet, you get the latest version from here: https://gitlab.syncad.com/hive/vessel/-/releases. To get onto the testnet with vessel, all you have to do is supply it with a proper testnet node. Right now we have https://testnet.openhive.network. You can set that over on the settings page on vessel, or when first importing your account. With this instance, most accounts should already be exported with the same keys so you can just use it with no problems. ![Screen Shot 2021-06-04 at 10.21.16 PM.png](https://files.peakd.com/file/peakd-hive/rishi556/23tcJe3m31RYHtSGU6FA2ecc1E8FwXnKzjsMwPRvX71LeDjbe9ue6tWPbG6rJTzTq9tBw.png) Switching to the testnet also gets your vessel to change its color to a lovely pink and some of the pages will show the testnet symbols instead of the mainnet one to signify that you are on it. I hope that this makes things easier for those of you use participate on the testnet. I also did upgrade someguy's hivefeed-js(https://github.com/someguy123/hivefeed-js) to support the testnet as well. Just set the network to `testnet` in the config and you'll be good to go. Having more of our apps supporting the testnet will be awesome to make testing even easier and to make sure they function without problems once the fork comes around. Nerdier part starts here The main change that needed to be done was just changing Hive and HBD to the proper testnet symbols(though the latest hive-js version does this automatically so if I waited could have done less work haha), that can be seen on this commit https://gitlab.syncad.com/hive/vessel/-/commit/36b366d375cffb371f04a56b97a81de9d43d4d38. It was just a simple replacement of `HIVE` to `TESTS` and `HBD` to `TBD`. The other part was to set the chainid and prefix to the correct values, which can be seen here: https://gitlab.syncad.com/hive/vessel/-/commit/67a395539180fba62f4c849418982706e5a07c2f. @mahdiyari actually gave me a really great way on how to do this without needing user input at all. Initially I thought I would need to have user input in the chain id themselves, or check a box to signify that it's a testnet. Instead @mahdiyari proposed that I just pull the chain id and prefix right from the api node that the user supplied. That worked beautifully. See: Vessel Testnet Support by @rishi556</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://files.peakd.com/file/peakd-hive/rishi556/23tcJe3m31RYHtSGU6FA2ecc1E8FwXnKzjsMwPRvX71LeDjbe9ue6tWPbG6rJTzTq9tBw.png" /><media:content medium="image" url="https://files.peakd.com/file/peakd-hive/rishi556/23tcJe3m31RYHtSGU6FA2ecc1E8FwXnKzjsMwPRvX71LeDjbe9ue6tWPbG6rJTzTq9tBw.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">14th update of 2021 on BlockTrades work on Hive software</title><link href="https://hivedocs.info/news/core/development/2021/06/02/14th-update-of-2021-on-blocktrades-work-on-hive-software.html" rel="alternate" type="text/html" title="14th update of 2021 on BlockTrades work on Hive software" /><published>2021-06-02T17:21:12-07:00</published><updated>2021-06-02T17:21:12-07:00</updated><id>https://hivedocs.info/news/core/development/2021/06/02/14th-update-of-2021-on-blocktrades-work-on-hive-software</id><content type="html" xml:base="https://hivedocs.info/news/core/development/2021/06/02/14th-update-of-2021-on-blocktrades-work-on-hive-software.html">&lt;div id=&quot;content-blocktrades-14th-update-of-2021-on-blocktrades-work-on-hive-software&quot;&gt;![blocktrades update.png](https://images.hive.blog/DQmSihw8Kz4U7TuCQa98DDdCzqbqPFRumuVWAbareiYZW1Z/blocktrades%20update.png)
 
 Below is a list of Hive-related programming issues worked on by the BlockTrades team during the last week or so:
 
@@ -1573,144 +1670,4 @@ The HiveSQL Documentation is available at **https://docs.hivesql.io**
   &lt;a href=&quot;https://hive.blog/@arcange&quot;&gt;@arcange&lt;/a&gt;
 &lt;/p&gt;
 
-&lt;/center&gt;&lt;/div&gt;</content><author><name>arcange</name></author><category term="news" /><category term="sql" /><category term="database" /><summary type="html">![](https://i.imgur.com/rq7Ab3K.png) Promises are made to be kept! HiveSQL's proposal mentioned the creation of documentation and tutorials. Here is finally the culmination of a long work that I undertook several weeks ago: the [HiveSQL documentation](https://docs.hivesql.io). After many tests with different documentation solutions, my choice finally fell on gitbooks which, in my opinion, offer a lot of flexibility, both in terms of content editing and maintenance. TL;DR: HiveSQL documentation can be found at **https://docs.hivesql.io** ### What's in it? First, there is general information on * what is HiveSQL. * how to access it. * how to get support. Things that current HiveSQL users are already used to. You will then find more technical information such as: * a [database diagram](https://docs.hivesql.io/technical-informations/database-diagram) * an exhaustive list of all available tables * a description for each table's column Yes, you read it well: for all operations, virtual operations and state tables, each column of each table is described. This should interest many developers, even if they do not use Hiveql. The documentation describes: * [Operations](https://docs.hivesql.io/technical-informations/operations) * [Virtual Operations](https://docs.hivesql.io/technical-informations/virtual-operations) * [State tables](https://docs.hivesql.io/technical-informations/state-tables) like Accounts and Comments It also describes how to use HiveSQL exclusive features like [Full-Text Search](https://docs.hivesql.io/technical-informations/full-text-search) and [Language Detection](https://docs.hivesql.io/technical-informations/language-detection). The documentation also contains various tutorials for developers, notably PHP, Python, Ruby and even for Microsoft Excel users. More to come. ### Other Resources I also searched the blockchain to find the various posts that have been written about HiveSQL. So I grouped the links to these different posts on a resource page to make it easier for you to find them. If you have made a post that deserves to appear there, do not hesitate to contact me as well. ### What's next? There is still room to improve this documentation. I am thinking about examples of complex queries, more detailed information on the blockchain content and operations. Some of the tutorials provided are quite rudimentary. I plan to improve them too. Do not hesitate to contact me if you want to add your contribution. But I first wish to have your feedback on its current state before going further. Feel free to use the HiveSQL [Discord](https://discord.gg/kyEFDfT) channel to report typos or make suggestions. ### One last word Thank you to @inertia for the amazing work he did with the [Hive Developer Documentation](https://developers.hive.io) from which I borrowed a few sentences. I truly believe that both documentations are complementary resources and that they will help everyone, developers and non-developers, to understand the content and organization of our blockchain. The HiveSQL Documentation is available at **https://docs.hivesql.io** --- #### Support our proposals |HiveSQL (to keep it free for all)|HiveBuzz (to keep it entertaining)| |-|-| |[Vote for the proposal on PeakD](https://peakd.com/me/proposals/138)[Vote for the proposal on Ecency](https://ecency.com/proposals/138)[Vote for the proposal using HiveSigner](https://hivesigner.com/sign/update_proposal_votes?proposal_ids=%5B%22138%22%5D&amp;amp;approve=true)|[Vote for the proposal on PeakD](https://peakd.com/me/proposals/147)[Vote for the proposal on Ecency](https://ecency.com/proposals/147)[Vote for the proposal using HiveSigner](https://hivesigner.com/sign/update_proposal_votes?proposal_ids=%5B%22147%22%5D&amp;amp;approve=true)| ### Check out my apps and services ### [Vote for me as a witness ![](https://i.imgur.com/2bi4SnT.png)](https://hivesigner.com/sign/account-witness-vote?witness=arcange&amp;amp;approve=1)&amp;lt;/div&amp;gt; See: The HiveSQL documentation is now available by @arcange</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://i.imgur.com/rq7Ab3K.png" /><media:content medium="image" url="https://i.imgur.com/rq7Ab3K.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">12th update of 2021 on BlockTrades work on Hive software</title><link href="https://hivedocs.info/news/core/development/2021/05/17/12th-update-of-2021-on-blocktrades-work-on-hive-software.html" rel="alternate" type="text/html" title="12th update of 2021 on BlockTrades work on Hive software" /><published>2021-05-17T16:04:24-07:00</published><updated>2021-05-17T16:04:24-07:00</updated><id>https://hivedocs.info/news/core/development/2021/05/17/12th-update-of-2021-on-blocktrades-work-on-hive-software</id><content type="html" xml:base="https://hivedocs.info/news/core/development/2021/05/17/12th-update-of-2021-on-blocktrades-work-on-hive-software.html">&lt;div id=&quot;content-blocktrades-12th-update-of-2021-on-blocktrades-work-on-hive-software&quot;&gt;![blocktrades update.png](https://images.hive.blog/DQmSihw8Kz4U7TuCQa98DDdCzqbqPFRumuVWAbareiYZW1Z/blocktrades%20update.png)
-
-Below is a list of Hive-related programming issues worked on by the BlockTrades team during the last week:
-
-# Hived work (blockchain node software)
-
-This week we’ve been testing the first release candidate for hardfork 25.  In addition to manual testing of node operation, we're also writing a few more tests to test consensus changes under stress conditions.
-
-Although we haven’t found any bugs in the new consensus changes yet, we have made several fixes to long-standing bugs that we found as part of our manual node testing. Most of the bugs are related to startup issues and confusing log messages that might mislead a node operator:
-
-* We fixed an error message that erroneously reported that a peer node was on an irreversible fork when it most likely was just ahead of the user’s node.
-* We fixed a long-standing error that could cause a crash at startup if a node started receiving API requests before the node had fully initialized.
-* hived now reports the peer count in warning messages when the blockchain thread is warning that it hasn’t received any transactions or blocks from the P2P thread in the last 30 seconds.
-* Hived now delays connecting to seed nodes until the P2P network is initialized and ready to process peer requests. This prevent seed nodes from disconnecting because the user's node doesn't respond to them in a timely manner.
-* ulog messages are now logged to stderr (console) for the node. Ulog messages are used by the P2P thread to report important issues that should be seen by node operators. In particular, the user now receives a console warning when the node startup is delayed while the P2P thread is trying to get access to the P2P port from the operating system (when a node is shutdown via Ctrl-C, the OS may take up to 1 minute to release the port, delaying recapture of the port when the node is restarted).
-
-We’ve also updated hived nodes to begin reporting the Hive chainid of BEEABODE at startup (as a temporary measure, the node used to report a chainid of 0 at startup, then swap to reporting BEEABODE after they hit the genesis fork for Hive). 
-
-For the initial release of hardfork 25, hived nodes will still continue to allow connections from nodes with chainid of 0, despite reporting the new chainid, but after all Hive nodes have updated to the hardfork 25 code, we’ll change the code to reject connections from older nodes.
-
-## Second release candidate for hived soon
-
-We’ll likely be publishing a second release candidate of hived in the next couple of days that contains the diagnostics and fixes discussed above (those changes have already been merged into the develop branch, so you can get them now for testing), plus one or two more small improvements that are still pending review.
-
-# Hivemind (2nd layer applications + social media middleware)
-
-We’re continuing to work on a few hivemind tests, running performance tests, and preparing database migration scripts in preparation for a new hivemind release (should be sometime this week).
-
-# Modular hivemind (framework for hive applications)
-
-We still didn’t have time to make the changes for the sql serializer last week due to the time spent fixing the various issues discussed in this post, but we will likely? complete that work in the coming week. Then we’ll be able to do a full performance test of the sql serializer in combination with a full sync of hivemind.
-
-In the meantime, we’re doing preparatory work to create an example modular hivemind-based application that just supports the account history API.
-
-# Condenser (code base for https://hive.blog)
-
-We’re testing condenser code against the testnet. We had some problems with condenser being able to broadcast transactions to the testnest which were ultimately traced to condenser using an older version of the hive-js package. It’s being updated currently and testing will continue. The same change will also be applied to the condenser wallet.
-
-# Hived testnet
-
-We launched and began testing the new public testnet based on release candidate 1. 
-
-We’ve also setup an API node configured to draw data from the testnet. This API node should be used by Hive applications to begin adding code changes to support new features added by the hardfork, such as vote expiration reporting.
-
-If you want to add a node to the public testnet, use this seednode:
-`p2p-seed-node = testnet.openhive.network:2001`
-
-To use the API node for the testnet:
-
-API endpoint via jussi:  https://testnet.openhive.network
-hived direct http server:  http://testnet.openhive.network:8091
-hived direct websocket server:  ws://testnet.openhive.network:8090
-hivemind server direct server:  http://testnet.openhive.network:8080 
-
-As mentioned previously, we’ve begun testing this testnet API node with condenser. You can visit it here: https://testblog.openhive.network 
-
- We will also setup a block explorer and a condenser-based wallet for the testnet soon.
-Update: @ausbitbank added block explorer for testnet https://test.ausbit.dev/
-
-We plan to leave this testnet running as a permanent testnet that apps can use to test against prior to making changes to their app operating on the mainnet. So Hive app devs are strongly urged to take advantage of this opportunity. As a side note, when doing so, please make sure to use the latest version of hive-js to make sure it's compatible with the testnet API node. We've also tested beempy successfully against the testnet API node.
-
-# Planned date for hardfork 25
-
-I’m still projecting the hardfork will be in the latter part of June, probably in the last week.&lt;/div&gt;
-&lt;script crossorigin=&quot;anonymous&quot; integrity=&quot;sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=&quot; src=&quot;https://code.jquery.com/jquery-3.5.1.slim.min.js&quot;&gt;&lt;/script&gt;
-
-&lt;script src=&quot;https://unpkg.com/steem-content-renderer&quot;&gt;&lt;/script&gt;
-
-&lt;!-- &lt;script src=&quot;https://cdn.jsdelivr.net/npm/hive-content-renderer/dist/hive-content-renderer.min.js&quot;&gt;&lt;/script&gt; --&gt;
-&lt;script&gt;
-  $(document).ready(function() {
-    try {
-      const renderer = new SteemContentRenderer.DefaultRenderer({
-      // const renderer = new HiveContentRenderer({
-        baseUrl: &quot;https://hive.blog/&quot;,
-        breaks: true,
-        skipSanitization: false,
-        allowInsecureScriptTags: false,
-        addNofollowToLinks: true,
-        doNotShowImages: false,
-        ipfsPrefix: &quot;&quot;,
-        assetsWidth: 640,
-        assetsHeight: 480,
-        imageProxyFn: (url) =&gt; url,
-        usertagUrlFn: (account) =&gt; &quot;/@blocktrades&quot;,
-        hashtagUrlFn: (hashtag) =&gt; &quot;/12th-update-of-2021-on-blocktrades-work-on-hive-software&quot;,
-        isLinkSafeFn: (url) =&gt; true,
-      });
-      
-      const inputElem = $('#content-blocktrades-12th-update-of-2021-on-blocktrades-work-on-hive-software').html();
-      const outputElem = $('#content-blocktrades-12th-update-of-2021-on-blocktrades-work-on-hive-software');
-      const output = renderer.render(inputElem);
-      
-      outputElem.html(output);
-    } catch(e) {
-      console.log(e);
-    }
-  });
-&lt;/script&gt;
-
-&lt;style&gt;
-  #content-blocktrades-12th-update-of-2021-on-blocktrades-work-on-hive-software {
-    padding: 0 3rem;
-    color: #444444;
-    font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif;
-    font-size: 16px;
-    line-height: 1.8;
-    text-shadow: 0 1px 0 #ffffff;
-    padding: 0.5rem;
-  }
-  #content-blocktrades-12th-update-of-2021-on-blocktrades-work-on-hive-software code {
-    background: white;
-  }
-  #content-blocktrades-12th-update-of-2021-on-blocktrades-work-on-hive-software a {
-    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
-  }
-  #content-blocktrades-12th-update-of-2021-on-blocktrades-work-on-hive-software a:hover {
-    border-bottom: 0;
-  }
-  #content-blocktrades-12th-update-of-2021-on-blocktrades-work-on-hive-software h1 {
-    font-size: 2.2em;
-  }
-  #content-blocktrades-12th-update-of-2021-on-blocktrades-work-on-hive-software h2, h3, h4, h5 {
-    margin-bottom: 0;
-  }
-  #content-blocktrades-12th-update-of-2021-on-blocktrades-work-on-hive-software header small {
-    color: #999;
-    font-size: 50%;
-  }
-  #content-blocktrades-12th-update-of-2021-on-blocktrades-work-on-hive-software img {
-    max-width: 100%;
-  }
-&lt;/style&gt;
-
-&lt;hr /&gt;
-
-&lt;p&gt;
-  See: &lt;a href=&quot;https://hive.blog/hive-139531/@blocktrades/12th-update-of-2021-on-blocktrades-work-on-hive-software&quot;&gt;12th update of 2021 on BlockTrades work on Hive software&lt;/a&gt;
-  by
-  &lt;a href=&quot;https://hive.blog/@blocktrades&quot;&gt;@blocktrades&lt;/a&gt;
-&lt;/p&gt;</content><author><name>blocktrades</name></author><category term="news" /><category term="core" /><category term="development" /><summary type="html">![blocktrades update.png](https://images.hive.blog/DQmSihw8Kz4U7TuCQa98DDdCzqbqPFRumuVWAbareiYZW1Z/blocktrades%20update.png) Below is a list of Hive-related programming issues worked on by the BlockTrades team during the last week: # Hived work (blockchain node software) This week we’ve been testing the first release candidate for hardfork 25. In addition to manual testing of node operation, we're also writing a few more tests to test consensus changes under stress conditions. Although we haven’t found any bugs in the new consensus changes yet, we have made several fixes to long-standing bugs that we found as part of our manual node testing. Most of the bugs are related to startup issues and confusing log messages that might mislead a node operator: * We fixed an error message that erroneously reported that a peer node was on an irreversible fork when it most likely was just ahead of the user’s node. * We fixed a long-standing error that could cause a crash at startup if a node started receiving API requests before the node had fully initialized. * hived now reports the peer count in warning messages when the blockchain thread is warning that it hasn’t received any transactions or blocks from the P2P thread in the last 30 seconds. * Hived now delays connecting to seed nodes until the P2P network is initialized and ready to process peer requests. This prevent seed nodes from disconnecting because the user's node doesn't respond to them in a timely manner. * ulog messages are now logged to stderr (console) for the node. Ulog messages are used by the P2P thread to report important issues that should be seen by node operators. In particular, the user now receives a console warning when the node startup is delayed while the P2P thread is trying to get access to the P2P port from the operating system (when a node is shutdown via Ctrl-C, the OS may take up to 1 minute to release the port, delaying recapture of the port when the node is restarted). We’ve also updated hived nodes to begin reporting the Hive chainid of BEEABODE at startup (as a temporary measure, the node used to report a chainid of 0 at startup, then swap to reporting BEEABODE after they hit the genesis fork for Hive). For the initial release of hardfork 25, hived nodes will still continue to allow connections from nodes with chainid of 0, despite reporting the new chainid, but after all Hive nodes have updated to the hardfork 25 code, we’ll change the code to reject connections from older nodes. ## Second release candidate for hived soon We’ll likely be publishing a second release candidate of hived in the next couple of days that contains the diagnostics and fixes discussed above (those changes have already been merged into the develop branch, so you can get them now for testing), plus one or two more small improvements that are still pending review. # Hivemind (2nd layer applications + social media middleware) We’re continuing to work on a few hivemind tests, running performance tests, and preparing database migration scripts in preparation for a new hivemind release (should be sometime this week). # Modular hivemind (framework for hive applications) We still didn’t have time to make the changes for the sql serializer last week due to the time spent fixing the various issues discussed in this post, but we will likely? complete that work in the coming week. Then we’ll be able to do a full performance test of the sql serializer in combination with a full sync of hivemind. In the meantime, we’re doing preparatory work to create an example modular hivemind-based application that just supports the account history API. # Condenser (code base for https://hive.blog) We’re testing condenser code against the testnet. We had some problems with condenser being able to broadcast transactions to the testnest which were ultimately traced to condenser using an older version of the hive-js package. It’s being updated currently and testing will continue. The same change will also be applied to the condenser wallet. # Hived testnet We launched and began testing the new public testnet based on release candidate 1. We’ve also setup an API node configured to draw data from the testnet. This API node should be used by Hive applications to begin adding code changes to support new features added by the hardfork, such as vote expiration reporting. If you want to add a node to the public testnet, use this seednode: `p2p-seed-node = testnet.openhive.network:2001` To use the API node for the testnet: API endpoint via jussi:  https://testnet.openhive.network hived direct http server:  http://testnet.openhive.network:8091 hived direct websocket server: ws://testnet.openhive.network:8090 hivemind server direct server:  http://testnet.openhive.network:8080 As mentioned previously, we’ve begun testing this testnet API node with condenser. You can visit it here: https://testblog.openhive.network We will also setup a block explorer and a condenser-based wallet for the testnet soon. Update: @ausbitbank added block explorer for testnet https://test.ausbit.dev/ We plan to leave this testnet running as a permanent testnet that apps can use to test against prior to making changes to their app operating on the mainnet. So Hive app devs are strongly urged to take advantage of this opportunity. As a side note, when doing so, please make sure to use the latest version of hive-js to make sure it's compatible with the testnet API node. We've also tested beempy successfully against the testnet API node. # Planned date for hardfork 25 I’m still projecting the hardfork will be in the latter part of June, probably in the last week. See: 12th update of 2021 on BlockTrades work on Hive software by @blocktrades</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://images.hive.blog/DQmSihw8Kz4U7TuCQa98DDdCzqbqPFRumuVWAbareiYZW1Z/blocktrades%20update.png" /><media:content medium="image" url="https://images.hive.blog/DQmSihw8Kz4U7TuCQa98DDdCzqbqPFRumuVWAbareiYZW1Z/blocktrades%20update.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>
+&lt;/center&gt;&lt;/div&gt;</content><author><name>arcange</name></author><category term="news" /><category term="sql" /><category term="database" /><summary type="html">![](https://i.imgur.com/rq7Ab3K.png) Promises are made to be kept! HiveSQL's proposal mentioned the creation of documentation and tutorials. Here is finally the culmination of a long work that I undertook several weeks ago: the [HiveSQL documentation](https://docs.hivesql.io). After many tests with different documentation solutions, my choice finally fell on gitbooks which, in my opinion, offer a lot of flexibility, both in terms of content editing and maintenance. TL;DR: HiveSQL documentation can be found at **https://docs.hivesql.io** ### What's in it? First, there is general information on * what is HiveSQL. * how to access it. * how to get support. Things that current HiveSQL users are already used to. You will then find more technical information such as: * a [database diagram](https://docs.hivesql.io/technical-informations/database-diagram) * an exhaustive list of all available tables * a description for each table's column Yes, you read it well: for all operations, virtual operations and state tables, each column of each table is described. This should interest many developers, even if they do not use Hiveql. The documentation describes: * [Operations](https://docs.hivesql.io/technical-informations/operations) * [Virtual Operations](https://docs.hivesql.io/technical-informations/virtual-operations) * [State tables](https://docs.hivesql.io/technical-informations/state-tables) like Accounts and Comments It also describes how to use HiveSQL exclusive features like [Full-Text Search](https://docs.hivesql.io/technical-informations/full-text-search) and [Language Detection](https://docs.hivesql.io/technical-informations/language-detection). The documentation also contains various tutorials for developers, notably PHP, Python, Ruby and even for Microsoft Excel users. More to come. ### Other Resources I also searched the blockchain to find the various posts that have been written about HiveSQL. So I grouped the links to these different posts on a resource page to make it easier for you to find them. If you have made a post that deserves to appear there, do not hesitate to contact me as well. ### What's next? There is still room to improve this documentation. I am thinking about examples of complex queries, more detailed information on the blockchain content and operations. Some of the tutorials provided are quite rudimentary. I plan to improve them too. Do not hesitate to contact me if you want to add your contribution. But I first wish to have your feedback on its current state before going further. Feel free to use the HiveSQL [Discord](https://discord.gg/kyEFDfT) channel to report typos or make suggestions. ### One last word Thank you to @inertia for the amazing work he did with the [Hive Developer Documentation](https://developers.hive.io) from which I borrowed a few sentences. I truly believe that both documentations are complementary resources and that they will help everyone, developers and non-developers, to understand the content and organization of our blockchain. The HiveSQL Documentation is available at **https://docs.hivesql.io** --- #### Support our proposals |HiveSQL (to keep it free for all)|HiveBuzz (to keep it entertaining)| |-|-| |[Vote for the proposal on PeakD](https://peakd.com/me/proposals/138)[Vote for the proposal on Ecency](https://ecency.com/proposals/138)[Vote for the proposal using HiveSigner](https://hivesigner.com/sign/update_proposal_votes?proposal_ids=%5B%22138%22%5D&amp;amp;approve=true)|[Vote for the proposal on PeakD](https://peakd.com/me/proposals/147)[Vote for the proposal on Ecency](https://ecency.com/proposals/147)[Vote for the proposal using HiveSigner](https://hivesigner.com/sign/update_proposal_votes?proposal_ids=%5B%22147%22%5D&amp;amp;approve=true)| ### Check out my apps and services ### [Vote for me as a witness ![](https://i.imgur.com/2bi4SnT.png)](https://hivesigner.com/sign/account-witness-vote?witness=arcange&amp;amp;approve=1)&amp;lt;/div&amp;gt; See: The HiveSQL documentation is now available by @arcange</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://i.imgur.com/rq7Ab3K.png" /><media:content medium="image" url="https://i.imgur.com/rq7Ab3K.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>
