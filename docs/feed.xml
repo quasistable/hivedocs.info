@@ -1,4 +1,121 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="https://hivedocs.info/feed.xml" rel="self" type="application/atom+xml" /><link href="https://hivedocs.info/" rel="alternate" type="text/html" /><updated>2021-06-04T20:34:28-07:00</updated><id>https://hivedocs.info/feed.xml</id><title type="html">Hive Chain Documentation</title><subtitle>Your resource for various levels of Hive Documentation.</subtitle><author><name>site curated by: @inertia</name></author><entry><title type="html">Vessel Testnet Support</title><link href="https://hivedocs.info/news/vessel/testnet/2021/06/04/vessel-testnet-support.html" rel="alternate" type="text/html" title="Vessel Testnet Support" /><published>2021-06-04T20:26:39-07:00</published><updated>2021-06-04T20:26:39-07:00</updated><id>https://hivedocs.info/news/vessel/testnet/2021/06/04/vessel-testnet-support</id><content type="html" xml:base="https://hivedocs.info/news/vessel/testnet/2021/06/04/vessel-testnet-support.html">&lt;div id=&quot;content-rishi556-vessel-testnet-support&quot;&gt;Recently I updated Vessel to work with the testnet as well. Its quite nice stuff and has made my testing with the testnet a bit easier. It's pretty important to make sure what we've got work with future forks, and the testnet is a great way to do so. Nothing affecting vessel was changed so as long as you are on v0.5.0 you should be fine and not need to update, but if you'd like to checkout the testnet, you get the latest version from here: https://gitlab.syncad.com/hive/vessel/-/releases.
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="https://hivedocs.info/feed.xml" rel="self" type="application/atom+xml" /><link href="https://hivedocs.info/" rel="alternate" type="text/html" /><updated>2021-06-09T08:13:49-07:00</updated><id>https://hivedocs.info/feed.xml</id><title type="html">Hive Chain Documentation</title><subtitle>Your resource for various levels of Hive Documentation.</subtitle><author><name>site curated by: @inertia</name></author><entry><title type="html">Daily Hive Engine Snapshots</title><link href="https://hivedocs.info/howto/devops/hiveengine/2021/06/09/daily-hive-engine-snapshots.html" rel="alternate" type="text/html" title="Daily Hive Engine Snapshots" /><published>2021-06-09T07:36:06-07:00</published><updated>2021-06-09T07:36:06-07:00</updated><id>https://hivedocs.info/howto/devops/hiveengine/2021/06/09/daily-hive-engine-snapshots</id><content type="html" xml:base="https://hivedocs.info/howto/devops/hiveengine/2021/06/09/daily-hive-engine-snapshots.html">&lt;div id=&quot;content-primersion-daily-hive-engine-snapshots&quot;&gt;![wallp12.png](https://images.ecency.com/DQmRT6nLW4pqLqeR1NhGVy68HUhRMDEYCNUhFQ6R1SLT7sm/wallp12.png)
+
+## The Why
+
+Hive engine nodes read all transactions from the HIVE blockchain and when they discover a custom json operation with a special id (ssc-mainnet-hive), they process the transaction and add it to the hive engine sidechain. The hive engine sidechain itself is basically a big database storing all transactions and processed information, such as token balances and nft instances, inside a mongodb.
+To create the hive engine sidechain completely from scratch we would have to start from the genesis block and process all transactions after that. This is a very lengthy process, because it includes millions of transactions.
+
+That's where snapshots come into play. You simply create a snapshot of the database after block X was processed and the next time you only have to replay transactions starting from block X. The same principle applies to the HIVE blockchain itself.
+
+So whenever something goes wrong or you want to setup a fresh node you can use the snapshot to set up your node faster.
+
+## The What
+
+I am running a hive engine witness node myself, which is why I need to recreate my node regularly. A few other witnesses are already providing snapshots of the hive engine sidechain regularly. I think more is better, so I decided to set up my own daily hive engine snapshots. I have integrated the snapshots into my HIVE monitor tool over here: https://primersion.com/he-snapshots
+
+Every day at 11pm UTC a snapshot is created automatically, uploaded to https://transfer.sh and provided through my page afterwards:
+
+![image.png](https://images.ecency.com/DQmbdCZh87hkktsYM1Sot7qBg8rDXqoWG4Do8HqDBLPxm3J/image.png)
+
+You will find snapshots of the last 7 days (in a few days, because I only started 2 days ago) and you can download them directly by clicking on the link. After downloading the snapshot you can use it to restore the database of your hive engine node using `mongorestore --gzip --archive=&lt;path to=&quot;&quot; archive=&quot;&quot;&gt;`. Additionally you will find a checksum below the link, which you can compare with the checksum created when running `md5sum &lt;path to=&quot;&quot; archive=&quot;&quot;&gt;` on the downloaded file.
+
+## The How
+
+I have written a small script, which does all the work for me. All I need for it to function is a running and synced hive engine node. First I am stopping my node using `pm2 stop all`.
+In a next step I am dumping the mongodb to a file including the current date and the last processed block:
+```
+now=`date +&quot;%m-%d-%Y&quot;`
+block=`cat config.json | grep startHiveBlock | grep -Eo '[0-9]*'`
+mongodump --db hsc --gzip --archive=&quot;hsc_${now}_b${block}.archive&quot;
+```
+When the dump is finished I start the node back up using `pm2 start app.js --no-treekill --kill-timeout 10000 --no-autorestart`.
+And transfer the dump to https://transfer.sh using `curl --upload-file &quot;hsc_${now}_b${block}.archive&quot; &quot;https://transfer.sh/hsc_${now}_b${block}.archive&quot;`.
+
+I am running the script daily at 11pm UTC using a cronjob.
+
+That's all the magic.
+
+---
+
+Please support me by voting for my HIVE / Hive-Engine witness:
+
+[HIVE](https://vote.hive.uno/?witness=primersion) (using Hivesigner)
+[Hive-Engine](https://votify.now.sh/primersion) (using Votify)&amp;lt;/div&amp;gt;
+&lt;script crossorigin=&quot;anonymous&quot; integrity=&quot;sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=&quot; src=&quot;https://code.jquery.com/jquery-3.5.1.slim.min.js&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;https://unpkg.com/steem-content-renderer&quot;&gt;&lt;/script&gt;
+&lt;!-- &lt;script src=&quot;https://cdn.jsdelivr.net/npm/hive-content-renderer/dist/hive-content-renderer.min.js&quot;&gt;&lt;/script&gt; --&gt;
+&lt;script&gt;
+  $(document).ready(function() {
+    try {
+      const renderer = new SteemContentRenderer.DefaultRenderer({
+      // const renderer = new HiveContentRenderer({
+        baseUrl: &quot;https://hive.blog/&quot;,
+        breaks: true,
+        skipSanitization: false,
+        allowInsecureScriptTags: false,
+        addNofollowToLinks: true,
+        doNotShowImages: false,
+        ipfsPrefix: &quot;&quot;,
+        assetsWidth: 640,
+        assetsHeight: 480,
+        imageProxyFn: (url) =&gt; url,
+        usertagUrlFn: (account) =&gt; &quot;/@primersion&quot;,
+        hashtagUrlFn: (hashtag) =&gt; &quot;/daily-hive-engine-snapshots&quot;,
+        isLinkSafeFn: (url) =&gt; true,
+      });
+      
+      const inputElem = $('#content-primersion-daily-hive-engine-snapshots').html();
+      const outputElem = $('#content-primersion-daily-hive-engine-snapshots');
+      const output = renderer.render(inputElem);
+      
+      outputElem.html(output);
+    } catch(e) {
+      console.log(e);
+    }
+  });
+&lt;/script&gt;
+&lt;style&gt;
+  #content-primersion-daily-hive-engine-snapshots {
+    padding: 0 3rem;
+    color: #444444;
+    font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.8;
+    text-shadow: 0 1px 0 #ffffff;
+    padding: 0.5rem;
+  }
+  #content-primersion-daily-hive-engine-snapshots code {
+    background: white;
+  }
+  #content-primersion-daily-hive-engine-snapshots a {
+    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
+  }
+  #content-primersion-daily-hive-engine-snapshots a:hover {
+    border-bottom: 0;
+  }
+  #content-primersion-daily-hive-engine-snapshots h1 {
+    font-size: 2.2em;
+  }
+  #content-primersion-daily-hive-engine-snapshots h2, h3, h4, h5 {
+    margin-bottom: 0;
+  }
+  #content-primersion-daily-hive-engine-snapshots header small {
+    color: #999;
+    font-size: 50%;
+  }
+  #content-primersion-daily-hive-engine-snapshots img {
+    max-width: 100%;
+  }
+&lt;/style&gt;
+
+&lt;hr /&gt;
+&lt;p&gt;
+  See: &lt;a href=&quot;https://ecency.com/hive-169321/@primersion/daily-hive-engine-snapshots&quot;&gt;Daily Hive Engine Snapshots&lt;/a&gt;
+  by
+  &lt;a href=&quot;https://hive.blog/@primersion&quot;&gt;@primersion&lt;/a&gt;
+&lt;/p&gt;
+
+&lt;/path&gt;&lt;/path&gt;&lt;/div&gt;</content><author><name>primersion</name></author><category term="howto" /><category term="devops" /><category term="hiveengine" /><summary type="html">![wallp12.png](https://images.ecency.com/DQmRT6nLW4pqLqeR1NhGVy68HUhRMDEYCNUhFQ6R1SLT7sm/wallp12.png) ## The Why Hive engine nodes read all transactions from the HIVE blockchain and when they discover a custom json operation with a special id (ssc-mainnet-hive), they process the transaction and add it to the hive engine sidechain. The hive engine sidechain itself is basically a big database storing all transactions and processed information, such as token balances and nft instances, inside a mongodb. To create the hive engine sidechain completely from scratch we would have to start from the genesis block and process all transactions after that. This is a very lengthy process, because it includes millions of transactions. That's where snapshots come into play. You simply create a snapshot of the database after block X was processed and the next time you only have to replay transactions starting from block X. The same principle applies to the HIVE blockchain itself. So whenever something goes wrong or you want to setup a fresh node you can use the snapshot to set up your node faster. ## The What I am running a hive engine witness node myself, which is why I need to recreate my node regularly. A few other witnesses are already providing snapshots of the hive engine sidechain regularly. I think more is better, so I decided to set up my own daily hive engine snapshots. I have integrated the snapshots into my HIVE monitor tool over here: https://primersion.com/he-snapshots Every day at 11pm UTC a snapshot is created automatically, uploaded to https://transfer.sh and provided through my page afterwards: ![image.png](https://images.ecency.com/DQmbdCZh87hkktsYM1Sot7qBg8rDXqoWG4Do8HqDBLPxm3J/image.png) You will find snapshots of the last 7 days (in a few days, because I only started 2 days ago) and you can download them directly by clicking on the link. After downloading the snapshot you can use it to restore the database of your hive engine node using `mongorestore --gzip --archive=`. Additionally you will find a checksum below the link, which you can compare with the checksum created when running `md5sum ` on the downloaded file. ## The How I have written a small script, which does all the work for me. All I need for it to function is a running and synced hive engine node. First I am stopping my node using `pm2 stop all`. In a next step I am dumping the mongodb to a file including the current date and the last processed block: ``` now=`date +&quot;%m-%d-%Y&quot;` block=`cat config.json | grep startHiveBlock | grep -Eo '[0-9]*'` mongodump --db hsc --gzip --archive=&quot;hsc_${now}_b${block}.archive&quot; ``` When the dump is finished I start the node back up using `pm2 start app.js --no-treekill --kill-timeout 10000 --no-autorestart`. And transfer the dump to https://transfer.sh using `curl --upload-file &quot;hsc_${now}_b${block}.archive&quot; &quot;https://transfer.sh/hsc_${now}_b${block}.archive&quot;`. I am running the script daily at 11pm UTC using a cronjob. That's all the magic. --- Please support me by voting for my HIVE / Hive-Engine witness: [HIVE](https://vote.hive.uno/?witness=primersion) (using Hivesigner) [Hive-Engine](https://votify.now.sh/primersion) (using Votify)&amp;lt;/div&amp;gt; See: Daily Hive Engine Snapshots by @primersion</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://images.ecency.com/DQmRT6nLW4pqLqeR1NhGVy68HUhRMDEYCNUhFQ6R1SLT7sm/wallp12.png" /><media:content medium="image" url="https://images.ecency.com/DQmRT6nLW4pqLqeR1NhGVy68HUhRMDEYCNUhFQ6R1SLT7sm/wallp12.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Vessel Testnet Support</title><link href="https://hivedocs.info/news/vessel/testnet/2021/06/04/vessel-testnet-support.html" rel="alternate" type="text/html" title="Vessel Testnet Support" /><published>2021-06-04T20:26:39-07:00</published><updated>2021-06-04T20:26:39-07:00</updated><id>https://hivedocs.info/news/vessel/testnet/2021/06/04/vessel-testnet-support</id><content type="html" xml:base="https://hivedocs.info/news/vessel/testnet/2021/06/04/vessel-testnet-support.html">&lt;div id=&quot;content-rishi556-vessel-testnet-support&quot;&gt;Recently I updated Vessel to work with the testnet as well. Its quite nice stuff and has made my testing with the testnet a bit easier. It's pretty important to make sure what we've got work with future forks, and the testnet is a great way to do so. Nothing affecting vessel was changed so as long as you are on v0.5.0 you should be fine and not need to update, but if you'd like to checkout the testnet, you get the latest version from here: https://gitlab.syncad.com/hive/vessel/-/releases.
 
 To get onto the testnet with vessel, all you have to do is supply it with a proper testnet node. Right now we have https://testnet.openhive.network. You can set that over on the settings page on vessel, or when first importing your account. With this instance, most accounts should already be exported with the same keys so you can just use it with no problems.
 
@@ -1527,147 +1644,4 @@ Have a nice day
   See: &lt;a href=&quot;https://peakd.com/meeting/@howo/hive-core-developer-meeting-24&quot;&gt;Hive core developer meeting #24&lt;/a&gt;
   by
   &lt;a href=&quot;https://hive.blog/@howo&quot;&gt;@howo&lt;/a&gt;
-&lt;/p&gt;</content><author><name>howo</name></author><category term="news" /><category term="core" /><category term="development" /><summary type="html">https://www.youtube.com/watch?v=pxUvrI0pyPs Hi, This meeting was very focused on the testnet and it's operation and what was needed, if you are reading this and are a dapp creator, please test your app against the new testnet, or even better create a testnet version of your app, this testnet will keep on running after testing is over and if you are missing a tool to deploy your app, please tell us which. meeting tl;dr: ### Dev sync you should listen to that part ### Dynamic RC costs We discussed a few solutions we have in mind to make RC costs more in line with the actual cost of an operation on the chain ### vop for instant hbd conversion when transferring hive to the dhf Not discussed, postponed to a later meeting. ### support for new consensus changes in related libraries, who's down to do it ? I volunteered to do it in hive-js, we need to speak with other maintainers to see who will do what. ### How is the public testing going for the account expiration due to lack of governance activity ? We realized the expiration was set to 20 days which is too much time, so we will soon update the testnet with a new version that includes some fixes and lowers it. ### have front ends been updated to include notifications about account expiration or at least presenting the expiration date ? So far, no. ### What about testing recurrent transfer/proposal update publicly ? Best by using 3rd party libraries wrapping direct blockchain operations That has been tested on my own testnets, but not on that testnet, I'm gonna run some tests on it later this week ### We did internally test creating max. number of recurrent transfers for 10% accounts: 120000*255. Results show dramatic memory allocation (under investigation). Changes are here: https://gitlab.syncad.com/hive/hive/-/tree/km_operation_tests_recurrent We talked a bunch on this, the expected memory consumption was 8gb but ended up being 40 gb, we are not sure what is causing it but it could be that it's the nature of the testing environment that caused it and it wouldn't be reproduced in the real world, we are still investigating that part. ### Anyone [outside of Blocktrades group] tested new HBD conversion operation ? No ### Anyone [outside of Blocktrades group] tested/analyzed new author/curator rewarding ? No ^ on these last discussion points, there are a bunch of discussions on the gitlab issue that you can read here: https://gitlab.syncad.com/hive/tasks_without_projects_yet/-/issues/39 Have a nice day @howo See: Hive core developer meeting #24 by @howo</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://hivedocs.info/assets/images/favicon.png" /><media:content medium="image" url="https://hivedocs.info/assets/images/favicon.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">The HiveSQL documentation is now available</title><link href="https://hivedocs.info/news/sql/database/2021/05/25/hivesql-documentation.html" rel="alternate" type="text/html" title="The HiveSQL documentation is now available" /><published>2021-05-25T05:52:09-07:00</published><updated>2021-05-25T05:52:09-07:00</updated><id>https://hivedocs.info/news/sql/database/2021/05/25/hivesql-documentation</id><content type="html" xml:base="https://hivedocs.info/news/sql/database/2021/05/25/hivesql-documentation.html">&lt;div id=&quot;content-arcange-hivesql-documentation&quot;&gt;![](https://i.imgur.com/rq7Ab3K.png)
-
-Promises are made to be kept! HiveSQL's proposal mentioned the creation of documentation and tutorials. Here is finally the culmination of a long work that I undertook several weeks ago: the [HiveSQL documentation](https://docs.hivesql.io).
-
-After many tests with different documentation solutions, my choice finally fell on gitbooks which, in my opinion, offer a lot of flexibility, both in terms of content editing and maintenance.
-
-TL;DR: HiveSQL documentation can be found at **https://docs.hivesql.io**
-
-### What's in it?
-
-First, there is general information on 
-* what is HiveSQL.
-* how to access it.
-* how to get support. 
-
-Things that current HiveSQL users are already used to.
-
-You will then find more technical information such as: 
-* a [database diagram](https://docs.hivesql.io/technical-informations/database-diagram)
-* an exhaustive list of all available tables
-* a description for each table's column
-
-Yes, you read it well: for all operations, virtual operations and state tables, each column of each table is described. This should interest many developers, even if they do not use Hiveql.
-
-The documentation describes:
-* [Operations](https://docs.hivesql.io/technical-informations/operations)
-* [Virtual Operations](https://docs.hivesql.io/technical-informations/virtual-operations)
-* [State tables](https://docs.hivesql.io/technical-informations/state-tables) like Accounts and Comments
-
-It also describes how to use HiveSQL exclusive features like [Full-Text Search](https://docs.hivesql.io/technical-informations/full-text-search) and [Language Detection](https://docs.hivesql.io/technical-informations/language-detection).
-
-The documentation also contains various tutorials for developers, notably PHP, Python, Ruby and even for Microsoft Excel users. More to come.
-
-### Other Resources
-
-I also searched the blockchain to find the various posts that have been written about HiveSQL. So I grouped the links to these different posts on a resource page to make it easier for you to find them. 
-
-If you have made a post that deserves to appear there, do not hesitate to contact me as well.
-
-### What's next?
-
-There is still room to improve this documentation. I am thinking about examples of complex queries, more detailed information on the blockchain content and operations.
-
-Some of the tutorials provided are quite rudimentary. I plan to improve them too. Do not hesitate to contact me if you want to add your contribution.
-
-But I first wish to have your feedback on its current state before going further.
-
-Feel free to use the HiveSQL [Discord](https://discord.gg/kyEFDfT) channel to report typos or make suggestions.
-
-### One last word
-
-Thank you to @inertia for the amazing work he did with the [Hive Developer Documentation](https://developers.hive.io) from which I borrowed a few sentences.
-
-I truly believe that both documentations are complementary resources and that they will help everyone, developers and non-developers, to understand the content and organization of our blockchain.
-
-The HiveSQL Documentation is available at **https://docs.hivesql.io**
-
----
-#### &lt;center&gt; Support our proposals&lt;/center&gt;
-|HiveSQL (to keep it free for all)|HiveBuzz (to keep it entertaining)|
-|-|-|
-|[Vote for the proposal on PeakD](https://peakd.com/me/proposals/138)&lt;br /&gt;[Vote for the proposal on Ecency](https://ecency.com/proposals/138)&lt;br /&gt;[Vote for the proposal using HiveSigner](https://hivesigner.com/sign/update_proposal_votes?proposal_ids=%5B%22138%22%5D&amp;amp;approve=true)|[Vote for the proposal on PeakD](https://peakd.com/me/proposals/147)&lt;br /&gt;[Vote for the proposal on Ecency](https://ecency.com/proposals/147)&lt;br /&gt;[Vote for the proposal using HiveSigner](https://hivesigner.com/sign/update_proposal_votes?proposal_ids=%5B%22147%22%5D&amp;amp;approve=true)|
-
-&lt;center&gt;
-### Check out my apps and services
-&lt;a href=&quot;/hive/@hive.engage/stay-connected-with-your-hive-audience-and-catch-attention&quot;&gt;&lt;img src=&quot;https://i.imgur.com/GiNJqlm.png&quot; /&gt;&lt;/a&gt;&lt;a href=&quot;/@hivebuzz&quot;&gt;&lt;img src=&quot;https://i.imgur.com/B4UTun2.png&quot; /&gt;&lt;/a&gt;&lt;a href=&quot;/@hivesql&quot;&gt;&lt;img src=&quot;https://i.imgur.com/EPN8RW6.png&quot; /&gt;&lt;/a&gt;&lt;a href=&quot;/hive/@arcange/introducing-hive-account-recovery&quot;&gt;&lt;img src=&quot;https://i.imgur.com/6TWeW7V.png&quot; /&gt;&lt;/a&gt;&lt;a href=&quot;/@hive.autoclaim&quot;&gt;&lt;img src=&quot;https://i.imgur.com/ih2pEOw.png&quot; /&gt;&lt;/a&gt;&lt;/center&gt;
-&lt;center&gt;
-
-### [Vote for me as a witness ![](https://i.imgur.com/2bi4SnT.png)](https://hivesigner.com/sign/account-witness-vote?witness=arcange&amp;amp;approve=1)&amp;lt;/div&amp;gt;
-&lt;script crossorigin=&quot;anonymous&quot; integrity=&quot;sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=&quot; src=&quot;https://code.jquery.com/jquery-3.5.1.slim.min.js&quot;&gt;&lt;/script&gt;
-&lt;script src=&quot;https://unpkg.com/steem-content-renderer&quot;&gt;&lt;/script&gt;
-&lt;!-- &lt;script src=&quot;https://cdn.jsdelivr.net/npm/hive-content-renderer/dist/hive-content-renderer.min.js&quot;&gt;&lt;/script&gt; --&gt;
-&lt;script&gt;
-  $(document).ready(function() {
-    try {
-      const renderer = new SteemContentRenderer.DefaultRenderer({
-      // const renderer = new HiveContentRenderer({
-        baseUrl: &quot;https://hive.blog/&quot;,
-        breaks: true,
-        skipSanitization: false,
-        allowInsecureScriptTags: false,
-        addNofollowToLinks: true,
-        doNotShowImages: false,
-        ipfsPrefix: &quot;&quot;,
-        assetsWidth: 640,
-        assetsHeight: 480,
-        imageProxyFn: (url) =&gt; url,
-        usertagUrlFn: (account) =&gt; &quot;/@arcange&quot;,
-        hashtagUrlFn: (hashtag) =&gt; &quot;/hivesql-documentation&quot;,
-        isLinkSafeFn: (url) =&gt; true,
-      });
-      
-      const inputElem = $('#content-arcange-hivesql-documentation').html();
-      const outputElem = $('#content-arcange-hivesql-documentation');
-      const output = renderer.render(inputElem);
-      
-      outputElem.html(output);
-    } catch(e) {
-      console.log(e);
-    }
-  });
-&lt;/script&gt;
-&lt;style&gt;
-  #content-arcange-hivesql-documentation {
-    padding: 0 3rem;
-    color: #444444;
-    font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif;
-    font-size: 16px;
-    line-height: 1.8;
-    text-shadow: 0 1px 0 #ffffff;
-    padding: 0.5rem;
-  }
-  #content-arcange-hivesql-documentation code {
-    background: white;
-  }
-  #content-arcange-hivesql-documentation a {
-    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
-  }
-  #content-arcange-hivesql-documentation a:hover {
-    border-bottom: 0;
-  }
-  #content-arcange-hivesql-documentation h1 {
-    font-size: 2.2em;
-  }
-  #content-arcange-hivesql-documentation h2, h3, h4, h5 {
-    margin-bottom: 0;
-  }
-  #content-arcange-hivesql-documentation header small {
-    color: #999;
-    font-size: 50%;
-  }
-  #content-arcange-hivesql-documentation img {
-    max-width: 100%;
-  }
-&lt;/style&gt;
-
-&lt;hr /&gt;
-&lt;p&gt;
-  See: &lt;a href=&quot;https://peakd.com/hive-139531/@arcange/hivesql-documentation&quot;&gt;The HiveSQL documentation is now available&lt;/a&gt;
-  by
-  &lt;a href=&quot;https://hive.blog/@arcange&quot;&gt;@arcange&lt;/a&gt;
-&lt;/p&gt;
-
-&lt;/center&gt;&lt;/div&gt;</content><author><name>arcange</name></author><category term="news" /><category term="sql" /><category term="database" /><summary type="html">![](https://i.imgur.com/rq7Ab3K.png) Promises are made to be kept! HiveSQL's proposal mentioned the creation of documentation and tutorials. Here is finally the culmination of a long work that I undertook several weeks ago: the [HiveSQL documentation](https://docs.hivesql.io). After many tests with different documentation solutions, my choice finally fell on gitbooks which, in my opinion, offer a lot of flexibility, both in terms of content editing and maintenance. TL;DR: HiveSQL documentation can be found at **https://docs.hivesql.io** ### What's in it? First, there is general information on * what is HiveSQL. * how to access it. * how to get support. Things that current HiveSQL users are already used to. You will then find more technical information such as: * a [database diagram](https://docs.hivesql.io/technical-informations/database-diagram) * an exhaustive list of all available tables * a description for each table's column Yes, you read it well: for all operations, virtual operations and state tables, each column of each table is described. This should interest many developers, even if they do not use Hiveql. The documentation describes: * [Operations](https://docs.hivesql.io/technical-informations/operations) * [Virtual Operations](https://docs.hivesql.io/technical-informations/virtual-operations) * [State tables](https://docs.hivesql.io/technical-informations/state-tables) like Accounts and Comments It also describes how to use HiveSQL exclusive features like [Full-Text Search](https://docs.hivesql.io/technical-informations/full-text-search) and [Language Detection](https://docs.hivesql.io/technical-informations/language-detection). The documentation also contains various tutorials for developers, notably PHP, Python, Ruby and even for Microsoft Excel users. More to come. ### Other Resources I also searched the blockchain to find the various posts that have been written about HiveSQL. So I grouped the links to these different posts on a resource page to make it easier for you to find them. If you have made a post that deserves to appear there, do not hesitate to contact me as well. ### What's next? There is still room to improve this documentation. I am thinking about examples of complex queries, more detailed information on the blockchain content and operations. Some of the tutorials provided are quite rudimentary. I plan to improve them too. Do not hesitate to contact me if you want to add your contribution. But I first wish to have your feedback on its current state before going further. Feel free to use the HiveSQL [Discord](https://discord.gg/kyEFDfT) channel to report typos or make suggestions. ### One last word Thank you to @inertia for the amazing work he did with the [Hive Developer Documentation](https://developers.hive.io) from which I borrowed a few sentences. I truly believe that both documentations are complementary resources and that they will help everyone, developers and non-developers, to understand the content and organization of our blockchain. The HiveSQL Documentation is available at **https://docs.hivesql.io** --- #### Support our proposals |HiveSQL (to keep it free for all)|HiveBuzz (to keep it entertaining)| |-|-| |[Vote for the proposal on PeakD](https://peakd.com/me/proposals/138)[Vote for the proposal on Ecency](https://ecency.com/proposals/138)[Vote for the proposal using HiveSigner](https://hivesigner.com/sign/update_proposal_votes?proposal_ids=%5B%22138%22%5D&amp;amp;approve=true)|[Vote for the proposal on PeakD](https://peakd.com/me/proposals/147)[Vote for the proposal on Ecency](https://ecency.com/proposals/147)[Vote for the proposal using HiveSigner](https://hivesigner.com/sign/update_proposal_votes?proposal_ids=%5B%22147%22%5D&amp;amp;approve=true)| ### Check out my apps and services ### [Vote for me as a witness ![](https://i.imgur.com/2bi4SnT.png)](https://hivesigner.com/sign/account-witness-vote?witness=arcange&amp;amp;approve=1)&amp;lt;/div&amp;gt; See: The HiveSQL documentation is now available by @arcange</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://i.imgur.com/rq7Ab3K.png" /><media:content medium="image" url="https://i.imgur.com/rq7Ab3K.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>
+&lt;/p&gt;</content><author><name>howo</name></author><category term="news" /><category term="core" /><category term="development" /><summary type="html">https://www.youtube.com/watch?v=pxUvrI0pyPs Hi, This meeting was very focused on the testnet and it's operation and what was needed, if you are reading this and are a dapp creator, please test your app against the new testnet, or even better create a testnet version of your app, this testnet will keep on running after testing is over and if you are missing a tool to deploy your app, please tell us which. meeting tl;dr: ### Dev sync you should listen to that part ### Dynamic RC costs We discussed a few solutions we have in mind to make RC costs more in line with the actual cost of an operation on the chain ### vop for instant hbd conversion when transferring hive to the dhf Not discussed, postponed to a later meeting. ### support for new consensus changes in related libraries, who's down to do it ? I volunteered to do it in hive-js, we need to speak with other maintainers to see who will do what. ### How is the public testing going for the account expiration due to lack of governance activity ? We realized the expiration was set to 20 days which is too much time, so we will soon update the testnet with a new version that includes some fixes and lowers it. ### have front ends been updated to include notifications about account expiration or at least presenting the expiration date ? So far, no. ### What about testing recurrent transfer/proposal update publicly ? Best by using 3rd party libraries wrapping direct blockchain operations That has been tested on my own testnets, but not on that testnet, I'm gonna run some tests on it later this week ### We did internally test creating max. number of recurrent transfers for 10% accounts: 120000*255. Results show dramatic memory allocation (under investigation). Changes are here: https://gitlab.syncad.com/hive/hive/-/tree/km_operation_tests_recurrent We talked a bunch on this, the expected memory consumption was 8gb but ended up being 40 gb, we are not sure what is causing it but it could be that it's the nature of the testing environment that caused it and it wouldn't be reproduced in the real world, we are still investigating that part. ### Anyone [outside of Blocktrades group] tested new HBD conversion operation ? No ### Anyone [outside of Blocktrades group] tested/analyzed new author/curator rewarding ? No ^ on these last discussion points, there are a bunch of discussions on the gitlab issue that you can read here: https://gitlab.syncad.com/hive/tasks_without_projects_yet/-/issues/39 Have a nice day @howo See: Hive core developer meeting #24 by @howo</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://hivedocs.info/assets/images/favicon.png" /><media:content medium="image" url="https://hivedocs.info/assets/images/favicon.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>
