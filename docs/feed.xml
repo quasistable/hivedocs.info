@@ -1,4 +1,138 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="https://hivedocs.info/feed.xml" rel="self" type="application/atom+xml" /><link href="https://hivedocs.info/" rel="alternate" type="text/html" /><updated>2021-06-10T09:57:25-07:00</updated><id>https://hivedocs.info/feed.xml</id><title type="html">Hive Chain Documentation</title><subtitle>Your resource for various levels of Hive Documentation.</subtitle><author><name>site curated by: @inertia</name></author><entry><title type="html">All new Hivesigner</title><link href="https://hivedocs.info/news/hivesigner/2021/06/10/all-new-hivesigner.html" rel="alternate" type="text/html" title="All new Hivesigner" /><published>2021-06-10T00:28:27-07:00</published><updated>2021-06-10T00:28:27-07:00</updated><id>https://hivedocs.info/news/hivesigner/2021/06/10/all-new-hivesigner</id><content type="html" xml:base="https://hivedocs.info/news/hivesigner/2021/06/10/all-new-hivesigner.html">&lt;div id=&quot;content-good-karma-all-new-hivesigner&quot;&gt;New Hivesigner Interface is getting ready for the release. Excited to share details of what we have been working on.
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="https://hivedocs.info/feed.xml" rel="self" type="application/atom+xml" /><link href="https://hivedocs.info/" rel="alternate" type="text/html" /><updated>2021-06-10T18:05:44-07:00</updated><id>https://hivedocs.info/feed.xml</id><title type="html">Hive Chain Documentation</title><subtitle>Your resource for various levels of Hive Documentation.</subtitle><author><name>site curated by: @inertia</name></author><entry><title type="html">15th update of 2021 on BlockTrades work on Hive software</title><link href="https://hivedocs.info/news/core/development/2021/06/10/15th-update-of-2021-on-blocktrades-work-on-hive-software.html" rel="alternate" type="text/html" title="15th update of 2021 on BlockTrades work on Hive software" /><published>2021-06-10T16:21:27-07:00</published><updated>2021-06-10T16:21:27-07:00</updated><id>https://hivedocs.info/news/core/development/2021/06/10/15th-update-of-2021-on-blocktrades-work-on-hive-software</id><content type="html" xml:base="https://hivedocs.info/news/core/development/2021/06/10/15th-update-of-2021-on-blocktrades-work-on-hive-software.html">&lt;div id=&quot;content-blocktrades-15th-update-of-2021-on-blocktrades-work-on-hive-software&quot;&gt;![blocktrades update.png](https://images.hive.blog/DQmSihw8Kz4U7TuCQa98DDdCzqbqPFRumuVWAbareiYZW1Z/blocktrades%20update.png)
+
+Work by the BlockTrades team slowed a little in the last period, as much of our staff was off for Corpus Christi holiday, and in the past two days there was a company-sponsored recreational trip to the mountains (and today many people are probably recovering from that). Still we made progress on several fronts:
+
+# Hived work (blockchain node software)
+
+We expect to tag release candidate 4 tomorrow (this version has been running on the testnet for over a week now but hasn’t yet been officially tagged because of some false-positive test fails that need to be eliminated). 
+
+Assuming no problems are reported for this release candidate by Monday (hopefully the testnet will get a lot of testing this weekend), we’ll merge the code to the master branch and tag an official release of hived (aka v1.25.0). 
+
+We’ll also be doing a final review of the build and installation docs and next we’ll contact exchanges and notify them of the **expected hardfork on June 30th** so that they can update their wallets ahead of time.
+
+
+# Hivemind (2nd layer applications + social media middleware)
+
+We found a bug with the latest release of hivemind and we’re working on a fix for  it now. This problem manifested most visibly as a reputation calculation error for two Hive accounts, although we believe it could possibly result in other errors. 
+
+The root cause of the problem is where we did some code refactoring to share some of the code used during massive sync to process blocks during live sync. This version of the code processed blocks in three separate transactions, and if one of these transactions failed, the work done by the other two transactions persisted, which could lead to inconsistencies in the data on the failing node.
+
+The likely fix will be to revert to using a single transaction for block processing during live sync, and we'll probably be able to deploy the fix late next week.
+
+## Fix for hivemind sync time regression
+
+We also tested/fixed a regression in hivemind sync time where the `update_posts_rshares` query was sometimes inappropriately including a sequential scan in its query planning, which resulted in about 12 hours being added to initial sync time for a database with 53M blocks. 
+
+Our initial test of the fix shows a dramatic improvement (only takes 15 minutes now), but we need to test some more to ensure that the improvement persists under all conditions. The initial performance test for the fix was performed by starting from a database dump file, whereas the 12hr measurement was made on a database constructed from a full sync, so we still need to test performance under a full hivemind sync (which takes several days) to do a strictly accurate comparison.
+
+I consider the current fix a bit of a workaround, because we’re essentially overriding the query planner’s plan based on its internal estimates and forcing it to avoid using a sequential scan. Later we will try to get the planner to estimate better by improving its collection of statistics and weighting of costs, because we know similar bad estimates were causing postgres 13 to apply inappropriate “just-in-time” optimizations to this same query. So it is conceivable that if we are able to correct the planner’s estimation process, we’ll get more optimal performance as the data’s statistical “shape” changes over time.
+
+# Hive Application Framework (HAF is new &quot;official&quot; name for modular hivemind)
+
+Unless there’s a popular uprising, I think I’ve settled on an official name for the project that we’ve been developing under the “codename” of modular hivemind: Hive Application Framework aka HAF.
+
+I think Hive Application Framework is much more descriptive of the actual functionality and it is more clearly distinguishable from the hivemind social media application. Plus it lends itself better to promotional taglines like: “HAF your blockchain app is already done!&quot;
+
+## Initial release of HAF expected sometime in July
+
+For the past week, we’ve been reviewing and improving the code and documentation for HAF, in particular the code that provides automated fork handling. We had a teleconference on Monday to discuss the state of the work and discuss further enhancements, and based on my positive feelings from that meeting, I estimate we will be able to do an official release of HAF sometime in July.
+
+## Ongoing work on HAF
+
+The most recent change being made is to simplify swapping back and forth between a Hive application that only relies on irreversible blocks versus one that also processes reversible blocks.
+
+On a related note, we’re also going to try to automate the optimization of block processing when a process that works on reversible blocks is currently processing irreversible blocks (originally the plan was to require the app to signal when it planned to work in an optimized fashion on irreversible blocks).
+
+We’ll also be creating a skeleton code template to illustrate how a typical Hive app would use the HAF framework, and later, an full-blown example application.
+
+## Updates to sql_serializer plug for changes to hive_fork_plugin
+
+Before we can do a full test of the framework, we also need to make some needed improvements to the sql_serializer plugin for hived that writes data to the postgres database. In particular, this code needs to be updated to support API changes that have been made to the Hive fork manager extension (this is the SQL code that manages tracking reversible blocks and reverting an application’s table changes when a fork occurs). 
+
+The above work will begin tomorrow and I hope we will be able to execute a full test of hived + hivemind sync by late next week.
+
+## Call for apps reviewers for HAF
+
+At this point, while it still suffers from some typos which I’ll correct shortly, I think the architectural documentation for HAF is good enough that I want feedback from all app developers with an existing or planned app, especially any applications that require their own database and custom API. 
+
+**Please review the architectural doc and help us create the best possible starting point for Hive apps. Here’s a link to the most recent version of that document: https://gitlab.syncad.com/hive/psql_tools/-/blob/mi_hive_fork_plugin2/src/hive_fork/Readme.md**&lt;/div&gt;
+&lt;script crossorigin=&quot;anonymous&quot; integrity=&quot;sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=&quot; src=&quot;https://code.jquery.com/jquery-3.5.1.slim.min.js&quot;&gt;&lt;/script&gt;
+
+&lt;script src=&quot;https://unpkg.com/steem-content-renderer&quot;&gt;&lt;/script&gt;
+
+&lt;!-- &lt;script src=&quot;https://cdn.jsdelivr.net/npm/hive-content-renderer/dist/hive-content-renderer.min.js&quot;&gt;&lt;/script&gt; --&gt;
+&lt;script&gt;
+  $(document).ready(function() {
+    try {
+      const renderer = new SteemContentRenderer.DefaultRenderer({
+      // const renderer = new HiveContentRenderer({
+        baseUrl: &quot;https://hive.blog/&quot;,
+        breaks: true,
+        skipSanitization: false,
+        allowInsecureScriptTags: false,
+        addNofollowToLinks: true,
+        doNotShowImages: false,
+        ipfsPrefix: &quot;&quot;,
+        assetsWidth: 640,
+        assetsHeight: 480,
+        imageProxyFn: (url) =&gt; url,
+        usertagUrlFn: (account) =&gt; &quot;/@blocktrades&quot;,
+        hashtagUrlFn: (hashtag) =&gt; &quot;/15th-update-of-2021-on-blocktrades-work-on-hive-software&quot;,
+        isLinkSafeFn: (url) =&gt; true,
+      });
+      
+      const inputElem = $('#content-blocktrades-15th-update-of-2021-on-blocktrades-work-on-hive-software').html();
+      const outputElem = $('#content-blocktrades-15th-update-of-2021-on-blocktrades-work-on-hive-software');
+      const output = renderer.render(inputElem);
+      
+      outputElem.html(output);
+    } catch(e) {
+      console.log(e);
+    }
+  });
+&lt;/script&gt;
+
+&lt;style&gt;
+  #content-blocktrades-15th-update-of-2021-on-blocktrades-work-on-hive-software {
+    padding: 0 3rem;
+    color: #444444;
+    font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.8;
+    text-shadow: 0 1px 0 #ffffff;
+    padding: 0.5rem;
+  }
+  #content-blocktrades-15th-update-of-2021-on-blocktrades-work-on-hive-software code {
+    background: white;
+  }
+  #content-blocktrades-15th-update-of-2021-on-blocktrades-work-on-hive-software a {
+    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
+  }
+  #content-blocktrades-15th-update-of-2021-on-blocktrades-work-on-hive-software a:hover {
+    border-bottom: 0;
+  }
+  #content-blocktrades-15th-update-of-2021-on-blocktrades-work-on-hive-software h1 {
+    font-size: 2.2em;
+  }
+  #content-blocktrades-15th-update-of-2021-on-blocktrades-work-on-hive-software h2, h3, h4, h5 {
+    margin-bottom: 0;
+  }
+  #content-blocktrades-15th-update-of-2021-on-blocktrades-work-on-hive-software header small {
+    color: #999;
+    font-size: 50%;
+  }
+  #content-blocktrades-15th-update-of-2021-on-blocktrades-work-on-hive-software img {
+    max-width: 100%;
+  }
+&lt;/style&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;
+  See: &lt;a href=&quot;https://hive.blog/hive-139531/@blocktrades/15th-update-of-2021-on-blocktrades-work-on-hive-software&quot;&gt;15th update of 2021 on BlockTrades work on Hive software&lt;/a&gt;
+  by
+  &lt;a href=&quot;https://hive.blog/@blocktrades&quot;&gt;@blocktrades&lt;/a&gt;
+&lt;/p&gt;</content><author><name>blocktrades</name></author><category term="news" /><category term="core" /><category term="development" /><summary type="html">![blocktrades update.png](https://images.hive.blog/DQmSihw8Kz4U7TuCQa98DDdCzqbqPFRumuVWAbareiYZW1Z/blocktrades%20update.png) Work by the BlockTrades team slowed a little in the last period, as much of our staff was off for Corpus Christi holiday, and in the past two days there was a company-sponsored recreational trip to the mountains (and today many people are probably recovering from that). Still we made progress on several fronts: # Hived work (blockchain node software) We expect to tag release candidate 4 tomorrow (this version has been running on the testnet for over a week now but hasn’t yet been officially tagged because of some false-positive test fails that need to be eliminated). Assuming no problems are reported for this release candidate by Monday (hopefully the testnet will get a lot of testing this weekend), we’ll merge the code to the master branch and tag an official release of hived (aka v1.25.0). We’ll also be doing a final review of the build and installation docs and next we’ll contact exchanges and notify them of the **expected hardfork on June 30th** so that they can update their wallets ahead of time. # Hivemind (2nd layer applications + social media middleware) We found a bug with the latest release of hivemind and we’re working on a fix for it now. This problem manifested most visibly as a reputation calculation error for two Hive accounts, although we believe it could possibly result in other errors. The root cause of the problem is where we did some code refactoring to share some of the code used during massive sync to process blocks during live sync. This version of the code processed blocks in three separate transactions, and if one of these transactions failed, the work done by the other two transactions persisted, which could lead to inconsistencies in the data on the failing node. The likely fix will be to revert to using a single transaction for block processing during live sync, and we'll probably be able to deploy the fix late next week. ## Fix for hivemind sync time regression We also tested/fixed a regression in hivemind sync time where the `update_posts_rshares` query was sometimes inappropriately including a sequential scan in its query planning, which resulted in about 12 hours being added to initial sync time for a database with 53M blocks. Our initial test of the fix shows a dramatic improvement (only takes 15 minutes now), but we need to test some more to ensure that the improvement persists under all conditions. The initial performance test for the fix was performed by starting from a database dump file, whereas the 12hr measurement was made on a database constructed from a full sync, so we still need to test performance under a full hivemind sync (which takes several days) to do a strictly accurate comparison. I consider the current fix a bit of a workaround, because we’re essentially overriding the query planner’s plan based on its internal estimates and forcing it to avoid using a sequential scan. Later we will try to get the planner to estimate better by improving its collection of statistics and weighting of costs, because we know similar bad estimates were causing postgres 13 to apply inappropriate “just-in-time” optimizations to this same query. So it is conceivable that if we are able to correct the planner’s estimation process, we’ll get more optimal performance as the data’s statistical “shape” changes over time. # Hive Application Framework (HAF is new &quot;official&quot; name for modular hivemind) Unless there’s a popular uprising, I think I’ve settled on an official name for the project that we’ve been developing under the “codename” of modular hivemind: Hive Application Framework aka HAF. I think Hive Application Framework is much more descriptive of the actual functionality and it is more clearly distinguishable from the hivemind social media application. Plus it lends itself better to promotional taglines like: “HAF your blockchain app is already done!&quot; ## Initial release of HAF expected sometime in July For the past week, we’ve been reviewing and improving the code and documentation for HAF, in particular the code that provides automated fork handling. We had a teleconference on Monday to discuss the state of the work and discuss further enhancements, and based on my positive feelings from that meeting, I estimate we will be able to do an official release of HAF sometime in July. ## Ongoing work on HAF The most recent change being made is to simplify swapping back and forth between a Hive application that only relies on irreversible blocks versus one that also processes reversible blocks. On a related note, we’re also going to try to automate the optimization of block processing when a process that works on reversible blocks is currently processing irreversible blocks (originally the plan was to require the app to signal when it planned to work in an optimized fashion on irreversible blocks). We’ll also be creating a skeleton code template to illustrate how a typical Hive app would use the HAF framework, and later, an full-blown example application. ## Updates to sql_serializer plug for changes to hive_fork_plugin Before we can do a full test of the framework, we also need to make some needed improvements to the sql_serializer plugin for hived that writes data to the postgres database. In particular, this code needs to be updated to support API changes that have been made to the Hive fork manager extension (this is the SQL code that manages tracking reversible blocks and reverting an application’s table changes when a fork occurs). The above work will begin tomorrow and I hope we will be able to execute a full test of hived + hivemind sync by late next week. ## Call for apps reviewers for HAF At this point, while it still suffers from some typos which I’ll correct shortly, I think the architectural documentation for HAF is good enough that I want feedback from all app developers with an existing or planned app, especially any applications that require their own database and custom API. **Please review the architectural doc and help us create the best possible starting point for Hive apps. Here’s a link to the most recent version of that document: https://gitlab.syncad.com/hive/psql_tools/-/blob/mi_hive_fork_plugin2/src/hive_fork/Readme.md** See: 15th update of 2021 on BlockTrades work on Hive software by @blocktrades</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://images.hive.blog/DQmSihw8Kz4U7TuCQa98DDdCzqbqPFRumuVWAbareiYZW1Z/blocktrades%20update.png" /><media:content medium="image" url="https://images.hive.blog/DQmSihw8Kz4U7TuCQa98DDdCzqbqPFRumuVWAbareiYZW1Z/blocktrades%20update.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">All new Hivesigner</title><link href="https://hivedocs.info/news/hivesigner/2021/06/10/all-new-hivesigner.html" rel="alternate" type="text/html" title="All new Hivesigner" /><published>2021-06-10T00:28:27-07:00</published><updated>2021-06-10T00:28:27-07:00</updated><id>https://hivedocs.info/news/hivesigner/2021/06/10/all-new-hivesigner</id><content type="html" xml:base="https://hivedocs.info/news/hivesigner/2021/06/10/all-new-hivesigner.html">&lt;div id=&quot;content-good-karma-all-new-hivesigner&quot;&gt;New Hivesigner Interface is getting ready for the release. Excited to share details of what we have been working on.
 
 We have rewritten and redesigned Hivesigner UI component in Vue + Typescript. Improved user flow, added new pages, combined documentation into single place, added multi language support, optimized for mobile browsing, bugs fixed and much more. Read on to learn more about changes.
 
@@ -1471,175 +1605,4 @@ CyberBuzz Radio is LIVE: Community Q&amp;amp;A For the Upcoming Hive Blockchain 
   See: &lt;a href=&quot;https://hive.blog/hive-139531/@gtg/hf25-public-testnet-reloaded-rc2&quot;&gt;HF25 Public Testnet Reloaded (RC2)&lt;/a&gt;
   by
   &lt;a href=&quot;https://hive.blog/@gtg&quot;&gt;@gtg&lt;/a&gt;
-&lt;/p&gt;</content><author><name>gtg</name></author><category term="news" /><category term="projects" /><category term="testnet" /><summary type="html">I just started brand new instance of a public Hive testnet based on `v1.25.0rc2` https://gitlab.syncad.com/hive/hive/-/tags/v1.25.0rc2 Re-initialization was needed due to changes in governance voting rules (rc1 would fork, because different rules impacts witness schedule): ``` witness.owner == scheduled_witness: Witness produced block at wrong time {&quot;block witness&quot;:&quot;gtg-rc1-10&quot;,&quot;scheduled&quot;:&quot;gtg-rc1-13&quot;,&quot;slot_num&quot;:1} database.cpp:4838 validate_block_header ``` Unless your account was created very recently, you should be able to participate in the testnet using your own mainnet account and keys (though please be careful, if you leak your key during testnet, your mainnet account will be compromised) To get some tokens for testing you can use https://hivetestnetfaucet.org/ created by @howo or reach out to witnesses using your favorite communication channels such as https://openhive.chat ;-) - Hive testnet chain-id: `18dcf0a285365fc58b71f18b3d3fec954aa0c141c44e4e5cb4cf777b9eab274e` - Hive seed node: `p2p-seed-node = testnet.openhive.network:2001` - API endpoint (via jussi): `https://testnet.openhive.network` - Hive Testnet Condenser instance: https://testblog.openhive.network - Hive Testnet Wallet instance: https://testwallet.openhive.network - Binaries: https://gtg.openhive.network/get/testnet/bin/ - hived direct http server `http://testnet.openhive.network:8091` - hived direct websocket server `ws://testnet.openhive.network:8090` - hivemind server direct server `http://testnet.openhive.network:8080` To join testnet with your hived, you need a testnet-enabled version, which you can get from here: https://gtg.openhive.network/get/testnet/bin or build yourself (as usual plus `-DBUILD_HIVE_TESTNET=ON` during cmake step) ## See also CyberBuzz Radio is LIVE: Community Q&amp;amp;A For the Upcoming Hive Blockchain Hardfork: https://www.youtube.com/watch?v=FtyhMAWto90&amp;amp;t=448s (@hbdstabilizer as 50% beneficiary) See: HF25 Public Testnet Reloaded (RC2) by @gtg</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://img.youtube.com/vi/FtyhMAWto90/0.jpg" /><media:content medium="image" url="https://img.youtube.com/vi/FtyhMAWto90/0.jpg" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">13th update of 2021 on BlockTrades work on Hive software</title><link href="https://hivedocs.info/news/core/development/2021/05/25/13th-update-of-2021-on-blocktrades-work-on-hive-software.html" rel="alternate" type="text/html" title="13th update of 2021 on BlockTrades work on Hive software" /><published>2021-05-25T16:30:27-07:00</published><updated>2021-05-25T16:30:27-07:00</updated><id>https://hivedocs.info/news/core/development/2021/05/25/13th-update-of-2021-on-blocktrades-work-on-hive-software</id><content type="html" xml:base="https://hivedocs.info/news/core/development/2021/05/25/13th-update-of-2021-on-blocktrades-work-on-hive-software.html">&lt;div id=&quot;content-blocktrades-13th-update-of-2021-on-blocktrades-work-on-hive-software&quot;&gt;![blocktrades update.png](https://images.hive.blog/DQmSihw8Kz4U7TuCQa98DDdCzqbqPFRumuVWAbareiYZW1Z/blocktrades%20update.png)
-
-Below is a list of Hive-related programming issues worked on by BlockTrades team during the last week or so:
-
-# Hived work (blockchain node software)
-
-We’re continuing to test and make fixes as a precursor to tagging a second release candidate for hived.
-
-We’ve created a new python-based library currently called “testtools” for creating test scenarios for hived and hived’s CLI wallet. We’re replacing the beempy library that was previously used for this purpose in order to accelerate the speed at which the tests execute. 
-
-For now, the primary purpose for this python library is testing hived, but it may have more general applicability as a library for communicating with hived, in which case we will rename it later to something more appropriate: 
-https://gitlab.syncad.com/hive/hive/-/merge_requests/242
-
-We created some unit-test based stress tests for the new recurrent transfers functionality, and initially we found some surprising results in terms of memory usage, but ultimately this was traced to a misconfiguration of the hived instance (it was configured with the deprecated chainbase account history plugin which is known to consume too much memory). With that plugin replaced by the rocksdb-account-history plugin, memory consumption and general performance was fine.
-
-We also fixed some minor issues with the recurrent transfer operation: https://gitlab.syncad.com/hive/hive/-/merge_requests/246
-
-We’ve added a few new network API calls to hived for getting peer count, getting connected peers, adding peers, and setting allowed peers. These functions were primarily added to facilitate testing scenarios (e.g. testing forking logic), but they can be useful to node operators as well: https://gitlab.syncad.com/hive/hive/-/merge_requests/244
-
-We’ve added support for building with boost 1.70 (tested on Ubuntu 18 and 20).
-
-We also modified the fc library to enable a simplified logging syntax. For example, instead of:
-`ilog(“my variable=${my_variable}”,(“my_variable”,my_variable));`
-you can simply use:
-`ilog(“my variable=${my_variable}”,(my_variable));`
-Note that the older syntax is still required when you need to call a function on the variable to get the value to log. The two syntaxes can be mixed-and-matched in a single log statement.
-
-During our testing of the fix of the longstanding “duplicate operations in account history” bug, we found that this problem could also arise when the value of the last irreversible block was “undone” as part of the shutdown of hived (i.e. when a node operator presses Ctrl-C to shutdown the node). On a subsequent start, with the last irreversible block set to an earlier block, the code would re-add the operations from the already processed blocks. To fix this, we’re making sure the irreversible block number doesn’t get reverted by the database state undo operation anymore.
-
-Once the above issue is fixed and tested in replay mode in conjunction with a full sync of hivemind, we’ll be tagging a second release candidate for the testnet (probably Thursday or Friday). Barring any unexpected issues during testnet testing, I expect that this will be our last release candidate before the official release, based on testing results so far.
-
-# Hivemind (2nd layer applications + social media middleware)
-
-Last week we’ve been making final fixes and doing performance tests in preparation for a new release of hivemind for API node operators later this week.
-
-## Changing back to using pip for hivemind installation
-
-We recently found that our current installation methodology for hivemind could lead to unexpected package versioning issues, so we’re switching back to using pip (python package installer) and pinning the versions of packages that hivemind uses.
-
-
-## Performance testing and optimization for hivemind
-
-While testing the develop branch of hivemind on our production API node (https://api.hive.blog), we noticed a slowdown in performance of the query `bridge_get_ranked_post_by_created_for_tag` (went from average of 64ms to nearly 2s average time). 
-
-This problem was ultimately traced down to a lack of sufficient statistics being accumulated for the tags_ids column in the hive_posts table. The collected statistics weren’t sufficient to model the probability distribution of the tags used by posts, which resulted in the query planner selecting an under-performing query plan.
-
-What’s interesting here is that this was a latent performance issue that could have potentially occurred on any given API node if it collected an unlucky statistical set (the problem wasn’t really a master vs develop branch issue). We fixed the issue by increasing the statistics collected for this column from 100 to 1000: 
-https://gitlab.syncad.com/hive/hivemind/-/merge_requests/503
-
-## Hivemind memory consumption
-
-We’re still researching potential ways to decrease the amount of memory consumed by the hivemind sync process over time. We’ve reduced memory consumption some, but more looks possible.
-
-## Postgres 13 vs Postgres 10 for hivemind
-
-During our search for a possible solution to the above problem (before we realized increasing statistics was the best solution), we also tried updating our SQL database from postgres 10 with postgres 13, to see if it would select a better query plan. 
-
-The database upgrade had no impact on the above problem, but we found another slowdown during hive sync (the indexer that adds data from the blockchain to the database) tied to postgres 13. This problem occurs because the postgres13 planner incorrectly estimates the costs of updating rshare totals during ‘live sync’ and decides to do a just-in-time (jit) optimization which adds 100ms to the query time. 
-
-We confirmed this was the issue by increasing the threshold cost required before the planner was allowed to employ jit optimization (effectively disabling jit usage in the query). In this scenario, performance was just slightly better for postgres 13 than for 10. Once we move to 13, we’ll need to select a long term solution for this issue (either improve the cost estimation or just disable jit for this query), but that’s an issue for a later day.
-
-## Functional testing and fixes for hivemind
-
-While working on fixes to community-related API calls, we also improved mock testing capabilities to verify the changes (mock testing allows us to generate “fake” data for testing purposes into an existing hivemind data set).
-https://gitlab.syncad.com/hive/hivemind/-/merge_requests/496
-
-https://gitlab.syncad.com/hive/hivemind/-/merge_requests/499
-https://gitlab.syncad.com/hive/hivemind/-/merge_requests/501
-
-
-# Modular hivemind (Application framework for Hive apps)
-
-We’re currently building a sample application with the prototype for our modular hivemind framework that will support the account history API. Hopefully we’ll be able to perform a full test of this sample application by sometime next week.
-
-# Condenser wallet
-
-We’ve been doing some condenser wallet testing and bug fixing. We fixed a bug in the new feature by @quochuy that generates a CSV file with a user’s transaction history. The fix has been deployed to https://wallet.hive.blog.
-https://gitlab.syncad.com/hive/wallet/-/merge_requests/106
-
-# Testnet
-
-We’ve had a few brave souls do some testing with the testnet, but I’d like to see a lot more, especially from users supporting Hive API libraries and Hive-based apps. 
-
-But everyone is welcome to play around on the testnet and try to break things. As a regular Hive user, you can login with your normal credentials via:
-https://testblog.openhive.network (hive.blog-like testing site)
-or
-https://testnet.peakd.com/ (peakd-like testing site)
-
-You can also browse the testnet with this block explorer: https://test.ausbit.dev/ 
-
-Going forward, the testnet should be the preferred vehicle for initial testing of Hive apps. And testing new features now, before the hardfork, helps us to identify areas where we may want to make changes to API responses, etc, before there’s an “official” API response that must then be changed later.
-
-# Planned date for hardfork 25
-
-I’m still projecting the hardfork will be in the last week of June.&lt;/div&gt;
-&lt;script crossorigin=&quot;anonymous&quot; integrity=&quot;sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=&quot; src=&quot;https://code.jquery.com/jquery-3.5.1.slim.min.js&quot;&gt;&lt;/script&gt;
-
-&lt;script src=&quot;https://unpkg.com/steem-content-renderer&quot;&gt;&lt;/script&gt;
-
-&lt;!-- &lt;script src=&quot;https://cdn.jsdelivr.net/npm/hive-content-renderer/dist/hive-content-renderer.min.js&quot;&gt;&lt;/script&gt; --&gt;
-&lt;script&gt;
-  $(document).ready(function() {
-    try {
-      const renderer = new SteemContentRenderer.DefaultRenderer({
-      // const renderer = new HiveContentRenderer({
-        baseUrl: &quot;https://hive.blog/&quot;,
-        breaks: true,
-        skipSanitization: false,
-        allowInsecureScriptTags: false,
-        addNofollowToLinks: true,
-        doNotShowImages: false,
-        ipfsPrefix: &quot;&quot;,
-        assetsWidth: 640,
-        assetsHeight: 480,
-        imageProxyFn: (url) =&gt; url,
-        usertagUrlFn: (account) =&gt; &quot;/@blocktrades&quot;,
-        hashtagUrlFn: (hashtag) =&gt; &quot;/13th-update-of-2021-on-blocktrades-work-on-hive-software&quot;,
-        isLinkSafeFn: (url) =&gt; true,
-      });
-      
-      const inputElem = $('#content-blocktrades-13th-update-of-2021-on-blocktrades-work-on-hive-software').html();
-      const outputElem = $('#content-blocktrades-13th-update-of-2021-on-blocktrades-work-on-hive-software');
-      const output = renderer.render(inputElem);
-      
-      outputElem.html(output);
-    } catch(e) {
-      console.log(e);
-    }
-  });
-&lt;/script&gt;
-
-&lt;style&gt;
-  #content-blocktrades-13th-update-of-2021-on-blocktrades-work-on-hive-software {
-    padding: 0 3rem;
-    color: #444444;
-    font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif;
-    font-size: 16px;
-    line-height: 1.8;
-    text-shadow: 0 1px 0 #ffffff;
-    padding: 0.5rem;
-  }
-  #content-blocktrades-13th-update-of-2021-on-blocktrades-work-on-hive-software code {
-    background: white;
-  }
-  #content-blocktrades-13th-update-of-2021-on-blocktrades-work-on-hive-software a {
-    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
-  }
-  #content-blocktrades-13th-update-of-2021-on-blocktrades-work-on-hive-software a:hover {
-    border-bottom: 0;
-  }
-  #content-blocktrades-13th-update-of-2021-on-blocktrades-work-on-hive-software h1 {
-    font-size: 2.2em;
-  }
-  #content-blocktrades-13th-update-of-2021-on-blocktrades-work-on-hive-software h2, h3, h4, h5 {
-    margin-bottom: 0;
-  }
-  #content-blocktrades-13th-update-of-2021-on-blocktrades-work-on-hive-software header small {
-    color: #999;
-    font-size: 50%;
-  }
-  #content-blocktrades-13th-update-of-2021-on-blocktrades-work-on-hive-software img {
-    max-width: 100%;
-  }
-&lt;/style&gt;
-
-&lt;hr /&gt;
-
-&lt;p&gt;
-  See: &lt;a href=&quot;https://hive.blog/hive-139531/@blocktrades/13th-update-of-2021-on-blocktrades-work-on-hive-software&quot;&gt;13th update of 2021 on BlockTrades work on Hive software&lt;/a&gt;
-  by
-  &lt;a href=&quot;https://hive.blog/@blocktrades&quot;&gt;@blocktrades&lt;/a&gt;
-&lt;/p&gt;</content><author><name>blocktrades</name></author><category term="news" /><category term="core" /><category term="development" /><summary type="html">![blocktrades update.png](https://images.hive.blog/DQmSihw8Kz4U7TuCQa98DDdCzqbqPFRumuVWAbareiYZW1Z/blocktrades%20update.png) Below is a list of Hive-related programming issues worked on by BlockTrades team during the last week or so: # Hived work (blockchain node software) We’re continuing to test and make fixes as a precursor to tagging a second release candidate for hived. We’ve created a new python-based library currently called “testtools” for creating test scenarios for hived and hived’s CLI wallet. We’re replacing the beempy library that was previously used for this purpose in order to accelerate the speed at which the tests execute. For now, the primary purpose for this python library is testing hived, but it may have more general applicability as a library for communicating with hived, in which case we will rename it later to something more appropriate: https://gitlab.syncad.com/hive/hive/-/merge_requests/242 We created some unit-test based stress tests for the new recurrent transfers functionality, and initially we found some surprising results in terms of memory usage, but ultimately this was traced to a misconfiguration of the hived instance (it was configured with the deprecated chainbase account history plugin which is known to consume too much memory). With that plugin replaced by the rocksdb-account-history plugin, memory consumption and general performance was fine. We also fixed some minor issues with the recurrent transfer operation: https://gitlab.syncad.com/hive/hive/-/merge_requests/246 We’ve added a few new network API calls to hived for getting peer count, getting connected peers, adding peers, and setting allowed peers. These functions were primarily added to facilitate testing scenarios (e.g. testing forking logic), but they can be useful to node operators as well: https://gitlab.syncad.com/hive/hive/-/merge_requests/244 We’ve added support for building with boost 1.70 (tested on Ubuntu 18 and 20). We also modified the fc library to enable a simplified logging syntax. For example, instead of: `ilog(“my variable=${my_variable}”,(“my_variable”,my_variable));` you can simply use: `ilog(“my variable=${my_variable}”,(my_variable));` Note that the older syntax is still required when you need to call a function on the variable to get the value to log. The two syntaxes can be mixed-and-matched in a single log statement. During our testing of the fix of the longstanding “duplicate operations in account history” bug, we found that this problem could also arise when the value of the last irreversible block was “undone” as part of the shutdown of hived (i.e. when a node operator presses Ctrl-C to shutdown the node). On a subsequent start, with the last irreversible block set to an earlier block, the code would re-add the operations from the already processed blocks. To fix this, we’re making sure the irreversible block number doesn’t get reverted by the database state undo operation anymore. Once the above issue is fixed and tested in replay mode in conjunction with a full sync of hivemind, we’ll be tagging a second release candidate for the testnet (probably Thursday or Friday). Barring any unexpected issues during testnet testing, I expect that this will be our last release candidate before the official release, based on testing results so far. # Hivemind (2nd layer applications + social media middleware) Last week we’ve been making final fixes and doing performance tests in preparation for a new release of hivemind for API node operators later this week. ## Changing back to using pip for hivemind installation We recently found that our current installation methodology for hivemind could lead to unexpected package versioning issues, so we’re switching back to using pip (python package installer) and pinning the versions of packages that hivemind uses. ## Performance testing and optimization for hivemind While testing the develop branch of hivemind on our production API node (https://api.hive.blog), we noticed a slowdown in performance of the query `bridge_get_ranked_post_by_created_for_tag` (went from average of 64ms to nearly 2s average time). This problem was ultimately traced down to a lack of sufficient statistics being accumulated for the tags_ids column in the hive_posts table. The collected statistics weren’t sufficient to model the probability distribution of the tags used by posts, which resulted in the query planner selecting an under-performing query plan. What’s interesting here is that this was a latent performance issue that could have potentially occurred on any given API node if it collected an unlucky statistical set (the problem wasn’t really a master vs develop branch issue). We fixed the issue by increasing the statistics collected for this column from 100 to 1000: https://gitlab.syncad.com/hive/hivemind/-/merge_requests/503 ## Hivemind memory consumption We’re still researching potential ways to decrease the amount of memory consumed by the hivemind sync process over time. We’ve reduced memory consumption some, but more looks possible. ## Postgres 13 vs Postgres 10 for hivemind During our search for a possible solution to the above problem (before we realized increasing statistics was the best solution), we also tried updating our SQL database from postgres 10 with postgres 13, to see if it would select a better query plan. The database upgrade had no impact on the above problem, but we found another slowdown during hive sync (the indexer that adds data from the blockchain to the database) tied to postgres 13. This problem occurs because the postgres13 planner incorrectly estimates the costs of updating rshare totals during ‘live sync’ and decides to do a just-in-time (jit) optimization which adds 100ms to the query time. We confirmed this was the issue by increasing the threshold cost required before the planner was allowed to employ jit optimization (effectively disabling jit usage in the query). In this scenario, performance was just slightly better for postgres 13 than for 10. Once we move to 13, we’ll need to select a long term solution for this issue (either improve the cost estimation or just disable jit for this query), but that’s an issue for a later day. ## Functional testing and fixes for hivemind While working on fixes to community-related API calls, we also improved mock testing capabilities to verify the changes (mock testing allows us to generate “fake” data for testing purposes into an existing hivemind data set). https://gitlab.syncad.com/hive/hivemind/-/merge_requests/496 https://gitlab.syncad.com/hive/hivemind/-/merge_requests/499 https://gitlab.syncad.com/hive/hivemind/-/merge_requests/501 # Modular hivemind (Application framework for Hive apps) We’re currently building a sample application with the prototype for our modular hivemind framework that will support the account history API. Hopefully we’ll be able to perform a full test of this sample application by sometime next week. # Condenser wallet We’ve been doing some condenser wallet testing and bug fixing. We fixed a bug in the new feature by @quochuy that generates a CSV file with a user’s transaction history. The fix has been deployed to https://wallet.hive.blog. https://gitlab.syncad.com/hive/wallet/-/merge_requests/106 # Testnet We’ve had a few brave souls do some testing with the testnet, but I’d like to see a lot more, especially from users supporting Hive API libraries and Hive-based apps. But everyone is welcome to play around on the testnet and try to break things. As a regular Hive user, you can login with your normal credentials via: https://testblog.openhive.network (hive.blog-like testing site) or https://testnet.peakd.com/ (peakd-like testing site) You can also browse the testnet with this block explorer: https://test.ausbit.dev/ Going forward, the testnet should be the preferred vehicle for initial testing of Hive apps. And testing new features now, before the hardfork, helps us to identify areas where we may want to make changes to API responses, etc, before there’s an “official” API response that must then be changed later. # Planned date for hardfork 25 I’m still projecting the hardfork will be in the last week of June. See: 13th update of 2021 on BlockTrades work on Hive software by @blocktrades</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://images.hive.blog/DQmSihw8Kz4U7TuCQa98DDdCzqbqPFRumuVWAbareiYZW1Z/blocktrades%20update.png" /><media:content medium="image" url="https://images.hive.blog/DQmSihw8Kz4U7TuCQa98DDdCzqbqPFRumuVWAbareiYZW1Z/blocktrades%20update.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>
+&lt;/p&gt;</content><author><name>gtg</name></author><category term="news" /><category term="projects" /><category term="testnet" /><summary type="html">I just started brand new instance of a public Hive testnet based on `v1.25.0rc2` https://gitlab.syncad.com/hive/hive/-/tags/v1.25.0rc2 Re-initialization was needed due to changes in governance voting rules (rc1 would fork, because different rules impacts witness schedule): ``` witness.owner == scheduled_witness: Witness produced block at wrong time {&quot;block witness&quot;:&quot;gtg-rc1-10&quot;,&quot;scheduled&quot;:&quot;gtg-rc1-13&quot;,&quot;slot_num&quot;:1} database.cpp:4838 validate_block_header ``` Unless your account was created very recently, you should be able to participate in the testnet using your own mainnet account and keys (though please be careful, if you leak your key during testnet, your mainnet account will be compromised) To get some tokens for testing you can use https://hivetestnetfaucet.org/ created by @howo or reach out to witnesses using your favorite communication channels such as https://openhive.chat ;-) - Hive testnet chain-id: `18dcf0a285365fc58b71f18b3d3fec954aa0c141c44e4e5cb4cf777b9eab274e` - Hive seed node: `p2p-seed-node = testnet.openhive.network:2001` - API endpoint (via jussi): `https://testnet.openhive.network` - Hive Testnet Condenser instance: https://testblog.openhive.network - Hive Testnet Wallet instance: https://testwallet.openhive.network - Binaries: https://gtg.openhive.network/get/testnet/bin/ - hived direct http server `http://testnet.openhive.network:8091` - hived direct websocket server `ws://testnet.openhive.network:8090` - hivemind server direct server `http://testnet.openhive.network:8080` To join testnet with your hived, you need a testnet-enabled version, which you can get from here: https://gtg.openhive.network/get/testnet/bin or build yourself (as usual plus `-DBUILD_HIVE_TESTNET=ON` during cmake step) ## See also CyberBuzz Radio is LIVE: Community Q&amp;amp;A For the Upcoming Hive Blockchain Hardfork: https://www.youtube.com/watch?v=FtyhMAWto90&amp;amp;t=448s (@hbdstabilizer as 50% beneficiary) See: HF25 Public Testnet Reloaded (RC2) by @gtg</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://img.youtube.com/vi/FtyhMAWto90/0.jpg" /><media:content medium="image" url="https://img.youtube.com/vi/FtyhMAWto90/0.jpg" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>
