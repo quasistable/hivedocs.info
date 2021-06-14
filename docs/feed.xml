@@ -1,4 +1,473 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="https://hivedocs.info/feed.xml" rel="self" type="application/atom+xml" /><link href="https://hivedocs.info/" rel="alternate" type="text/html" /><updated>2021-06-10T18:05:44-07:00</updated><id>https://hivedocs.info/feed.xml</id><title type="html">Hive Chain Documentation</title><subtitle>Your resource for various levels of Hive Documentation.</subtitle><author><name>site curated by: @inertia</name></author><entry><title type="html">15th update of 2021 on BlockTrades work on Hive software</title><link href="https://hivedocs.info/news/core/development/2021/06/10/15th-update-of-2021-on-blocktrades-work-on-hive-software.html" rel="alternate" type="text/html" title="15th update of 2021 on BlockTrades work on Hive software" /><published>2021-06-10T16:21:27-07:00</published><updated>2021-06-10T16:21:27-07:00</updated><id>https://hivedocs.info/news/core/development/2021/06/10/15th-update-of-2021-on-blocktrades-work-on-hive-software</id><content type="html" xml:base="https://hivedocs.info/news/core/development/2021/06/10/15th-update-of-2021-on-blocktrades-work-on-hive-software.html">&lt;div id=&quot;content-blocktrades-15th-update-of-2021-on-blocktrades-work-on-hive-software&quot;&gt;![blocktrades update.png](https://images.hive.blog/DQmSihw8Kz4U7TuCQa98DDdCzqbqPFRumuVWAbareiYZW1Z/blocktrades%20update.png)
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="https://hivedocs.info/feed.xml" rel="self" type="application/atom+xml" /><link href="https://hivedocs.info/" rel="alternate" type="text/html" /><updated>2021-06-14T08:18:54-07:00</updated><id>https://hivedocs.info/feed.xml</id><title type="html">Hive Chain Documentation</title><subtitle>Your resource for various levels of Hive Documentation.</subtitle><author><name>site curated by: @inertia</name></author><entry><title type="html">Imagehoster cache purge for Cloudflare</title><link href="https://hivedocs.info/howto/devops/imagehoster/2021/06/14/imagehoster-cache-purge-for-cloudflare.html" rel="alternate" type="text/html" title="Imagehoster cache purge for Cloudflare" /><published>2021-06-14T01:43:48-07:00</published><updated>2021-06-14T01:43:48-07:00</updated><id>https://hivedocs.info/howto/devops/imagehoster/2021/06/14/imagehoster-cache-purge-for-cloudflare</id><content type="html" xml:base="https://hivedocs.info/howto/devops/imagehoster/2021/06/14/imagehoster-cache-purge-for-cloudflare.html">&lt;div id=&quot;content-good-karma-imagehoster-cache-purge-for-cloudflare&quot;&gt;Quick post about new script that helps with caching avatars on imagehoster instances hosted on Cloudflare.
+
+![ecency-imagehoster-caching](https://images.ecency.com/DQmecXYP57pagKtfrUvcRG5AZsrgnwdmbsmugKcv5han8Mn/cache_work.png)
+
+We have 2 imagehoster instances right now, one run by Ecency team and another from Blocktrades team. It is crucial part of platform without which user experience would really suffer. Images, avatars are face of every UI.
+
+https://images.ecency.com
+https://images.hive.blog
+
+They both run in front of Cloudflare and images were not utilizing Cloudflare cache properly. For couple reasons, one - avatars cannot be cached for long time, when person updates avatar via apps/websites then they expect it see it instantly, two - Cloudflare considers them dynamic content by default.
+
+If you force cache avatars with Cloudflare page rules then update only shown after cache is expired. That’s not acceptable for Blockchain that’s very fast but avatar update require cache expiry. On Ecency instance we had 10 seconds cache, while Hiveblog instance wasn’t using cache at first and couple days ago Blocktrades tried 4h. All other images could be cached for longer period because they don’t change at all, for avatars 4h. Which was still too long.
+
+To solve avatar caching issue, created simple script that would purge cache from Cloudflare when account gets update on blockchain. If imagehoster instances are down or in maintenance, all images would be served from Cloudflare cache which is really great for user experience as well.
+
+If you will be running Imagehoster instance in future or considering it, I would recommend running this script on separate server and set avatars caching to longer period safely. If you are not using Cloudflare, then consider removing caching avatars completely, it will put some load on your server but alternative is confusing user experience.
+
+https://github.com/ecency/cf-cache
+
+Both instances running above script now and whenever account update triggered on Blockchain, above script purges relevant user’s avatar to keep it fresh, use new avatar on all apps that depend on it. 
+
+images.ecency.com cache period for avatars 1 week 
+images.hive.blog cache period for avatar 5 hours
+
+After change, I noticed Ecency.com became even more faster... Caching images for sure improving performance of all apps.
+
+### Support proposals  
+ 
+[`Ecency`](https://hivesigner.com/sign/update-proposal-votes?proposal_ids=%5B141%5D&amp;amp;approve=true) | [`Hivesearcher`](https://hivesigner.com/sign/update-proposal-votes?proposal_ids=%5B146%5D&amp;amp;approve=true) | [`Hivesigner`](https://hivesigner.com/sign/update-proposal-votes?proposal_ids=%5B88%5D&amp;amp;approve=true)&lt;/div&gt;
+&lt;script crossorigin=&quot;anonymous&quot; integrity=&quot;sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=&quot; src=&quot;https://code.jquery.com/jquery-3.5.1.slim.min.js&quot;&gt;&lt;/script&gt;
+
+&lt;script src=&quot;https://unpkg.com/steem-content-renderer&quot;&gt;&lt;/script&gt;
+
+&lt;!-- &lt;script src=&quot;https://cdn.jsdelivr.net/npm/hive-content-renderer/dist/hive-content-renderer.min.js&quot;&gt;&lt;/script&gt; --&gt;
+&lt;script&gt;
+  $(document).ready(function() {
+    try {
+      const renderer = new SteemContentRenderer.DefaultRenderer({
+      // const renderer = new HiveContentRenderer({
+        baseUrl: &quot;https://hive.blog/&quot;,
+        breaks: true,
+        skipSanitization: false,
+        allowInsecureScriptTags: false,
+        addNofollowToLinks: true,
+        doNotShowImages: false,
+        ipfsPrefix: &quot;&quot;,
+        assetsWidth: 640,
+        assetsHeight: 480,
+        imageProxyFn: (url) =&gt; url,
+        usertagUrlFn: (account) =&gt; &quot;/@good-karma&quot;,
+        hashtagUrlFn: (hashtag) =&gt; &quot;/imagehoster-cache-purge-for-cloudflare&quot;,
+        isLinkSafeFn: (url) =&gt; true,
+      });
+      
+      const inputElem = $('#content-good-karma-imagehoster-cache-purge-for-cloudflare').html();
+      const outputElem = $('#content-good-karma-imagehoster-cache-purge-for-cloudflare');
+      const output = renderer.render(inputElem);
+      
+      outputElem.html(output);
+    } catch(e) {
+      console.log(e);
+    }
+  });
+&lt;/script&gt;
+
+&lt;style&gt;
+  #content-good-karma-imagehoster-cache-purge-for-cloudflare {
+    padding: 0 3rem;
+    color: #444444;
+    font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.8;
+    text-shadow: 0 1px 0 #ffffff;
+    padding: 0.5rem;
+  }
+  #content-good-karma-imagehoster-cache-purge-for-cloudflare code {
+    background: white;
+  }
+  #content-good-karma-imagehoster-cache-purge-for-cloudflare a {
+    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
+  }
+  #content-good-karma-imagehoster-cache-purge-for-cloudflare a:hover {
+    border-bottom: 0;
+  }
+  #content-good-karma-imagehoster-cache-purge-for-cloudflare h1 {
+    font-size: 2.2em;
+  }
+  #content-good-karma-imagehoster-cache-purge-for-cloudflare h2, h3, h4, h5 {
+    margin-bottom: 0;
+  }
+  #content-good-karma-imagehoster-cache-purge-for-cloudflare header small {
+    color: #999;
+    font-size: 50%;
+  }
+  #content-good-karma-imagehoster-cache-purge-for-cloudflare img {
+    max-width: 100%;
+  }
+&lt;/style&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;
+  See: &lt;a href=&quot;https://ecency.com/hive-139531/@good-karma/imagehoster-cache-purge-for-cloudflare&quot;&gt;Imagehoster cache purge for Cloudflare&lt;/a&gt;
+  by
+  &lt;a href=&quot;https://hive.blog/@good-karma&quot;&gt;@good-karma&lt;/a&gt;
+&lt;/p&gt;</content><author><name>good-karma</name></author><category term="howto" /><category term="devops" /><category term="imagehoster" /><summary type="html">Quick post about new script that helps with caching avatars on imagehoster instances hosted on Cloudflare. ![ecency-imagehoster-caching](https://images.ecency.com/DQmecXYP57pagKtfrUvcRG5AZsrgnwdmbsmugKcv5han8Mn/cache_work.png) We have 2 imagehoster instances right now, one run by Ecency team and another from Blocktrades team. It is crucial part of platform without which user experience would really suffer. Images, avatars are face of every UI. https://images.ecency.com https://images.hive.blog They both run in front of Cloudflare and images were not utilizing Cloudflare cache properly. For couple reasons, one - avatars cannot be cached for long time, when person updates avatar via apps/websites then they expect it see it instantly, two - Cloudflare considers them dynamic content by default. If you force cache avatars with Cloudflare page rules then update only shown after cache is expired. That’s not acceptable for Blockchain that’s very fast but avatar update require cache expiry. On Ecency instance we had 10 seconds cache, while Hiveblog instance wasn’t using cache at first and couple days ago Blocktrades tried 4h. All other images could be cached for longer period because they don’t change at all, for avatars 4h. Which was still too long. To solve avatar caching issue, created simple script that would purge cache from Cloudflare when account gets update on blockchain. If imagehoster instances are down or in maintenance, all images would be served from Cloudflare cache which is really great for user experience as well. If you will be running Imagehoster instance in future or considering it, I would recommend running this script on separate server and set avatars caching to longer period safely. If you are not using Cloudflare, then consider removing caching avatars completely, it will put some load on your server but alternative is confusing user experience. https://github.com/ecency/cf-cache Both instances running above script now and whenever account update triggered on Blockchain, above script purges relevant user’s avatar to keep it fresh, use new avatar on all apps that depend on it. images.ecency.com cache period for avatars 1 week images.hive.blog cache period for avatar 5 hours After change, I noticed Ecency.com became even more faster... Caching images for sure improving performance of all apps. ### Support proposals [`Ecency`](https://hivesigner.com/sign/update-proposal-votes?proposal_ids=%5B141%5D&amp;amp;approve=true) | [`Hivesearcher`](https://hivesigner.com/sign/update-proposal-votes?proposal_ids=%5B146%5D&amp;amp;approve=true) | [`Hivesigner`](https://hivesigner.com/sign/update-proposal-votes?proposal_ids=%5B88%5D&amp;amp;approve=true) See: Imagehoster cache purge for Cloudflare by @good-karma</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://images.ecency.com/DQmecXYP57pagKtfrUvcRG5AZsrgnwdmbsmugKcv5han8Mn/cache_work.png" /><media:content medium="image" url="https://images.ecency.com/DQmecXYP57pagKtfrUvcRG5AZsrgnwdmbsmugKcv5han8Mn/cache_work.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Hive Projects weekly update: 5 projects added, 131 listed in total!</title><link href="https://hivedocs.info/news/projects/2021/06/12/hiveprojects-weekly-update-2021-06-12-42368.html" rel="alternate" type="text/html" title="Hive Projects weekly update: 5 projects added, 131 listed in total!" /><published>2021-06-12T09:00:06-07:00</published><updated>2021-06-12T09:00:06-07:00</updated><id>https://hivedocs.info/news/projects/2021/06/12/hiveprojects-weekly-update-2021-06-12-42368</id><content type="html" xml:base="https://hivedocs.info/news/projects/2021/06/12/hiveprojects-weekly-update-2021-06-12-42368.html">&lt;div id=&quot;content-engrave-hiveprojects-weekly-update-2021-06-12-42368&quot;&gt;![](https://files.peakd.com/file/peakd-hive/engrave/IHxPwBD1-hiveprojects_update.png)
+
+# What is [Hive Projects](https://hiveprojects.io)?
+
+[Hive Projects](https://hiveprojects.io) is the biggest directory of apps, sites, tools, and scripts created for the Hive ecosystem. This website is an entirely volunteer-driven effort. That includes coding time and hosting costs. If you wish to help or show your gratitude, there are plenty of ways in which you can do that:
+ * upvote this post
+ * reblog or cross-post it into your favorite community
+ * contribute to HiveProjects, by adding a new project - everyone can do it!
+ * let us know about new project, by posting about it in [Hive Projects Community](https://peakd.com/c/hive-192847) or by cross-posting to it or simply paste us a link at [Engrave Discord server](https://discord.gg/8NktdFh)
+ * vote for our @engrave witness
+ * write a comment :)
+
+***
+
+
+Previous post: [Hive Projects weekly update: 4 projects added, 126 listed in total!](/@engrave/hiveprojects-weekly-update-2021-03-06-13937)
+
+***
+
+
+
+# Newly added projects 
+
+All published projects were moderated and accepted by our **Content Manager** @lukmarcus, who works hard to make [Hive Projects](https://hiveprojects.io) the best and most up-to-date directory of tools and apps in our ecosystem. The entire reward from this post goes to him.
+
+
+
+
+## PizzaBox
+**Team:** @thebeardflex, @hivetrending
+
+![](https://hiveprojects.io/media/imgs/136/1623453852443.png)
+
+**Category:** [Bots](https://hiveprojects.io/categories/bots/)
+
+**Description:** *HIVE tailored community Discord Bot focused around awareness and onboarding. Provides moderation tools for use by communities both on and off chain.
+
+Ban, Kick, Mute, Sticky, Slowmo, Lock Channel, Purge, Music Player, Ticket System etc.
+Giveaways
+Market information for second-layer Hive-Engine tokens
+HIVE market information
+Mini-games
+HIVE onboarding tools/tutorials. Some commands will be customizable per guild they exist in.*
+
+[PizzaBox on HiveProjects.io](https://hiveprojects.io/projects/p/pizzabox/)
+
+
+
+## Beatzchain
+**Team:** @polarmystro, @lamarz7
+
+![](https://hiveprojects.io/media/imgs/134/1618985842320.png)
+
+**Category:** [Generic Hive Interfaces](https://hiveprojects.io/categories/generic-hive-interfaces/)
+
+**Description:** *Beatzchain project will be a platform that would run on the Hive Blockchain that would serve for Rappers and music producers.  Beatzchain wants to change the Hip-Hop world with a network rap musicians can earn cryptocurrencies through Hive, Music producers can buy/sell beats, and rappers can use crypto to purchase beats including the ones they&amp;#39;ve earned through the Hive Blockchain.  We would like to start an NFT exchange for rappers and producers called &amp;quot;Hip-Hop Stocks&amp;quot; where musicians can create music NFTs with their songs/beats and buyers could benefit off the equity appreciation.  The goal is to give unsigned, independent, and major artists a better financial system for musicians where everyone with good talent who put the work in can sit by the table together.*
+
+[Beatzchain on HiveProjects.io](https://hiveprojects.io/projects/p/beatzchain/)
+
+
+
+## Hive Chain Documentation
+**Team:** @inertia
+
+![](https://hiveprojects.io/media/imgs/133/1615696720345.png)
+
+**Category:** [Programming Tools](https://hiveprojects.io/categories/programming-tools/)
+
+**Description:** *Your resource for various levels of Hive Documentation.*
+
+[Hive Chain Documentation on HiveProjects.io](https://hiveprojects.io/projects/p/hive-chain-documentation/)
+
+
+
+## Votify
+**Team:** @dannychain
+
+![](https://hiveprojects.io/media/imgs/132/1615069673826.png)
+
+**Category:** [Witness Tools](https://hiveprojects.io/categories/witness-tools/)
+
+**Description:** *An Open Source Voting Page for Hive-Engine Witnesses*
+
+[Votify on HiveProjects.io](https://hiveprojects.io/projects/p/votify/)
+
+
+
+## Karaka
+**Team:** 
+
+![](https://hiveprojects.io/media/imgs/135/1619983488995.png)
+
+**Category:** [Bots](https://hiveprojects.io/categories/bots/)
+
+**Description:** *Karaka is an automation (clerk) for Hive and Hive-Engine blockchains. Use it to manage tokens across multiple accounts.*
+
+[Karaka on HiveProjects.io](https://hiveprojects.io/projects/p/karaka/)
+
+
+
+***
+
+&lt;center&gt;
+
+**That would be all for today. Stay tuned for the next update and consider contributing to Hive Projects. It is a community-driven website.**
+
+**Click on the image to vote for @engrave witness:**
+
+[![banner_engrave 100.png](https://images.hive.blog/DQmUghvic5TCPPvVkB4iB7eXmgQ3RQ4L8jkVizvuCBW8RMT/banner_engrave%20100.png)](https://hivesigner.com/sign/account-witness-vote?witness=engrave&amp;amp;approve=1)
+
+**Dont forget to follow @engrave account!**
+
+&lt;/center&gt;
+&lt;/div&gt;
+&lt;script crossorigin=&quot;anonymous&quot; integrity=&quot;sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=&quot; src=&quot;https://code.jquery.com/jquery-3.5.1.slim.min.js&quot;&gt;&lt;/script&gt;
+
+&lt;script src=&quot;https://unpkg.com/steem-content-renderer&quot;&gt;&lt;/script&gt;
+
+&lt;!-- &lt;script src=&quot;https://cdn.jsdelivr.net/npm/hive-content-renderer/dist/hive-content-renderer.min.js&quot;&gt;&lt;/script&gt; --&gt;
+&lt;script&gt;
+  $(document).ready(function() {
+    try {
+      const renderer = new SteemContentRenderer.DefaultRenderer({
+      // const renderer = new HiveContentRenderer({
+        baseUrl: &quot;https://hive.blog/&quot;,
+        breaks: true,
+        skipSanitization: false,
+        allowInsecureScriptTags: false,
+        addNofollowToLinks: true,
+        doNotShowImages: false,
+        ipfsPrefix: &quot;&quot;,
+        assetsWidth: 640,
+        assetsHeight: 480,
+        imageProxyFn: (url) =&gt; url,
+        usertagUrlFn: (account) =&gt; &quot;/@engrave&quot;,
+        hashtagUrlFn: (hashtag) =&gt; &quot;/hiveprojects-weekly-update-2021-06-12-42368&quot;,
+        isLinkSafeFn: (url) =&gt; true,
+      });
+      
+      const inputElem = $('#content-engrave-hiveprojects-weekly-update-2021-06-12-42368').html();
+      const outputElem = $('#content-engrave-hiveprojects-weekly-update-2021-06-12-42368');
+      const output = renderer.render(inputElem);
+      
+      outputElem.html(output);
+    } catch(e) {
+      console.log(e);
+    }
+  });
+&lt;/script&gt;
+
+&lt;style&gt;
+  #content-engrave-hiveprojects-weekly-update-2021-06-12-42368 {
+    padding: 0 3rem;
+    color: #444444;
+    font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.8;
+    text-shadow: 0 1px 0 #ffffff;
+    padding: 0.5rem;
+  }
+  #content-engrave-hiveprojects-weekly-update-2021-06-12-42368 code {
+    background: white;
+  }
+  #content-engrave-hiveprojects-weekly-update-2021-06-12-42368 a {
+    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
+  }
+  #content-engrave-hiveprojects-weekly-update-2021-06-12-42368 a:hover {
+    border-bottom: 0;
+  }
+  #content-engrave-hiveprojects-weekly-update-2021-06-12-42368 h1 {
+    font-size: 2.2em;
+  }
+  #content-engrave-hiveprojects-weekly-update-2021-06-12-42368 h2, h3, h4, h5 {
+    margin-bottom: 0;
+  }
+  #content-engrave-hiveprojects-weekly-update-2021-06-12-42368 header small {
+    color: #999;
+    font-size: 50%;
+  }
+  #content-engrave-hiveprojects-weekly-update-2021-06-12-42368 img {
+    max-width: 100%;
+  }
+&lt;/style&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;
+  See: &lt;a href=&quot;https://hive.blog/hive-192847/@engrave/hiveprojects-weekly-update-2021-06-12-42368&quot;&gt;Hive Projects weekly update: 5 projects added, 131 listed in total!&lt;/a&gt;
+  by
+  &lt;a href=&quot;https://hive.blog/@engrave&quot;&gt;@engrave&lt;/a&gt;
+&lt;/p&gt;</content><author><name>engrave</name></author><category term="news" /><category term="projects" /><summary type="html">![](https://files.peakd.com/file/peakd-hive/engrave/IHxPwBD1-hiveprojects_update.png) # What is [Hive Projects](https://hiveprojects.io)? [Hive Projects](https://hiveprojects.io) is the biggest directory of apps, sites, tools, and scripts created for the Hive ecosystem. This website is an entirely volunteer-driven effort. That includes coding time and hosting costs. If you wish to help or show your gratitude, there are plenty of ways in which you can do that: * upvote this post * reblog or cross-post it into your favorite community * contribute to HiveProjects, by adding a new project - everyone can do it! * let us know about new project, by posting about it in [Hive Projects Community](https://peakd.com/c/hive-192847) or by cross-posting to it or simply paste us a link at [Engrave Discord server](https://discord.gg/8NktdFh) * vote for our @engrave witness * write a comment :) *** Previous post: [Hive Projects weekly update: 4 projects added, 126 listed in total!](/@engrave/hiveprojects-weekly-update-2021-03-06-13937) *** # Newly added projects All published projects were moderated and accepted by our **Content Manager** @lukmarcus, who works hard to make [Hive Projects](https://hiveprojects.io) the best and most up-to-date directory of tools and apps in our ecosystem. The entire reward from this post goes to him. ## PizzaBox **Team:** @thebeardflex, @hivetrending ![](https://hiveprojects.io/media/imgs/136/1623453852443.png) **Category:** [Bots](https://hiveprojects.io/categories/bots/) **Description:** *HIVE tailored community Discord Bot focused around awareness and onboarding. Provides moderation tools for use by communities both on and off chain. Ban, Kick, Mute, Sticky, Slowmo, Lock Channel, Purge, Music Player, Ticket System etc. Giveaways Market information for second-layer Hive-Engine tokens HIVE market information Mini-games HIVE onboarding tools/tutorials. Some commands will be customizable per guild they exist in.* [PizzaBox on HiveProjects.io](https://hiveprojects.io/projects/p/pizzabox/) ## Beatzchain **Team:** @polarmystro, @lamarz7 ![](https://hiveprojects.io/media/imgs/134/1618985842320.png) **Category:** [Generic Hive Interfaces](https://hiveprojects.io/categories/generic-hive-interfaces/) **Description:** *Beatzchain project will be a platform that would run on the Hive Blockchain that would serve for Rappers and music producers. Beatzchain wants to change the Hip-Hop world with a network rap musicians can earn cryptocurrencies through Hive, Music producers can buy/sell beats, and rappers can use crypto to purchase beats including the ones they&amp;#39;ve earned through the Hive Blockchain. We would like to start an NFT exchange for rappers and producers called &amp;quot;Hip-Hop Stocks&amp;quot; where musicians can create music NFTs with their songs/beats and buyers could benefit off the equity appreciation. The goal is to give unsigned, independent, and major artists a better financial system for musicians where everyone with good talent who put the work in can sit by the table together.* [Beatzchain on HiveProjects.io](https://hiveprojects.io/projects/p/beatzchain/) ## Hive Chain Documentation **Team:** @inertia ![](https://hiveprojects.io/media/imgs/133/1615696720345.png) **Category:** [Programming Tools](https://hiveprojects.io/categories/programming-tools/) **Description:** *Your resource for various levels of Hive Documentation.* [Hive Chain Documentation on HiveProjects.io](https://hiveprojects.io/projects/p/hive-chain-documentation/) ## Votify **Team:** @dannychain ![](https://hiveprojects.io/media/imgs/132/1615069673826.png) **Category:** [Witness Tools](https://hiveprojects.io/categories/witness-tools/) **Description:** *An Open Source Voting Page for Hive-Engine Witnesses* [Votify on HiveProjects.io](https://hiveprojects.io/projects/p/votify/) ## Karaka **Team:** ![](https://hiveprojects.io/media/imgs/135/1619983488995.png) **Category:** [Bots](https://hiveprojects.io/categories/bots/) **Description:** *Karaka is an automation (clerk) for Hive and Hive-Engine blockchains. Use it to manage tokens across multiple accounts.* [Karaka on HiveProjects.io](https://hiveprojects.io/projects/p/karaka/) *** **That would be all for today. Stay tuned for the next update and consider contributing to Hive Projects. It is a community-driven website.** **Click on the image to vote for @engrave witness:** [![banner_engrave 100.png](https://images.hive.blog/DQmUghvic5TCPPvVkB4iB7eXmgQ3RQ4L8jkVizvuCBW8RMT/banner_engrave%20100.png)](https://hivesigner.com/sign/account-witness-vote?witness=engrave&amp;amp;approve=1) **Dont forget to follow @engrave account!** See: Hive Projects weekly update: 5 projects added, 131 listed in total! by @engrave</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://hivedocs.info/assets/images/favicon.png" /><media:content medium="image" url="https://hivedocs.info/assets/images/favicon.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">CryptoCurrency eXchange Trading Library | Hive &amp;amp; HBD Prices</title><link href="https://hivedocs.info/howto/nodejs/exchange/2021/06/11/cryptocurrency-exchange-trading-library-or-hive-and-hbd-prices.html" rel="alternate" type="text/html" title="CryptoCurrency eXchange Trading Library | Hive &amp;amp; HBD Prices" /><published>2021-06-11T18:15:15-07:00</published><updated>2021-06-11T18:15:15-07:00</updated><id>https://hivedocs.info/howto/nodejs/exchange/2021/06/11/cryptocurrency-exchange-trading-library-or-hive-and-hbd-prices</id><content type="html" xml:base="https://hivedocs.info/howto/nodejs/exchange/2021/06/11/cryptocurrency-exchange-trading-library-or-hive-and-hbd-prices.html">&lt;div id=&quot;content-geekgirl-cryptocurrency-exchange-trading-library-or-hive-and-hbd-prices&quot;&gt;&lt;center&gt;![ccxt.png](https://images.hive.blog/DQmP7AXNQQHk7FXFZruTqK3nagHuWBefrNA489MHsxVbH5a/ccxt.png)&lt;/center&gt;
+
+CCXT is a cryptocurrency exchange trading library for Javascript, Python, and PHP. It is a trading API that supports more than 120 crypto exchanges and continues to add more. While my personal preference is to use in my python projects, it is nice to know that it can be used in Javascript and PHP based projects. For more details feel free to visit [CCXT GitHub page](https://github.com/ccxt/ccxt).
+
+What is really great about this library is that it provides access to many exchanges which include major exchanges like Coinbase, CoinbasePro, Binance, Bittrex, Huobi, etc. Various exchanges have their own python packages to interact with them. I think it is much better to have one interface that can connect to multiple exchanges, get necessary data, and even automate trading.
+
+Most of the functions are available as public and do not need API access credentials. However, for projects that need access to a trading account, we will need to obtain the API access credentials for specific exchanges that we have accounts at.
+
+This API can be used for simple things like getting data on what is being traded on exchanges, historical cryptocurrency prices. It can also be used for more complex projects like trading bots, web applications, etc.
+
+Getting started with this API is super easy. For python we need to first pip install ccxt. Once that is done we can start using it in our python code.
+
+To demonstrate how work with ccxt, I wanted to see what exchanges have HIVE and HBD listed, what trading pairs are available and the latest prices.
+
+First to see what exchanges are supported we can write the following code:
+
+```
+import ccxt
+
+print(ccxt.exchanges)
+```
+If we already know what exchange we would like to use in that list, we can start connecting to this exchange, and get trading pairs and latest data about this trading pairs as below:
+
+```
+import ccxt
+
+binance = ccxt.binance()
+print(binance.load_markets())
+```
+
+If we need to access our accounts we will need to pass api key and secrets as a dictionary argument like this:
+
+```
+import ccxt
+
+binance = ccxt.binance({
+    'apiKey': 'YOUR_PUBLIC_API_KEY',
+    'secret': 'YOUR_SECRET_PRIVATE_KEY',
+})
+
+```
+
+As you can see it is very easy to get started with CCXT. Exploring more available methods and properties we can write much more useful code.
+
+As I mentioned I was curious to see if I could use CCXT to see all the exchanges that have HIVE and HBD listed, what trading pairs they have available, and latest prices. Let's do that now.
+
+```
+import ccxt
+
+def create_table(prices):
+    table = '&lt;table&gt;&lt;tr&gt;&lt;th&gt;Ticker Symbol&lt;/th&gt;&lt;th&gt;Exchange&lt;/th&gt;&lt;th&gt;Price&lt;/th&gt;&lt;/tr&gt;'
+    for price in prices:
+        row = f'&lt;tr&gt;&lt;td&gt;{price[0]}&lt;/td&gt;&lt;td&gt;{price[1]}&lt;/td&gt;&lt;td&gt;{str(price[2])+&quot; &quot;+price[3]}&lt;/td&gt;&lt;/tr&gt;'
+        table += row
+    table += '&lt;/table&gt;'
+    return table
+
+prices = []
+for exchange_id in ccxt.exchanges:
+    if exchange_id == 'cdax':
+        continue
+
+    try:
+        exchange_class = getattr(ccxt, exchange_id)
+        exchange = exchange_class()
+        markets = exchange.load_markets()
+    except:
+        continue
+
+    for market in markets:
+        if 'HIVE' in market or 'HBD' in market:
+            if 'HBDC' in market:
+                continue
+            ticker = exchange.fetch_ticker(market)
+            if ticker['symbol'].split('/')[1] == 'BTC':
+                prices.append((market, exchange_id, format(ticker['close'], '.8f'), ticker['symbol'].split('/')[1]))
+            else:
+                prices.append((market, exchange_id, ticker['close'], ticker['symbol'].split('/')[1]))
+
+table = create_table(prices)
+print(table)
+```
+
+What the main part of the code doing is, first we are trying to identify all the exchanges, then we are getting the method by the same name to create the instance of the exchange. Then we are looking what ticker symbols are traded in the exchange. If any of the tickers include Hive or HBD we are storing ticker symbol, exchange name, last close price in prices list. `create_table` is a helper function that puts together the results in a table format, so I can include them in the post. You can scroll down to see the results.
+
+Initially when I was testing I was getting 12 exchanges that have Hive traded on. However, something went wrong when I tried to get the prices of **CDAX** exchange. After looking closely I was convinced Hive or HBD were not actually listed there. So I have do include a line of code to exclude **CDAX**. 
+
+Another interesting thing we can see is from the results is that, for some reason **HBTC** exchange named the ticker symbol as **HIVE1/USDT** instead of just HIVE without 1.
+
+I don't know what exchange **LATOKEN** is, but from the results we can see while HIVE seems to be listed, prices there are all zero.
+
+This is not a full list of exchanges that have Hive or HBD listed. We can see how some exchanges like ionomy, blocktrades, beaxy, mxc, are not there. It is still great to see that all the major exchanges like Binance, Bittrex, Huobi, Upbit are supported in CCXT.
+
+The code above can also be used for any other coins/tokens. If you learn about a new coin/token and would like to see if where it is traded, simply change the comparison logic from HIVE and HBD to that coin/token.
+
+&lt;center&gt;&lt;h1&gt;Hive and HBD Prices&amp;lt;/h2&amp;gt;&amp;lt;/center&amp;gt;
+
+&lt;center&gt;&lt;table&gt;&lt;tr&gt;&lt;th&gt;Ticker Symbol&lt;/th&gt;&lt;th&gt;Exchange&lt;/th&gt;&lt;th&gt;Price&lt;/th&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;HIVE/BNB&lt;/td&gt;&lt;td&gt;binance&lt;/td&gt;&lt;td&gt;0.00429 BNB&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;HIVE/BTC&lt;/td&gt;&lt;td&gt;binance&lt;/td&gt;&lt;td&gt;0.00000946 BTC&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;HIVE/USDT&lt;/td&gt;&lt;td&gt;binance&lt;/td&gt;&lt;td&gt;0.3521 USDT&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;HIVE/KRW&lt;/td&gt;&lt;td&gt;bithumb&lt;/td&gt;&lt;td&gt;410.3 KRW&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;HBD/BTC&lt;/td&gt;&lt;td&gt;bittrex&lt;/td&gt;&lt;td&gt;0.00002654 BTC&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;HIVE/BTC&lt;/td&gt;&lt;td&gt;bittrex&lt;/td&gt;&lt;td&gt;0.00000950 BTC&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;HIVE/USD&lt;/td&gt;&lt;td&gt;bittrex&lt;/td&gt;&lt;td&gt;0.35458 USD&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;HIVE/USDT&lt;/td&gt;&lt;td&gt;bittrex&lt;/td&gt;&lt;td&gt;0.35712 USDT&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;HIVE/USDT&lt;/td&gt;&lt;td&gt;gateio&lt;/td&gt;&lt;td&gt;0.3524 USDT&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;HIVE1/USDT&lt;/td&gt;&lt;td&gt;hbtc&lt;/td&gt;&lt;td&gt;0.358 USDT&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;HIVE/USDT&lt;/td&gt;&lt;td&gt;huobipro&lt;/td&gt;&lt;td&gt;0.3525 USDT&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;HIVE/HT&lt;/td&gt;&lt;td&gt;huobipro&lt;/td&gt;&lt;td&gt;0.025623 HT&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;HIVE/BTC&lt;/td&gt;&lt;td&gt;huobipro&lt;/td&gt;&lt;td&gt;0.00000947 BTC&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;HIVE/IDR&lt;/td&gt;&lt;td&gt;indodax&lt;/td&gt;&lt;td&gt;5063.0 IDR&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;HIVE/USDT&lt;/td&gt;&lt;td&gt;latoken&lt;/td&gt;&lt;td&gt;0.0 USDT&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;HIVE/BTC&lt;/td&gt;&lt;td&gt;latoken&lt;/td&gt;&lt;td&gt;0.00000000 BTC&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;HIVE/ETH&lt;/td&gt;&lt;td&gt;latoken&lt;/td&gt;&lt;td&gt;0.0 ETH&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;HIVE/KRW&lt;/td&gt;&lt;td&gt;probit&lt;/td&gt;&lt;td&gt;410.9 KRW&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;HIVE/USDT&lt;/td&gt;&lt;td&gt;probit&lt;/td&gt;&lt;td&gt;0.3526 USDT&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;HIVE/BTC&lt;/td&gt;&lt;td&gt;probit&lt;/td&gt;&lt;td&gt;0.00000948 BTC&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;HIVE/BTC&lt;/td&gt;&lt;td&gt;stex&lt;/td&gt;&lt;td&gt;0.00000107 BTC&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;HIVE/BTC&lt;/td&gt;&lt;td&gt;upbit&lt;/td&gt;&lt;td&gt;0.00000955 BTC&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;HBD/BTC&lt;/td&gt;&lt;td&gt;upbit&lt;/td&gt;&lt;td&gt;0.00002515 BTC&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;HIVE/KRW&lt;/td&gt;&lt;td&gt;upbit&lt;/td&gt;&lt;td&gt;413.0 KRW&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/center&gt;
+
+Posted Using [LeoFinance &lt;sup&gt;Beta&lt;/sup&gt;](https://leofinance.io/@geekgirl/cryptocurrency-exchange-trading-library-or-hive-and-hbd-prices)&amp;lt;/div&amp;gt;
+&lt;script crossorigin=&quot;anonymous&quot; integrity=&quot;sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=&quot; src=&quot;https://code.jquery.com/jquery-3.5.1.slim.min.js&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;https://unpkg.com/steem-content-renderer&quot;&gt;&lt;/script&gt;
+&lt;!-- &lt;script src=&quot;https://cdn.jsdelivr.net/npm/hive-content-renderer/dist/hive-content-renderer.min.js&quot;&gt;&lt;/script&gt; --&gt;
+&lt;script&gt;
+  $(document).ready(function() {
+    try {
+      const renderer = new SteemContentRenderer.DefaultRenderer({
+      // const renderer = new HiveContentRenderer({
+        baseUrl: &quot;https://hive.blog/&quot;,
+        breaks: true,
+        skipSanitization: false,
+        allowInsecureScriptTags: false,
+        addNofollowToLinks: true,
+        doNotShowImages: false,
+        ipfsPrefix: &quot;&quot;,
+        assetsWidth: 640,
+        assetsHeight: 480,
+        imageProxyFn: (url) =&gt; url,
+        usertagUrlFn: (account) =&gt; &quot;/@geekgirl&quot;,
+        hashtagUrlFn: (hashtag) =&gt; &quot;/cryptocurrency-exchange-trading-library-or-hive-and-hbd-prices&quot;,
+        isLinkSafeFn: (url) =&gt; true,
+      });
+      
+      const inputElem = $('#content-geekgirl-cryptocurrency-exchange-trading-library-or-hive-and-hbd-prices').html();
+      const outputElem = $('#content-geekgirl-cryptocurrency-exchange-trading-library-or-hive-and-hbd-prices');
+      const output = renderer.render(inputElem);
+      
+      outputElem.html(output);
+    } catch(e) {
+      console.log(e);
+    }
+  });
+&lt;/script&gt;
+&lt;style&gt;
+  #content-geekgirl-cryptocurrency-exchange-trading-library-or-hive-and-hbd-prices {
+    padding: 0 3rem;
+    color: #444444;
+    font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.8;
+    text-shadow: 0 1px 0 #ffffff;
+    padding: 0.5rem;
+  }
+  #content-geekgirl-cryptocurrency-exchange-trading-library-or-hive-and-hbd-prices code {
+    background: white;
+  }
+  #content-geekgirl-cryptocurrency-exchange-trading-library-or-hive-and-hbd-prices a {
+    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
+  }
+  #content-geekgirl-cryptocurrency-exchange-trading-library-or-hive-and-hbd-prices a:hover {
+    border-bottom: 0;
+  }
+  #content-geekgirl-cryptocurrency-exchange-trading-library-or-hive-and-hbd-prices h1 {
+    font-size: 2.2em;
+  }
+  #content-geekgirl-cryptocurrency-exchange-trading-library-or-hive-and-hbd-prices h2, h3, h4, h5 {
+    margin-bottom: 0;
+  }
+  #content-geekgirl-cryptocurrency-exchange-trading-library-or-hive-and-hbd-prices header small {
+    color: #999;
+    font-size: 50%;
+  }
+  #content-geekgirl-cryptocurrency-exchange-trading-library-or-hive-and-hbd-prices img {
+    max-width: 100%;
+  }
+&lt;/style&gt;
+
+&lt;hr /&gt;
+&lt;p&gt;
+  See: &lt;a href=&quot;https://leofinance.io/@geekgirl/cryptocurrency-exchange-trading-library-or-hive-and-hbd-prices&quot;&gt;CryptoCurrency eXchange Trading Library | Hive &amp;amp; HBD Prices&lt;/a&gt;
+  by
+  &lt;a href=&quot;https://hive.blog/@geekgirl&quot;&gt;@geekgirl&lt;/a&gt;
+&lt;/p&gt;
+
+&lt;/h1&gt;&lt;/center&gt;&lt;/div&gt;</content><author><name>geekgirl</name></author><category term="howto" /><category term="nodejs" /><category term="exchange" /><summary type="html">![ccxt.png](https://images.hive.blog/DQmP7AXNQQHk7FXFZruTqK3nagHuWBefrNA489MHsxVbH5a/ccxt.png) CCXT is a cryptocurrency exchange trading library for Javascript, Python, and PHP. It is a trading API that supports more than 120 crypto exchanges and continues to add more. While my personal preference is to use in my python projects, it is nice to know that it can be used in Javascript and PHP based projects. For more details feel free to visit [CCXT GitHub page](https://github.com/ccxt/ccxt). What is really great about this library is that it provides access to many exchanges which include major exchanges like Coinbase, CoinbasePro, Binance, Bittrex, Huobi, etc. Various exchanges have their own python packages to interact with them. I think it is much better to have one interface that can connect to multiple exchanges, get necessary data, and even automate trading. Most of the functions are available as public and do not need API access credentials. However, for projects that need access to a trading account, we will need to obtain the API access credentials for specific exchanges that we have accounts at. This API can be used for simple things like getting data on what is being traded on exchanges, historical cryptocurrency prices. It can also be used for more complex projects like trading bots, web applications, etc. Getting started with this API is super easy. For python we need to first pip install ccxt. Once that is done we can start using it in our python code. To demonstrate how work with ccxt, I wanted to see what exchanges have HIVE and HBD listed, what trading pairs are available and the latest prices. First to see what exchanges are supported we can write the following code: ``` import ccxt print(ccxt.exchanges) ``` If we already know what exchange we would like to use in that list, we can start connecting to this exchange, and get trading pairs and latest data about this trading pairs as below: ``` import ccxt binance = ccxt.binance() print(binance.load_markets()) ``` If we need to access our accounts we will need to pass api key and secrets as a dictionary argument like this: ``` import ccxt binance = ccxt.binance({ 'apiKey': 'YOUR_PUBLIC_API_KEY', 'secret': 'YOUR_SECRET_PRIVATE_KEY', }) ``` As you can see it is very easy to get started with CCXT. Exploring more available methods and properties we can write much more useful code. As I mentioned I was curious to see if I could use CCXT to see all the exchanges that have HIVE and HBD listed, what trading pairs they have available, and latest prices. Let's do that now. ``` import ccxt def create_table(prices): table = 'Ticker SymbolExchangePrice' for price in prices: row = f'{price[0]}{price[1]}{str(price[2])+&quot; &quot;+price[3]}' table += row table += '' return table prices = [] for exchange_id in ccxt.exchanges: if exchange_id == 'cdax': continue try: exchange_class = getattr(ccxt, exchange_id) exchange = exchange_class() markets = exchange.load_markets() except: continue for market in markets: if 'HIVE' in market or 'HBD' in market: if 'HBDC' in market: continue ticker = exchange.fetch_ticker(market) if ticker['symbol'].split('/')[1] == 'BTC': prices.append((market, exchange_id, format(ticker['close'], '.8f'), ticker['symbol'].split('/')[1])) else: prices.append((market, exchange_id, ticker['close'], ticker['symbol'].split('/')[1])) table = create_table(prices) print(table) ``` What the main part of the code doing is, first we are trying to identify all the exchanges, then we are getting the method by the same name to create the instance of the exchange. Then we are looking what ticker symbols are traded in the exchange. If any of the tickers include Hive or HBD we are storing ticker symbol, exchange name, last close price in prices list. `create_table` is a helper function that puts together the results in a table format, so I can include them in the post. You can scroll down to see the results. Initially when I was testing I was getting 12 exchanges that have Hive traded on. However, something went wrong when I tried to get the prices of **CDAX** exchange. After looking closely I was convinced Hive or HBD were not actually listed there. So I have do include a line of code to exclude **CDAX**. Another interesting thing we can see is from the results is that, for some reason **HBTC** exchange named the ticker symbol as **HIVE1/USDT** instead of just HIVE without 1. I don't know what exchange **LATOKEN** is, but from the results we can see while HIVE seems to be listed, prices there are all zero. This is not a full list of exchanges that have Hive or HBD listed. We can see how some exchanges like ionomy, blocktrades, beaxy, mxc, are not there. It is still great to see that all the major exchanges like Binance, Bittrex, Huobi, Upbit are supported in CCXT. The code above can also be used for any other coins/tokens. If you learn about a new coin/token and would like to see if where it is traded, simply change the comparison logic from HIVE and HBD to that coin/token. Hive and HBD Prices&amp;lt;/h2&amp;gt;&amp;lt;/center&amp;gt; Ticker SymbolExchangePriceHIVE/BNBbinance0.00429 BNBHIVE/BTCbinance0.00000946 BTCHIVE/USDTbinance0.3521 USDTHIVE/KRWbithumb410.3 KRWHBD/BTCbittrex0.00002654 BTCHIVE/BTCbittrex0.00000950 BTCHIVE/USDbittrex0.35458 USDHIVE/USDTbittrex0.35712 USDTHIVE/USDTgateio0.3524 USDTHIVE1/USDThbtc0.358 USDTHIVE/USDThuobipro0.3525 USDTHIVE/HThuobipro0.025623 HTHIVE/BTChuobipro0.00000947 BTCHIVE/IDRindodax5063.0 IDRHIVE/USDTlatoken0.0 USDTHIVE/BTClatoken0.00000000 BTCHIVE/ETHlatoken0.0 ETHHIVE/KRWprobit410.9 KRWHIVE/USDTprobit0.3526 USDTHIVE/BTCprobit0.00000948 BTCHIVE/BTCstex0.00000107 BTCHIVE/BTCupbit0.00000955 BTCHBD/BTCupbit0.00002515 BTCHIVE/KRWupbit413.0 KRW Posted Using [LeoFinance Beta](https://leofinance.io/@geekgirl/cryptocurrency-exchange-trading-library-or-hive-and-hbd-prices)&amp;lt;/div&amp;gt; See: CryptoCurrency eXchange Trading Library | Hive &amp;amp; HBD Prices by @geekgirl</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://images.hive.blog/DQmP7AXNQQHk7FXFZruTqK3nagHuWBefrNA489MHsxVbH5a/ccxt.png" /><media:content medium="image" url="https://images.hive.blog/DQmP7AXNQQHk7FXFZruTqK3nagHuWBefrNA489MHsxVbH5a/ccxt.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">15th update of 2021 on BlockTrades work on Hive software</title><link href="https://hivedocs.info/news/core/development/2021/06/10/15th-update-of-2021-on-blocktrades-work-on-hive-software.html" rel="alternate" type="text/html" title="15th update of 2021 on BlockTrades work on Hive software" /><published>2021-06-10T16:21:27-07:00</published><updated>2021-06-10T16:21:27-07:00</updated><id>https://hivedocs.info/news/core/development/2021/06/10/15th-update-of-2021-on-blocktrades-work-on-hive-software</id><content type="html" xml:base="https://hivedocs.info/news/core/development/2021/06/10/15th-update-of-2021-on-blocktrades-work-on-hive-software.html">&lt;div id=&quot;content-blocktrades-15th-update-of-2021-on-blocktrades-work-on-hive-software&quot;&gt;![blocktrades update.png](https://images.hive.blog/DQmSihw8Kz4U7TuCQa98DDdCzqbqPFRumuVWAbareiYZW1Z/blocktrades%20update.png)
 
 Work by the BlockTrades team slowed a little in the last period, as much of our staff was off for Corpus Christi holiday, and in the past two days there was a company-sponsored recreational trip to the mountains (and today many people are probably recovering from that). Still we made progress on several fronts:
 
@@ -1128,481 +1597,4 @@ If you liked this writeup, please consider voting for @steempress it's the witne
   See: &lt;a href=&quot;https://peakd.com/guide/@howo/how-to-run-a-witness-node-on-the-hf25-testnet&quot;&gt;How to run a witness node on the hf25 testnet&lt;/a&gt;
   by
   &lt;a href=&quot;https://hive.blog/@howo&quot;&gt;@howo&lt;/a&gt;
-&lt;/p&gt;</content><author><name>howo</name></author><category term="howto" /><category term="witness" /><category term="testnet" /><summary type="html">![image.png](https://files.peakd.com/file/peakd-hive/howo/23xe7eZsnrPcykgbjNqyAudjuQ8nfGfqRzVCpTShns5vRs2J9gcknbewso9v32YFhw54x.png) Hi ! the testnet phase for HF25 is now in full swing, here's some info on it from @gtg https://peakd.com/@gtg/hf25-public-testnet-reloaded-rc2 One important thing to understand about the testnet is much more lightweight than the main net (because the chain is brand new) so you can actually get it running on a super small machine, to prove my point I'm going to write this tutorial using the 6$ a month doplet (1 core, 25gb storage) from digitalocean. I recommend ubuntu 18.04 LTS, 20.04 is also supported by hive but it can be more tricky depending on the versions of GCC+boost+cmake that are provided with it. If you participated in the last testnet you will find this guide very similar to the previous one https://peakd.com/hive/@howo/how-to-participate-in-the-tesntets-this-week-full-guide but I felt like making a new one was better than telling you &quot;follow the outdated guide and at step 35 do this instead&quot; ### step 1: Build hive or download binaries #### download binaries If you're on a low end hardware compiling may take a while, so it's faster to let someone compile the binaries for you so you can just run them instead. @gtg offers pre-built binaries at https://gtg.openhive.network/get/testnet/bin/ just download both hived and cli_wallet and you're good to go: ``` mkdir programs cd programs wget https://gtg.openhive.network/get/testnet/bin/cli_wallet-v1.25.0rc2 wget https://gtg.openhive.network/get/testnet/bin/hived-v1.25.0rc2 chmod +x * ``` This is a hassle-free solution but binaries may not always be available and it's generally better security-wise to compile it yourself. ### build hive If you are running on low end hardware like me, you will probably need to setup some swap to compile hive: https://linuxize.com/post/how-to-add-swap-space-on-ubuntu-18-04/ I personally added 16GB of swap. I don't know how much is actually needed I just figured that it would be enough, feel free to tell me in the comments if you experiment with it. Let's install the dependencies first: ``` apt-get install -y \ autoconf \ automake \ autotools-dev \ build-essential \ cmake \ doxygen \ git \ libboost-all-dev \ libyajl-dev \ libreadline-dev \ libssl-dev \ libtool \ liblz4-tool \ ncurses-dev \ python3 \ python3-dev \ python3-jinja2 \ python3-pip \ libgflags-dev \ libsnappy-dev \ zlib1g-dev \ libbz2-dev \ liblz4-dev \ libzstd-dev ``` Then get hive and compile it, change `v1.25.0rc2` to whatever is the current release tag, follow @gtg he is usually the one announcing the release notes, alternatively you can look on https://gitlab.syncad.com/hive/hive/-/tags and look at the most recent tags. ``` git clone git@gitlab.syncad.com:hive/hive.git cd hive git checkout v1.25.0rc2 git submodule update --init --recursive mkdir build cd build cmake -DENABLE_COVERAGE_TESTING=ON -DBUILD_HIVE_TESTNET=ON -DLOW_MEMORY_NODE=ON .. make -j$(nproc) hived cli_wallet ``` Compiling may take a while if you are on low end hardware it could take up to a few hours if not more, I forgot to measure it when I did it myself so 🤷‍. On high end hardware you can expect 3-5 minutes. ## Run the node I am using the directory structure and binary names that you get when you compile hive so straight copy paste may not work if you use binaries but everything else works the same you just have to use the right paths and right binary names. Run the node a few seconds and then exit hived like so `./programs/hive/hived -d testnet/` this will create a testnet directory with the default config file. open the config.ini file nano testnet/config.ini replace the config.ini with this one: ``` # tells the node which seeds he should listen to to get blocks p2p-seed-node = testnet.openhive.network:2001 # Local http endpoint for webserver requests. webserver-http-endpoint = 127.0.0.1:8090 # Local websocket endpoint for webserver requests. webserver-ws-endpoint =127.0.0.1:8091 log-appender = {&quot;appender&quot;:&quot;stderr&quot;,&quot;stream&quot;:&quot;std_error&quot;} log-logger = {&quot;name&quot;:&quot;default&quot;,&quot;level&quot;:&quot;info&quot;,&quot;appender&quot;:&quot;stderr&quot;} backtrace = yes plugin = webserver p2p json_rpc plugin = database_api condenser_api plugin = witness plugin = rc plugin = market_history plugin = market_history_api plugin = account_history_rocksdb plugin = account_history_api plugin = transaction_status plugin = transaction_status_api plugin = account_by_key plugin = account_by_key_api plugin = reputation plugin = reputation_api plugin = block_api network_broadcast_api rc_api account-history-rocksdb-path = &quot;blockchain/account-history-rocksdb-storage&quot; shared-file-size = 10G shared-file-full-threshold = 9500 shared-file-scale-rate = 1000 flush-state-interval = 0 market-history-bucket-size = [15,60,300,3600,86400] market-history-buckets-per-size = 5760 p2p-endpoint = 0.0.0.0:2001 transaction-status-block-depth = 64000 transaction-status-track-after-block = 46000000 webserver-thread-pool-size = 256 ``` Then run hived again, this time we want it to stay up so setup a way for it to persist even if you log out, like screen. I personally use pm2 for the testnets just because it's convenient. This is not optimal for a production setup but it's fine for those testnets. (see https://pm2.keymetrics.io/docs/usage/quick-start/) for the testnet I run hived like this with pm2: pm2 start --name testnet ./programs/hived/hived -- -d testnet It will take some time (a few minutes to a few hours) before you get your blocks. You can look at https://test.ausbit.dev/ to see what is the head block to get a sense of how far you are. When you are synched with the testnet and you should see messages like this: ``` 3|hf23 | 1526617ms p2p_plugin.cpp:212 handle_block ] Got 0 transactions on block 4415 by howo -- Block Time Offset: -382 ms 3|hf23 | 1532618ms p2p_plugin.cpp:212 handle_block ] Got 0 transactions on block 4416 by howo -- Block Time Offset: -381 ms 3|hf23 | 1538612ms p2p_plugin.cpp:212 handle_block ] Got 0 transactions on block 4417 by howo -- Block Time Offset: -387 ms 3|hf23 | 1544620ms p2p_plugin.cpp:212 handle_block ] Got 0 transactions on block 4418 by howo -- Block Time Offset: -379 ms 3|hf23 | 1550615ms p2p_plugin.cpp:212 handle_block ] Got 0 transactions on block 4419 by howo -- Block Time Offset: -384 ms ``` now your node is running ! So that's great, but it's not producing. So you need to setup your witness. ## Setting up your witness ### cli_wallet Open up the cli wallet: `./programs/cli_wallet/cli_wallet --server-rpc-endpoint=&quot;ws://127.0.0.1:8091&quot;` it'll ask for a password, so execute: `set_password yourpassword` then unlock it using: `unlock yourpassword` Now execute those commands: import your active key to do various actions, note that the keys on the testnet are the same than the keys on main net (they have been ported) so you can just use your account `import_key 5JNHfZYKGaomSFvd4NUdQ9qMcEAC43kujbfjueTHpVapX1Kzq2n` then generate keys for your witness: `suggest_brain_key` it'll be something like this: ``` { &quot;brain_priv_key&quot;: &quot;STRANGE ROADWAY TWASOME MOLER CENTIMO THOFT COMPORT VARIANT OUTSWIM EGGER SCRIBE GLAVER CROWDED DOLLIER AWNED DOPPER&quot;, &quot;wif_priv_key&quot;: &quot;5KJUxvUSdAV6H7LiutRJMVwEVptmoaDhM73Cg1itzYjG8zs7tWF&quot;, &quot;pub_key&quot;: &quot;TST71oeHrdBZEKDG1GaC75VKDaRGcXk2R8htD8J6wkP6p1zDRPzFZ&quot; } ``` Save these for later ! Then set yourself as a witness (notice how I used the pub_key generated above) ``` update_witness &quot;yourusername&quot; &quot;http://example.org&quot; &quot;TST71oeHrdBZEKDG1GaC75VKDaRGcXk2R8htD8J6wkP6p1zDRPzFZ&quot; {&quot;account_creation_fee&quot;:&quot;0.000 TESTS&quot;,&quot;maximum_block_size&quot;:65536,&quot;hbd_interest_rate&quot;:300} true ``` then request some test hive via https://hivetestnetfaucet.org/ and power it up, this is important to do even if you already have hp. Because of the power up delay introduced in hf24, your initial HP don't have any effect: `transfer_to_vesting &quot;yourusername&quot; &quot;yourusername&quot; &quot;10.000 TESTS&quot; true` and finally vote for yourself so you get scheduled for blocks. If you don't have stake feel free to request some via https://hivetestnetfaucet.org/ `vote_for_witness &quot;yourusername&quot; &quot;yourusername&quot; true true` and we are done with cli_wallet ! but not with the setup. ### final config Open the config one final time to set yourself as a witness by adding these fields: I use the private key that you generated with the cli above not the one that I put here. I put one here to show that you don't put quotes around the private key. ``` witness = &quot;yourusername&quot; # WIF PRIVATE KEY to be used by one or more witnesses or miners private-key = 5KJUxvUSdAV6H7LiutRJMVwEVptmoaDhM73Cg1itzYjG8zs7tWF ``` restart the node and you should be producing blocks, the logs should look something like this: ``` 3|hf23 | 2687621ms p2p_plugin.cpp:212 handle_block ] Got 0 transactions on block 4595 by howo -- Block Time Offset: -378 ms 3|hf23 | 2690613ms witness_plugin.cpp:343 block_production_loo ] Generated block #4596 with timestamp 2020-08-25T19:44:51 at time 2020-08-25T19:44:51 ``` ## Seed node Go the extra mile and setup a seed node ! this is quite important as the testnet have very few seed nodes, so it helps a lot if you make one. Your node is already configured to be a seed node so you just need to open the corresponding port: (note that this command may vary depending on the firewall setup of your computer) ``` sudo iptables -A INPUT -m state --state NEW -m tcp -p tcp --dport 2001 -j ACCEPT ``` And now you can communicate the new seed node to everyone. Please post your ip as a comment of that post so that I can update this link to use your seed as well :). Thank you for reading. If you liked this writeup, please consider voting for @steempress it's the witness that I co-manage with @fredrikaa: ![](https://i.imgur.com/oPJ63jA.png) You can vote for our witness directly using Hivesigner here. See: How to run a witness node on the hf25 testnet by @howo</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://files.peakd.com/file/peakd-hive/howo/23xe7eZsnrPcykgbjNqyAudjuQ8nfGfqRzVCpTShns5vRs2J9gcknbewso9v32YFhw54x.png" /><media:content medium="image" url="https://files.peakd.com/file/peakd-hive/howo/23xe7eZsnrPcykgbjNqyAudjuQ8nfGfqRzVCpTShns5vRs2J9gcknbewso9v32YFhw54x.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Hive SQL is ready for the hardfork 25</title><link href="https://hivedocs.info/news/sql/database/2021/05/31/hivesql-update-hardfork25.html" rel="alternate" type="text/html" title="Hive SQL is ready for the hardfork 25" /><published>2021-05-31T06:27:45-07:00</published><updated>2021-05-31T06:27:45-07:00</updated><id>https://hivedocs.info/news/sql/database/2021/05/31/hivesql-update-hardfork25</id><content type="html" xml:base="https://hivedocs.info/news/sql/database/2021/05/31/hivesql-update-hardfork25.html">&lt;div id=&quot;content-arcange-hivesql-update-hardfork25&quot;&gt;![](https://i.imgur.com/IQw9dbJ.png)
-
-The hardfork 25 (codename Equilibrium) should be activated in a few weeks. With these harfork will come many changes in the blockchain data which must obviously be passed on to HiveSQL.
-
-Therfore HiveSQL has undergo a lot of updates to be prepared to the new specs and configuration of the blockchain after the hardfork.
-
-Of course, all of these changes have been implemented in such a way as to minimize the impact on users, apps and processes relying on HiveSQL, which means... they shouldn't be affected at all!
-
-## What's new?
-
-Here is the list of all these changes.
-
-### 1. New Operation tables
-
-Two new operation tables and height virtual operation tables have been created to store the new virtual operations data.
-
-* **TxCollateralizedConverts**
-
-The `collateralized_convert` operation is similar to the `convert` operation and instructs the blockchain to convert HIVE to HBD. The operation is performed after a 3.5 days delay, but the owner gets HBD immediately. The price risk is cushioned by extra HIVE. After actual conversion takes place the excess HIVE is returned to the owner.
-    
-|Column|Description|
-|-|-|
-|owner|The account requesting the conversion|
-|requestid|A request identifier|
-|amount|The amount of HIVE to convert|
-|amount_symbol|HIVE|
-
-* **TxRecurrentTransfers**
-
-The `recurrent_transfer` operation creates/updates/removes a recurrent transfer (Transfers any liquid asset every fixed amount of time from one account to another). If the amount is set to 0, the recurrent transfer is be deleted. If there is already a recurrent transfer matching from and to, the recurrent transfer is updated.
-    
-|Column|Description|
-|-|-|
-|from|Account to transfer an asset from|
-|to|Account to transfer an asset to|
-|amount|The amount of asset to transfer|
-|amount_symbol|The symbol of the asset to transfer|
-|memo|communication that accompanies the transfer. The memo is plain-text, any encryption on the memo is up to a higher-level protocol|
-|recurrence|How often will the payment be triggered (hours)|
-|executions|How many times the recurrent payment will be executed|
-|extensions|reserved for future use|
-
-### 2. New Virtual Operation tables
-
-* **VOAccountCreateds**
-
-This virtual operation is issued each time a new account has been successfully created.
-
-|Column|Description|
-|-|-|
-|new_account_name|name of the newly created account|
-|creator|name of the account creator|
-|initial_vesting_shares|Amount of VESTS given to the created account|
-|initial_vesting_shares_symbol|VESTS|
-|initial_delegation|Amount of VESTS delegated if created with account_create_with_delegation|
-|initial_delegation_symbol|VESTS|
-
-* **VOChangedRecoveryAccounts**
-
-This virtual operation is issued when the blockchain effectively changes the recovery account of an account after it issued such a request.
-
-|Column|Description|
-|-|-|
-|account|account who changed its recovery account|
-|old_recovery_account|old recovery account|
-|new_recovery_account|new recovery account|
-
-* **VOCommentsVotes**
-
-This virtual operation is issued when a vote on a post or comment becomes effective.
-
-|Column|Description|
-|-|-|
-|voter|account performing the vote|
-|author|author of the post or comment being voted|
-|permlink|permlink of the post or comment being voted|
-|weight|defines the score this vote receives, used by vote payout calc. 0 if a negative vote or changed votes|
-|rshares|The number of rshares this vote is responsible for|
-|total_vote_weight|the total weight of voting rewards. It is used to calculate the pro-rata share of curation payouts|
-|pending_payout|potential payout of related comment at the moment of this vote|
-|pending_payout_symbol|HBD|
-
-* **VOExpiredAccountNotifications**
-
-This virtual operation is issued when governance votes for an account have expired and are removed.
-
-|Column|Description|
-|-|-|
-|account|Account for who governance votes have expired|
-
-* **VOFailedRecurrentTransfers**
-
-This virtual operation is issued when a recurrent transfer has failed to be executed.
-
-|Column|Description|
-|-|-|
-|from|Account to transfer an asset from|
-|to|Account to transfer an asset to|
-|amount|The amount of asset to transfer|
-|amount_symbol|The symbol of the asset to transfer|
-|memo||
-|consecutive_failures|How many times the recurrent payment failed to be executed|
-|remaining_executions|How many times the recurrent payment should still be executed|
-|deleted|Indicates that the recurrent transfer was deleted due to too many consecutive failures|
-
-* **VOFillCollateralizedConvertRequests**
-
-This virtual operation is issued when a HIVE to HBD conversion is completed.
-
-|Column|Description|
-|-|-|
-|owner|Account requesting the conversion|
-|requestid|conversion request identifier|
-|amount_in|Amount of hive to be converted|
-|amount_in_symbol|HIVE|
-|amount_out|Amount of HBD to be received|
-|amount_out_symbol|HBD|
-|excess_collateral|excess HIVE returned to the owner|
-|excess_collateral_symbol|HIVE|
-
-* **VOFillRecurrentTransfers**
-
-This virtual operation is issued when a recurrent transfer is executed.
-
-|Column|Description|
-|-|-|
-|from|account sending assets|
-|to|account receiving assets|
-|amount|amount sent|
-|amount_symbol|asset symbol|
-|memo|a communication that accompanies the transfer. The memo is plain-text, any encryption on the memo is up to a higher-level protocol|
-|remaining_executions|Number of remaining executions|
-
-* **VOTransferToVestingCompleteds**
-
-This virtual operation is issued when a power-up is finally taken into account for governance votes.
-
-|Column|Description|
-|-|-|
-|from_account|account powering up HIVE|
-|to_account|account receiving VESTS|
-|hive_vested|amount of HIVE powered up|
-|hive_vested_symbol|HIVE|
-|vesting_shares_received|amount of VESTS received|
-|vesting_shares_received_symbol|VESTS|
-
-## Documentation
-
-The HiveSQL documentation has been updated accordingly and can be viewed at https://docs.hivesql.io
-
-## Support
-
-If you have any questions or remarks, support is provided on the [HiveSQL Discord Channel](https://discord.gg/kyEFDfT).
-
-Thank you.
-
-#### &lt;center&gt; &lt;/center&gt;
-|&lt;center&gt;Support the HiveSQL proposal to keep it free for all&lt;/center&gt;|
-|-|
-|&lt;center&gt;[Vote for the proposal on PeakD](https://peakd.com/me/proposals/138)&lt;br /&gt;[Vote for the proposal on Ecency](https://ecency.com/proposals/138)&lt;br /&gt;[Vote for the proposal using HiveSigner](https://hivesigner.com/sign/update_proposal_votes?proposal_ids=%5B%22138%22%5D&amp;amp;approve=true)&lt;/center&gt;|
-
-&lt;center&gt;
-
-### Check out my apps and services
-&lt;a href=&quot;/hive/@hive.engage/stay-connected-with-your-hive-audience-and-catch-attention&quot;&gt;&lt;img src=&quot;https://i.imgur.com/GiNJqlm.png&quot; /&gt;&lt;/a&gt;&lt;a href=&quot;/@hivebuzz&quot;&gt;&lt;img src=&quot;https://i.imgur.com/B4UTun2.png&quot; /&gt;&lt;/a&gt;&lt;a href=&quot;/@hivesql&quot;&gt;&lt;img src=&quot;https://i.imgur.com/EPN8RW6.png&quot; /&gt;&lt;/a&gt;&lt;a href=&quot;/hive/@arcange/introducing-hive-account-recovery&quot;&gt;&lt;img src=&quot;https://i.imgur.com/6TWeW7V.png&quot; /&gt;&lt;/a&gt;&lt;a href=&quot;/@hive.autoclaim&quot;&gt;&lt;img src=&quot;https://i.imgur.com/ih2pEOw.png&quot; /&gt;&lt;/a&gt;&lt;/center&gt;
-&lt;center&gt;
-
-### [Vote for me as a witness ![](https://i.imgur.com/2bi4SnT.png)](https://hivesigner.com/sign/account-witness-vote?witness=arcange&amp;amp;approve=1)&amp;lt;/div&amp;gt;
-&lt;script crossorigin=&quot;anonymous&quot; integrity=&quot;sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=&quot; src=&quot;https://code.jquery.com/jquery-3.5.1.slim.min.js&quot;&gt;&lt;/script&gt;
-&lt;script src=&quot;https://unpkg.com/steem-content-renderer&quot;&gt;&lt;/script&gt;
-&lt;!-- &lt;script src=&quot;https://cdn.jsdelivr.net/npm/hive-content-renderer/dist/hive-content-renderer.min.js&quot;&gt;&lt;/script&gt; --&gt;
-&lt;script&gt;
-  $(document).ready(function() {
-    try {
-      const renderer = new SteemContentRenderer.DefaultRenderer({
-      // const renderer = new HiveContentRenderer({
-        baseUrl: &quot;https://hive.blog/&quot;,
-        breaks: true,
-        skipSanitization: false,
-        allowInsecureScriptTags: false,
-        addNofollowToLinks: true,
-        doNotShowImages: false,
-        ipfsPrefix: &quot;&quot;,
-        assetsWidth: 640,
-        assetsHeight: 480,
-        imageProxyFn: (url) =&gt; url,
-        usertagUrlFn: (account) =&gt; &quot;/@arcange&quot;,
-        hashtagUrlFn: (hashtag) =&gt; &quot;/hivesql-update-hardfork25&quot;,
-        isLinkSafeFn: (url) =&gt; true,
-      });
-      
-      const inputElem = $('#content-arcange-hivesql-update-hardfork25').html();
-      const outputElem = $('#content-arcange-hivesql-update-hardfork25');
-      const output = renderer.render(inputElem);
-      
-      outputElem.html(output);
-    } catch(e) {
-      console.log(e);
-    }
-  });
-&lt;/script&gt;
-&lt;style&gt;
-  #content-arcange-hivesql-update-hardfork25 {
-    padding: 0 3rem;
-    color: #444444;
-    font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif;
-    font-size: 16px;
-    line-height: 1.8;
-    text-shadow: 0 1px 0 #ffffff;
-    padding: 0.5rem;
-  }
-  #content-arcange-hivesql-update-hardfork25 code {
-    background: white;
-  }
-  #content-arcange-hivesql-update-hardfork25 a {
-    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
-  }
-  #content-arcange-hivesql-update-hardfork25 a:hover {
-    border-bottom: 0;
-  }
-  #content-arcange-hivesql-update-hardfork25 h1 {
-    font-size: 2.2em;
-  }
-  #content-arcange-hivesql-update-hardfork25 h2, h3, h4, h5 {
-    margin-bottom: 0;
-  }
-  #content-arcange-hivesql-update-hardfork25 header small {
-    color: #999;
-    font-size: 50%;
-  }
-  #content-arcange-hivesql-update-hardfork25 img {
-    max-width: 100%;
-  }
-&lt;/style&gt;
-
-&lt;hr /&gt;
-&lt;p&gt;
-  See: &lt;a href=&quot;https://peakd.com/hive-139531/@arcange/hivesql-update-hardfork25&quot;&gt;Hive SQL is ready for the hardfork 25&lt;/a&gt;
-  by
-  &lt;a href=&quot;https://hive.blog/@arcange&quot;&gt;@arcange&lt;/a&gt;
-&lt;/p&gt;
-
-&lt;/center&gt;&lt;/div&gt;</content><author><name>arcange</name></author><category term="news" /><category term="sql" /><category term="database" /><summary type="html">![](https://i.imgur.com/IQw9dbJ.png) The hardfork 25 (codename Equilibrium) should be activated in a few weeks. With these harfork will come many changes in the blockchain data which must obviously be passed on to HiveSQL. Therfore HiveSQL has undergo a lot of updates to be prepared to the new specs and configuration of the blockchain after the hardfork. Of course, all of these changes have been implemented in such a way as to minimize the impact on users, apps and processes relying on HiveSQL, which means... they shouldn't be affected at all! ## What's new? Here is the list of all these changes. ### 1. New Operation tables Two new operation tables and height virtual operation tables have been created to store the new virtual operations data. * **TxCollateralizedConverts** The `collateralized_convert` operation is similar to the `convert` operation and instructs the blockchain to convert HIVE to HBD. The operation is performed after a 3.5 days delay, but the owner gets HBD immediately. The price risk is cushioned by extra HIVE. After actual conversion takes place the excess HIVE is returned to the owner. |Column|Description| |-|-| |owner|The account requesting the conversion| |requestid|A request identifier| |amount|The amount of HIVE to convert| |amount_symbol|HIVE| * **TxRecurrentTransfers** The `recurrent_transfer` operation creates/updates/removes a recurrent transfer (Transfers any liquid asset every fixed amount of time from one account to another). If the amount is set to 0, the recurrent transfer is be deleted. If there is already a recurrent transfer matching from and to, the recurrent transfer is updated. |Column|Description| |-|-| |from|Account to transfer an asset from| |to|Account to transfer an asset to| |amount|The amount of asset to transfer| |amount_symbol|The symbol of the asset to transfer| |memo|communication that accompanies the transfer. The memo is plain-text, any encryption on the memo is up to a higher-level protocol| |recurrence|How often will the payment be triggered (hours)| |executions|How many times the recurrent payment will be executed| |extensions|reserved for future use| ### 2. New Virtual Operation tables * **VOAccountCreateds** This virtual operation is issued each time a new account has been successfully created. |Column|Description| |-|-| |new_account_name|name of the newly created account| |creator|name of the account creator| |initial_vesting_shares|Amount of VESTS given to the created account| |initial_vesting_shares_symbol|VESTS| |initial_delegation|Amount of VESTS delegated if created with account_create_with_delegation| |initial_delegation_symbol|VESTS| * **VOChangedRecoveryAccounts** This virtual operation is issued when the blockchain effectively changes the recovery account of an account after it issued such a request. |Column|Description| |-|-| |account|account who changed its recovery account| |old_recovery_account|old recovery account| |new_recovery_account|new recovery account| * **VOCommentsVotes** This virtual operation is issued when a vote on a post or comment becomes effective. |Column|Description| |-|-| |voter|account performing the vote| |author|author of the post or comment being voted| |permlink|permlink of the post or comment being voted| |weight|defines the score this vote receives, used by vote payout calc. 0 if a negative vote or changed votes| |rshares|The number of rshares this vote is responsible for| |total_vote_weight|the total weight of voting rewards. It is used to calculate the pro-rata share of curation payouts| |pending_payout|potential payout of related comment at the moment of this vote| |pending_payout_symbol|HBD| * **VOExpiredAccountNotifications** This virtual operation is issued when governance votes for an account have expired and are removed. |Column|Description| |-|-| |account|Account for who governance votes have expired| * **VOFailedRecurrentTransfers** This virtual operation is issued when a recurrent transfer has failed to be executed. |Column|Description| |-|-| |from|Account to transfer an asset from| |to|Account to transfer an asset to| |amount|The amount of asset to transfer| |amount_symbol|The symbol of the asset to transfer| |memo|| |consecutive_failures|How many times the recurrent payment failed to be executed| |remaining_executions|How many times the recurrent payment should still be executed| |deleted|Indicates that the recurrent transfer was deleted due to too many consecutive failures| * **VOFillCollateralizedConvertRequests** This virtual operation is issued when a HIVE to HBD conversion is completed. |Column|Description| |-|-| |owner|Account requesting the conversion| |requestid|conversion request identifier| |amount_in|Amount of hive to be converted| |amount_in_symbol|HIVE| |amount_out|Amount of HBD to be received| |amount_out_symbol|HBD| |excess_collateral|excess HIVE returned to the owner| |excess_collateral_symbol|HIVE| * **VOFillRecurrentTransfers** This virtual operation is issued when a recurrent transfer is executed. |Column|Description| |-|-| |from|account sending assets| |to|account receiving assets| |amount|amount sent| |amount_symbol|asset symbol| |memo|a communication that accompanies the transfer. The memo is plain-text, any encryption on the memo is up to a higher-level protocol| |remaining_executions|Number of remaining executions| * **VOTransferToVestingCompleteds** This virtual operation is issued when a power-up is finally taken into account for governance votes. |Column|Description| |-|-| |from_account|account powering up HIVE| |to_account|account receiving VESTS| |hive_vested|amount of HIVE powered up| |hive_vested_symbol|HIVE| |vesting_shares_received|amount of VESTS received| |vesting_shares_received_symbol|VESTS| ## Documentation The HiveSQL documentation has been updated accordingly and can be viewed at https://docs.hivesql.io ## Support If you have any questions or remarks, support is provided on the [HiveSQL Discord Channel](https://discord.gg/kyEFDfT). Thank you. #### |Support the HiveSQL proposal to keep it free for all| |-| |[Vote for the proposal on PeakD](https://peakd.com/me/proposals/138)[Vote for the proposal on Ecency](https://ecency.com/proposals/138)[Vote for the proposal using HiveSigner](https://hivesigner.com/sign/update_proposal_votes?proposal_ids=%5B%22138%22%5D&amp;amp;approve=true)| ### Check out my apps and services ### [Vote for me as a witness ![](https://i.imgur.com/2bi4SnT.png)](https://hivesigner.com/sign/account-witness-vote?witness=arcange&amp;amp;approve=1)&amp;lt;/div&amp;gt; See: Hive SQL is ready for the hardfork 25 by @arcange</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://i.imgur.com/IQw9dbJ.png" /><media:content medium="image" url="https://i.imgur.com/IQw9dbJ.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Updates to Hive.io</title><link href="https://hivedocs.info/news/projects/hive/2021/05/30/updates-to-hiveio.html" rel="alternate" type="text/html" title="Updates to Hive.io" /><published>2021-05-30T04:03:36-07:00</published><updated>2021-05-30T04:03:36-07:00</updated><id>https://hivedocs.info/news/projects/hive/2021/05/30/updates-to-hiveio</id><content type="html" xml:base="https://hivedocs.info/news/projects/hive/2021/05/30/updates-to-hiveio.html">&lt;div id=&quot;content-therealwolf-updates-to-hiveio&quot;&gt;
-![image.png](https://files.peakd.com/file/peakd-hive/therealwolf/23wgiuoC5oSm54NFdpopv9SdzZjtdjhSonHUoJh6MLngntYMjXysbmrPjfVj3RHhzwTjz.png)
-
----
-
-
-I've recently made some updates to hive.io.
-
-This primarily includes:
-
-- Upgraded Landing Page (https://hive.io)
-- Upgraded Ecosystem Page (https://hive.io/eco)
-- New Contributors Page (https://hive.io/contributors)
-- New Updates Page (https://hive.io/updates)
-- Upgraded Wallets Page (https://hive.io/wallets)
-
-I want to thank @mahydiari and @good-karma for their input and feedback and ofc. everybody else who gave feedback.
-
-There's still a bit more I've planned, mainly I want to redo the first part of the landing page (Fast, Scalable, Powerful. Hive Logo =&amp;gt; too generic, every blockchain project says that. Want to put focus on the fact that Hive made blockchain history i.e. https://twitter.com/lopp/status/1262786986013798400 and https://twitter.com/vitalikbuterin/status/1240605327122464768) but I'll need more time for planning/design.
-
-
-
-## Contributors
-
-I've first asked on [GitLab](https://gitlab.syncad.com/hive/hive-io/-/issues/15) who wants to be listed on there and got some fast replies, but then decided on at least adding TOP 30 Witnesses and those who are also actively working within the Hive ecosystem.
-
-![image.png](https://files.peakd.com/file/peakd-hive/therealwolf/23z7X3CbQQda4oEQ4FuyNrxdY48L9nKiiZkg67hXJewHKFBVxiE8iAjfURNkixm6MKeRJ.png)
-
-https://hive.io/contributors
-
----
-
-Please let me know if:
-
-- you don't want to be listed
-- you want to be listed (see below)
-- some data should be changed (optimally in this format https://gitlab.syncad.com/hive/hive-io/-/blob/develop/src/helpers/contributors.ts)
-- you have ideas about more categories (like Core Dev, Marketing,..)
-
-## Changing Data
-
-Hive.io is open-source and you can also add apps/contributors yourself (technical). Checkout the Readme on GitLab: https://gitlab.syncad.com/hive/hive-io/-/blob/master/README.md
-
----
-
-Have a nice Sunday!
-
-Hive On
-Wolf&lt;/div&gt;
-&lt;script crossorigin=&quot;anonymous&quot; integrity=&quot;sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=&quot; src=&quot;https://code.jquery.com/jquery-3.5.1.slim.min.js&quot;&gt;&lt;/script&gt;
-
-&lt;script src=&quot;https://unpkg.com/steem-content-renderer&quot;&gt;&lt;/script&gt;
-
-&lt;!-- &lt;script src=&quot;https://cdn.jsdelivr.net/npm/hive-content-renderer/dist/hive-content-renderer.min.js&quot;&gt;&lt;/script&gt; --&gt;
-&lt;script&gt;
-  $(document).ready(function() {
-    try {
-      const renderer = new SteemContentRenderer.DefaultRenderer({
-      // const renderer = new HiveContentRenderer({
-        baseUrl: &quot;https://hive.blog/&quot;,
-        breaks: true,
-        skipSanitization: false,
-        allowInsecureScriptTags: false,
-        addNofollowToLinks: true,
-        doNotShowImages: false,
-        ipfsPrefix: &quot;&quot;,
-        assetsWidth: 640,
-        assetsHeight: 480,
-        imageProxyFn: (url) =&gt; url,
-        usertagUrlFn: (account) =&gt; &quot;/@therealwolf&quot;,
-        hashtagUrlFn: (hashtag) =&gt; &quot;/updates-to-hiveio&quot;,
-        isLinkSafeFn: (url) =&gt; true,
-      });
-      
-      const inputElem = $('#content-therealwolf-updates-to-hiveio').html();
-      const outputElem = $('#content-therealwolf-updates-to-hiveio');
-      const output = renderer.render(inputElem);
-      
-      outputElem.html(output);
-    } catch(e) {
-      console.log(e);
-    }
-  });
-&lt;/script&gt;
-
-&lt;style&gt;
-  #content-therealwolf-updates-to-hiveio {
-    padding: 0 3rem;
-    color: #444444;
-    font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif;
-    font-size: 16px;
-    line-height: 1.8;
-    text-shadow: 0 1px 0 #ffffff;
-    padding: 0.5rem;
-  }
-  #content-therealwolf-updates-to-hiveio code {
-    background: white;
-  }
-  #content-therealwolf-updates-to-hiveio a {
-    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
-  }
-  #content-therealwolf-updates-to-hiveio a:hover {
-    border-bottom: 0;
-  }
-  #content-therealwolf-updates-to-hiveio h1 {
-    font-size: 2.2em;
-  }
-  #content-therealwolf-updates-to-hiveio h2, h3, h4, h5 {
-    margin-bottom: 0;
-  }
-  #content-therealwolf-updates-to-hiveio header small {
-    color: #999;
-    font-size: 50%;
-  }
-  #content-therealwolf-updates-to-hiveio img {
-    max-width: 100%;
-  }
-&lt;/style&gt;
-
-&lt;hr /&gt;
-
-&lt;p&gt;
-  See: &lt;a href=&quot;https://peakd.com/hive-102930/@therealwolf/updates-to-hiveio&quot;&gt;Updates to Hive.io&lt;/a&gt;
-  by
-  &lt;a href=&quot;https://hive.blog/@therealwolf&quot;&gt;@therealwolf&lt;/a&gt;
-&lt;/p&gt;</content><author><name>therealwolf</name></author><category term="news" /><category term="projects" /><category term="hive" /><summary type="html">![image.png](https://files.peakd.com/file/peakd-hive/therealwolf/23wgiuoC5oSm54NFdpopv9SdzZjtdjhSonHUoJh6MLngntYMjXysbmrPjfVj3RHhzwTjz.png) --- I've recently made some updates to hive.io. This primarily includes: - Upgraded Landing Page (https://hive.io) - Upgraded Ecosystem Page (https://hive.io/eco) - New Contributors Page (https://hive.io/contributors) - New Updates Page (https://hive.io/updates) - Upgraded Wallets Page (https://hive.io/wallets) I want to thank @mahydiari and @good-karma for their input and feedback and ofc. everybody else who gave feedback. There's still a bit more I've planned, mainly I want to redo the first part of the landing page (Fast, Scalable, Powerful. Hive Logo =&amp;gt; too generic, every blockchain project says that. Want to put focus on the fact that Hive made blockchain history i.e. https://twitter.com/lopp/status/1262786986013798400 and https://twitter.com/vitalikbuterin/status/1240605327122464768) but I'll need more time for planning/design. ## Contributors I've first asked on [GitLab](https://gitlab.syncad.com/hive/hive-io/-/issues/15) who wants to be listed on there and got some fast replies, but then decided on at least adding TOP 30 Witnesses and those who are also actively working within the Hive ecosystem. ![image.png](https://files.peakd.com/file/peakd-hive/therealwolf/23z7X3CbQQda4oEQ4FuyNrxdY48L9nKiiZkg67hXJewHKFBVxiE8iAjfURNkixm6MKeRJ.png) https://hive.io/contributors --- Please let me know if: - you don't want to be listed - you want to be listed (see below) - some data should be changed (optimally in this format https://gitlab.syncad.com/hive/hive-io/-/blob/develop/src/helpers/contributors.ts) - you have ideas about more categories (like Core Dev, Marketing,..) ## Changing Data Hive.io is open-source and you can also add apps/contributors yourself (technical). Checkout the Readme on GitLab: https://gitlab.syncad.com/hive/hive-io/-/blob/master/README.md --- Have a nice Sunday! Hive On Wolf See: Updates to Hive.io by @therealwolf</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://files.peakd.com/file/peakd-hive/therealwolf/23wgiuoC5oSm54NFdpopv9SdzZjtdjhSonHUoJh6MLngntYMjXysbmrPjfVj3RHhzwTjz.png" /><media:content medium="image" url="https://files.peakd.com/file/peakd-hive/therealwolf/23wgiuoC5oSm54NFdpopv9SdzZjtdjhSonHUoJh6MLngntYMjXysbmrPjfVj3RHhzwTjz.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">HF25 Public Testnet Reloaded (RC2)</title><link href="https://hivedocs.info/news/projects/testnet/2021/05/29/hf25-public-testnet-reloaded-rc2.html" rel="alternate" type="text/html" title="HF25 Public Testnet Reloaded (RC2)" /><published>2021-05-29T14:46:00-07:00</published><updated>2021-05-29T14:46:00-07:00</updated><id>https://hivedocs.info/news/projects/testnet/2021/05/29/hf25-public-testnet-reloaded-rc2</id><content type="html" xml:base="https://hivedocs.info/news/projects/testnet/2021/05/29/hf25-public-testnet-reloaded-rc2.html">&lt;div id=&quot;content-gtg-hf25-public-testnet-reloaded-rc2&quot;&gt;I just started brand new instance of a public Hive testnet based on `v1.25.0rc2`
-https://gitlab.syncad.com/hive/hive/-/tags/v1.25.0rc2
-
-Re-initialization was needed due to changes in governance voting rules (rc1 would fork, because different rules impacts witness schedule):
-
-```
-witness.owner == scheduled_witness: Witness produced block at wrong time
-    {&quot;block witness&quot;:&quot;gtg-rc1-10&quot;,&quot;scheduled&quot;:&quot;gtg-rc1-13&quot;,&quot;slot_num&quot;:1}
-    database.cpp:4838 validate_block_header
-```
-
-Unless your account was created very recently, you should be able to participate in the testnet using your own mainnet account and keys (though please be careful, if you leak your key during testnet, your mainnet account will be compromised)
-
-To get some tokens for testing you can use https://hivetestnetfaucet.org/ created by @howo or reach out to witnesses using your favorite communication channels such as https://openhive.chat ;-)
-
-- Hive testnet chain-id: `18dcf0a285365fc58b71f18b3d3fec954aa0c141c44e4e5cb4cf777b9eab274e`
-- Hive seed node: `p2p-seed-node = testnet.openhive.network:2001`
-- API endpoint (via jussi): `https://testnet.openhive.network`
-- Hive Testnet Condenser instance: https://testblog.openhive.network
-- Hive Testnet Wallet instance: https://testwallet.openhive.network
-- Binaries: https://gtg.openhive.network/get/testnet/bin/
-- hived direct http server `http://testnet.openhive.network:8091`
-- hived direct websocket server `ws://testnet.openhive.network:8090`
-- hivemind server direct server `http://testnet.openhive.network:8080`
-
-To join testnet with your hived, you need a testnet-enabled version, which you can get from here:
-https://gtg.openhive.network/get/testnet/bin 
-or build yourself (as usual plus `-DBUILD_HIVE_TESTNET=ON` during cmake step)
-
-## See also
-CyberBuzz Radio is LIVE: Community Q&amp;amp;A For the Upcoming Hive Blockchain Hardfork:
-&lt;center&gt;https://www.youtube.com/watch?v=FtyhMAWto90&amp;amp;t=448s&lt;/center&gt;
-
-(@hbdstabilizer as 50% beneficiary)&lt;/div&gt;
-&lt;script crossorigin=&quot;anonymous&quot; integrity=&quot;sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=&quot; src=&quot;https://code.jquery.com/jquery-3.5.1.slim.min.js&quot;&gt;&lt;/script&gt;
-
-&lt;script src=&quot;https://unpkg.com/steem-content-renderer&quot;&gt;&lt;/script&gt;
-
-&lt;!-- &lt;script src=&quot;https://cdn.jsdelivr.net/npm/hive-content-renderer/dist/hive-content-renderer.min.js&quot;&gt;&lt;/script&gt; --&gt;
-&lt;script&gt;
-  $(document).ready(function() {
-    try {
-      const renderer = new SteemContentRenderer.DefaultRenderer({
-      // const renderer = new HiveContentRenderer({
-        baseUrl: &quot;https://hive.blog/&quot;,
-        breaks: true,
-        skipSanitization: false,
-        allowInsecureScriptTags: false,
-        addNofollowToLinks: true,
-        doNotShowImages: false,
-        ipfsPrefix: &quot;&quot;,
-        assetsWidth: 640,
-        assetsHeight: 480,
-        imageProxyFn: (url) =&gt; url,
-        usertagUrlFn: (account) =&gt; &quot;/@gtg&quot;,
-        hashtagUrlFn: (hashtag) =&gt; &quot;/hf25-public-testnet-reloaded-rc2&quot;,
-        isLinkSafeFn: (url) =&gt; true,
-      });
-      
-      const inputElem = $('#content-gtg-hf25-public-testnet-reloaded-rc2').html();
-      const outputElem = $('#content-gtg-hf25-public-testnet-reloaded-rc2');
-      const output = renderer.render(inputElem);
-      
-      outputElem.html(output);
-    } catch(e) {
-      console.log(e);
-    }
-  });
-&lt;/script&gt;
-
-&lt;style&gt;
-  #content-gtg-hf25-public-testnet-reloaded-rc2 {
-    padding: 0 3rem;
-    color: #444444;
-    font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif;
-    font-size: 16px;
-    line-height: 1.8;
-    text-shadow: 0 1px 0 #ffffff;
-    padding: 0.5rem;
-  }
-  #content-gtg-hf25-public-testnet-reloaded-rc2 code {
-    background: white;
-  }
-  #content-gtg-hf25-public-testnet-reloaded-rc2 a {
-    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
-  }
-  #content-gtg-hf25-public-testnet-reloaded-rc2 a:hover {
-    border-bottom: 0;
-  }
-  #content-gtg-hf25-public-testnet-reloaded-rc2 h1 {
-    font-size: 2.2em;
-  }
-  #content-gtg-hf25-public-testnet-reloaded-rc2 h2, h3, h4, h5 {
-    margin-bottom: 0;
-  }
-  #content-gtg-hf25-public-testnet-reloaded-rc2 header small {
-    color: #999;
-    font-size: 50%;
-  }
-  #content-gtg-hf25-public-testnet-reloaded-rc2 img {
-    max-width: 100%;
-  }
-&lt;/style&gt;
-
-&lt;hr /&gt;
-
-&lt;p&gt;
-  See: &lt;a href=&quot;https://hive.blog/hive-139531/@gtg/hf25-public-testnet-reloaded-rc2&quot;&gt;HF25 Public Testnet Reloaded (RC2)&lt;/a&gt;
-  by
-  &lt;a href=&quot;https://hive.blog/@gtg&quot;&gt;@gtg&lt;/a&gt;
-&lt;/p&gt;</content><author><name>gtg</name></author><category term="news" /><category term="projects" /><category term="testnet" /><summary type="html">I just started brand new instance of a public Hive testnet based on `v1.25.0rc2` https://gitlab.syncad.com/hive/hive/-/tags/v1.25.0rc2 Re-initialization was needed due to changes in governance voting rules (rc1 would fork, because different rules impacts witness schedule): ``` witness.owner == scheduled_witness: Witness produced block at wrong time {&quot;block witness&quot;:&quot;gtg-rc1-10&quot;,&quot;scheduled&quot;:&quot;gtg-rc1-13&quot;,&quot;slot_num&quot;:1} database.cpp:4838 validate_block_header ``` Unless your account was created very recently, you should be able to participate in the testnet using your own mainnet account and keys (though please be careful, if you leak your key during testnet, your mainnet account will be compromised) To get some tokens for testing you can use https://hivetestnetfaucet.org/ created by @howo or reach out to witnesses using your favorite communication channels such as https://openhive.chat ;-) - Hive testnet chain-id: `18dcf0a285365fc58b71f18b3d3fec954aa0c141c44e4e5cb4cf777b9eab274e` - Hive seed node: `p2p-seed-node = testnet.openhive.network:2001` - API endpoint (via jussi): `https://testnet.openhive.network` - Hive Testnet Condenser instance: https://testblog.openhive.network - Hive Testnet Wallet instance: https://testwallet.openhive.network - Binaries: https://gtg.openhive.network/get/testnet/bin/ - hived direct http server `http://testnet.openhive.network:8091` - hived direct websocket server `ws://testnet.openhive.network:8090` - hivemind server direct server `http://testnet.openhive.network:8080` To join testnet with your hived, you need a testnet-enabled version, which you can get from here: https://gtg.openhive.network/get/testnet/bin or build yourself (as usual plus `-DBUILD_HIVE_TESTNET=ON` during cmake step) ## See also CyberBuzz Radio is LIVE: Community Q&amp;amp;A For the Upcoming Hive Blockchain Hardfork: https://www.youtube.com/watch?v=FtyhMAWto90&amp;amp;t=448s (@hbdstabilizer as 50% beneficiary) See: HF25 Public Testnet Reloaded (RC2) by @gtg</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://img.youtube.com/vi/FtyhMAWto90/0.jpg" /><media:content medium="image" url="https://img.youtube.com/vi/FtyhMAWto90/0.jpg" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>
+&lt;/p&gt;</content><author><name>howo</name></author><category term="howto" /><category term="witness" /><category term="testnet" /><summary type="html">![image.png](https://files.peakd.com/file/peakd-hive/howo/23xe7eZsnrPcykgbjNqyAudjuQ8nfGfqRzVCpTShns5vRs2J9gcknbewso9v32YFhw54x.png) Hi ! the testnet phase for HF25 is now in full swing, here's some info on it from @gtg https://peakd.com/@gtg/hf25-public-testnet-reloaded-rc2 One important thing to understand about the testnet is much more lightweight than the main net (because the chain is brand new) so you can actually get it running on a super small machine, to prove my point I'm going to write this tutorial using the 6$ a month doplet (1 core, 25gb storage) from digitalocean. I recommend ubuntu 18.04 LTS, 20.04 is also supported by hive but it can be more tricky depending on the versions of GCC+boost+cmake that are provided with it. If you participated in the last testnet you will find this guide very similar to the previous one https://peakd.com/hive/@howo/how-to-participate-in-the-tesntets-this-week-full-guide but I felt like making a new one was better than telling you &quot;follow the outdated guide and at step 35 do this instead&quot; ### step 1: Build hive or download binaries #### download binaries If you're on a low end hardware compiling may take a while, so it's faster to let someone compile the binaries for you so you can just run them instead. @gtg offers pre-built binaries at https://gtg.openhive.network/get/testnet/bin/ just download both hived and cli_wallet and you're good to go: ``` mkdir programs cd programs wget https://gtg.openhive.network/get/testnet/bin/cli_wallet-v1.25.0rc2 wget https://gtg.openhive.network/get/testnet/bin/hived-v1.25.0rc2 chmod +x * ``` This is a hassle-free solution but binaries may not always be available and it's generally better security-wise to compile it yourself. ### build hive If you are running on low end hardware like me, you will probably need to setup some swap to compile hive: https://linuxize.com/post/how-to-add-swap-space-on-ubuntu-18-04/ I personally added 16GB of swap. I don't know how much is actually needed I just figured that it would be enough, feel free to tell me in the comments if you experiment with it. Let's install the dependencies first: ``` apt-get install -y \ autoconf \ automake \ autotools-dev \ build-essential \ cmake \ doxygen \ git \ libboost-all-dev \ libyajl-dev \ libreadline-dev \ libssl-dev \ libtool \ liblz4-tool \ ncurses-dev \ python3 \ python3-dev \ python3-jinja2 \ python3-pip \ libgflags-dev \ libsnappy-dev \ zlib1g-dev \ libbz2-dev \ liblz4-dev \ libzstd-dev ``` Then get hive and compile it, change `v1.25.0rc2` to whatever is the current release tag, follow @gtg he is usually the one announcing the release notes, alternatively you can look on https://gitlab.syncad.com/hive/hive/-/tags and look at the most recent tags. ``` git clone git@gitlab.syncad.com:hive/hive.git cd hive git checkout v1.25.0rc2 git submodule update --init --recursive mkdir build cd build cmake -DENABLE_COVERAGE_TESTING=ON -DBUILD_HIVE_TESTNET=ON -DLOW_MEMORY_NODE=ON .. make -j$(nproc) hived cli_wallet ``` Compiling may take a while if you are on low end hardware it could take up to a few hours if not more, I forgot to measure it when I did it myself so 🤷‍. On high end hardware you can expect 3-5 minutes. ## Run the node I am using the directory structure and binary names that you get when you compile hive so straight copy paste may not work if you use binaries but everything else works the same you just have to use the right paths and right binary names. Run the node a few seconds and then exit hived like so `./programs/hive/hived -d testnet/` this will create a testnet directory with the default config file. open the config.ini file nano testnet/config.ini replace the config.ini with this one: ``` # tells the node which seeds he should listen to to get blocks p2p-seed-node = testnet.openhive.network:2001 # Local http endpoint for webserver requests. webserver-http-endpoint = 127.0.0.1:8090 # Local websocket endpoint for webserver requests. webserver-ws-endpoint =127.0.0.1:8091 log-appender = {&quot;appender&quot;:&quot;stderr&quot;,&quot;stream&quot;:&quot;std_error&quot;} log-logger = {&quot;name&quot;:&quot;default&quot;,&quot;level&quot;:&quot;info&quot;,&quot;appender&quot;:&quot;stderr&quot;} backtrace = yes plugin = webserver p2p json_rpc plugin = database_api condenser_api plugin = witness plugin = rc plugin = market_history plugin = market_history_api plugin = account_history_rocksdb plugin = account_history_api plugin = transaction_status plugin = transaction_status_api plugin = account_by_key plugin = account_by_key_api plugin = reputation plugin = reputation_api plugin = block_api network_broadcast_api rc_api account-history-rocksdb-path = &quot;blockchain/account-history-rocksdb-storage&quot; shared-file-size = 10G shared-file-full-threshold = 9500 shared-file-scale-rate = 1000 flush-state-interval = 0 market-history-bucket-size = [15,60,300,3600,86400] market-history-buckets-per-size = 5760 p2p-endpoint = 0.0.0.0:2001 transaction-status-block-depth = 64000 transaction-status-track-after-block = 46000000 webserver-thread-pool-size = 256 ``` Then run hived again, this time we want it to stay up so setup a way for it to persist even if you log out, like screen. I personally use pm2 for the testnets just because it's convenient. This is not optimal for a production setup but it's fine for those testnets. (see https://pm2.keymetrics.io/docs/usage/quick-start/) for the testnet I run hived like this with pm2: pm2 start --name testnet ./programs/hived/hived -- -d testnet It will take some time (a few minutes to a few hours) before you get your blocks. You can look at https://test.ausbit.dev/ to see what is the head block to get a sense of how far you are. When you are synched with the testnet and you should see messages like this: ``` 3|hf23 | 1526617ms p2p_plugin.cpp:212 handle_block ] Got 0 transactions on block 4415 by howo -- Block Time Offset: -382 ms 3|hf23 | 1532618ms p2p_plugin.cpp:212 handle_block ] Got 0 transactions on block 4416 by howo -- Block Time Offset: -381 ms 3|hf23 | 1538612ms p2p_plugin.cpp:212 handle_block ] Got 0 transactions on block 4417 by howo -- Block Time Offset: -387 ms 3|hf23 | 1544620ms p2p_plugin.cpp:212 handle_block ] Got 0 transactions on block 4418 by howo -- Block Time Offset: -379 ms 3|hf23 | 1550615ms p2p_plugin.cpp:212 handle_block ] Got 0 transactions on block 4419 by howo -- Block Time Offset: -384 ms ``` now your node is running ! So that's great, but it's not producing. So you need to setup your witness. ## Setting up your witness ### cli_wallet Open up the cli wallet: `./programs/cli_wallet/cli_wallet --server-rpc-endpoint=&quot;ws://127.0.0.1:8091&quot;` it'll ask for a password, so execute: `set_password yourpassword` then unlock it using: `unlock yourpassword` Now execute those commands: import your active key to do various actions, note that the keys on the testnet are the same than the keys on main net (they have been ported) so you can just use your account `import_key 5JNHfZYKGaomSFvd4NUdQ9qMcEAC43kujbfjueTHpVapX1Kzq2n` then generate keys for your witness: `suggest_brain_key` it'll be something like this: ``` { &quot;brain_priv_key&quot;: &quot;STRANGE ROADWAY TWASOME MOLER CENTIMO THOFT COMPORT VARIANT OUTSWIM EGGER SCRIBE GLAVER CROWDED DOLLIER AWNED DOPPER&quot;, &quot;wif_priv_key&quot;: &quot;5KJUxvUSdAV6H7LiutRJMVwEVptmoaDhM73Cg1itzYjG8zs7tWF&quot;, &quot;pub_key&quot;: &quot;TST71oeHrdBZEKDG1GaC75VKDaRGcXk2R8htD8J6wkP6p1zDRPzFZ&quot; } ``` Save these for later ! Then set yourself as a witness (notice how I used the pub_key generated above) ``` update_witness &quot;yourusername&quot; &quot;http://example.org&quot; &quot;TST71oeHrdBZEKDG1GaC75VKDaRGcXk2R8htD8J6wkP6p1zDRPzFZ&quot; {&quot;account_creation_fee&quot;:&quot;0.000 TESTS&quot;,&quot;maximum_block_size&quot;:65536,&quot;hbd_interest_rate&quot;:300} true ``` then request some test hive via https://hivetestnetfaucet.org/ and power it up, this is important to do even if you already have hp. Because of the power up delay introduced in hf24, your initial HP don't have any effect: `transfer_to_vesting &quot;yourusername&quot; &quot;yourusername&quot; &quot;10.000 TESTS&quot; true` and finally vote for yourself so you get scheduled for blocks. If you don't have stake feel free to request some via https://hivetestnetfaucet.org/ `vote_for_witness &quot;yourusername&quot; &quot;yourusername&quot; true true` and we are done with cli_wallet ! but not with the setup. ### final config Open the config one final time to set yourself as a witness by adding these fields: I use the private key that you generated with the cli above not the one that I put here. I put one here to show that you don't put quotes around the private key. ``` witness = &quot;yourusername&quot; # WIF PRIVATE KEY to be used by one or more witnesses or miners private-key = 5KJUxvUSdAV6H7LiutRJMVwEVptmoaDhM73Cg1itzYjG8zs7tWF ``` restart the node and you should be producing blocks, the logs should look something like this: ``` 3|hf23 | 2687621ms p2p_plugin.cpp:212 handle_block ] Got 0 transactions on block 4595 by howo -- Block Time Offset: -378 ms 3|hf23 | 2690613ms witness_plugin.cpp:343 block_production_loo ] Generated block #4596 with timestamp 2020-08-25T19:44:51 at time 2020-08-25T19:44:51 ``` ## Seed node Go the extra mile and setup a seed node ! this is quite important as the testnet have very few seed nodes, so it helps a lot if you make one. Your node is already configured to be a seed node so you just need to open the corresponding port: (note that this command may vary depending on the firewall setup of your computer) ``` sudo iptables -A INPUT -m state --state NEW -m tcp -p tcp --dport 2001 -j ACCEPT ``` And now you can communicate the new seed node to everyone. Please post your ip as a comment of that post so that I can update this link to use your seed as well :). Thank you for reading. If you liked this writeup, please consider voting for @steempress it's the witness that I co-manage with @fredrikaa: ![](https://i.imgur.com/oPJ63jA.png) You can vote for our witness directly using Hivesigner here. See: How to run a witness node on the hf25 testnet by @howo</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://files.peakd.com/file/peakd-hive/howo/23xe7eZsnrPcykgbjNqyAudjuQ8nfGfqRzVCpTShns5vRs2J9gcknbewso9v32YFhw54x.png" /><media:content medium="image" url="https://files.peakd.com/file/peakd-hive/howo/23xe7eZsnrPcykgbjNqyAudjuQ8nfGfqRzVCpTShns5vRs2J9gcknbewso9v32YFhw54x.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>
