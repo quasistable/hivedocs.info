@@ -1,4 +1,159 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="https://hivedocs.info/feed.xml" rel="self" type="application/atom+xml" /><link href="https://hivedocs.info/" rel="alternate" type="text/html" /><updated>2021-06-14T08:18:54-07:00</updated><id>https://hivedocs.info/feed.xml</id><title type="html">Hive Chain Documentation</title><subtitle>Your resource for various levels of Hive Documentation.</subtitle><author><name>site curated by: @inertia</name></author><entry><title type="html">Imagehoster cache purge for Cloudflare</title><link href="https://hivedocs.info/howto/devops/imagehoster/2021/06/14/imagehoster-cache-purge-for-cloudflare.html" rel="alternate" type="text/html" title="Imagehoster cache purge for Cloudflare" /><published>2021-06-14T01:43:48-07:00</published><updated>2021-06-14T01:43:48-07:00</updated><id>https://hivedocs.info/howto/devops/imagehoster/2021/06/14/imagehoster-cache-purge-for-cloudflare</id><content type="html" xml:base="https://hivedocs.info/howto/devops/imagehoster/2021/06/14/imagehoster-cache-purge-for-cloudflare.html">&lt;div id=&quot;content-good-karma-imagehoster-cache-purge-for-cloudflare&quot;&gt;Quick post about new script that helps with caching avatars on imagehoster instances hosted on Cloudflare.
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="https://hivedocs.info/feed.xml" rel="self" type="application/atom+xml" /><link href="https://hivedocs.info/" rel="alternate" type="text/html" /><updated>2021-06-19T11:46:51-07:00</updated><id>https://hivedocs.info/feed.xml</id><title type="html">Hive Chain Documentation</title><subtitle>Your resource for various levels of Hive Documentation.</subtitle><author><name>site curated by: @inertia</name></author><entry><title type="html">Hive HardFork 25 Jump Starter Kit</title><link href="https://hivedocs.info/howto/devops/2021/06/18/hive-hardfork-25-jump-starter-kit.html" rel="alternate" type="text/html" title="Hive HardFork 25 Jump Starter Kit" /><published>2021-06-18T12:31:45-07:00</published><updated>2021-06-18T12:31:45-07:00</updated><id>https://hivedocs.info/howto/devops/2021/06/18/hive-hardfork-25-jump-starter-kit</id><content type="html" xml:base="https://hivedocs.info/howto/devops/2021/06/18/hive-hardfork-25-jump-starter-kit.html">&lt;div id=&quot;content-gtg-hive-hardfork-25-jump-starter-kit&quot;&gt;Intended for the Hive API node operators, witnesses, and developers.
+
+At the time of Eclipse release I made a similar post that saved many (hours) of lives, so I’m creating an updated one for the upcoming Hard Fork 25.
+
+&lt;center&gt;https://www.youtube.com/watch?v=mrwgrOhl7Yw&lt;/center&gt;&lt;sup&gt;Yes, new Hive Hard Fork, new fancy logo reveal.&lt;/sup&gt;
+
+# Code
+## GitLab
+https://gitlab.syncad.com/hive/hive
+Our core development efforts takes place in a community hosted GitLab repository (thanks @blocktrades). There's Hive core itself, but also many other Hive related software repositories.
+
+## GitHub
+https://github.com/openhive-network/hive
+We use it as a push mirror for GitLab repository, mostly for visibility and decentralization - if you have an account on GitHub please fork at least [hive](https://github.com/openhive-network/hive) and [hivemind](https://github.com/openhive-network/hivemind) and star them if you haven’t done so yet. We haven't paid much attention to it but apparently it's important for some outside metrics.
+
+&lt;center&gt;![star_fork.png](https://images.hive.blog/DQmQbRRrtoTFPZA9QmDRjvswPtaGuXrWXje1WHp9CeeGbV2/star_fork.png)
+&lt;sup&gt;Please click both buttons&lt;/sup&gt;&lt;/center&gt;
+
+# Services
+## API node
+https://api.openhive.network
+Soon to be switched to `v1.25.0` but because it’s heavily used in Hive related R&amp;amp;D it might not be your best choice if you are looking for a fast API node without any rate limiting. During the maintenance mode, it will fall back to https://api.hive.blog 
+
+## Seed node
+`hived` `v1.25.0` listens on `gtg.openhive.network:2001`
+to use it in your `config.ini` file just add the line:
+```
+p2p-seed-node = gtg.openhive.network:2001
+```
+If you don't have any `p2p-seed-node = ` entries in your config file, built-in defaults will be used (which contains my node too).
+
+# Stuff for download
+TL;DR https://gtg.openhive.network/get
+
+## Binaries
+`./get/bin`contains `hived` and `cli_wallet` binaries built on `Ubuntu 18.04 LTS` which should also run fine on `Ubuntu 20.04 LTS`
+
+## Blocks
+`./get/blockchain`
+As usual, the `block_log` file, roughly 350GB and counting.
+For testing needs there's also `block_log.5M` that is limited to first 5 million blocks.
+
+## Snapshots
+
+### API
+`./get/snapshot/api/` contains a relatively recent snapshot of the API node with all the fancy plugins.
+There’s a snapshot for the upcoming version `v1.25.0` but also for the old one `v1.24.8` if you need to switch back.
+Uncompressed snapshot takes roughly 480GB
+There’s also the `example-api-config.ini` file out there that contains settings compatible with the snapshot.
+
+To decompress, you can use simply run it through something like: `lbzip2 -dc | tar xv`
+(Using parallel bzip2 on multi-threaded systems might save you a lot of time)
+
+To use snapshot you need:
+- A `block_log` file, not smaller than the one used when the snapshot was made.
+- A `config.ini` file, compatible with the snapshot (see above), adjusted to your needs, without changes that could affect it in a way that changes the state.
+- A `hived` binary compatible with the snapshot
+
+All of that you can find above.
+
+ Run `hived` with `--load-snapshot name`, assuming the snapshot is stored in `snapshot/name`
+
+`hived` API node runtime currently takes 823GB (incl. shm 19GB, excl. snapshot)
+
+### Exchanges
+There’s also a snapshot meant for exchanges in `./get/snapshot/exchange/`  that allows them to quickly get up and running, it requires a compatible configuration and that exchange account is one of those who are tracked by my node. If you run an exchange and want to be on that list to use a snapshot, just please let me know.
+
+## Hivemind database dump
+`./get/hivemind/` contains a relatively recent dump of the Hivemind database.
+I use self-describing file names such as:
+`hivemind-20210616-47a41c96.dump`
+Date when dump was taken, revision of `hivemind` that was running it.
+You need at least that version, remember about `intarray` extension
+Consider running `pg_restore` with at least `-j 6` to run long running tasks in parallel
+After restoring the database, make sure to run the `db_upgrade` script.
+
+Even though during full sync database size peaks easily over 750GB, when restored from dump it takes roughly 500GB. Dump file itself is just 53GB.
+
+### All resources are offered AS IS.&lt;/div&gt;
+&lt;script crossorigin=&quot;anonymous&quot; integrity=&quot;sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=&quot; src=&quot;https://code.jquery.com/jquery-3.5.1.slim.min.js&quot;&gt;&lt;/script&gt;
+
+&lt;script src=&quot;https://unpkg.com/steem-content-renderer&quot;&gt;&lt;/script&gt;
+
+&lt;!-- &lt;script src=&quot;https://cdn.jsdelivr.net/npm/hive-content-renderer/dist/hive-content-renderer.min.js&quot;&gt;&lt;/script&gt; --&gt;
+&lt;script&gt;
+  $(document).ready(function() {
+    try {
+      const renderer = new SteemContentRenderer.DefaultRenderer({
+      // const renderer = new HiveContentRenderer({
+        baseUrl: &quot;https://hive.blog/&quot;,
+        breaks: true,
+        skipSanitization: false,
+        allowInsecureScriptTags: false,
+        addNofollowToLinks: true,
+        doNotShowImages: false,
+        ipfsPrefix: &quot;&quot;,
+        assetsWidth: 640,
+        assetsHeight: 480,
+        imageProxyFn: (url) =&gt; url,
+        usertagUrlFn: (account) =&gt; &quot;/@gtg&quot;,
+        hashtagUrlFn: (hashtag) =&gt; &quot;/hive-hardfork-25-jump-starter-kit&quot;,
+        isLinkSafeFn: (url) =&gt; true,
+      });
+      
+      const inputElem = $('#content-gtg-hive-hardfork-25-jump-starter-kit').html();
+      const outputElem = $('#content-gtg-hive-hardfork-25-jump-starter-kit');
+      const output = renderer.render(inputElem);
+      
+      outputElem.html(output);
+    } catch(e) {
+      console.log(e);
+    }
+  });
+&lt;/script&gt;
+
+&lt;style&gt;
+  #content-gtg-hive-hardfork-25-jump-starter-kit {
+    padding: 0 3rem;
+    color: #444444;
+    font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.8;
+    text-shadow: 0 1px 0 #ffffff;
+    padding: 0.5rem;
+  }
+  #content-gtg-hive-hardfork-25-jump-starter-kit code {
+    background: white;
+  }
+  #content-gtg-hive-hardfork-25-jump-starter-kit a {
+    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
+  }
+  #content-gtg-hive-hardfork-25-jump-starter-kit a:hover {
+    border-bottom: 0;
+  }
+  #content-gtg-hive-hardfork-25-jump-starter-kit h1 {
+    font-size: 2.2em;
+  }
+  #content-gtg-hive-hardfork-25-jump-starter-kit h2, h3, h4, h5 {
+    margin-bottom: 0;
+  }
+  #content-gtg-hive-hardfork-25-jump-starter-kit header small {
+    color: #999;
+    font-size: 50%;
+  }
+  #content-gtg-hive-hardfork-25-jump-starter-kit img {
+    max-width: 100%;
+  }
+&lt;/style&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;
+  See: &lt;a href=&quot;https://hive.blog/hive-160391/@gtg/hive-hardfork-25-jump-starter-kit&quot;&gt;Hive HardFork 25 Jump Starter Kit&lt;/a&gt;
+  by
+  &lt;a href=&quot;https://hive.blog/@gtg&quot;&gt;@gtg&lt;/a&gt;
+&lt;/p&gt;</content><author><name>gtg</name></author><category term="howto" /><category term="devops" /><summary type="html">Intended for the Hive API node operators, witnesses, and developers. At the time of Eclipse release I made a similar post that saved many (hours) of lives, so I’m creating an updated one for the upcoming Hard Fork 25. https://www.youtube.com/watch?v=mrwgrOhl7YwYes, new Hive Hard Fork, new fancy logo reveal. # Code ## GitLab https://gitlab.syncad.com/hive/hive Our core development efforts takes place in a community hosted GitLab repository (thanks @blocktrades). There's Hive core itself, but also many other Hive related software repositories. ## GitHub https://github.com/openhive-network/hive We use it as a push mirror for GitLab repository, mostly for visibility and decentralization - if you have an account on GitHub please fork at least [hive](https://github.com/openhive-network/hive) and [hivemind](https://github.com/openhive-network/hivemind) and star them if you haven’t done so yet. We haven't paid much attention to it but apparently it's important for some outside metrics. ![star_fork.png](https://images.hive.blog/DQmQbRRrtoTFPZA9QmDRjvswPtaGuXrWXje1WHp9CeeGbV2/star_fork.png) Please click both buttons # Services ## API node https://api.openhive.network Soon to be switched to `v1.25.0` but because it’s heavily used in Hive related R&amp;amp;D it might not be your best choice if you are looking for a fast API node without any rate limiting. During the maintenance mode, it will fall back to https://api.hive.blog ## Seed node `hived` `v1.25.0` listens on `gtg.openhive.network:2001` to use it in your `config.ini` file just add the line: ``` p2p-seed-node = gtg.openhive.network:2001 ``` If you don't have any `p2p-seed-node = ` entries in your config file, built-in defaults will be used (which contains my node too). # Stuff for download TL;DR https://gtg.openhive.network/get ## Binaries `./get/bin`contains `hived` and `cli_wallet` binaries built on `Ubuntu 18.04 LTS` which should also run fine on `Ubuntu 20.04 LTS` ## Blocks `./get/blockchain` As usual, the `block_log` file, roughly 350GB and counting. For testing needs there's also `block_log.5M` that is limited to first 5 million blocks. ## Snapshots ### API `./get/snapshot/api/` contains a relatively recent snapshot of the API node with all the fancy plugins. There’s a snapshot for the upcoming version `v1.25.0` but also for the old one `v1.24.8` if you need to switch back. Uncompressed snapshot takes roughly 480GB There’s also the `example-api-config.ini` file out there that contains settings compatible with the snapshot. To decompress, you can use simply run it through something like: `lbzip2 -dc | tar xv` (Using parallel bzip2 on multi-threaded systems might save you a lot of time) To use snapshot you need: - A `block_log` file, not smaller than the one used when the snapshot was made. - A `config.ini` file, compatible with the snapshot (see above), adjusted to your needs, without changes that could affect it in a way that changes the state. - A `hived` binary compatible with the snapshot All of that you can find above. Run `hived` with `--load-snapshot name`, assuming the snapshot is stored in `snapshot/name` `hived` API node runtime currently takes 823GB (incl. shm 19GB, excl. snapshot) ### Exchanges There’s also a snapshot meant for exchanges in `./get/snapshot/exchange/` that allows them to quickly get up and running, it requires a compatible configuration and that exchange account is one of those who are tracked by my node. If you run an exchange and want to be on that list to use a snapshot, just please let me know. ## Hivemind database dump `./get/hivemind/` contains a relatively recent dump of the Hivemind database. I use self-describing file names such as: `hivemind-20210616-47a41c96.dump` Date when dump was taken, revision of `hivemind` that was running it. You need at least that version, remember about `intarray` extension Consider running `pg_restore` with at least `-j 6` to run long running tasks in parallel After restoring the database, make sure to run the `db_upgrade` script. Even though during full sync database size peaks easily over 750GB, when restored from dump it takes roughly 500GB. Dump file itself is just 53GB. ### All resources are offered AS IS. See: Hive HardFork 25 Jump Starter Kit by @gtg</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://img.youtube.com/vi/mrwgrOhl7Yw/0.jpg" /><media:content medium="image" url="https://img.youtube.com/vi/mrwgrOhl7Yw/0.jpg" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Imagehoster cache purge for Cloudflare</title><link href="https://hivedocs.info/howto/devops/imagehoster/2021/06/14/imagehoster-cache-purge-for-cloudflare.html" rel="alternate" type="text/html" title="Imagehoster cache purge for Cloudflare" /><published>2021-06-14T01:43:48-07:00</published><updated>2021-06-14T01:43:48-07:00</updated><id>https://hivedocs.info/howto/devops/imagehoster/2021/06/14/imagehoster-cache-purge-for-cloudflare</id><content type="html" xml:base="https://hivedocs.info/howto/devops/imagehoster/2021/06/14/imagehoster-cache-purge-for-cloudflare.html">&lt;div id=&quot;content-good-karma-imagehoster-cache-purge-for-cloudflare&quot;&gt;Quick post about new script that helps with caching avatars on imagehoster instances hosted on Cloudflare.
 
 ![ecency-imagehoster-caching](https://images.ecency.com/DQmecXYP57pagKtfrUvcRG5AZsrgnwdmbsmugKcv5han8Mn/cache_work.png)
 
@@ -1258,343 +1413,4 @@ _Join us on Discord: https://discord.gg/Fy3bca5_&lt;/div&gt;
   See: &lt;a href=&quot;https://peakd.com/hive-163399/@peakd/community-improvements-testnet-support-and-15-more-updates&quot;&gt;Community Improvements, Testnet support and 15 More Updates&lt;/a&gt;
   by
   &lt;a href=&quot;https://hive.blog/@peakd&quot;&gt;@peakd&lt;/a&gt;
-&lt;/p&gt;</content><author><name>peakd</name></author><category term="news" /><category term="projects" /><category term="testnet" /><summary type="html">A new release of [peakd.com](https://peakd.com) is now available. Keep reading to discover the new features and check the full list of improvements ;) The new release is now live at https://peakd.com ![release_cover_2021_06_01.jpg](https://files.peakd.com/file/peakd-hive/peakd/23tS2bqoaD4CxPADDAxsarFCkYRHHhFubPR4eXcxdGagL2Ak7d3Lr13d4YCePLPTsnAaF.jpg) #### 1. Default/Required Beneficiary account for Communities A community can now define a 'default' or 'required' beneficiary for posts published in that community. This option is not supported at the chain level (or Hivemind), so keep this in mind if you want to enable it. Probvably the only community using this feature at the moment is [PhotoGames](https://peakd.com/c/hive-146701). When this option is enabled a label will be shown on the community rules: ![image.png](https://files.peakd.com/file/peakd-hive/peakd/23ydVgLHPXNthY6xzWT8boYRB5Ka3XoP9YSx69hMpB1e7EXRd2TnQdcA7T6nMq7hKbrFy.png) ###### Introduce the '@peakd.bot' account to automatically handle posts not using the required beneficiary account If you want to automatically mute posts not respecting the required beneficiary setting you can add the @peakd.bot account as a community moderators and it will take care of it. ![image.png](https://files.peakd.com/file/peakd-hive/peakd/23uRKjMY5AFdXPSGPeVE7SY9A3PcdrSL6YvgAjBv2aQuiGAKNMGcLBLw1bGFxdrBK34uD.png) *This is still and experimental feature, so feel free to report any issues you notice* ;) #### 2. Other Communities Improvements ###### Support public Templates in communities Communities can now define public Templates (owned by the community `hive-000000` owner account) that are available to their users when they want to write a new post: ![image.png](https://files.peakd.com/file/peakd-hive/peakd/23wgaTg2AHFAUWyBNZzvWmbBdvwsv7gusdEMhFS8APfpAYPpRHMqZk6nUDLxXSF2yx45f.png) Only templates marked as 'PUBLIC' will be available in the dropdown. You can mark a template as public on this page: https://peakd.com/me/templates. ###### Allow communities to have a Curated Collections (CCC) page Similar to what is already available for user pages it's now possible to add a collection page to communities: ![image.png](https://files.peakd.com/file/peakd-hive/peakd/23uR9aGiUjafHdkUwL6rHt8XFUvvjdT14qvDuUyxaqc7PkNSRJ44hfd1gEBbwR7QX4Rf4.png) ###### Allow up to 20 preferred topics for communities You can now set up to 20 preferred topics for a community ![image.png](https://files.peakd.com/file/peakd-hive/peakd/EoyVJhZbq39MxsMsupUaL1GCFwfmmpGCpHBTe6dLYKyrrYGJJJivWm9smzwTBJMd9h8.png) #### 3. Testnet Support This is not completely new as we have supported Testnet in the past, but we did some improvements and better support for multiple login methods. This is intended for advanced users, but if you want you can have a look here: https://testnet.peakd.com **Important:** If you login using Hive Keychain remind to change the RPC node used to cast transactions otherwise you will cast them on the actual chain. #### 4. Notification counter in browser tab It's now easier to see if there are new notifications directly on the browser tab/page title: ![image.png](https://files.peakd.com/file/peakd-hive/peakd/EoCbSnqkEUmVRc7QtnbruGou1A1aaLYqC9qZ5D1hGW2H2451b5VUVtfd8NAZZhV3WPS.png) #### 5. Image viewer for comments Image viewer had been available for images in a post for quite some time, but now you can enjoy the same for images in the comment section. Just click on the image to see it larger ;) #### 6. Some minor improvements and bug fixes As always some minor improvements, updates and fixes across the website. You can check the full release notes here: **https://peakd.com/about/changelog**. ``` # Improvements and Fixes ------------------------------ [update] Better instructions for creating a curated collection [update] Double check community required beneficiary before publishing a post [update] Improve image hashing function to better handle edge cases [update] Include power down amount in MAX available amount in delegation popup [update] Stop embedded videos autoplay when opening the post in full view [update] Exclude downvoted/muted posts from Trail view [update] Indent sub-headers in post outline [update] Add link to edit default beneficiaries in Settings [update] Improve support for CCC associated templates [update] Allow up to 20 preferred topics for communities [update] Better handle community curator account (if set) [fix] Improve check on max percentage set for beneficiaries [fix] Improve HW wallet layout on smaller display [fix] 3speak video embeds in post [fix] Image file extension missing after upload for some file [fix] Set the community name in browser tab title [fix] Login with PeakLock on testnet.peakd.com is now allowed ``` --- ## Support the @peakd project Now is probably a nice time to remind you of the ways you can support the development of @peakd. ![Selection_298.png](https://files.peakd.com/file/peakd-hive/peakd/w36DQpO7-Selection_298.png) We have a proposal on the Decentralized Hive Fund. You can review the proposal [here](/proposals/52). If you agree to the proposal and you think the points mentioned add value to the Hive Blockchain consider supporting it using the above links or directly with **[this link](https://hivesigner.com/sign/update-proposal-votes?proposal_ids=[52]&amp;amp;approve=true)**. --- We also run a witness server to help produce the blocks for the Hive Blockchain. You can vote for our witness so we are in a position to process more of them. Vote on the witness page: https://peakd.com/witnesses - Using Keychain: You just have to click and approve the transaction - Using HiveSigner: You'll need access to confirm the transaction with your Active Key at least --- ###### *The PeakD Team* _About us: https://peakd.com/about_ _Join us on Discord: https://discord.gg/Fy3bca5_ See: Community Improvements, Testnet support and 15 More Updates by @peakd</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://files.peakd.com/file/peakd-hive/peakd/23tS2bqoaD4CxPADDAxsarFCkYRHHhFubPR4eXcxdGagL2Ak7d3Lr13d4YCePLPTsnAaF.jpg" /><media:content medium="image" url="https://files.peakd.com/file/peakd-hive/peakd/23tS2bqoaD4CxPADDAxsarFCkYRHHhFubPR4eXcxdGagL2Ak7d3Lr13d4YCePLPTsnAaF.jpg" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">How to run a witness node on the hf25 testnet</title><link href="https://hivedocs.info/howto/witness/testnet/2021/05/31/how-to-run-a-witness-node-on-the-hf25-testnet.html" rel="alternate" type="text/html" title="How to run a witness node on the hf25 testnet" /><published>2021-05-31T06:51:27-07:00</published><updated>2021-05-31T06:51:27-07:00</updated><id>https://hivedocs.info/howto/witness/testnet/2021/05/31/how-to-run-a-witness-node-on-the-hf25-testnet</id><content type="html" xml:base="https://hivedocs.info/howto/witness/testnet/2021/05/31/how-to-run-a-witness-node-on-the-hf25-testnet.html">&lt;div id=&quot;content-howo-how-to-run-a-witness-node-on-the-hf25-testnet&quot;&gt;![image.png](https://files.peakd.com/file/peakd-hive/howo/23xe7eZsnrPcykgbjNqyAudjuQ8nfGfqRzVCpTShns5vRs2J9gcknbewso9v32YFhw54x.png)
-
-Hi ! the testnet phase for HF25 is now in full swing, here's some info on it from @gtg https://peakd.com/@gtg/hf25-public-testnet-reloaded-rc2
-
-One important thing to understand about the testnet is much more lightweight than the main net (because the chain is brand new) so you can actually get it running on a super small machine, to prove my point I'm going to write this tutorial using the 6$ a month doplet (1 core, 25gb storage) from digitalocean. I recommend ubuntu 18.04 LTS, 20.04 is also supported by hive but it can be more tricky depending on the versions of GCC+boost+cmake that are provided with it.
-
-If you participated in the last testnet you will find this guide very similar to the previous one https://peakd.com/hive/@howo/how-to-participate-in-the-tesntets-this-week-full-guide but I felt like making a new one was better than telling you  &quot;follow the outdated guide and at step 35 do this instead&quot; 
-
-### step 1: Build hive or download binaries
-
-#### download binaries
-
-If you're on a low end hardware compiling may take a while, so it's faster to let someone compile the binaries for you so you can just run them instead.
-
-@gtg offers pre-built binaries at https://gtg.openhive.network/get/testnet/bin/ just download both hived and cli_wallet and you're good to go:
-
-```
-mkdir programs
-cd programs
-wget https://gtg.openhive.network/get/testnet/bin/cli_wallet-v1.25.0rc2
-wget https://gtg.openhive.network/get/testnet/bin/hived-v1.25.0rc2
-chmod +x *
-```
-
-This is a hassle-free solution but binaries may not always be available and it's generally better security-wise to compile it yourself.
-
-### build hive
-
-If you are running on low end hardware like me, you will probably need to setup some swap to compile hive:  https://linuxize.com/post/how-to-add-swap-space-on-ubuntu-18-04/ I personally added 16GB of swap. I don't know how much is actually needed I just figured that it would be enough, feel free to tell me in the comments if you experiment with it.
-
-
-Let's install the dependencies first:
-```
-apt-get install -y \
-        autoconf \
-        automake \
-        autotools-dev \
-        build-essential \
-        cmake \
-        doxygen \
-        git \
-        libboost-all-dev \
-        libyajl-dev \
-        libreadline-dev \
-        libssl-dev \
-        libtool \
-        liblz4-tool \
-        ncurses-dev \
-        python3 \
-        python3-dev \
-        python3-jinja2 \
-        python3-pip \
-        libgflags-dev \
-        libsnappy-dev \
-        zlib1g-dev \
-        libbz2-dev \
-        liblz4-dev \
-        libzstd-dev
-```
-
-Then get hive and compile it, change `v1.25.0rc2` to whatever is the current release tag, follow @gtg he is usually the one announcing the release notes, alternatively you can look on https://gitlab.syncad.com/hive/hive/-/tags and look at the most recent tags.  
-
-```
-git clone git@gitlab.syncad.com:hive/hive.git
-cd hive
-git checkout v1.25.0rc2
-git submodule update --init --recursive
-mkdir build
-cd build
-
-cmake -DENABLE_COVERAGE_TESTING=ON -DBUILD_HIVE_TESTNET=ON -DLOW_MEMORY_NODE=ON ..
-
-make -j$(nproc) hived cli_wallet
-```
-
-Compiling may take a while if you are on low end hardware it could take up to a few hours if not more, I forgot to measure it when I did it myself so 🤷‍. On high end hardware you can expect 3-5 minutes.
- 
-## Run the node
-
-I am using the directory structure and binary names that you get when you compile hive so straight copy paste may not work if you use binaries but everything else works the same you just have to use the right paths and right binary names.
-
-
-Run the node a few seconds and then exit hived like so
-
-`./programs/hive/hived -d testnet/`
-
-this will create a testnet directory with the default config file.
-
-open the config.ini file
-
-nano testnet/config.ini
-
-replace the config.ini with this one:
-
-```
-# tells the node which seeds he should listen to to get blocks
-p2p-seed-node = testnet.openhive.network:2001
-
-# Local http endpoint for webserver requests.
-webserver-http-endpoint = 127.0.0.1:8090
-
-# Local websocket endpoint for webserver requests.
-webserver-ws-endpoint =127.0.0.1:8091
-
-log-appender = {&quot;appender&quot;:&quot;stderr&quot;,&quot;stream&quot;:&quot;std_error&quot;}
-log-logger = {&quot;name&quot;:&quot;default&quot;,&quot;level&quot;:&quot;info&quot;,&quot;appender&quot;:&quot;stderr&quot;}
-
-backtrace = yes
-
-plugin = webserver p2p json_rpc
-plugin = database_api condenser_api
-
-plugin = witness
-plugin = rc
-
-plugin = market_history
-plugin = market_history_api
-
-plugin = account_history_rocksdb
-plugin = account_history_api
-
-plugin = transaction_status
-plugin = transaction_status_api
-
-plugin = account_by_key
-plugin = account_by_key_api
-
-plugin = reputation
-plugin = reputation_api
-
-plugin = block_api network_broadcast_api rc_api
-
-account-history-rocksdb-path = &quot;blockchain/account-history-rocksdb-storage&quot;
-
-shared-file-size = 10G
-
-shared-file-full-threshold = 9500
-shared-file-scale-rate = 1000
-
-flush-state-interval = 0
-
-market-history-bucket-size = [15,60,300,3600,86400]
-market-history-buckets-per-size = 5760
-
-p2p-endpoint = 0.0.0.0:2001
-
-transaction-status-block-depth = 64000
-transaction-status-track-after-block = 46000000
-
-webserver-thread-pool-size = 256
-```
-
-Then run hived again, this time we want it to stay up so setup a way for it to persist even if you log out, like screen. I personally use pm2 for the testnets just because it's convenient. This is not optimal for a production setup but it's fine for those testnets. (see https://pm2.keymetrics.io/docs/usage/quick-start/)
-
-for the testnet I run hived like this with pm2:
-
-pm2 start --name testnet ./programs/hived/hived -- -d testnet
-
-
-It will take some time (a few minutes to a few hours) before you get your blocks.
-You can look at https://test.ausbit.dev/ to see what is the head block to get a sense of how far you are.
-When you are synched with the testnet and you should see messages like this:
-
-```
-3|hf23     | 1526617ms p2p_plugin.cpp:212            handle_block         ] Got 0 transactions on block 4415 by howo -- Block Time Offset: -382 ms
-3|hf23     | 1532618ms p2p_plugin.cpp:212            handle_block         ] Got 0 transactions on block 4416 by howo -- Block Time Offset: -381 ms
-3|hf23     | 1538612ms p2p_plugin.cpp:212            handle_block         ] Got 0 transactions on block 4417 by howo -- Block Time Offset: -387 ms
-3|hf23     | 1544620ms p2p_plugin.cpp:212            handle_block         ] Got 0 transactions on block 4418 by howo -- Block Time Offset: -379 ms
-3|hf23     | 1550615ms p2p_plugin.cpp:212            handle_block         ] Got 0 transactions on block 4419 by howo -- Block Time Offset: -384 ms
-
-```
-
-now your node is running ! So that's great, but it's not producing.
-
-So you need to setup your witness.
-
-## Setting up your witness 
-
-### cli_wallet 
-
-Open up the cli wallet:
-
-`./programs/cli_wallet/cli_wallet --server-rpc-endpoint=&quot;ws://127.0.0.1:8091&quot;`
-
-it'll ask for a password, so execute:
-
-`set_password yourpassword`
-
-then unlock it using:
-
-`unlock yourpassword`
-
-Now execute those commands:
-
-import your active key to do various actions, note that the keys on the testnet are the same than the keys on main net (they have been ported) so you can just use your account  
-`import_key 5JNHfZYKGaomSFvd4NUdQ9qMcEAC43kujbfjueTHpVapX1Kzq2n`
-
-then generate keys for your witness:
-`suggest_brain_key`
-
-it'll be something like this:
-```
-{
-  &quot;brain_priv_key&quot;: &quot;STRANGE ROADWAY TWASOME MOLER CENTIMO THOFT COMPORT VARIANT OUTSWIM EGGER SCRIBE GLAVER CROWDED DOLLIER AWNED DOPPER&quot;,
-  &quot;wif_priv_key&quot;: &quot;5KJUxvUSdAV6H7LiutRJMVwEVptmoaDhM73Cg1itzYjG8zs7tWF&quot;,
-  &quot;pub_key&quot;: &quot;TST71oeHrdBZEKDG1GaC75VKDaRGcXk2R8htD8J6wkP6p1zDRPzFZ&quot;
-}
-```
-Save these for later !
-
-Then set yourself as a witness (notice how I used the pub_key generated above)
-```
-update_witness &quot;yourusername&quot; &quot;http://example.org&quot; &quot;TST71oeHrdBZEKDG1GaC75VKDaRGcXk2R8htD8J6wkP6p1zDRPzFZ&quot; {&quot;account_creation_fee&quot;:&quot;0.000 TESTS&quot;,&quot;maximum_block_size&quot;:65536,&quot;hbd_interest_rate&quot;:300} true
-```
-
-then request some test hive via https://hivetestnetfaucet.org/
-
-and power it up, this is important to do even if you already have hp. Because of the power up delay introduced in hf24, your initial HP don't have any effect:
-
-`transfer_to_vesting &quot;yourusername&quot; &quot;yourusername&quot; &quot;10.000 TESTS&quot; true`
-
-and finally vote for yourself so you get scheduled for blocks. If you don't have stake feel free to request some via https://hivetestnetfaucet.org/
-
-`vote_for_witness &quot;yourusername&quot; &quot;yourusername&quot; true true`
-
-and we are done with cli_wallet ! but not with the setup.
-
-### final config
-
-Open the config one final time to set yourself as a witness by adding these fields:
-
-I use the private key that you generated with the cli above not the one that I put here. I put one here to show that you don't put quotes around the private key.
-```
-witness = &quot;yourusername&quot;
-
-# WIF PRIVATE KEY to be used by one or more witnesses or miners
-private-key = 5KJUxvUSdAV6H7LiutRJMVwEVptmoaDhM73Cg1itzYjG8zs7tWF
-```
-
-restart the node and you should be producing blocks, the logs should look something like this:
-
-```
-3|hf23     | 2687621ms p2p_plugin.cpp:212            handle_block         ] Got 0 transactions on block 4595 by howo -- Block Time Offset: -378 ms
-3|hf23     | 2690613ms witness_plugin.cpp:343        block_production_loo ] Generated block #4596 with timestamp 2020-08-25T19:44:51 at time 2020-08-25T19:44:51
-```
-
-## Seed node
-
-Go the extra mile and setup a seed node ! this is quite important as the testnet have very few seed nodes, so it helps a lot if you make one.
-
-Your node is already configured to be a seed node so you just need to open the corresponding port:
-(note that this command may vary depending on the firewall setup of your computer)
-```
-sudo iptables -A INPUT -m state --state NEW -m tcp -p tcp --dport 2001 -j ACCEPT
-```
-
-And now you can communicate the new seed node to everyone. Please post your ip as a comment of that post so that I can update this link to use your seed as well :).
-
-Thank you for reading.
-
-If you liked this writeup, please consider voting for @steempress it's the witness that I co-manage with @fredrikaa:
-![](https://i.imgur.com/oPJ63jA.png)
-&lt;center&gt;&lt;sup&gt;You can vote for our witness directly using Hivesigner &lt;a href=&quot;https://hivesigner.com/sign/account-witness-vote?witness=steempress&amp;amp;approve=1&quot;&gt;here&lt;/a&gt;.&lt;/sup&gt;&lt;/center&gt;&lt;/div&gt;
-&lt;script crossorigin=&quot;anonymous&quot; integrity=&quot;sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=&quot; src=&quot;https://code.jquery.com/jquery-3.5.1.slim.min.js&quot;&gt;&lt;/script&gt;
-
-&lt;script src=&quot;https://unpkg.com/steem-content-renderer&quot;&gt;&lt;/script&gt;
-
-&lt;!-- &lt;script src=&quot;https://cdn.jsdelivr.net/npm/hive-content-renderer/dist/hive-content-renderer.min.js&quot;&gt;&lt;/script&gt; --&gt;
-&lt;script&gt;
-  $(document).ready(function() {
-    try {
-      const renderer = new SteemContentRenderer.DefaultRenderer({
-      // const renderer = new HiveContentRenderer({
-        baseUrl: &quot;https://hive.blog/&quot;,
-        breaks: true,
-        skipSanitization: false,
-        allowInsecureScriptTags: false,
-        addNofollowToLinks: true,
-        doNotShowImages: false,
-        ipfsPrefix: &quot;&quot;,
-        assetsWidth: 640,
-        assetsHeight: 480,
-        imageProxyFn: (url) =&gt; url,
-        usertagUrlFn: (account) =&gt; &quot;/@howo&quot;,
-        hashtagUrlFn: (hashtag) =&gt; &quot;/how-to-run-a-witness-node-on-the-hf25-testnet&quot;,
-        isLinkSafeFn: (url) =&gt; true,
-      });
-      
-      const inputElem = $('#content-howo-how-to-run-a-witness-node-on-the-hf25-testnet').html();
-      const outputElem = $('#content-howo-how-to-run-a-witness-node-on-the-hf25-testnet');
-      const output = renderer.render(inputElem);
-      
-      outputElem.html(output);
-    } catch(e) {
-      console.log(e);
-    }
-  });
-&lt;/script&gt;
-
-&lt;style&gt;
-  #content-howo-how-to-run-a-witness-node-on-the-hf25-testnet {
-    padding: 0 3rem;
-    color: #444444;
-    font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif;
-    font-size: 16px;
-    line-height: 1.8;
-    text-shadow: 0 1px 0 #ffffff;
-    padding: 0.5rem;
-  }
-  #content-howo-how-to-run-a-witness-node-on-the-hf25-testnet code {
-    background: white;
-  }
-  #content-howo-how-to-run-a-witness-node-on-the-hf25-testnet a {
-    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
-  }
-  #content-howo-how-to-run-a-witness-node-on-the-hf25-testnet a:hover {
-    border-bottom: 0;
-  }
-  #content-howo-how-to-run-a-witness-node-on-the-hf25-testnet h1 {
-    font-size: 2.2em;
-  }
-  #content-howo-how-to-run-a-witness-node-on-the-hf25-testnet h2, h3, h4, h5 {
-    margin-bottom: 0;
-  }
-  #content-howo-how-to-run-a-witness-node-on-the-hf25-testnet header small {
-    color: #999;
-    font-size: 50%;
-  }
-  #content-howo-how-to-run-a-witness-node-on-the-hf25-testnet img {
-    max-width: 100%;
-  }
-&lt;/style&gt;
-
-&lt;hr /&gt;
-
-&lt;p&gt;
-  See: &lt;a href=&quot;https://peakd.com/guide/@howo/how-to-run-a-witness-node-on-the-hf25-testnet&quot;&gt;How to run a witness node on the hf25 testnet&lt;/a&gt;
-  by
-  &lt;a href=&quot;https://hive.blog/@howo&quot;&gt;@howo&lt;/a&gt;
-&lt;/p&gt;</content><author><name>howo</name></author><category term="howto" /><category term="witness" /><category term="testnet" /><summary type="html">![image.png](https://files.peakd.com/file/peakd-hive/howo/23xe7eZsnrPcykgbjNqyAudjuQ8nfGfqRzVCpTShns5vRs2J9gcknbewso9v32YFhw54x.png) Hi ! the testnet phase for HF25 is now in full swing, here's some info on it from @gtg https://peakd.com/@gtg/hf25-public-testnet-reloaded-rc2 One important thing to understand about the testnet is much more lightweight than the main net (because the chain is brand new) so you can actually get it running on a super small machine, to prove my point I'm going to write this tutorial using the 6$ a month doplet (1 core, 25gb storage) from digitalocean. I recommend ubuntu 18.04 LTS, 20.04 is also supported by hive but it can be more tricky depending on the versions of GCC+boost+cmake that are provided with it. If you participated in the last testnet you will find this guide very similar to the previous one https://peakd.com/hive/@howo/how-to-participate-in-the-tesntets-this-week-full-guide but I felt like making a new one was better than telling you &quot;follow the outdated guide and at step 35 do this instead&quot; ### step 1: Build hive or download binaries #### download binaries If you're on a low end hardware compiling may take a while, so it's faster to let someone compile the binaries for you so you can just run them instead. @gtg offers pre-built binaries at https://gtg.openhive.network/get/testnet/bin/ just download both hived and cli_wallet and you're good to go: ``` mkdir programs cd programs wget https://gtg.openhive.network/get/testnet/bin/cli_wallet-v1.25.0rc2 wget https://gtg.openhive.network/get/testnet/bin/hived-v1.25.0rc2 chmod +x * ``` This is a hassle-free solution but binaries may not always be available and it's generally better security-wise to compile it yourself. ### build hive If you are running on low end hardware like me, you will probably need to setup some swap to compile hive: https://linuxize.com/post/how-to-add-swap-space-on-ubuntu-18-04/ I personally added 16GB of swap. I don't know how much is actually needed I just figured that it would be enough, feel free to tell me in the comments if you experiment with it. Let's install the dependencies first: ``` apt-get install -y \ autoconf \ automake \ autotools-dev \ build-essential \ cmake \ doxygen \ git \ libboost-all-dev \ libyajl-dev \ libreadline-dev \ libssl-dev \ libtool \ liblz4-tool \ ncurses-dev \ python3 \ python3-dev \ python3-jinja2 \ python3-pip \ libgflags-dev \ libsnappy-dev \ zlib1g-dev \ libbz2-dev \ liblz4-dev \ libzstd-dev ``` Then get hive and compile it, change `v1.25.0rc2` to whatever is the current release tag, follow @gtg he is usually the one announcing the release notes, alternatively you can look on https://gitlab.syncad.com/hive/hive/-/tags and look at the most recent tags. ``` git clone git@gitlab.syncad.com:hive/hive.git cd hive git checkout v1.25.0rc2 git submodule update --init --recursive mkdir build cd build cmake -DENABLE_COVERAGE_TESTING=ON -DBUILD_HIVE_TESTNET=ON -DLOW_MEMORY_NODE=ON .. make -j$(nproc) hived cli_wallet ``` Compiling may take a while if you are on low end hardware it could take up to a few hours if not more, I forgot to measure it when I did it myself so 🤷‍. On high end hardware you can expect 3-5 minutes. ## Run the node I am using the directory structure and binary names that you get when you compile hive so straight copy paste may not work if you use binaries but everything else works the same you just have to use the right paths and right binary names. Run the node a few seconds and then exit hived like so `./programs/hive/hived -d testnet/` this will create a testnet directory with the default config file. open the config.ini file nano testnet/config.ini replace the config.ini with this one: ``` # tells the node which seeds he should listen to to get blocks p2p-seed-node = testnet.openhive.network:2001 # Local http endpoint for webserver requests. webserver-http-endpoint = 127.0.0.1:8090 # Local websocket endpoint for webserver requests. webserver-ws-endpoint =127.0.0.1:8091 log-appender = {&quot;appender&quot;:&quot;stderr&quot;,&quot;stream&quot;:&quot;std_error&quot;} log-logger = {&quot;name&quot;:&quot;default&quot;,&quot;level&quot;:&quot;info&quot;,&quot;appender&quot;:&quot;stderr&quot;} backtrace = yes plugin = webserver p2p json_rpc plugin = database_api condenser_api plugin = witness plugin = rc plugin = market_history plugin = market_history_api plugin = account_history_rocksdb plugin = account_history_api plugin = transaction_status plugin = transaction_status_api plugin = account_by_key plugin = account_by_key_api plugin = reputation plugin = reputation_api plugin = block_api network_broadcast_api rc_api account-history-rocksdb-path = &quot;blockchain/account-history-rocksdb-storage&quot; shared-file-size = 10G shared-file-full-threshold = 9500 shared-file-scale-rate = 1000 flush-state-interval = 0 market-history-bucket-size = [15,60,300,3600,86400] market-history-buckets-per-size = 5760 p2p-endpoint = 0.0.0.0:2001 transaction-status-block-depth = 64000 transaction-status-track-after-block = 46000000 webserver-thread-pool-size = 256 ``` Then run hived again, this time we want it to stay up so setup a way for it to persist even if you log out, like screen. I personally use pm2 for the testnets just because it's convenient. This is not optimal for a production setup but it's fine for those testnets. (see https://pm2.keymetrics.io/docs/usage/quick-start/) for the testnet I run hived like this with pm2: pm2 start --name testnet ./programs/hived/hived -- -d testnet It will take some time (a few minutes to a few hours) before you get your blocks. You can look at https://test.ausbit.dev/ to see what is the head block to get a sense of how far you are. When you are synched with the testnet and you should see messages like this: ``` 3|hf23 | 1526617ms p2p_plugin.cpp:212 handle_block ] Got 0 transactions on block 4415 by howo -- Block Time Offset: -382 ms 3|hf23 | 1532618ms p2p_plugin.cpp:212 handle_block ] Got 0 transactions on block 4416 by howo -- Block Time Offset: -381 ms 3|hf23 | 1538612ms p2p_plugin.cpp:212 handle_block ] Got 0 transactions on block 4417 by howo -- Block Time Offset: -387 ms 3|hf23 | 1544620ms p2p_plugin.cpp:212 handle_block ] Got 0 transactions on block 4418 by howo -- Block Time Offset: -379 ms 3|hf23 | 1550615ms p2p_plugin.cpp:212 handle_block ] Got 0 transactions on block 4419 by howo -- Block Time Offset: -384 ms ``` now your node is running ! So that's great, but it's not producing. So you need to setup your witness. ## Setting up your witness ### cli_wallet Open up the cli wallet: `./programs/cli_wallet/cli_wallet --server-rpc-endpoint=&quot;ws://127.0.0.1:8091&quot;` it'll ask for a password, so execute: `set_password yourpassword` then unlock it using: `unlock yourpassword` Now execute those commands: import your active key to do various actions, note that the keys on the testnet are the same than the keys on main net (they have been ported) so you can just use your account `import_key 5JNHfZYKGaomSFvd4NUdQ9qMcEAC43kujbfjueTHpVapX1Kzq2n` then generate keys for your witness: `suggest_brain_key` it'll be something like this: ``` { &quot;brain_priv_key&quot;: &quot;STRANGE ROADWAY TWASOME MOLER CENTIMO THOFT COMPORT VARIANT OUTSWIM EGGER SCRIBE GLAVER CROWDED DOLLIER AWNED DOPPER&quot;, &quot;wif_priv_key&quot;: &quot;5KJUxvUSdAV6H7LiutRJMVwEVptmoaDhM73Cg1itzYjG8zs7tWF&quot;, &quot;pub_key&quot;: &quot;TST71oeHrdBZEKDG1GaC75VKDaRGcXk2R8htD8J6wkP6p1zDRPzFZ&quot; } ``` Save these for later ! Then set yourself as a witness (notice how I used the pub_key generated above) ``` update_witness &quot;yourusername&quot; &quot;http://example.org&quot; &quot;TST71oeHrdBZEKDG1GaC75VKDaRGcXk2R8htD8J6wkP6p1zDRPzFZ&quot; {&quot;account_creation_fee&quot;:&quot;0.000 TESTS&quot;,&quot;maximum_block_size&quot;:65536,&quot;hbd_interest_rate&quot;:300} true ``` then request some test hive via https://hivetestnetfaucet.org/ and power it up, this is important to do even if you already have hp. Because of the power up delay introduced in hf24, your initial HP don't have any effect: `transfer_to_vesting &quot;yourusername&quot; &quot;yourusername&quot; &quot;10.000 TESTS&quot; true` and finally vote for yourself so you get scheduled for blocks. If you don't have stake feel free to request some via https://hivetestnetfaucet.org/ `vote_for_witness &quot;yourusername&quot; &quot;yourusername&quot; true true` and we are done with cli_wallet ! but not with the setup. ### final config Open the config one final time to set yourself as a witness by adding these fields: I use the private key that you generated with the cli above not the one that I put here. I put one here to show that you don't put quotes around the private key. ``` witness = &quot;yourusername&quot; # WIF PRIVATE KEY to be used by one or more witnesses or miners private-key = 5KJUxvUSdAV6H7LiutRJMVwEVptmoaDhM73Cg1itzYjG8zs7tWF ``` restart the node and you should be producing blocks, the logs should look something like this: ``` 3|hf23 | 2687621ms p2p_plugin.cpp:212 handle_block ] Got 0 transactions on block 4595 by howo -- Block Time Offset: -378 ms 3|hf23 | 2690613ms witness_plugin.cpp:343 block_production_loo ] Generated block #4596 with timestamp 2020-08-25T19:44:51 at time 2020-08-25T19:44:51 ``` ## Seed node Go the extra mile and setup a seed node ! this is quite important as the testnet have very few seed nodes, so it helps a lot if you make one. Your node is already configured to be a seed node so you just need to open the corresponding port: (note that this command may vary depending on the firewall setup of your computer) ``` sudo iptables -A INPUT -m state --state NEW -m tcp -p tcp --dport 2001 -j ACCEPT ``` And now you can communicate the new seed node to everyone. Please post your ip as a comment of that post so that I can update this link to use your seed as well :). Thank you for reading. If you liked this writeup, please consider voting for @steempress it's the witness that I co-manage with @fredrikaa: ![](https://i.imgur.com/oPJ63jA.png) You can vote for our witness directly using Hivesigner here. See: How to run a witness node on the hf25 testnet by @howo</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://files.peakd.com/file/peakd-hive/howo/23xe7eZsnrPcykgbjNqyAudjuQ8nfGfqRzVCpTShns5vRs2J9gcknbewso9v32YFhw54x.png" /><media:content medium="image" url="https://files.peakd.com/file/peakd-hive/howo/23xe7eZsnrPcykgbjNqyAudjuQ8nfGfqRzVCpTShns5vRs2J9gcknbewso9v32YFhw54x.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>
+&lt;/p&gt;</content><author><name>peakd</name></author><category term="news" /><category term="projects" /><category term="testnet" /><summary type="html">A new release of [peakd.com](https://peakd.com) is now available. Keep reading to discover the new features and check the full list of improvements ;) The new release is now live at https://peakd.com ![release_cover_2021_06_01.jpg](https://files.peakd.com/file/peakd-hive/peakd/23tS2bqoaD4CxPADDAxsarFCkYRHHhFubPR4eXcxdGagL2Ak7d3Lr13d4YCePLPTsnAaF.jpg) #### 1. Default/Required Beneficiary account for Communities A community can now define a 'default' or 'required' beneficiary for posts published in that community. This option is not supported at the chain level (or Hivemind), so keep this in mind if you want to enable it. Probvably the only community using this feature at the moment is [PhotoGames](https://peakd.com/c/hive-146701). When this option is enabled a label will be shown on the community rules: ![image.png](https://files.peakd.com/file/peakd-hive/peakd/23ydVgLHPXNthY6xzWT8boYRB5Ka3XoP9YSx69hMpB1e7EXRd2TnQdcA7T6nMq7hKbrFy.png) ###### Introduce the '@peakd.bot' account to automatically handle posts not using the required beneficiary account If you want to automatically mute posts not respecting the required beneficiary setting you can add the @peakd.bot account as a community moderators and it will take care of it. ![image.png](https://files.peakd.com/file/peakd-hive/peakd/23uRKjMY5AFdXPSGPeVE7SY9A3PcdrSL6YvgAjBv2aQuiGAKNMGcLBLw1bGFxdrBK34uD.png) *This is still and experimental feature, so feel free to report any issues you notice* ;) #### 2. Other Communities Improvements ###### Support public Templates in communities Communities can now define public Templates (owned by the community `hive-000000` owner account) that are available to their users when they want to write a new post: ![image.png](https://files.peakd.com/file/peakd-hive/peakd/23wgaTg2AHFAUWyBNZzvWmbBdvwsv7gusdEMhFS8APfpAYPpRHMqZk6nUDLxXSF2yx45f.png) Only templates marked as 'PUBLIC' will be available in the dropdown. You can mark a template as public on this page: https://peakd.com/me/templates. ###### Allow communities to have a Curated Collections (CCC) page Similar to what is already available for user pages it's now possible to add a collection page to communities: ![image.png](https://files.peakd.com/file/peakd-hive/peakd/23uR9aGiUjafHdkUwL6rHt8XFUvvjdT14qvDuUyxaqc7PkNSRJ44hfd1gEBbwR7QX4Rf4.png) ###### Allow up to 20 preferred topics for communities You can now set up to 20 preferred topics for a community ![image.png](https://files.peakd.com/file/peakd-hive/peakd/EoyVJhZbq39MxsMsupUaL1GCFwfmmpGCpHBTe6dLYKyrrYGJJJivWm9smzwTBJMd9h8.png) #### 3. Testnet Support This is not completely new as we have supported Testnet in the past, but we did some improvements and better support for multiple login methods. This is intended for advanced users, but if you want you can have a look here: https://testnet.peakd.com **Important:** If you login using Hive Keychain remind to change the RPC node used to cast transactions otherwise you will cast them on the actual chain. #### 4. Notification counter in browser tab It's now easier to see if there are new notifications directly on the browser tab/page title: ![image.png](https://files.peakd.com/file/peakd-hive/peakd/EoCbSnqkEUmVRc7QtnbruGou1A1aaLYqC9qZ5D1hGW2H2451b5VUVtfd8NAZZhV3WPS.png) #### 5. Image viewer for comments Image viewer had been available for images in a post for quite some time, but now you can enjoy the same for images in the comment section. Just click on the image to see it larger ;) #### 6. Some minor improvements and bug fixes As always some minor improvements, updates and fixes across the website. You can check the full release notes here: **https://peakd.com/about/changelog**. ``` # Improvements and Fixes ------------------------------ [update] Better instructions for creating a curated collection [update] Double check community required beneficiary before publishing a post [update] Improve image hashing function to better handle edge cases [update] Include power down amount in MAX available amount in delegation popup [update] Stop embedded videos autoplay when opening the post in full view [update] Exclude downvoted/muted posts from Trail view [update] Indent sub-headers in post outline [update] Add link to edit default beneficiaries in Settings [update] Improve support for CCC associated templates [update] Allow up to 20 preferred topics for communities [update] Better handle community curator account (if set) [fix] Improve check on max percentage set for beneficiaries [fix] Improve HW wallet layout on smaller display [fix] 3speak video embeds in post [fix] Image file extension missing after upload for some file [fix] Set the community name in browser tab title [fix] Login with PeakLock on testnet.peakd.com is now allowed ``` --- ## Support the @peakd project Now is probably a nice time to remind you of the ways you can support the development of @peakd. ![Selection_298.png](https://files.peakd.com/file/peakd-hive/peakd/w36DQpO7-Selection_298.png) We have a proposal on the Decentralized Hive Fund. You can review the proposal [here](/proposals/52). If you agree to the proposal and you think the points mentioned add value to the Hive Blockchain consider supporting it using the above links or directly with **[this link](https://hivesigner.com/sign/update-proposal-votes?proposal_ids=[52]&amp;amp;approve=true)**. --- We also run a witness server to help produce the blocks for the Hive Blockchain. You can vote for our witness so we are in a position to process more of them. Vote on the witness page: https://peakd.com/witnesses - Using Keychain: You just have to click and approve the transaction - Using HiveSigner: You'll need access to confirm the transaction with your Active Key at least --- ###### *The PeakD Team* _About us: https://peakd.com/about_ _Join us on Discord: https://discord.gg/Fy3bca5_ See: Community Improvements, Testnet support and 15 More Updates by @peakd</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://files.peakd.com/file/peakd-hive/peakd/23tS2bqoaD4CxPADDAxsarFCkYRHHhFubPR4eXcxdGagL2Ak7d3Lr13d4YCePLPTsnAaF.jpg" /><media:content medium="image" url="https://files.peakd.com/file/peakd-hive/peakd/23tS2bqoaD4CxPADDAxsarFCkYRHHhFubPR4eXcxdGagL2Ak7d3Lr13d4YCePLPTsnAaF.jpg" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>
