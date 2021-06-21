@@ -1,4 +1,283 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="https://hivedocs.info/feed.xml" rel="self" type="application/atom+xml" /><link href="https://hivedocs.info/" rel="alternate" type="text/html" /><updated>2021-06-19T11:46:51-07:00</updated><id>https://hivedocs.info/feed.xml</id><title type="html">Hive Chain Documentation</title><subtitle>Your resource for various levels of Hive Documentation.</subtitle><author><name>site curated by: @inertia</name></author><entry><title type="html">Hive HardFork 25 Jump Starter Kit</title><link href="https://hivedocs.info/howto/devops/2021/06/18/hive-hardfork-25-jump-starter-kit.html" rel="alternate" type="text/html" title="Hive HardFork 25 Jump Starter Kit" /><published>2021-06-18T12:31:45-07:00</published><updated>2021-06-18T12:31:45-07:00</updated><id>https://hivedocs.info/howto/devops/2021/06/18/hive-hardfork-25-jump-starter-kit</id><content type="html" xml:base="https://hivedocs.info/howto/devops/2021/06/18/hive-hardfork-25-jump-starter-kit.html">&lt;div id=&quot;content-gtg-hive-hardfork-25-jump-starter-kit&quot;&gt;Intended for the Hive API node operators, witnesses, and developers.
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="https://hivedocs.info/feed.xml" rel="self" type="application/atom+xml" /><link href="https://hivedocs.info/" rel="alternate" type="text/html" /><updated>2021-06-21T07:33:01-07:00</updated><id>https://hivedocs.info/feed.xml</id><title type="html">Hive Chain Documentation</title><subtitle>Your resource for various levels of Hive Documentation.</subtitle><author><name>site curated by: @inertia</name></author><entry><title type="html">16th update of 2021 on BlockTrades work on Hive software</title><link href="https://hivedocs.info/news/core/development/2021/06/20/16th-update-of-2021-on-blocktrades-work-on-hive-software.html" rel="alternate" type="text/html" title="16th update of 2021 on BlockTrades work on Hive software" /><published>2021-06-20T18:24:24-07:00</published><updated>2021-06-20T18:24:24-07:00</updated><id>https://hivedocs.info/news/core/development/2021/06/20/16th-update-of-2021-on-blocktrades-work-on-hive-software</id><content type="html" xml:base="https://hivedocs.info/news/core/development/2021/06/20/16th-update-of-2021-on-blocktrades-work-on-hive-software.html">&lt;div id=&quot;content-blocktrades-16th-update-of-2021-on-blocktrades-work-on-hive-software&quot;&gt;![blocktrades update.png](https://images.hive.blog/DQmSihw8Kz4U7TuCQa98DDdCzqbqPFRumuVWAbareiYZW1Z/blocktrades%20update.png)
+
+Below is a list of Hive-related programming issues worked on by BlockTrades team during the last week or so:
+
+# Hived work (blockchain node software)
+
+## Official release of Equilibrium (hived code for hardfork 25)
+
+Last week we merged all develop branch changes since the last hardfork into the master branch and tagged an official release of hived (v1.25.0). The “code name” for this release is “Equilibrium”. 
+
+ For the official press release associated with the new release and details about associated functional changes, see https://hive.blog/hive/@hiveio/hive-hardfork-25-is-on-the-way-hive-to-reach-equilibrium-on-june-30th-2021
+
+The [release notes for Equilibrium](https://gitlab.syncad.com/hive/hive/-/tags/v1.25.0) represent a concise summary of virtually all changes that were made as part of this hardfork, along with links to review the code associated with each individual change. 
+
+Alternatively, you can inspect [a diff with the totality of changes for this hardfork](https://gitlab.syncad.com/hive/hive/-/merge_requests/262/diffs).
+
+
+## Other hived work last week
+
+We continued performance testing of the new “recurrent transfers” feature written by @howo. As a side note, based on some discussion among various devs, I believe Hive frontends will use the term “recurring payments” to refer to the “recurrent transfers” feature, since that is the name most commonly used in the business world for this type of functionality.
+
+During our still incomplete testing, we found some areas where the new “test tools” framework that is being used to create and test massive numbers of recurrent transfers could be improved to make it faster and more stable:
+https://gitlab.syncad.com/hive/hive/-/merge_requests/257
+https://gitlab.syncad.com/hive/hive/-/merge_requests/263
+
+Here’s a short list of other work done on hived:
+
+* Fixed two unit tests that we previously had to disable and re-enabled them: https://gitlab.syncad.com/hive/hive/-/merge_requests/259
+* Added a new command-line option –exit-before-sync for configuring hived to a predictable state for running a replay or creating a statefile dump, then ending the hived process. This is useful for setting up test scenarios. https://gitlab.syncad.com/hive/hive/-/merge_requests/232
+* Added new regression tests to test recent changes to last irreversible block handling (a change that was made to fix a longstanding bug with duplicate transactions in the account history plugin): https://gitlab.syncad.com/hive/hive/-/merge_requests/252
+* Fixed an intermittent crash on application shutdown: https://gitlab.syncad.com/hive/hive/-/merge_requests/253
+* Documentation cleanup: https://gitlab.syncad.com/hive/hive/-/merge_requests/258
+*   Implemented option for automatic spawning of hived replays within our continuous integration system  (done off main servers to avoid breaking or interrupting primary development CI system).
+
+# Hivemind (2nd layer applications + social media middleware)
+
+* Added tests for recent changes in behavior of setLastRead operation: https://gitlab.syncad.com/hive/hivemind/-/merge_requests/511
+* Explicit specification of package versions to be used when building hivemind to avoid potential headaches when package dependencies are updated: https://gitlab.syncad.com/hive/hivemind/-/merge_requests/498
+* Update CodeQL analysis configuration: https://gitlab.syncad.com/hive/hivemind/-/merge_requests/509
+* We’re currently investigating ways to improve performance of the `update_rshares` function immediately after massive sync of a hivemind instance.
+*  Fixed &quot;broken reputation&quot; problem related to ordering issue because of multiple transactions used per block. This was known to impact the calculation of reputation for at least two Hive users.
+*   list_subscribers bug being worked on (tests being created first).
+
+# Hive Application Framework
+
+The current implementation of the Hive Application Framework requires applications to mark their constraints as DEFERRABLE to enable HAF apps to use the auto-rewind feature when a fork switch occurs. 
+
+While this may be an acceptable limitation on the design of HAF-based apps, we decided to create an alternative implementation of HAF without that limitation and measure the performance of the two alternative designs. The ongoing discussion of this topic can be found in the latest comments attached to the still open HAF merge request: https://gitlab.syncad.com/hive/psql_tools/-/merge_requests/1
+
+# Upcoming work in the next week
+
+* Continue performance testing of recurring payments functionality in hived.
+* Complete psql_serializer updates and begin testing hived+psql_serializer with hivemind. This is a prerequisite for testing the entire HAF code base.
+* More work and testing of the Hive Application Framework (HAF), including more documentation and example HAF-based applications.
+* Finish up fix for list_subscribers.
+* Work with witnesses to collect performance statistics for the Equilibrium release on different hardware configurations. 
+
+On a related note,  @drakos noted a significant performance improvement in the speed of creating statefile snapshots and @gtg has confirmed the same findings on his system. Gandalf reports v1.24.8 took 4866 seconds whereas v1.25.0 was able to complete this task in only 3134 seconds.&lt;/div&gt;
+&lt;script crossorigin=&quot;anonymous&quot; integrity=&quot;sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=&quot; src=&quot;https://code.jquery.com/jquery-3.5.1.slim.min.js&quot;&gt;&lt;/script&gt;
+
+&lt;script src=&quot;https://unpkg.com/steem-content-renderer&quot;&gt;&lt;/script&gt;
+
+&lt;!-- &lt;script src=&quot;https://cdn.jsdelivr.net/npm/hive-content-renderer/dist/hive-content-renderer.min.js&quot;&gt;&lt;/script&gt; --&gt;
+&lt;script&gt;
+  $(document).ready(function() {
+    try {
+      const renderer = new SteemContentRenderer.DefaultRenderer({
+      // const renderer = new HiveContentRenderer({
+        baseUrl: &quot;https://hive.blog/&quot;,
+        breaks: true,
+        skipSanitization: false,
+        allowInsecureScriptTags: false,
+        addNofollowToLinks: true,
+        doNotShowImages: false,
+        ipfsPrefix: &quot;&quot;,
+        assetsWidth: 640,
+        assetsHeight: 480,
+        imageProxyFn: (url) =&gt; url,
+        usertagUrlFn: (account) =&gt; &quot;/@blocktrades&quot;,
+        hashtagUrlFn: (hashtag) =&gt; &quot;/16th-update-of-2021-on-blocktrades-work-on-hive-software&quot;,
+        isLinkSafeFn: (url) =&gt; true,
+      });
+      
+      const inputElem = $('#content-blocktrades-16th-update-of-2021-on-blocktrades-work-on-hive-software').html();
+      const outputElem = $('#content-blocktrades-16th-update-of-2021-on-blocktrades-work-on-hive-software');
+      const output = renderer.render(inputElem);
+      
+      outputElem.html(output);
+    } catch(e) {
+      console.log(e);
+    }
+  });
+&lt;/script&gt;
+
+&lt;style&gt;
+  #content-blocktrades-16th-update-of-2021-on-blocktrades-work-on-hive-software {
+    padding: 0 3rem;
+    color: #444444;
+    font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.8;
+    text-shadow: 0 1px 0 #ffffff;
+    padding: 0.5rem;
+  }
+  #content-blocktrades-16th-update-of-2021-on-blocktrades-work-on-hive-software code {
+    background: white;
+  }
+  #content-blocktrades-16th-update-of-2021-on-blocktrades-work-on-hive-software a {
+    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
+  }
+  #content-blocktrades-16th-update-of-2021-on-blocktrades-work-on-hive-software a:hover {
+    border-bottom: 0;
+  }
+  #content-blocktrades-16th-update-of-2021-on-blocktrades-work-on-hive-software h1 {
+    font-size: 2.2em;
+  }
+  #content-blocktrades-16th-update-of-2021-on-blocktrades-work-on-hive-software h2, h3, h4, h5 {
+    margin-bottom: 0;
+  }
+  #content-blocktrades-16th-update-of-2021-on-blocktrades-work-on-hive-software header small {
+    color: #999;
+    font-size: 50%;
+  }
+  #content-blocktrades-16th-update-of-2021-on-blocktrades-work-on-hive-software img {
+    max-width: 100%;
+  }
+&lt;/style&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;
+  See: &lt;a href=&quot;https://hive.blog/hive-139531/@blocktrades/16th-update-of-2021-on-blocktrades-work-on-hive-software&quot;&gt;16th update of 2021 on BlockTrades work on Hive software&lt;/a&gt;
+  by
+  &lt;a href=&quot;https://hive.blog/@blocktrades&quot;&gt;@blocktrades&lt;/a&gt;
+&lt;/p&gt;</content><author><name>blocktrades</name></author><category term="news" /><category term="core" /><category term="development" /><summary type="html">![blocktrades update.png](https://images.hive.blog/DQmSihw8Kz4U7TuCQa98DDdCzqbqPFRumuVWAbareiYZW1Z/blocktrades%20update.png) Below is a list of Hive-related programming issues worked on by BlockTrades team during the last week or so: # Hived work (blockchain node software) ## Official release of Equilibrium (hived code for hardfork 25) Last week we merged all develop branch changes since the last hardfork into the master branch and tagged an official release of hived (v1.25.0). The “code name” for this release is “Equilibrium”. For the official press release associated with the new release and details about associated functional changes, see https://hive.blog/hive/@hiveio/hive-hardfork-25-is-on-the-way-hive-to-reach-equilibrium-on-june-30th-2021 The [release notes for Equilibrium](https://gitlab.syncad.com/hive/hive/-/tags/v1.25.0) represent a concise summary of virtually all changes that were made as part of this hardfork, along with links to review the code associated with each individual change. Alternatively, you can inspect [a diff with the totality of changes for this hardfork](https://gitlab.syncad.com/hive/hive/-/merge_requests/262/diffs). ## Other hived work last week We continued performance testing of the new “recurrent transfers” feature written by @howo. As a side note, based on some discussion among various devs, I believe Hive frontends will use the term “recurring payments” to refer to the “recurrent transfers” feature, since that is the name most commonly used in the business world for this type of functionality. During our still incomplete testing, we found some areas where the new “test tools” framework that is being used to create and test massive numbers of recurrent transfers could be improved to make it faster and more stable: https://gitlab.syncad.com/hive/hive/-/merge_requests/257 https://gitlab.syncad.com/hive/hive/-/merge_requests/263 Here’s a short list of other work done on hived: * Fixed two unit tests that we previously had to disable and re-enabled them: https://gitlab.syncad.com/hive/hive/-/merge_requests/259 * Added a new command-line option –exit-before-sync for configuring hived to a predictable state for running a replay or creating a statefile dump, then ending the hived process. This is useful for setting up test scenarios. https://gitlab.syncad.com/hive/hive/-/merge_requests/232 * Added new regression tests to test recent changes to last irreversible block handling (a change that was made to fix a longstanding bug with duplicate transactions in the account history plugin): https://gitlab.syncad.com/hive/hive/-/merge_requests/252 * Fixed an intermittent crash on application shutdown: https://gitlab.syncad.com/hive/hive/-/merge_requests/253 * Documentation cleanup: https://gitlab.syncad.com/hive/hive/-/merge_requests/258 * Implemented option for automatic spawning of hived replays within our continuous integration system (done off main servers to avoid breaking or interrupting primary development CI system). # Hivemind (2nd layer applications + social media middleware) * Added tests for recent changes in behavior of setLastRead operation: https://gitlab.syncad.com/hive/hivemind/-/merge_requests/511 * Explicit specification of package versions to be used when building hivemind to avoid potential headaches when package dependencies are updated: https://gitlab.syncad.com/hive/hivemind/-/merge_requests/498 * Update CodeQL analysis configuration: https://gitlab.syncad.com/hive/hivemind/-/merge_requests/509 * We’re currently investigating ways to improve performance of the `update_rshares` function immediately after massive sync of a hivemind instance. * Fixed &quot;broken reputation&quot; problem related to ordering issue because of multiple transactions used per block. This was known to impact the calculation of reputation for at least two Hive users. * list_subscribers bug being worked on (tests being created first). # Hive Application Framework The current implementation of the Hive Application Framework requires applications to mark their constraints as DEFERRABLE to enable HAF apps to use the auto-rewind feature when a fork switch occurs. While this may be an acceptable limitation on the design of HAF-based apps, we decided to create an alternative implementation of HAF without that limitation and measure the performance of the two alternative designs. The ongoing discussion of this topic can be found in the latest comments attached to the still open HAF merge request: https://gitlab.syncad.com/hive/psql_tools/-/merge_requests/1 # Upcoming work in the next week * Continue performance testing of recurring payments functionality in hived. * Complete psql_serializer updates and begin testing hived+psql_serializer with hivemind. This is a prerequisite for testing the entire HAF code base. * More work and testing of the Hive Application Framework (HAF), including more documentation and example HAF-based applications. * Finish up fix for list_subscribers. * Work with witnesses to collect performance statistics for the Equilibrium release on different hardware configurations. On a related note, @drakos noted a significant performance improvement in the speed of creating statefile snapshots and @gtg has confirmed the same findings on his system. Gandalf reports v1.24.8 took 4866 seconds whereas v1.25.0 was able to complete this task in only 3134 seconds. See: 16th update of 2021 on BlockTrades work on Hive software by @blocktrades</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://images.hive.blog/DQmSihw8Kz4U7TuCQa98DDdCzqbqPFRumuVWAbareiYZW1Z/blocktrades%20update.png" /><media:content medium="image" url="https://images.hive.blog/DQmSihw8Kz4U7TuCQa98DDdCzqbqPFRumuVWAbareiYZW1Z/blocktrades%20update.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Hive Hardfork 25 is on the Way: Hive to reach Equilibrium on June 30th, 2021</title><link href="https://hivedocs.info/news/core/development/2021/06/19/hive-hardfork-25-is-on-the-way-hive-to-reach-equilibrium-on-june-30th-2021.html" rel="alternate" type="text/html" title="Hive Hardfork 25 is on the Way: Hive to reach Equilibrium on June 30th, 2021" /><published>2021-06-19T17:10:27-07:00</published><updated>2021-06-19T17:10:27-07:00</updated><id>https://hivedocs.info/news/core/development/2021/06/19/hive-hardfork-25-is-on-the-way-hive-to-reach-equilibrium-on-june-30th-2021</id><content type="html" xml:base="https://hivedocs.info/news/core/development/2021/06/19/hive-hardfork-25-is-on-the-way-hive-to-reach-equilibrium-on-june-30th-2021.html">&lt;div id=&quot;content-hiveio-hive-hardfork-25-is-on-the-way-hive-to-reach-equilibrium-on-june-30th-2021&quot;&gt;![image.png](https://images.hive.blog/DQmfByqFD7d9ecpcYMhy7ucwhQLKKrrLjcp9vb378wSJwCP/image.png)
+
+Earlier this week we notified cryptocurrency exchanges that the upcoming hardfork to the Hive blockchain network, dubbed *Equilibrium*, is planned for the end of June. 
+
+Today's official date announcement also has a pile of helpful information including a summary of changes coming with the new hardfork, links to the software, and details for those of you who may want to get involved in testing the new software!
+
+## TL:DR the Code; A Quick Overview of the Upcoming Changes
+
+*Equilibrium* is a state of balance between multiple forces. In the case of the Hive blockchain network, the guiding mission from day one has been to create an ecosystem that allows anyone to become a part of our decentralized network, contribute to governance, and to own their data, connections, tokens and actions in a world where the current tech and social powers have an iron grip. 
+
+This hardfork continues to empower people to use Hive the way they want and takes another few large steps forward in creating an ecosystem with better balanced rules and tools for building whatever we can dream up. 
+
+Reaching equilibrium is finding a state of balance and readiness. It is the essential preparation for big moves, exciting changes, and sustained growth.
+
+### Here's a quick summary of HF25:
+
+Below is a list of the consensus changes that are being made as part of this hardfork:
+
+- **changes to curation window and curation rewards calculation**
+    - The most important aspect of this change is that the 5 minute reverse auction is going away, so there is no punishment for voting early. This will finally put manual voters on an equal footing with automated voters when it comes to competing for curation rewards. This change, more than any other, was the driving reason for the naming of this hardfork.
+    - In addition, anyone voting in the first 24 hours will be rewarded based solely on their Hive Power and vote weight, and the reward curve applied from 24 hours to the end of the voting window will be much softer than currently, eliminating any need to feel rushed when voting in order to maximize curation rewards.
+- **new operation and API to convert HIVE to HBD**
+    - HBD (Hive-backed Dollars) is intended to be a feeless, trustless, USD-pegged stablecoin, a feat that has yet to be achieved in the cryptocurrency world. This new operation will stabilize the price pegging of HBD, allowing it to achieve its full potential as a frictionless medium of exchange for digital commerce.
+    - While you've always been able to convert your HBD to HIVE, this new operation will allow you to convert in the opposite direction (HIVE -&amp;gt; HBD). 
+    - Previously, HBD was only effectively price-pegged on the low side of USD pricing. This new conversion will create an equilibrium point where HBD will be pegged on both the low side AND the high side.
+    
+- **interest only paid on HBD held in your savings account**
+    - You might have missed that you're earning interest on your Hive-backed Dollars, so this could be a neat surprise: simply move HBD into your savings account (3 day withdrawal waiting period) to earn interest on it just for holding! No-risk DeFi, made easy.
+- **new operation and API to enable recurring payments**
+    - These are periodic transfers which you schedule to happen automatically. They are intended for managing subscription payments, etc.
+- **disallow voting on expired proposals**
+- **witness and proposal votes by an account expire after one year if the account stops actively making governance-related votes**
+    - This change was made to ensure that old votes from dormant accounts don't unduly impact governance decisions for Hive. It will enable Hive to find a new balance between incumbent block producers and new competitors for those positions.
+- **proposal creators can change the end date of their Decentralized Hive Fund (DHF) proposals**
+    - This allows a proposal creator to reduce their funding request (by decreasing the number of payments they receive) without having to create a new proposal and start from zero in respect to community support for the proposal.
+- **re-allow vote operation for already paid posts**
+    - Voting outside the rewards window should still be something you can do, to show appreciation for the content you like and to add to your curated feed. This is a quality of life change that does *not* impact anything to do with allocation of rewards. 
+
+There are also new command-line options, a pile of bug fixes and performance optimizations, a new API call, and many other improvements to the code and documentation that the Hive blockchain relies on. Full details are available in the [release notes](https://gitlab.syncad.com/hive/hive/-/releases#v1.25.0) This is pretty critical work towards making it easier to understand, easier to run, and to create the best possible ecosystem for someone to hop in and start building with Hive.
+
+If you're not technical and don't want to do some hands-on testing, you're all caught up! You likely won't notice anything immediately when *Equilibrium* goes live. 
+
+However, you may want to consider changing the way you vote for posts after the hardfork, especially if you've resorted to auto-voting to maximize your curation rewards. Now you'll have more time and flexibility to find the content you love in a relaxed way, and more time to engage with your favorite authors and communities!
+
+### In the next 12 days...
+
+There is still time before the hardfork takes place. If you want to contribute to testing or if you are a dApp creator, project owner, or someone who just wants to start getting more involved with the ecosystem, here are some handy links so you can jump in before *Equilibrium* goes live.
+
+## Some Technical ~~House~~Beekeeping
+
+**Here is the link to the final official release version of Hardfork 25:**
+https://gitlab.syncad.com/hive/hive/-/tags/v1.25.0
+
+...and here are some helpful posts that outline joining the testnet, including how to create a witness node on the testnet, if you want to dive into the decentralized tech that powers Hive.
+
+**A guide to starting up a testnet witness:**
+https://peakd.com/guide/@howo/how-to-run-a-witness-node-on-the-hf25-testnet
+
+**And more information on the public testnet itself:**
+https://peakd.com/@gtg/hf25-public-testnet-reloaded-rc2
+
+**The testnet faucet page:**
+https://hivetestnetfaucet.org/
+
+All dApps that rely on the functions outlined above should have started testing or be starting to test as soon as possible. 
+
+*Equilibrium* is the second community-driven hardfork of the Hive blockchain and we are very excited for it! It marks a key milestone for Hive development and for the Hive ecosystem. 
+
+### Keep an eye out for updates here and on our various Hive social media channels! 🐝&lt;/div&gt;
+&lt;script crossorigin=&quot;anonymous&quot; integrity=&quot;sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=&quot; src=&quot;https://code.jquery.com/jquery-3.5.1.slim.min.js&quot;&gt;&lt;/script&gt;
+
+&lt;script src=&quot;https://unpkg.com/steem-content-renderer&quot;&gt;&lt;/script&gt;
+
+&lt;!-- &lt;script src=&quot;https://cdn.jsdelivr.net/npm/hive-content-renderer/dist/hive-content-renderer.min.js&quot;&gt;&lt;/script&gt; --&gt;
+&lt;script&gt;
+  $(document).ready(function() {
+    try {
+      const renderer = new SteemContentRenderer.DefaultRenderer({
+      // const renderer = new HiveContentRenderer({
+        baseUrl: &quot;https://hive.blog/&quot;,
+        breaks: true,
+        skipSanitization: false,
+        allowInsecureScriptTags: false,
+        addNofollowToLinks: true,
+        doNotShowImages: false,
+        ipfsPrefix: &quot;&quot;,
+        assetsWidth: 640,
+        assetsHeight: 480,
+        imageProxyFn: (url) =&gt; url,
+        usertagUrlFn: (account) =&gt; &quot;/@hiveio&quot;,
+        hashtagUrlFn: (hashtag) =&gt; &quot;/hive-hardfork-25-is-on-the-way-hive-to-reach-equilibrium-on-june-30th-2021&quot;,
+        isLinkSafeFn: (url) =&gt; true,
+      });
+      
+      const inputElem = $('#content-hiveio-hive-hardfork-25-is-on-the-way-hive-to-reach-equilibrium-on-june-30th-2021').html();
+      const outputElem = $('#content-hiveio-hive-hardfork-25-is-on-the-way-hive-to-reach-equilibrium-on-june-30th-2021');
+      const output = renderer.render(inputElem);
+      
+      outputElem.html(output);
+    } catch(e) {
+      console.log(e);
+    }
+  });
+&lt;/script&gt;
+
+&lt;style&gt;
+  #content-hiveio-hive-hardfork-25-is-on-the-way-hive-to-reach-equilibrium-on-june-30th-2021 {
+    padding: 0 3rem;
+    color: #444444;
+    font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.8;
+    text-shadow: 0 1px 0 #ffffff;
+    padding: 0.5rem;
+  }
+  #content-hiveio-hive-hardfork-25-is-on-the-way-hive-to-reach-equilibrium-on-june-30th-2021 code {
+    background: white;
+  }
+  #content-hiveio-hive-hardfork-25-is-on-the-way-hive-to-reach-equilibrium-on-june-30th-2021 a {
+    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
+  }
+  #content-hiveio-hive-hardfork-25-is-on-the-way-hive-to-reach-equilibrium-on-june-30th-2021 a:hover {
+    border-bottom: 0;
+  }
+  #content-hiveio-hive-hardfork-25-is-on-the-way-hive-to-reach-equilibrium-on-june-30th-2021 h1 {
+    font-size: 2.2em;
+  }
+  #content-hiveio-hive-hardfork-25-is-on-the-way-hive-to-reach-equilibrium-on-june-30th-2021 h2, h3, h4, h5 {
+    margin-bottom: 0;
+  }
+  #content-hiveio-hive-hardfork-25-is-on-the-way-hive-to-reach-equilibrium-on-june-30th-2021 header small {
+    color: #999;
+    font-size: 50%;
+  }
+  #content-hiveio-hive-hardfork-25-is-on-the-way-hive-to-reach-equilibrium-on-june-30th-2021 img {
+    max-width: 100%;
+  }
+&lt;/style&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;
+  See: &lt;a href=&quot;https://hive.blog/hive/@hiveio/hive-hardfork-25-is-on-the-way-hive-to-reach-equilibrium-on-june-30th-2021&quot;&gt;Hive Hardfork 25 is on the Way: Hive to reach Equilibrium on June 30th, 2021&lt;/a&gt;
+  by
+  &lt;a href=&quot;https://hive.blog/@hiveio&quot;&gt;@hiveio&lt;/a&gt;
+&lt;/p&gt;</content><author><name>hiveio</name></author><category term="news" /><category term="core" /><category term="development" /><summary type="html">![image.png](https://images.hive.blog/DQmfByqFD7d9ecpcYMhy7ucwhQLKKrrLjcp9vb378wSJwCP/image.png) Earlier this week we notified cryptocurrency exchanges that the upcoming hardfork to the Hive blockchain network, dubbed *Equilibrium*, is planned for the end of June. Today's official date announcement also has a pile of helpful information including a summary of changes coming with the new hardfork, links to the software, and details for those of you who may want to get involved in testing the new software! ## TL:DR the Code; A Quick Overview of the Upcoming Changes *Equilibrium* is a state of balance between multiple forces. In the case of the Hive blockchain network, the guiding mission from day one has been to create an ecosystem that allows anyone to become a part of our decentralized network, contribute to governance, and to own their data, connections, tokens and actions in a world where the current tech and social powers have an iron grip. This hardfork continues to empower people to use Hive the way they want and takes another few large steps forward in creating an ecosystem with better balanced rules and tools for building whatever we can dream up. Reaching equilibrium is finding a state of balance and readiness. It is the essential preparation for big moves, exciting changes, and sustained growth. ### Here's a quick summary of HF25: Below is a list of the consensus changes that are being made as part of this hardfork: - **changes to curation window and curation rewards calculation** - The most important aspect of this change is that the 5 minute reverse auction is going away, so there is no punishment for voting early. This will finally put manual voters on an equal footing with automated voters when it comes to competing for curation rewards. This change, more than any other, was the driving reason for the naming of this hardfork. - In addition, anyone voting in the first 24 hours will be rewarded based solely on their Hive Power and vote weight, and the reward curve applied from 24 hours to the end of the voting window will be much softer than currently, eliminating any need to feel rushed when voting in order to maximize curation rewards. - **new operation and API to convert HIVE to HBD** - HBD (Hive-backed Dollars) is intended to be a feeless, trustless, USD-pegged stablecoin, a feat that has yet to be achieved in the cryptocurrency world. This new operation will stabilize the price pegging of HBD, allowing it to achieve its full potential as a frictionless medium of exchange for digital commerce. - While you've always been able to convert your HBD to HIVE, this new operation will allow you to convert in the opposite direction (HIVE -&amp;gt; HBD). - Previously, HBD was only effectively price-pegged on the low side of USD pricing. This new conversion will create an equilibrium point where HBD will be pegged on both the low side AND the high side. - **interest only paid on HBD held in your savings account** - You might have missed that you're earning interest on your Hive-backed Dollars, so this could be a neat surprise: simply move HBD into your savings account (3 day withdrawal waiting period) to earn interest on it just for holding! No-risk DeFi, made easy. - **new operation and API to enable recurring payments** - These are periodic transfers which you schedule to happen automatically. They are intended for managing subscription payments, etc. - **disallow voting on expired proposals** - **witness and proposal votes by an account expire after one year if the account stops actively making governance-related votes** - This change was made to ensure that old votes from dormant accounts don't unduly impact governance decisions for Hive. It will enable Hive to find a new balance between incumbent block producers and new competitors for those positions. - **proposal creators can change the end date of their Decentralized Hive Fund (DHF) proposals** - This allows a proposal creator to reduce their funding request (by decreasing the number of payments they receive) without having to create a new proposal and start from zero in respect to community support for the proposal. - **re-allow vote operation for already paid posts** - Voting outside the rewards window should still be something you can do, to show appreciation for the content you like and to add to your curated feed. This is a quality of life change that does *not* impact anything to do with allocation of rewards. There are also new command-line options, a pile of bug fixes and performance optimizations, a new API call, and many other improvements to the code and documentation that the Hive blockchain relies on. Full details are available in the [release notes](https://gitlab.syncad.com/hive/hive/-/releases#v1.25.0) This is pretty critical work towards making it easier to understand, easier to run, and to create the best possible ecosystem for someone to hop in and start building with Hive. If you're not technical and don't want to do some hands-on testing, you're all caught up! You likely won't notice anything immediately when *Equilibrium* goes live. However, you may want to consider changing the way you vote for posts after the hardfork, especially if you've resorted to auto-voting to maximize your curation rewards. Now you'll have more time and flexibility to find the content you love in a relaxed way, and more time to engage with your favorite authors and communities! ### In the next 12 days... There is still time before the hardfork takes place. If you want to contribute to testing or if you are a dApp creator, project owner, or someone who just wants to start getting more involved with the ecosystem, here are some handy links so you can jump in before *Equilibrium* goes live. ## Some Technical ~~House~~Beekeeping **Here is the link to the final official release version of Hardfork 25:** https://gitlab.syncad.com/hive/hive/-/tags/v1.25.0 ...and here are some helpful posts that outline joining the testnet, including how to create a witness node on the testnet, if you want to dive into the decentralized tech that powers Hive. **A guide to starting up a testnet witness:** https://peakd.com/guide/@howo/how-to-run-a-witness-node-on-the-hf25-testnet **And more information on the public testnet itself:** https://peakd.com/@gtg/hf25-public-testnet-reloaded-rc2 **The testnet faucet page:** https://hivetestnetfaucet.org/ All dApps that rely on the functions outlined above should have started testing or be starting to test as soon as possible. *Equilibrium* is the second community-driven hardfork of the Hive blockchain and we are very excited for it! It marks a key milestone for Hive development and for the Hive ecosystem. ### Keep an eye out for updates here and on our various Hive social media channels! 🐝 See: Hive Hardfork 25 is on the Way: Hive to reach Equilibrium on June 30th, 2021 by @hiveio</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://images.hive.blog/DQmfByqFD7d9ecpcYMhy7ucwhQLKKrrLjcp9vb378wSJwCP/image.png" /><media:content medium="image" url="https://images.hive.blog/DQmfByqFD7d9ecpcYMhy7ucwhQLKKrrLjcp9vb378wSJwCP/image.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Hive HardFork 25 Jump Starter Kit</title><link href="https://hivedocs.info/howto/devops/2021/06/18/hive-hardfork-25-jump-starter-kit.html" rel="alternate" type="text/html" title="Hive HardFork 25 Jump Starter Kit" /><published>2021-06-18T12:31:45-07:00</published><updated>2021-06-18T12:31:45-07:00</updated><id>https://hivedocs.info/howto/devops/2021/06/18/hive-hardfork-25-jump-starter-kit</id><content type="html" xml:base="https://hivedocs.info/howto/devops/2021/06/18/hive-hardfork-25-jump-starter-kit.html">&lt;div id=&quot;content-gtg-hive-hardfork-25-jump-starter-kit&quot;&gt;Intended for the Hive API node operators, witnesses, and developers.
 
 At the time of Eclipse release I made a similar post that saved many (hours) of lives, so I’m creating an updated one for the upcoming Hard Fork 25.
 
@@ -1101,316 +1380,4 @@ The other part was to set the chainid and prefix to the correct values, which ca
   See: &lt;a href=&quot;https://peakd.com/hive-139531/@rishi556/vessel-testnet-support&quot;&gt;Vessel Testnet Support&lt;/a&gt;
   by
   &lt;a href=&quot;https://hive.blog/@rishi556&quot;&gt;@rishi556&lt;/a&gt;
-&lt;/p&gt;</content><author><name>rishi556</name></author><category term="news" /><category term="vessel" /><category term="testnet" /><summary type="html">Recently I updated Vessel to work with the testnet as well. Its quite nice stuff and has made my testing with the testnet a bit easier. It's pretty important to make sure what we've got work with future forks, and the testnet is a great way to do so. Nothing affecting vessel was changed so as long as you are on v0.5.0 you should be fine and not need to update, but if you'd like to checkout the testnet, you get the latest version from here: https://gitlab.syncad.com/hive/vessel/-/releases. To get onto the testnet with vessel, all you have to do is supply it with a proper testnet node. Right now we have https://testnet.openhive.network. You can set that over on the settings page on vessel, or when first importing your account. With this instance, most accounts should already be exported with the same keys so you can just use it with no problems. ![Screen Shot 2021-06-04 at 10.21.16 PM.png](https://files.peakd.com/file/peakd-hive/rishi556/23tcJe3m31RYHtSGU6FA2ecc1E8FwXnKzjsMwPRvX71LeDjbe9ue6tWPbG6rJTzTq9tBw.png) Switching to the testnet also gets your vessel to change its color to a lovely pink and some of the pages will show the testnet symbols instead of the mainnet one to signify that you are on it. I hope that this makes things easier for those of you use participate on the testnet. I also did upgrade someguy's hivefeed-js(https://github.com/someguy123/hivefeed-js) to support the testnet as well. Just set the network to `testnet` in the config and you'll be good to go. Having more of our apps supporting the testnet will be awesome to make testing even easier and to make sure they function without problems once the fork comes around. Nerdier part starts here The main change that needed to be done was just changing Hive and HBD to the proper testnet symbols(though the latest hive-js version does this automatically so if I waited could have done less work haha), that can be seen on this commit https://gitlab.syncad.com/hive/vessel/-/commit/36b366d375cffb371f04a56b97a81de9d43d4d38. It was just a simple replacement of `HIVE` to `TESTS` and `HBD` to `TBD`. The other part was to set the chainid and prefix to the correct values, which can be seen here: https://gitlab.syncad.com/hive/vessel/-/commit/67a395539180fba62f4c849418982706e5a07c2f. @mahdiyari actually gave me a really great way on how to do this without needing user input at all. Initially I thought I would need to have user input in the chain id themselves, or check a box to signify that it's a testnet. Instead @mahdiyari proposed that I just pull the chain id and prefix right from the api node that the user supplied. That worked beautifully. See: Vessel Testnet Support by @rishi556</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://files.peakd.com/file/peakd-hive/rishi556/23tcJe3m31RYHtSGU6FA2ecc1E8FwXnKzjsMwPRvX71LeDjbe9ue6tWPbG6rJTzTq9tBw.png" /><media:content medium="image" url="https://files.peakd.com/file/peakd-hive/rishi556/23tcJe3m31RYHtSGU6FA2ecc1E8FwXnKzjsMwPRvX71LeDjbe9ue6tWPbG6rJTzTq9tBw.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">14th update of 2021 on BlockTrades work on Hive software</title><link href="https://hivedocs.info/news/core/development/2021/06/02/14th-update-of-2021-on-blocktrades-work-on-hive-software.html" rel="alternate" type="text/html" title="14th update of 2021 on BlockTrades work on Hive software" /><published>2021-06-02T17:21:12-07:00</published><updated>2021-06-02T17:21:12-07:00</updated><id>https://hivedocs.info/news/core/development/2021/06/02/14th-update-of-2021-on-blocktrades-work-on-hive-software</id><content type="html" xml:base="https://hivedocs.info/news/core/development/2021/06/02/14th-update-of-2021-on-blocktrades-work-on-hive-software.html">&lt;div id=&quot;content-blocktrades-14th-update-of-2021-on-blocktrades-work-on-hive-software&quot;&gt;![blocktrades update.png](https://images.hive.blog/DQmSihw8Kz4U7TuCQa98DDdCzqbqPFRumuVWAbareiYZW1Z/blocktrades%20update.png)
-
-Below is a list of Hive-related programming issues worked on by the BlockTrades team during the last week or so:
-
-# Hived work (blockchain node software)
-We released a second and third release candidate earlier this week with several fixes and improvements for testnet-based testing:
-https://gitlab.syncad.com/hive/hive/-/merge_requests/243
-https://gitlab.syncad.com/hive/hive/-/merge_requests/244
-https://gitlab.syncad.com/hive/hive/-/merge_requests/245
-
-https://gitlab.syncad.com/hive/hive/-/merge_requests/250
-https://gitlab.syncad.com/hive/hive/-/merge_requests/251
-
-But we found some more issues associated with those release candidates and we also decided to reduce the vote powerup delay to one day for the testnet  (this value is configured for 30 days in the mainnet) to simplify testing scenarios where accounts stake their coins and then vote in new witnesses. So we’re about to tag a fourth release candidate for hived (probably will be tagged tomorrow). 
-
-We’ve actually launched a new testnet with an untagged version of the planned release candidate to get the testnet jump-started quicker (we're simulating a transition of the code from HF24 rules to HF25 rules in this release and the transition test is scheduled for tomorrow so we wanted to get the testnet up as fast as possible). We haven’t tagged the new code yet as 1.25.0.rc4 because some of the automated tests failed when we changed the vote powerup delay for the testnet, but we’ll tag it after we have committed updated tests. As part of the changes to the tests, the response checking will be modified to test for the configured delay value rather than a hardcoded value, to avoid a repeat of this issue in the future.
-
-I’ll add a link here to the new release candidate after it’s tagged.
-
-# Hivemind (2nd layer applications + social media middleware)
-Earlier this week, we merged develop branch changes to master and released a new 1.25.0 version of hivemind (so just pull from the head of the master branch to get the new version), and now we’re assisting API node operators as they upgrade to the new version. Note that the old version and the new version are broadly API compatible: most of the changes in the new release consist of bug fixes and performance improvements.
-
-Currently the API nodes for api.hive.blog (@blocktrades), api.deathwing.me (@deathwing), and api.openhive.network (@gtg) have been updated to the new release.
-
-Also, to eliminate the multi-day hive sync requirement for anyone setting up their API node for the first time, @gtg has provided a hivemind database dump for the new release that can be used to quickly initialize a new API node:   https://gtg.openhive.network/get/hivemind/ 
-
-# Modular hivemind (Application framework for Hive apps)
-We’ve been working on the documentation for modular hivemind’s internal architecture this week and doing individual code reviews. We have a meeting scheduled Monday to do a group code review. After that meeting, I should have a better idea as to when we can expect an initial release of the software, but from what I’ve seen so far, I’m thinking we could make it available for beta testing next month. 
-
- An early draft of the documentation for the architecture is here: https://gitlab.syncad.com/hive/psql_tools/-/blob/23239a592bd77b3b2cefc648e5c25880e0f76ffb/src/hive_fork/Readme.md 
-
-# Testnet
-We’re seeing more apps join in and hookup up test sites to the testnet. Note that as a regular Hive user, you can typically login with your normal credentials and test via these sites.
-For example, you can login to either of these blog sites on the testnet
-https://testblog.openhive.network (hive.blog-like testing site)
-or
-https://testnet.peakd.com/ (peakd-like testing site)
-
-You can also browse the testnet with this block explorer: https://test.ausbit.dev/
-
-## New testing tool for testnet
-We’ve also created a new tool to convert an existing block log to a testnet block log to ease creation of more realistic “real-world” testnet-based test scenarios. The new tool is undergoing testing now.
-
-# Tentative date for hardfork 25 is June 30th
-Release candidate 4 has the hardfork scheduled for June 30th. Assuming we find no further issues by late next week, we’ll make that date official, create an official release by merging the develop branch to the master branch, and notify exchanges of the need to upgrade their wallets.&lt;/div&gt;
-&lt;script crossorigin=&quot;anonymous&quot; integrity=&quot;sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=&quot; src=&quot;https://code.jquery.com/jquery-3.5.1.slim.min.js&quot;&gt;&lt;/script&gt;
-
-&lt;script src=&quot;https://unpkg.com/steem-content-renderer&quot;&gt;&lt;/script&gt;
-
-&lt;!-- &lt;script src=&quot;https://cdn.jsdelivr.net/npm/hive-content-renderer/dist/hive-content-renderer.min.js&quot;&gt;&lt;/script&gt; --&gt;
-&lt;script&gt;
-  $(document).ready(function() {
-    try {
-      const renderer = new SteemContentRenderer.DefaultRenderer({
-      // const renderer = new HiveContentRenderer({
-        baseUrl: &quot;https://hive.blog/&quot;,
-        breaks: true,
-        skipSanitization: false,
-        allowInsecureScriptTags: false,
-        addNofollowToLinks: true,
-        doNotShowImages: false,
-        ipfsPrefix: &quot;&quot;,
-        assetsWidth: 640,
-        assetsHeight: 480,
-        imageProxyFn: (url) =&gt; url,
-        usertagUrlFn: (account) =&gt; &quot;/@blocktrades&quot;,
-        hashtagUrlFn: (hashtag) =&gt; &quot;/14th-update-of-2021-on-blocktrades-work-on-hive-software&quot;,
-        isLinkSafeFn: (url) =&gt; true,
-      });
-      
-      const inputElem = $('#content-blocktrades-14th-update-of-2021-on-blocktrades-work-on-hive-software').html();
-      const outputElem = $('#content-blocktrades-14th-update-of-2021-on-blocktrades-work-on-hive-software');
-      const output = renderer.render(inputElem);
-      
-      outputElem.html(output);
-    } catch(e) {
-      console.log(e);
-    }
-  });
-&lt;/script&gt;
-
-&lt;style&gt;
-  #content-blocktrades-14th-update-of-2021-on-blocktrades-work-on-hive-software {
-    padding: 0 3rem;
-    color: #444444;
-    font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif;
-    font-size: 16px;
-    line-height: 1.8;
-    text-shadow: 0 1px 0 #ffffff;
-    padding: 0.5rem;
-  }
-  #content-blocktrades-14th-update-of-2021-on-blocktrades-work-on-hive-software code {
-    background: white;
-  }
-  #content-blocktrades-14th-update-of-2021-on-blocktrades-work-on-hive-software a {
-    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
-  }
-  #content-blocktrades-14th-update-of-2021-on-blocktrades-work-on-hive-software a:hover {
-    border-bottom: 0;
-  }
-  #content-blocktrades-14th-update-of-2021-on-blocktrades-work-on-hive-software h1 {
-    font-size: 2.2em;
-  }
-  #content-blocktrades-14th-update-of-2021-on-blocktrades-work-on-hive-software h2, h3, h4, h5 {
-    margin-bottom: 0;
-  }
-  #content-blocktrades-14th-update-of-2021-on-blocktrades-work-on-hive-software header small {
-    color: #999;
-    font-size: 50%;
-  }
-  #content-blocktrades-14th-update-of-2021-on-blocktrades-work-on-hive-software img {
-    max-width: 100%;
-  }
-&lt;/style&gt;
-
-&lt;hr /&gt;
-
-&lt;p&gt;
-  See: &lt;a href=&quot;https://hive.blog/hive-139531/@blocktrades/14th-update-of-2021-on-blocktrades-work-on-hive-software&quot;&gt;14th update of 2021 on BlockTrades work on Hive software&lt;/a&gt;
-  by
-  &lt;a href=&quot;https://hive.blog/@blocktrades&quot;&gt;@blocktrades&lt;/a&gt;
-&lt;/p&gt;</content><author><name>blocktrades</name></author><category term="news" /><category term="core" /><category term="development" /><summary type="html">![blocktrades update.png](https://images.hive.blog/DQmSihw8Kz4U7TuCQa98DDdCzqbqPFRumuVWAbareiYZW1Z/blocktrades%20update.png) Below is a list of Hive-related programming issues worked on by the BlockTrades team during the last week or so: # Hived work (blockchain node software) We released a second and third release candidate earlier this week with several fixes and improvements for testnet-based testing: https://gitlab.syncad.com/hive/hive/-/merge_requests/243 https://gitlab.syncad.com/hive/hive/-/merge_requests/244 https://gitlab.syncad.com/hive/hive/-/merge_requests/245 https://gitlab.syncad.com/hive/hive/-/merge_requests/250 https://gitlab.syncad.com/hive/hive/-/merge_requests/251 But we found some more issues associated with those release candidates and we also decided to reduce the vote powerup delay to one day for the testnet (this value is configured for 30 days in the mainnet) to simplify testing scenarios where accounts stake their coins and then vote in new witnesses. So we’re about to tag a fourth release candidate for hived (probably will be tagged tomorrow). We’ve actually launched a new testnet with an untagged version of the planned release candidate to get the testnet jump-started quicker (we're simulating a transition of the code from HF24 rules to HF25 rules in this release and the transition test is scheduled for tomorrow so we wanted to get the testnet up as fast as possible). We haven’t tagged the new code yet as 1.25.0.rc4 because some of the automated tests failed when we changed the vote powerup delay for the testnet, but we’ll tag it after we have committed updated tests. As part of the changes to the tests, the response checking will be modified to test for the configured delay value rather than a hardcoded value, to avoid a repeat of this issue in the future. I’ll add a link here to the new release candidate after it’s tagged. # Hivemind (2nd layer applications + social media middleware) Earlier this week, we merged develop branch changes to master and released a new 1.25.0 version of hivemind (so just pull from the head of the master branch to get the new version), and now we’re assisting API node operators as they upgrade to the new version. Note that the old version and the new version are broadly API compatible: most of the changes in the new release consist of bug fixes and performance improvements. Currently the API nodes for api.hive.blog (@blocktrades), api.deathwing.me (@deathwing), and api.openhive.network (@gtg) have been updated to the new release. Also, to eliminate the multi-day hive sync requirement for anyone setting up their API node for the first time, @gtg has provided a hivemind database dump for the new release that can be used to quickly initialize a new API node: https://gtg.openhive.network/get/hivemind/ # Modular hivemind (Application framework for Hive apps) We’ve been working on the documentation for modular hivemind’s internal architecture this week and doing individual code reviews. We have a meeting scheduled Monday to do a group code review. After that meeting, I should have a better idea as to when we can expect an initial release of the software, but from what I’ve seen so far, I’m thinking we could make it available for beta testing next month. An early draft of the documentation for the architecture is here: https://gitlab.syncad.com/hive/psql_tools/-/blob/23239a592bd77b3b2cefc648e5c25880e0f76ffb/src/hive_fork/Readme.md # Testnet We’re seeing more apps join in and hookup up test sites to the testnet. Note that as a regular Hive user, you can typically login with your normal credentials and test via these sites. For example, you can login to either of these blog sites on the testnet https://testblog.openhive.network (hive.blog-like testing site) or https://testnet.peakd.com/ (peakd-like testing site) You can also browse the testnet with this block explorer: https://test.ausbit.dev/ ## New testing tool for testnet We’ve also created a new tool to convert an existing block log to a testnet block log to ease creation of more realistic “real-world” testnet-based test scenarios. The new tool is undergoing testing now. # Tentative date for hardfork 25 is June 30th Release candidate 4 has the hardfork scheduled for June 30th. Assuming we find no further issues by late next week, we’ll make that date official, create an official release by merging the develop branch to the master branch, and notify exchanges of the need to upgrade their wallets. See: 14th update of 2021 on BlockTrades work on Hive software by @blocktrades</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://images.hive.blog/DQmSihw8Kz4U7TuCQa98DDdCzqbqPFRumuVWAbareiYZW1Z/blocktrades%20update.png" /><media:content medium="image" url="https://images.hive.blog/DQmSihw8Kz4U7TuCQa98DDdCzqbqPFRumuVWAbareiYZW1Z/blocktrades%20update.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Community Improvements, Testnet support and 15 More Updates</title><link href="https://hivedocs.info/news/projects/testnet/2021/06/01/community-improvements-testnet-support-and-15-more-updates.html" rel="alternate" type="text/html" title="Community Improvements, Testnet support and 15 More Updates" /><published>2021-06-01T06:18:18-07:00</published><updated>2021-06-01T06:18:18-07:00</updated><id>https://hivedocs.info/news/projects/testnet/2021/06/01/community-improvements-testnet-support-and-15-more-updates</id><content type="html" xml:base="https://hivedocs.info/news/projects/testnet/2021/06/01/community-improvements-testnet-support-and-15-more-updates.html">&lt;div id=&quot;content-peakd-community-improvements-testnet-support-and-15-more-updates&quot;&gt;A new release of [peakd.com](https://peakd.com) is now available. Keep reading to discover the new features and check the full list of improvements ;)
-
-&lt;center&gt;&lt;h4&gt;The new release is now live at https://peakd.com&lt;/h4&gt;&lt;/center&gt;
-
-![release_cover_2021_06_01.jpg](https://files.peakd.com/file/peakd-hive/peakd/23tS2bqoaD4CxPADDAxsarFCkYRHHhFubPR4eXcxdGagL2Ak7d3Lr13d4YCePLPTsnAaF.jpg)
-
-#### 1. Default/Required Beneficiary account for Communities
-
-A community can now define a 'default' or 'required' beneficiary for posts published in that community. This option is not supported at the chain level (or Hivemind), so keep this in mind if you want to enable it. Probvably the only community using this feature at the moment is [PhotoGames](https://peakd.com/c/hive-146701).
-
-When this option is enabled a label will be shown on the community rules:
-
-![image.png](https://files.peakd.com/file/peakd-hive/peakd/23ydVgLHPXNthY6xzWT8boYRB5Ka3XoP9YSx69hMpB1e7EXRd2TnQdcA7T6nMq7hKbrFy.png)
-
-###### Introduce the '@peakd.bot' account to automatically handle posts not using the required beneficiary account
-
-If you want to automatically mute posts not respecting the required beneficiary setting you can add the @peakd.bot account as a community moderators and it will take care of it.
-
-![image.png](https://files.peakd.com/file/peakd-hive/peakd/23uRKjMY5AFdXPSGPeVE7SY9A3PcdrSL6YvgAjBv2aQuiGAKNMGcLBLw1bGFxdrBK34uD.png)
-
-*This is still and experimental feature, so feel free to report any issues you notice* ;)
-
-#### 2. Other Communities Improvements
-
-###### Support public Templates in communities
-
-Communities can now define public Templates (owned by the community `hive-000000` owner account) that are available to their users when they want to write a new post:
-
-![image.png](https://files.peakd.com/file/peakd-hive/peakd/23wgaTg2AHFAUWyBNZzvWmbBdvwsv7gusdEMhFS8APfpAYPpRHMqZk6nUDLxXSF2yx45f.png)
-
-Only templates marked as 'PUBLIC' will be available in the dropdown. You can mark a template as public on this page: https://peakd.com/me/templates.
-
-###### Allow communities to have a Curated Collections (CCC) page
-
-Similar to what is already available for user pages it's now possible to add a collection page to communities:
-
-
-![image.png](https://files.peakd.com/file/peakd-hive/peakd/23uR9aGiUjafHdkUwL6rHt8XFUvvjdT14qvDuUyxaqc7PkNSRJ44hfd1gEBbwR7QX4Rf4.png)
-
-
-###### Allow up to 20 preferred topics for communities
-
-You can now set up to 20 preferred topics for a community
-
-![image.png](https://files.peakd.com/file/peakd-hive/peakd/EoyVJhZbq39MxsMsupUaL1GCFwfmmpGCpHBTe6dLYKyrrYGJJJivWm9smzwTBJMd9h8.png)
-
-
-#### 3. Testnet Support
-
-This is not completely new as we have supported Testnet in the past, but we did some improvements and better support for multiple login methods. This is intended for advanced users, but if you want you can have a look here: https://testnet.peakd.com
-
-**Important:** If you login using Hive Keychain remind to change the RPC node used to cast transactions otherwise you will cast them on the actual chain.
-
-#### 4. Notification counter in browser tab
-
-It's now easier to see if there are new notifications directly on the browser tab/page title:
-
-![image.png](https://files.peakd.com/file/peakd-hive/peakd/EoCbSnqkEUmVRc7QtnbruGou1A1aaLYqC9qZ5D1hGW2H2451b5VUVtfd8NAZZhV3WPS.png)
-
-#### 5. Image viewer for comments
-
-Image viewer had been available for images in a post for quite some time, but now you can enjoy the same for images in the comment section. Just click on the image to see it larger ;)
-
-#### 6. Some minor improvements and bug fixes
-
-As always some minor improvements, updates and fixes across the website. You can check the full release notes here: **https://peakd.com/about/changelog**.
-
-```
-# Improvements and Fixes
-------------------------------
-
-[update] Better instructions for creating a curated collection
-[update] Double check community required beneficiary before publishing a post
-[update] Improve image hashing function to better handle edge cases
-[update] Include power down amount in MAX available amount in delegation popup
-[update] Stop embedded videos autoplay when opening the post in full view
-[update] Exclude downvoted/muted posts from Trail view
-[update] Indent sub-headers in post outline
-[update] Add link to edit default beneficiaries in Settings
-[update] Improve support for CCC associated templates
-[update] Allow up to 20 preferred topics for communities
-[update] Better handle community curator account (if set)
-[fix] Improve check on max percentage set for beneficiaries
-[fix] Improve HW wallet layout on smaller display
-[fix] 3speak video embeds in post
-[fix] Image file extension missing after upload for some file
-[fix] Set the community name in browser tab title
-[fix] Login with PeakLock on testnet.peakd.com is now allowed
-```
-
----
-
-## Support the @peakd project
-
-Now is probably a nice time to remind you of the ways you can support the development of @peakd.
-
-![Selection_298.png](https://files.peakd.com/file/peakd-hive/peakd/w36DQpO7-Selection_298.png)
-
-We have a proposal on the Decentralized Hive Fund. You can review the proposal [here](/proposals/52).
-If you agree to the proposal and you think the points mentioned add value to the Hive Blockchain consider supporting it using the above links or directly with **[this link](https://hivesigner.com/sign/update-proposal-votes?proposal_ids=[52]&amp;amp;approve=true)**.
-
----
-
-We also run a witness server to help produce the blocks for the Hive Blockchain. You can vote for our witness so we are in a position to process more of them.
-
-Vote on the witness page: https://peakd.com/witnesses
-
-- Using Keychain: You just have to click and approve the transaction
-- Using HiveSigner: You'll need access to confirm the transaction with your Active Key at least
-
----
-
-###### *The PeakD Team*
-_About us: https://peakd.com/about_
-_Join us on Discord: https://discord.gg/Fy3bca5_&lt;/div&gt;
-&lt;script crossorigin=&quot;anonymous&quot; integrity=&quot;sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=&quot; src=&quot;https://code.jquery.com/jquery-3.5.1.slim.min.js&quot;&gt;&lt;/script&gt;
-
-&lt;script src=&quot;https://unpkg.com/steem-content-renderer&quot;&gt;&lt;/script&gt;
-
-&lt;!-- &lt;script src=&quot;https://cdn.jsdelivr.net/npm/hive-content-renderer/dist/hive-content-renderer.min.js&quot;&gt;&lt;/script&gt; --&gt;
-&lt;script&gt;
-  $(document).ready(function() {
-    try {
-      const renderer = new SteemContentRenderer.DefaultRenderer({
-      // const renderer = new HiveContentRenderer({
-        baseUrl: &quot;https://hive.blog/&quot;,
-        breaks: true,
-        skipSanitization: false,
-        allowInsecureScriptTags: false,
-        addNofollowToLinks: true,
-        doNotShowImages: false,
-        ipfsPrefix: &quot;&quot;,
-        assetsWidth: 640,
-        assetsHeight: 480,
-        imageProxyFn: (url) =&gt; url,
-        usertagUrlFn: (account) =&gt; &quot;/@peakd&quot;,
-        hashtagUrlFn: (hashtag) =&gt; &quot;/community-improvements-testnet-support-and-15-more-updates&quot;,
-        isLinkSafeFn: (url) =&gt; true,
-      });
-      
-      const inputElem = $('#content-peakd-community-improvements-testnet-support-and-15-more-updates').html();
-      const outputElem = $('#content-peakd-community-improvements-testnet-support-and-15-more-updates');
-      const output = renderer.render(inputElem);
-      
-      outputElem.html(output);
-    } catch(e) {
-      console.log(e);
-    }
-  });
-&lt;/script&gt;
-
-&lt;style&gt;
-  #content-peakd-community-improvements-testnet-support-and-15-more-updates {
-    padding: 0 3rem;
-    color: #444444;
-    font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif;
-    font-size: 16px;
-    line-height: 1.8;
-    text-shadow: 0 1px 0 #ffffff;
-    padding: 0.5rem;
-  }
-  #content-peakd-community-improvements-testnet-support-and-15-more-updates code {
-    background: white;
-  }
-  #content-peakd-community-improvements-testnet-support-and-15-more-updates a {
-    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
-  }
-  #content-peakd-community-improvements-testnet-support-and-15-more-updates a:hover {
-    border-bottom: 0;
-  }
-  #content-peakd-community-improvements-testnet-support-and-15-more-updates h1 {
-    font-size: 2.2em;
-  }
-  #content-peakd-community-improvements-testnet-support-and-15-more-updates h2, h3, h4, h5 {
-    margin-bottom: 0;
-  }
-  #content-peakd-community-improvements-testnet-support-and-15-more-updates header small {
-    color: #999;
-    font-size: 50%;
-  }
-  #content-peakd-community-improvements-testnet-support-and-15-more-updates img {
-    max-width: 100%;
-  }
-&lt;/style&gt;
-
-&lt;hr /&gt;
-
-&lt;p&gt;
-  See: &lt;a href=&quot;https://peakd.com/hive-163399/@peakd/community-improvements-testnet-support-and-15-more-updates&quot;&gt;Community Improvements, Testnet support and 15 More Updates&lt;/a&gt;
-  by
-  &lt;a href=&quot;https://hive.blog/@peakd&quot;&gt;@peakd&lt;/a&gt;
-&lt;/p&gt;</content><author><name>peakd</name></author><category term="news" /><category term="projects" /><category term="testnet" /><summary type="html">A new release of [peakd.com](https://peakd.com) is now available. Keep reading to discover the new features and check the full list of improvements ;) The new release is now live at https://peakd.com ![release_cover_2021_06_01.jpg](https://files.peakd.com/file/peakd-hive/peakd/23tS2bqoaD4CxPADDAxsarFCkYRHHhFubPR4eXcxdGagL2Ak7d3Lr13d4YCePLPTsnAaF.jpg) #### 1. Default/Required Beneficiary account for Communities A community can now define a 'default' or 'required' beneficiary for posts published in that community. This option is not supported at the chain level (or Hivemind), so keep this in mind if you want to enable it. Probvably the only community using this feature at the moment is [PhotoGames](https://peakd.com/c/hive-146701). When this option is enabled a label will be shown on the community rules: ![image.png](https://files.peakd.com/file/peakd-hive/peakd/23ydVgLHPXNthY6xzWT8boYRB5Ka3XoP9YSx69hMpB1e7EXRd2TnQdcA7T6nMq7hKbrFy.png) ###### Introduce the '@peakd.bot' account to automatically handle posts not using the required beneficiary account If you want to automatically mute posts not respecting the required beneficiary setting you can add the @peakd.bot account as a community moderators and it will take care of it. ![image.png](https://files.peakd.com/file/peakd-hive/peakd/23uRKjMY5AFdXPSGPeVE7SY9A3PcdrSL6YvgAjBv2aQuiGAKNMGcLBLw1bGFxdrBK34uD.png) *This is still and experimental feature, so feel free to report any issues you notice* ;) #### 2. Other Communities Improvements ###### Support public Templates in communities Communities can now define public Templates (owned by the community `hive-000000` owner account) that are available to their users when they want to write a new post: ![image.png](https://files.peakd.com/file/peakd-hive/peakd/23wgaTg2AHFAUWyBNZzvWmbBdvwsv7gusdEMhFS8APfpAYPpRHMqZk6nUDLxXSF2yx45f.png) Only templates marked as 'PUBLIC' will be available in the dropdown. You can mark a template as public on this page: https://peakd.com/me/templates. ###### Allow communities to have a Curated Collections (CCC) page Similar to what is already available for user pages it's now possible to add a collection page to communities: ![image.png](https://files.peakd.com/file/peakd-hive/peakd/23uR9aGiUjafHdkUwL6rHt8XFUvvjdT14qvDuUyxaqc7PkNSRJ44hfd1gEBbwR7QX4Rf4.png) ###### Allow up to 20 preferred topics for communities You can now set up to 20 preferred topics for a community ![image.png](https://files.peakd.com/file/peakd-hive/peakd/EoyVJhZbq39MxsMsupUaL1GCFwfmmpGCpHBTe6dLYKyrrYGJJJivWm9smzwTBJMd9h8.png) #### 3. Testnet Support This is not completely new as we have supported Testnet in the past, but we did some improvements and better support for multiple login methods. This is intended for advanced users, but if you want you can have a look here: https://testnet.peakd.com **Important:** If you login using Hive Keychain remind to change the RPC node used to cast transactions otherwise you will cast them on the actual chain. #### 4. Notification counter in browser tab It's now easier to see if there are new notifications directly on the browser tab/page title: ![image.png](https://files.peakd.com/file/peakd-hive/peakd/EoCbSnqkEUmVRc7QtnbruGou1A1aaLYqC9qZ5D1hGW2H2451b5VUVtfd8NAZZhV3WPS.png) #### 5. Image viewer for comments Image viewer had been available for images in a post for quite some time, but now you can enjoy the same for images in the comment section. Just click on the image to see it larger ;) #### 6. Some minor improvements and bug fixes As always some minor improvements, updates and fixes across the website. You can check the full release notes here: **https://peakd.com/about/changelog**. ``` # Improvements and Fixes ------------------------------ [update] Better instructions for creating a curated collection [update] Double check community required beneficiary before publishing a post [update] Improve image hashing function to better handle edge cases [update] Include power down amount in MAX available amount in delegation popup [update] Stop embedded videos autoplay when opening the post in full view [update] Exclude downvoted/muted posts from Trail view [update] Indent sub-headers in post outline [update] Add link to edit default beneficiaries in Settings [update] Improve support for CCC associated templates [update] Allow up to 20 preferred topics for communities [update] Better handle community curator account (if set) [fix] Improve check on max percentage set for beneficiaries [fix] Improve HW wallet layout on smaller display [fix] 3speak video embeds in post [fix] Image file extension missing after upload for some file [fix] Set the community name in browser tab title [fix] Login with PeakLock on testnet.peakd.com is now allowed ``` --- ## Support the @peakd project Now is probably a nice time to remind you of the ways you can support the development of @peakd. ![Selection_298.png](https://files.peakd.com/file/peakd-hive/peakd/w36DQpO7-Selection_298.png) We have a proposal on the Decentralized Hive Fund. You can review the proposal [here](/proposals/52). If you agree to the proposal and you think the points mentioned add value to the Hive Blockchain consider supporting it using the above links or directly with **[this link](https://hivesigner.com/sign/update-proposal-votes?proposal_ids=[52]&amp;amp;approve=true)**. --- We also run a witness server to help produce the blocks for the Hive Blockchain. You can vote for our witness so we are in a position to process more of them. Vote on the witness page: https://peakd.com/witnesses - Using Keychain: You just have to click and approve the transaction - Using HiveSigner: You'll need access to confirm the transaction with your Active Key at least --- ###### *The PeakD Team* _About us: https://peakd.com/about_ _Join us on Discord: https://discord.gg/Fy3bca5_ See: Community Improvements, Testnet support and 15 More Updates by @peakd</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://files.peakd.com/file/peakd-hive/peakd/23tS2bqoaD4CxPADDAxsarFCkYRHHhFubPR4eXcxdGagL2Ak7d3Lr13d4YCePLPTsnAaF.jpg" /><media:content medium="image" url="https://files.peakd.com/file/peakd-hive/peakd/23tS2bqoaD4CxPADDAxsarFCkYRHHhFubPR4eXcxdGagL2Ak7d3Lr13d4YCePLPTsnAaF.jpg" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>
+&lt;/p&gt;</content><author><name>rishi556</name></author><category term="news" /><category term="vessel" /><category term="testnet" /><summary type="html">Recently I updated Vessel to work with the testnet as well. Its quite nice stuff and has made my testing with the testnet a bit easier. It's pretty important to make sure what we've got work with future forks, and the testnet is a great way to do so. Nothing affecting vessel was changed so as long as you are on v0.5.0 you should be fine and not need to update, but if you'd like to checkout the testnet, you get the latest version from here: https://gitlab.syncad.com/hive/vessel/-/releases. To get onto the testnet with vessel, all you have to do is supply it with a proper testnet node. Right now we have https://testnet.openhive.network. You can set that over on the settings page on vessel, or when first importing your account. With this instance, most accounts should already be exported with the same keys so you can just use it with no problems. ![Screen Shot 2021-06-04 at 10.21.16 PM.png](https://files.peakd.com/file/peakd-hive/rishi556/23tcJe3m31RYHtSGU6FA2ecc1E8FwXnKzjsMwPRvX71LeDjbe9ue6tWPbG6rJTzTq9tBw.png) Switching to the testnet also gets your vessel to change its color to a lovely pink and some of the pages will show the testnet symbols instead of the mainnet one to signify that you are on it. I hope that this makes things easier for those of you use participate on the testnet. I also did upgrade someguy's hivefeed-js(https://github.com/someguy123/hivefeed-js) to support the testnet as well. Just set the network to `testnet` in the config and you'll be good to go. Having more of our apps supporting the testnet will be awesome to make testing even easier and to make sure they function without problems once the fork comes around. Nerdier part starts here The main change that needed to be done was just changing Hive and HBD to the proper testnet symbols(though the latest hive-js version does this automatically so if I waited could have done less work haha), that can be seen on this commit https://gitlab.syncad.com/hive/vessel/-/commit/36b366d375cffb371f04a56b97a81de9d43d4d38. It was just a simple replacement of `HIVE` to `TESTS` and `HBD` to `TBD`. The other part was to set the chainid and prefix to the correct values, which can be seen here: https://gitlab.syncad.com/hive/vessel/-/commit/67a395539180fba62f4c849418982706e5a07c2f. @mahdiyari actually gave me a really great way on how to do this without needing user input at all. Initially I thought I would need to have user input in the chain id themselves, or check a box to signify that it's a testnet. Instead @mahdiyari proposed that I just pull the chain id and prefix right from the api node that the user supplied. That worked beautifully. See: Vessel Testnet Support by @rishi556</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://files.peakd.com/file/peakd-hive/rishi556/23tcJe3m31RYHtSGU6FA2ecc1E8FwXnKzjsMwPRvX71LeDjbe9ue6tWPbG6rJTzTq9tBw.png" /><media:content medium="image" url="https://files.peakd.com/file/peakd-hive/rishi556/23tcJe3m31RYHtSGU6FA2ecc1E8FwXnKzjsMwPRvX71LeDjbe9ue6tWPbG6rJTzTq9tBw.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>
