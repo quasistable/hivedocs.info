@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta property="og:image" content="/assets/images/sticker.png" /><!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>[Quickstart] How to upgrade Hive-in-a-box (HIAB / hive-docker) to HF25 | Hive Chain Documentation</title>
+<meta name="generator" content="Jekyll v4.1.1" />
+<meta property="og:title" content="[Quickstart] How to upgrade Hive-in-a-box (HIAB / hive-docker) to HF25" />
+<meta name="author" content="someguy123" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="How to upgrade Hive-in-a-box (hive-docker) from Hive HF24 to HF25 as quickly as possible" />
+<meta property="og:description" content="How to upgrade Hive-in-a-box (hive-docker) from Hive HF24 to HF25 as quickly as possible" />
+<link rel="canonical" href="https://peakd.com/hive-139531/@someguy123/quickstart-how-to-upgrade-hive-in-a-box-hiab-hive-docker-to-hf25" />
+<meta property="og:url" content="https://peakd.com/hive-139531/@someguy123/quickstart-how-to-upgrade-hive-in-a-box-hiab-hive-docker-to-hf25" />
+<meta property="og:site_name" content="Hive Chain Documentation" />
+<meta property="og:image" content="https://images.hive.blog/p/HuuaCwcKuiEjNgLb5Q7HbtUvB1HEHgck8hUkQMB4bFSJaxwFsYXGx7N9qtgEvLdGaoY?format=match&amp;mode=fit" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2021-06-30T00:16:54-07:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="https://images.hive.blog/p/HuuaCwcKuiEjNgLb5Q7HbtUvB1HEHgck8hUkQMB4bFSJaxwFsYXGx7N9qtgEvLdGaoY?format=match&amp;mode=fit" />
+<meta property="twitter:title" content="[Quickstart] How to upgrade Hive-in-a-box (HIAB / hive-docker) to HF25" />
+<script type="application/ld+json">
+{"description":"How to upgrade Hive-in-a-box (hive-docker) from Hive HF24 to HF25 as quickly as possible","image":"https://images.hive.blog/p/HuuaCwcKuiEjNgLb5Q7HbtUvB1HEHgck8hUkQMB4bFSJaxwFsYXGx7N9qtgEvLdGaoY?format=match&amp;mode=fit","headline":"[Quickstart] How to upgrade Hive-in-a-box (HIAB / hive-docker) to HF25","dateModified":"2021-06-30T00:16:54-07:00","datePublished":"2021-06-30T00:16:54-07:00","@type":"BlogPosting","url":"https://peakd.com/hive-139531/@someguy123/quickstart-how-to-upgrade-hive-in-a-box-hiab-hive-docker-to-hf25","mainEntityOfPage":{"@type":"WebPage","@id":"https://peakd.com/hive-139531/@someguy123/quickstart-how-to-upgrade-hive-in-a-box-hiab-hive-docker-to-hf25"},"author":{"@type":"Person","name":"someguy123"},"@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://hivedocs.info/feed.xml" title="Hive Chain Documentation" /><script>
+if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNotTrack === "yes" || navigator.msDoNotTrack === "1")) {
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-161692811-1', 'auto');
+  ga('send', 'pageview');
+}
+</script>
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+  
+  <!-- jQuery Modal -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.css" />
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/turbolinks/5.2.0/turbolinks.js" integrity="sha256-iM4Yzi/zLj/IshPWMC1IluRxTtRjMqjPGd97TZ9yYpU=" crossorigin="anonymous"></script>
+  <script src='https://unpkg.com/steem-content-renderer'></script>
+  <script>
+    (function () {
+      if (Turbolinks.supported) {
+        Turbolinks.setProgressBarDelay(500);
+      }
+    })();
+  </script>
+  <script src="/assets/javascript/universal-bridge-against-phishing.js"></script>
+  <script src="/assets/javascript/lazysizes.min.js" async=""></script>
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Cousine|Inconsolata" rel="stylesheet">
+  <link rel="shortcut icon" type="image/png" href="/assets/images/favicon.png">
+</head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Hive Chain Documentation</a>
+
+      <nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/news/">News</a><a class="page-link" href="/howto/">How To</a><a class="page-link" href="/links/">Useful Links</a><a class="page-link" href="/authors/">Authors</a><!-- HTML elements for search -->
+          <input type="text" id="search-input" placeholder="Search" />
+          
+          <ul id="results-container"></ul>
+
+          <script src="/assets/javascript/search.js"></script>
+          <script>
+            var sjs = SimpleJekyllSearch({
+              searchInput: document.getElementById('search-input'),
+              resultsContainer: document.getElementById('results-container'),
+              json: '/search.json'
+            })
+          </script>
+          <!-- <form style="float: right;" class="form-inline" method="get" action="http://www.google.com/search">
+            <input type="hidden" name="sitesearch" value="hivedocs.info" />
+            <input type="text" name="q" maxlength="255" placeholder="Search" />
+          </form> -->
+          
+          <!-- <a href="#" onclick="try { $('#authors-container').slideToggle(); } catch { document.getElementById('authors-container').style.display = 'block'; }; return false;">Authors &#187;</a>
+          <a href="#" onclick="try { $('#topics-container').slideToggle(); } catch { document.getElementById('topics-container').style.display = 'block'; }; return false;">Topics &#187;</a> -->
+          
+          <a href="#topics-container" rel="modal:open">Topics &#187;</a>
+          
+          <div id="topics-container" class="modal">
+            <h3>Topics</h3>
+            <ul><li><a class="page-link" href="/account-recovery/"><nobr>Account Recovery</nobr></a></li><li><a class="page-link" href="/core-development/"><nobr>Core Development</nobr></a></li><li><a class="page-link" href="/dapps/"><nobr>Dapps</nobr></a></li><li><a class="page-link" href="/docker/"><nobr>Docker</nobr></a></li><li><a class="page-link" href="/hardfork/"><nobr>Hardfork</nobr></a></li><li><a class="page-link" href="/hivemind/"><nobr>Hivemind</nobr></a></li><li><a class="page-link" href="/javascript/"><nobr>Javascript</nobr></a></li><li><a class="page-link" href="/multisig/"><nobr>Multisig</nobr></a></li><li><a class="page-link" href="/python/"><nobr>Python</nobr></a></li><li><a class="page-link" href="/ruby/"><nobr>Ruby</nobr></a></li><li><a class="page-link" href="/testnet/"><nobr>Testnet</nobr></a></li><li><a class="page-link" href="/tools/"><nobr>Tools</nobr></a></li><li><a class="page-link" href="/witness/"><nobr>Witness</nobr></a></li></ul>
+          </div>
+        </div>
+      </nav>
+  </div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <div class="pull-right well">
+      <img src="https://images.hive.blog/u/someguy123/avatar" width="128" height="128" class="lazyload" />
+    </div>
+    
+    <h1 class="post-title p-name" itemprop="name headline">[Quickstart] How to upgrade Hive-in-a-box (HIAB / hive-docker) to HF25</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2021-06-30T00:16:54-07:00" itemprop="datePublished">Jun 30, 2021
+      </time>• <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">
+          <a href="/authors/#author-someguy123">someguy123</a>
+        </span></span></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <div id="content-someguy123-quickstart-how-to-upgrade-hive-in-a-box-hiab-hive-docker-to-hf25">
+![Hive-in-a-box Logo](https://images.hive.blog/p/HuuaCwcKuiEjNgLb5Q7HbtUvB1HEHgck8hUkQMB4bFSJaxwFsYXGx7N9qtgEvLdGaoY?format=match&amp;mode=fit)
+
+I apologise for the late post, I've been overwhelmed trying to prepare @Privex for HF25, prepare my own servers, and provide one-on-one upgrade assistance to many close witness friends, and Privex customers.
+
+This article covers how to upgrade from Hive HF24 to HF25 as quickly as possible for Privex Node-in-a-box VPS customers, as well as people who use normal Hive-in-a-box (`hive-docker`) on a Dedicated Server, or normal non-NIAB VPS.
+
+Note that this post was written relatively quickly without fully testing the guide, nor checking for any typos / grammatical errors, to ensure any Hive witnesses who use HIAB and haven't yet upgraded - will have time to see this post and follow the instructions.
+
+## HF25 is due at 14:00:00 (2:00 PM) UTC (15:00 / 3:00 PM United Kingdom BST Time) - or roughly 7-8 hrs from when this post was published. 
+
+## [Click HERE to see the current UTC time, with realtime updates](https://time.is/UTC)
+
+
+# Updating a Privex Node-in-a-box VPS
+
+If you have a Privex Node-in-a-box (NIAB) VPS, e.g. a VHIVE8-SE or VHIVE16-FI which is still running HF24 - you need to [contact support for a reinstall](https://support.privex.io).
+
+# Urgent Pre-installed HF25 Server
+
+If you need a HF25 Hive Server urgently, and your existing servers aren't possible to repair in time for the HF, you can order one of our 8GB or 16GB Hive Node-in-a-box VPS's from @Privex - which are delivered within 20 minutes of payment (as long as you **leave the notes blank**, and **don't use a referral code unless you're 200% certain that it's a valid referral code**, since if it isn't, the order will be flagged for manual inspection to attempt to identify the intended referral).
+
+- 🇸🇪 **SWEDEN** (SE)
+    - [8GB Hive Node-in-a-box Sweden - VHIVE8-SE](https://pay.privex.io/order/package/vhive8-se)
+    - [16GB Hive Node-in-a-box Sweden - VHIVE16-SE](https://pay.privex.io/order/package/vhive16-se)
+
+- 🇫🇮 **FINLAND** (FI)
+    - [8GB Hive Node-in-a-box Finland - VHIVE8-FI](https://pay.privex.io/order/package/vhive8-fi)
+    - [16GB Hive Node-in-a-box Finland - VHIVE16-FI](https://pay.privex.io/order/package/vhive16-fi)
+
+
+# Updating a normal Dedicated Server or non-Privex VPS from HF24 to HF25
+
+If you're running Hive-in-a-box HF24 on either a Dedicated Server (whether Privex or not), or a normal VPS (one that is definitely not a Privex Node-in-a-box Pre-Installed Hive server), the upgrade to HF25 can be done within 30 mins to 1 hr, so long as your server has a high-speed network connection, has a recent `block_log` without any known corruption, and you're able to run the official `someguy123/hive` images which I release.
+
+Before doing anything, enter the folder where you've installed `hive-docker`. Most people install it in their home directory.
+
+```sh
+cd ~/hive-docker
+```
+
+## Update Method 1 - Shared Memory Transplant - Fastest, but only works with my official binary docker images
+
+
+First, you'll want to make sure that the `hive-docker` repository is up to date, so that you have the latest features and bug fixes required for the upgrade to go smoothly:
+
+```sh
+git fetch
+git checkout master
+git pull
+```
+
+
+Next, you'll want to install the HF25 Docker binary image. On most setups, a standard `./run.sh install` would work, but to avoid the risk of some people having configured a different default docker image in their `.env`, it's best to specify `hf25`:
+
+```sh
+./run.sh install hf25
+```
+
+Now, you'll need to stop your node - if it's actually running:
+
+```sh
+./run.sh stop
+```
+
+To help avoid corruption/contamination issues, and to potentially speed the downloads up by preventing `rsync` from having to calculate the differences between Privex's copy, and your copy of `shared_memory.bin` and `block_log.index` - it's best we remove them:
+
+```sh
+./run.sh clean shm
+
+rm -fv data/witness_node_data_dir/blockchain/block_log.index
+```
+
+It's now time to truncate/update your block_log, replace your block_log.index, and obtain a fresh copy of shared_memory.bin for HF25:
+
+```
+DL_SERVER="se1.files.privex.io" ./run.sh fix-blocks
+```
+
+![](https://images.hive.blog/p/7258xSVeJbKmECTaWChp4sJR8aZDJ7Y2HRvUHUnE6UnEtpj2Z6dqikt3ye5hs7B8Ef2bkjsjyQTre4JUb4x4j7Hxq281Uk2Fio53QLtzuovnfGtaRi2NEJC8GQ4MpvT915F6gKRVhZPwL?format=match&amp;mode=fit)
+
+- When asked whether you want to download the rest of the block_log, or truncate your block_log, press `y` and then hit enter.
+- If it instead says that your `block_log` is the same size as the remote, and wants to do an "integrity check" or "verify the block_log, press `n` and hit enter.
+- When aksed if you want to replace/update/synchronise your `block_log.index` - press `y` and hit enter.
+- When asked if you want to download/synchronise your snapshot files, press `n` and hit enter.
+- When asked if you want to download/update/synchronise your `shared_memory.bin` - press `y` and hit enter.
+
+Assuming everything went well, your server should now be ready to start.
+
+Time to start your server:
+
+```
+./run.sh start
+```
+
+Now check the logs, and monitor it as it syncs. 
+
+```
+./run.sh logs
+```
+
+If it takes more than 5 minutes to start outputting "Got X transactions from witness someguy123 on block 123456778" - then you should run `./run.sh monitor` to see the sync progress.
+
+Either way, it's a waiting game, it shouldn't take more than 20 mins to sync up (assuming you're following this guide within this week - this article was written on June 30th 2021), as `fix-blocks` would've gotten the recently synced chain files from [Privex's](https://www.privex.io/) file server.
+
+
++++ END OF METHOD 1 - Your node should now be up, or will be up very soon when it finishes syncing +++
+
+----------------------
+
+## Update Method 2 - Load a native snapshot - Slower than shared_memory.bin transplant - but this method will work with non-someguy123 built images
+
+### ONLY FOLLOW THIS METHOD IF YOU COMPILE YOUR OWN DOCKER IMAGE, OR USE A THIRD-PARTY DOCKER IMAGE
+
+If you use a custom image - whether one you built yourself using `./run.sh build`, `docker build`, - or one you downloaded from someone who isn't me - the shared memory transplant will likely be incompatible.
+
+For this method, follow everything in method 1, but DO NOT follow the y/n suggestions for `fix-blocks`, instead, you'll want to answer them in the following way instead:
+
+- When asked whether you want to download the rest of the block_log, or truncate your block_log, press `y` and then hit enter.
+- If it instead says that your `block_log` is the same size as the remote, and wants to do an "integrity check" or "verify the block_log, press `n` and hit enter.
+- When aksed if you want to replace/update/synchronise your `block_log.index` - press `y` and hit enter.
+- When asked if you want to download/synchronise your snapshot files, press `y` and hit enter.
+- When asked if you want to download/update/synchronise your `shared_memory.bin` - press `n` and hit enter.
+
+**ONLY FOLLOW THIS METHOD IF YOU COMPILE YOUR OWN DOCKER IMAGE, OR USE A THIRD-PARTY DOCKER IMAGE**
+
+Now, use `./run.sh clean shm` to ensure you don't have a `shared_memory.bin`, since an existing shared_memory.bin file will cause problems.
+
+```
+./run.sh clean shm
+```
+
+You can now load the native snapshot using the command:
+
+```
+./run.sh loadsnap privexsnap
+```
+
+This will generate a `shared_memory.bin` using that snapshot, and once it's finished loading the snapshot, the node will automatically start normally, so for a witness node, that means it will be ready to start producing once it's finished loading the snapshot, and syncing up any blocks which it was behind.
+
+All you have to do now, is monitor it (if you like), to track it's progress, and make sure nothing is going wrong:
+
+```
+./run.sh logs
+```
+
+
++++ END OF METHOD 2 - Your node should now be up, or will be up very soon when it finishes syncing/loading the snapshot +++
+
+
+---
+
+Thanks for reading!
+---
+
+<center>
+
+![](https://cdn.discordapp.com/attachments/379745956134125569/737091330143944806/SOMEX123.gif)
+
+</center>
+
+GIF Avatar by @stellabelle
+
+---
+
+Do you like what I'm doing for Hive?
+----
+
+
+[Vote for me to be a Hive witness](https://peakd.com/witnesses) - every vote counts. 
+
+----
+
+Don't forget to follow me for more like this.
+----
+
+---
+
+Have you ever thought about being a witness yourself? Join the [witness channel](https://openhive.chat/channel/witness). We're happy to guide you! Join in shaping the STEEM economy.
+
+Are you looking for a new server provider? My company @privex offers highly-reliable and affordable dedicated and virtual servers for HIVE, HBD, EOS, LTC, BTC, and even DOGE! Check out our website at https://www.privex.io
+
+You can join Privex's public Discord at https://discord.privex.io - we also have a Matrix server, sign up at https://riot.privex.io (or if you have an existing Matrix account, join our General chat at `#privex:privex.io`)
+
+---
+</div>
+<script crossorigin="anonymous" integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=" src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+
+<script src="https://unpkg.com/steem-content-renderer"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/hive-content-renderer/dist/hive-content-renderer.min.js"></script> -->
+<script>
+  $(document).ready(function() {
+    try {
+      const renderer = new SteemContentRenderer.DefaultRenderer({
+      // const renderer = new HiveContentRenderer({
+        baseUrl: "https://hive.blog/",
+        breaks: true,
+        skipSanitization: false,
+        allowInsecureScriptTags: false,
+        addNofollowToLinks: true,
+        doNotShowImages: false,
+        ipfsPrefix: "",
+        assetsWidth: 640,
+        assetsHeight: 480,
+        imageProxyFn: (url) => url,
+        usertagUrlFn: (account) => "/@someguy123",
+        hashtagUrlFn: (hashtag) => "/quickstart-how-to-upgrade-hive-in-a-box-hiab-hive-docker-to-hf25",
+        isLinkSafeFn: (url) => true,
+      });
+      
+      const inputElem = $('#content-someguy123-quickstart-how-to-upgrade-hive-in-a-box-hiab-hive-docker-to-hf25').html();
+      const outputElem = $('#content-someguy123-quickstart-how-to-upgrade-hive-in-a-box-hiab-hive-docker-to-hf25');
+      const output = renderer.render(inputElem);
+      
+      outputElem.html(output);
+    } catch(e) {
+      console.log(e);
+    }
+  });
+</script>
+
+<style>
+  #content-someguy123-quickstart-how-to-upgrade-hive-in-a-box-hiab-hive-docker-to-hf25 {
+    padding: 0 3rem;
+    color: #444444;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.8;
+    text-shadow: 0 1px 0 #ffffff;
+    padding: 0.5rem;
+  }
+  #content-someguy123-quickstart-how-to-upgrade-hive-in-a-box-hiab-hive-docker-to-hf25 code {
+    background: white;
+  }
+  #content-someguy123-quickstart-how-to-upgrade-hive-in-a-box-hiab-hive-docker-to-hf25 a {
+    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
+  }
+  #content-someguy123-quickstart-how-to-upgrade-hive-in-a-box-hiab-hive-docker-to-hf25 a:hover {
+    border-bottom: 0;
+  }
+  #content-someguy123-quickstart-how-to-upgrade-hive-in-a-box-hiab-hive-docker-to-hf25 h1 {
+    font-size: 2.2em;
+  }
+  #content-someguy123-quickstart-how-to-upgrade-hive-in-a-box-hiab-hive-docker-to-hf25 h2, h3, h4, h5 {
+    margin-bottom: 0;
+  }
+  #content-someguy123-quickstart-how-to-upgrade-hive-in-a-box-hiab-hive-docker-to-hf25 header small {
+    color: #999;
+    font-size: 50%;
+  }
+  #content-someguy123-quickstart-how-to-upgrade-hive-in-a-box-hiab-hive-docker-to-hf25 img {
+    max-width: 100%;
+  }
+</style>
+
+<hr />
+
+<p>
+  See: <a href="https://peakd.com/hive-139531/@someguy123/quickstart-how-to-upgrade-hive-in-a-box-hiab-hive-docker-to-hf25">[Quickstart] How to upgrade Hive-in-a-box (HIAB / hive-docker) to HF25</a>
+  by
+  <a href="https://hive.blog/@someguy123">@someguy123</a>
+</p>
+
+
+  </div><a class="u-url" href="/howto/witness/docker/node/2021/06/30/quickstart-how-to-upgrade-hive-in-a-box-hiab-hive-docker-to-hf25.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading"><a rel="author" href="/">Hive Chain Documentation</a></h2>
+    
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">site curated by: @inertia</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>Your resource for various levels of Hive Documentation.</p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+</body>
+
+</html>
