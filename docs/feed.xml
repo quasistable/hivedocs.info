@@ -1,4 +1,151 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="https://hivedocs.info/feed.xml" rel="self" type="application/atom+xml" /><link href="https://hivedocs.info/" rel="alternate" type="text/html" /><updated>2021-07-01T18:24:17-07:00</updated><id>https://hivedocs.info/feed.xml</id><title type="html">Hive Chain Documentation</title><subtitle>Your resource for various levels of Hive Documentation.</subtitle><author><name>site curated by: @inertia</name></author><entry><title type="html">[Quickstart] How to upgrade Hive-in-a-box (HIAB / hive-docker) to HF25</title><link href="https://hivedocs.info/howto/witness/docker/node/2021/06/30/quickstart-how-to-upgrade-hive-in-a-box-hiab-hive-docker-to-hf25.html" rel="alternate" type="text/html" title="[Quickstart] How to upgrade Hive-in-a-box (HIAB / hive-docker) to HF25" /><published>2021-06-30T00:16:54-07:00</published><updated>2021-06-30T00:16:54-07:00</updated><id>https://hivedocs.info/howto/witness/docker/node/2021/06/30/quickstart-how-to-upgrade-hive-in-a-box-hiab-hive-docker-to-hf25</id><content type="html" xml:base="https://hivedocs.info/howto/witness/docker/node/2021/06/30/quickstart-how-to-upgrade-hive-in-a-box-hiab-hive-docker-to-hf25.html">&lt;div id=&quot;content-someguy123-quickstart-how-to-upgrade-hive-in-a-box-hiab-hive-docker-to-hf25&quot;&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="https://hivedocs.info/feed.xml" rel="self" type="application/atom+xml" /><link href="https://hivedocs.info/" rel="alternate" type="text/html" /><updated>2021-07-06T21:45:58-07:00</updated><id>https://hivedocs.info/feed.xml</id><title type="html">Hive Chain Documentation</title><subtitle>Your resource for various levels of Hive Documentation.</subtitle><author><name>site curated by: @inertia</name></author><entry><title type="html">Ledger App updated with HF25 operations</title><link href="https://hivedocs.info/news/nano/nodejs/wallet/2021/07/06/ledger-app-updated-with-hf25-operations.html" rel="alternate" type="text/html" title="Ledger App updated with HF25 operations" /><published>2021-07-06T12:38:18-07:00</published><updated>2021-07-06T12:38:18-07:00</updated><id>https://hivedocs.info/news/nano/nodejs/wallet/2021/07/06/ledger-app-updated-with-hf25-operations</id><content type="html" xml:base="https://hivedocs.info/news/nano/nodejs/wallet/2021/07/06/ledger-app-updated-with-hf25-operations.html">&lt;div id=&quot;content-engrave-ledger-app-updated-with-hf25-operations&quot;&gt;
+![image.png](https://files.peakd.com/file/peakd-hive/engrave/Eo23B9HfFGSxgkzJckVtC8WSMeoEwfMcitDDJBZYJzaiVGqirgAwMZmEHpr2WcufBP6.png)
+&lt;sup&gt;Image credit (@thepeakstudio)&lt;/sup&gt;
+
+I'm slowly getting back on track to work on a Ledger Hive Application. My [previous post](https://peakd.com/hive-139531/@engrave/javascript-library-for-ledger-nano-s-hive-application) gathered a lot of traction so I feel committed to keeping you in touch.
+
+# HF25
+
+The latest hard fork (which happened a few days ago) introduced few new transactions, so I decided to modify both the app and the library to support it.
+
+Javascript library is available on NPM with a newest version `2.1.0`:
+ * `https://www.npmjs.com/package/@engrave/ledger-app-hive`
+
+
+Because the original repository seems to be dead (my previous Merge Request hasn't been reviewed or merged), I decided to move it to the new home:
+
+ * **Ledger Application**: `https://gitlab.com/engrave/ledger/hw-app-hive`
+ * **Javascript Library**: `https://gitlab.com/engrave/ledger/ledger-app-hive`
+
+Here is my first `recurrent_transfer` operation signed with my Ledger: `https://hiveblocks.com/tx/76293c907bf0038076f3507402a716c7d0b8ed57`
+
+
+![image.png](https://files.peakd.com/file/peakd-hive/engrave/23z7Bh3LG2w23qb9SdLz1Vhmf2wRZKHztTw1H9RL58exJVe2XygcfAS4nqbPPUrTfKNqv.png)
+
+
+# Code review
+
+I'm slowly getting familiar with the codebase. What I can tell so far, is that it contains a lot of unused code which I'm removing. This seems like a copy-paste and I would really like to clean it before sending it to the official review. It also contains some code prepared for Ledger Nano X but I couldn't build it so far. This is probably some kind of a left-over from the boilerplate so there's a lot of work to be done yet.
+
+I'm getting familiar with the ledger SDK as well to understand the code better.
+
+# Development stack and SDK
+
+SDK used to build the Hive app is already deprecated. There is also a new firmware version (2.0) that is not compatible with the previous one, hence we cannot run the app on new devices. I'm trying to port it to the new SDK version. The new SDK unifies the user flow for both Nano S and Nano X, so finally, we could run it on both devices.
+
+I've even bought the Nano X to be able to test the app against this model.
+
+Ledger prepared a docker image that contains all the necessary libraries to build the app. Unfortunately, the newest version does not work with the actual codebase so I need to make some changes to build it but at the end, this should make future development much easier.
+
+# Ledger companion app
+
+Simultaneously, I've started working on an electron-powered desktop app (as I promised in a previous post). I decided to go with Vue.js and for now, it contains basic CSS rules and views. Will push the code to the gitlab when it's a bit cleaner.
+
+
+![image.png](https://files.peakd.com/file/peakd-hive/engrave/EowF9ezqJkPjHhLKMx9NjA82sqpuhKVddGJHDgbd5zyo9TsVhKtGc1714xjdsZxerab.png)
+
+# What next
+
+To get this app accepted by the Ledger, it needs to fulfill security, documentation, and functional requirements but I would also make it more user friendly, so the plan is as follow:
+ * Make it compatible with a new SDK and 2.0 firmware version
+ * Make it working on both Nano S and Nano X devices
+ * Add Approve and Reject screens before signing the transaction
+ * Prepare user guide and developer's documentation for Ledger Team
+ * Develop a working version of the Hive companion app
+ * Submit the app for the official review
+
+***
+
+Follow me to be up to date with incoming development updates!
+
+***
+
+&lt;center&gt;
+
+**Click on the image to vote for @engrave witness:**
+
+[![banner_engrave 100.png](https://images.hive.blog/DQmUghvic5TCPPvVkB4iB7eXmgQ3RQ4L8jkVizvuCBW8RMT/banner_engrave%20100.png)](https://hivesigner.com/sign/account-witness-vote?witness=engrave&amp;amp;approve=1)
+
+
+&lt;/center&gt;
+&lt;/div&gt;
+&lt;script crossorigin=&quot;anonymous&quot; integrity=&quot;sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=&quot; src=&quot;https://code.jquery.com/jquery-3.5.1.slim.min.js&quot;&gt;&lt;/script&gt;
+
+&lt;script src=&quot;https://unpkg.com/steem-content-renderer&quot;&gt;&lt;/script&gt;
+
+&lt;!-- &lt;script src=&quot;https://cdn.jsdelivr.net/npm/hive-content-renderer/dist/hive-content-renderer.min.js&quot;&gt;&lt;/script&gt; --&gt;
+&lt;script&gt;
+  $(document).ready(function() {
+    try {
+      const renderer = new SteemContentRenderer.DefaultRenderer({
+      // const renderer = new HiveContentRenderer({
+        baseUrl: &quot;https://hive.blog/&quot;,
+        breaks: true,
+        skipSanitization: false,
+        allowInsecureScriptTags: false,
+        addNofollowToLinks: true,
+        doNotShowImages: false,
+        ipfsPrefix: &quot;&quot;,
+        assetsWidth: 640,
+        assetsHeight: 480,
+        imageProxyFn: (url) =&gt; url,
+        usertagUrlFn: (account) =&gt; &quot;/@engrave&quot;,
+        hashtagUrlFn: (hashtag) =&gt; &quot;/ledger-app-updated-with-hf25-operations&quot;,
+        isLinkSafeFn: (url) =&gt; true,
+      });
+      
+      const inputElem = $('#content-engrave-ledger-app-updated-with-hf25-operations').html();
+      const outputElem = $('#content-engrave-ledger-app-updated-with-hf25-operations');
+      const output = renderer.render(inputElem);
+      
+      outputElem.html(output);
+    } catch(e) {
+      console.log(e);
+    }
+  });
+&lt;/script&gt;
+
+&lt;style&gt;
+  #content-engrave-ledger-app-updated-with-hf25-operations {
+    padding: 0 3rem;
+    color: #444444;
+    font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.8;
+    text-shadow: 0 1px 0 #ffffff;
+    padding: 0.5rem;
+  }
+  #content-engrave-ledger-app-updated-with-hf25-operations code {
+    background: white;
+  }
+  #content-engrave-ledger-app-updated-with-hf25-operations a {
+    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
+  }
+  #content-engrave-ledger-app-updated-with-hf25-operations a:hover {
+    border-bottom: 0;
+  }
+  #content-engrave-ledger-app-updated-with-hf25-operations h1 {
+    font-size: 2.2em;
+  }
+  #content-engrave-ledger-app-updated-with-hf25-operations h2, h3, h4, h5 {
+    margin-bottom: 0;
+  }
+  #content-engrave-ledger-app-updated-with-hf25-operations header small {
+    color: #999;
+    font-size: 50%;
+  }
+  #content-engrave-ledger-app-updated-with-hf25-operations img {
+    max-width: 100%;
+  }
+&lt;/style&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;
+  See: &lt;a href=&quot;https://peakd.com/hive-139531/@engrave/ledger-app-updated-with-hf25-operations&quot;&gt;Ledger App updated with HF25 operations&lt;/a&gt;
+  by
+  &lt;a href=&quot;https://hive.blog/@engrave&quot;&gt;@engrave&lt;/a&gt;
+&lt;/p&gt;</content><author><name>engrave</name></author><category term="news" /><category term="nano" /><category term="nodejs" /><category term="wallet" /><summary type="html">![image.png](https://files.peakd.com/file/peakd-hive/engrave/Eo23B9HfFGSxgkzJckVtC8WSMeoEwfMcitDDJBZYJzaiVGqirgAwMZmEHpr2WcufBP6.png) Image credit (@thepeakstudio) I'm slowly getting back on track to work on a Ledger Hive Application. My [previous post](https://peakd.com/hive-139531/@engrave/javascript-library-for-ledger-nano-s-hive-application) gathered a lot of traction so I feel committed to keeping you in touch. # HF25 The latest hard fork (which happened a few days ago) introduced few new transactions, so I decided to modify both the app and the library to support it. Javascript library is available on NPM with a newest version `2.1.0`: * `https://www.npmjs.com/package/@engrave/ledger-app-hive` Because the original repository seems to be dead (my previous Merge Request hasn't been reviewed or merged), I decided to move it to the new home: * **Ledger Application**: `https://gitlab.com/engrave/ledger/hw-app-hive` * **Javascript Library**: `https://gitlab.com/engrave/ledger/ledger-app-hive` Here is my first `recurrent_transfer` operation signed with my Ledger: `https://hiveblocks.com/tx/76293c907bf0038076f3507402a716c7d0b8ed57` ![image.png](https://files.peakd.com/file/peakd-hive/engrave/23z7Bh3LG2w23qb9SdLz1Vhmf2wRZKHztTw1H9RL58exJVe2XygcfAS4nqbPPUrTfKNqv.png) # Code review I'm slowly getting familiar with the codebase. What I can tell so far, is that it contains a lot of unused code which I'm removing. This seems like a copy-paste and I would really like to clean it before sending it to the official review. It also contains some code prepared for Ledger Nano X but I couldn't build it so far. This is probably some kind of a left-over from the boilerplate so there's a lot of work to be done yet. I'm getting familiar with the ledger SDK as well to understand the code better. # Development stack and SDK SDK used to build the Hive app is already deprecated. There is also a new firmware version (2.0) that is not compatible with the previous one, hence we cannot run the app on new devices. I'm trying to port it to the new SDK version. The new SDK unifies the user flow for both Nano S and Nano X, so finally, we could run it on both devices. I've even bought the Nano X to be able to test the app against this model. Ledger prepared a docker image that contains all the necessary libraries to build the app. Unfortunately, the newest version does not work with the actual codebase so I need to make some changes to build it but at the end, this should make future development much easier. # Ledger companion app Simultaneously, I've started working on an electron-powered desktop app (as I promised in a previous post). I decided to go with Vue.js and for now, it contains basic CSS rules and views. Will push the code to the gitlab when it's a bit cleaner. ![image.png](https://files.peakd.com/file/peakd-hive/engrave/EowF9ezqJkPjHhLKMx9NjA82sqpuhKVddGJHDgbd5zyo9TsVhKtGc1714xjdsZxerab.png) # What next To get this app accepted by the Ledger, it needs to fulfill security, documentation, and functional requirements but I would also make it more user friendly, so the plan is as follow: * Make it compatible with a new SDK and 2.0 firmware version * Make it working on both Nano S and Nano X devices * Add Approve and Reject screens before signing the transaction * Prepare user guide and developer's documentation for Ledger Team * Develop a working version of the Hive companion app * Submit the app for the official review *** Follow me to be up to date with incoming development updates! *** **Click on the image to vote for @engrave witness:** [![banner_engrave 100.png](https://images.hive.blog/DQmUghvic5TCPPvVkB4iB7eXmgQ3RQ4L8jkVizvuCBW8RMT/banner_engrave%20100.png)](https://hivesigner.com/sign/account-witness-vote?witness=engrave&amp;amp;approve=1) See: Ledger App updated with HF25 operations by @engrave</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://files.peakd.com/file/peakd-hive/engrave/Eo23B9HfFGSxgkzJckVtC8WSMeoEwfMcitDDJBZYJzaiVGqirgAwMZmEHpr2WcufBP6.png" /><media:content medium="image" url="https://files.peakd.com/file/peakd-hive/engrave/Eo23B9HfFGSxgkzJckVtC8WSMeoEwfMcitDDJBZYJzaiVGqirgAwMZmEHpr2WcufBP6.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">[Quickstart] How to upgrade Hive-in-a-box (HIAB / hive-docker) to HF25</title><link href="https://hivedocs.info/howto/witness/docker/node/2021/06/30/quickstart-how-to-upgrade-hive-in-a-box-hiab-hive-docker-to-hf25.html" rel="alternate" type="text/html" title="[Quickstart] How to upgrade Hive-in-a-box (HIAB / hive-docker) to HF25" /><published>2021-06-30T00:16:54-07:00</published><updated>2021-06-30T00:16:54-07:00</updated><id>https://hivedocs.info/howto/witness/docker/node/2021/06/30/quickstart-how-to-upgrade-hive-in-a-box-hiab-hive-docker-to-hf25</id><content type="html" xml:base="https://hivedocs.info/howto/witness/docker/node/2021/06/30/quickstart-how-to-upgrade-hive-in-a-box-hiab-hive-docker-to-hf25.html">&lt;div id=&quot;content-someguy123-quickstart-how-to-upgrade-hive-in-a-box-hiab-hive-docker-to-hf25&quot;&gt;
 ![Hive-in-a-box Logo](https://images.hive.blog/p/HuuaCwcKuiEjNgLb5Q7HbtUvB1HEHgck8hUkQMB4bFSJaxwFsYXGx7N9qtgEvLdGaoY?format=match&amp;amp;mode=fit)
 
 I apologise for the late post, I've been overwhelmed trying to prepare @Privex for HF25, prepare my own servers, and provide one-on-one upgrade assistance to many close witness friends, and Privex customers.
@@ -1360,178 +1507,4 @@ HIVE onboarding tools/tutorials. Some commands will be customizable per guild th
   See: &lt;a href=&quot;https://hive.blog/hive-192847/@engrave/hiveprojects-weekly-update-2021-06-12-42368&quot;&gt;Hive Projects weekly update: 5 projects added, 131 listed in total!&lt;/a&gt;
   by
   &lt;a href=&quot;https://hive.blog/@engrave&quot;&gt;@engrave&lt;/a&gt;
-&lt;/p&gt;</content><author><name>engrave</name></author><category term="news" /><category term="projects" /><summary type="html">![](https://files.peakd.com/file/peakd-hive/engrave/IHxPwBD1-hiveprojects_update.png) # What is [Hive Projects](https://hiveprojects.io)? [Hive Projects](https://hiveprojects.io) is the biggest directory of apps, sites, tools, and scripts created for the Hive ecosystem. This website is an entirely volunteer-driven effort. That includes coding time and hosting costs. If you wish to help or show your gratitude, there are plenty of ways in which you can do that: * upvote this post * reblog or cross-post it into your favorite community * contribute to HiveProjects, by adding a new project - everyone can do it! * let us know about new project, by posting about it in [Hive Projects Community](https://peakd.com/c/hive-192847) or by cross-posting to it or simply paste us a link at [Engrave Discord server](https://discord.gg/8NktdFh) * vote for our @engrave witness * write a comment :) *** Previous post: [Hive Projects weekly update: 4 projects added, 126 listed in total!](/@engrave/hiveprojects-weekly-update-2021-03-06-13937) *** # Newly added projects All published projects were moderated and accepted by our **Content Manager** @lukmarcus, who works hard to make [Hive Projects](https://hiveprojects.io) the best and most up-to-date directory of tools and apps in our ecosystem. The entire reward from this post goes to him. ## PizzaBox **Team:** @thebeardflex, @hivetrending ![](https://hiveprojects.io/media/imgs/136/1623453852443.png) **Category:** [Bots](https://hiveprojects.io/categories/bots/) **Description:** *HIVE tailored community Discord Bot focused around awareness and onboarding. Provides moderation tools for use by communities both on and off chain. Ban, Kick, Mute, Sticky, Slowmo, Lock Channel, Purge, Music Player, Ticket System etc. Giveaways Market information for second-layer Hive-Engine tokens HIVE market information Mini-games HIVE onboarding tools/tutorials. Some commands will be customizable per guild they exist in.* [PizzaBox on HiveProjects.io](https://hiveprojects.io/projects/p/pizzabox/) ## Beatzchain **Team:** @polarmystro, @lamarz7 ![](https://hiveprojects.io/media/imgs/134/1618985842320.png) **Category:** [Generic Hive Interfaces](https://hiveprojects.io/categories/generic-hive-interfaces/) **Description:** *Beatzchain project will be a platform that would run on the Hive Blockchain that would serve for Rappers and music producers. Beatzchain wants to change the Hip-Hop world with a network rap musicians can earn cryptocurrencies through Hive, Music producers can buy/sell beats, and rappers can use crypto to purchase beats including the ones they&amp;#39;ve earned through the Hive Blockchain. We would like to start an NFT exchange for rappers and producers called &amp;quot;Hip-Hop Stocks&amp;quot; where musicians can create music NFTs with their songs/beats and buyers could benefit off the equity appreciation. The goal is to give unsigned, independent, and major artists a better financial system for musicians where everyone with good talent who put the work in can sit by the table together.* [Beatzchain on HiveProjects.io](https://hiveprojects.io/projects/p/beatzchain/) ## Hive Chain Documentation **Team:** @inertia ![](https://hiveprojects.io/media/imgs/133/1615696720345.png) **Category:** [Programming Tools](https://hiveprojects.io/categories/programming-tools/) **Description:** *Your resource for various levels of Hive Documentation.* [Hive Chain Documentation on HiveProjects.io](https://hiveprojects.io/projects/p/hive-chain-documentation/) ## Votify **Team:** @dannychain ![](https://hiveprojects.io/media/imgs/132/1615069673826.png) **Category:** [Witness Tools](https://hiveprojects.io/categories/witness-tools/) **Description:** *An Open Source Voting Page for Hive-Engine Witnesses* [Votify on HiveProjects.io](https://hiveprojects.io/projects/p/votify/) ## Karaka **Team:** ![](https://hiveprojects.io/media/imgs/135/1619983488995.png) **Category:** [Bots](https://hiveprojects.io/categories/bots/) **Description:** *Karaka is an automation (clerk) for Hive and Hive-Engine blockchains. Use it to manage tokens across multiple accounts.* [Karaka on HiveProjects.io](https://hiveprojects.io/projects/p/karaka/) *** **That would be all for today. Stay tuned for the next update and consider contributing to Hive Projects. It is a community-driven website.** **Click on the image to vote for @engrave witness:** [![banner_engrave 100.png](https://images.hive.blog/DQmUghvic5TCPPvVkB4iB7eXmgQ3RQ4L8jkVizvuCBW8RMT/banner_engrave%20100.png)](https://hivesigner.com/sign/account-witness-vote?witness=engrave&amp;amp;approve=1) **Dont forget to follow @engrave account!** See: Hive Projects weekly update: 5 projects added, 131 listed in total! by @engrave</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://hivedocs.info/assets/images/favicon.png" /><media:content medium="image" url="https://hivedocs.info/assets/images/favicon.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">CryptoCurrency eXchange Trading Library | Hive &amp;amp; HBD Prices</title><link href="https://hivedocs.info/howto/nodejs/exchange/2021/06/11/cryptocurrency-exchange-trading-library-or-hive-and-hbd-prices.html" rel="alternate" type="text/html" title="CryptoCurrency eXchange Trading Library | Hive &amp;amp; HBD Prices" /><published>2021-06-11T18:15:15-07:00</published><updated>2021-06-11T18:15:15-07:00</updated><id>https://hivedocs.info/howto/nodejs/exchange/2021/06/11/cryptocurrency-exchange-trading-library-or-hive-and-hbd-prices</id><content type="html" xml:base="https://hivedocs.info/howto/nodejs/exchange/2021/06/11/cryptocurrency-exchange-trading-library-or-hive-and-hbd-prices.html">&lt;div id=&quot;content-geekgirl-cryptocurrency-exchange-trading-library-or-hive-and-hbd-prices&quot;&gt;&lt;center&gt;![ccxt.png](https://images.hive.blog/DQmP7AXNQQHk7FXFZruTqK3nagHuWBefrNA489MHsxVbH5a/ccxt.png)&lt;/center&gt;
-
-CCXT is a cryptocurrency exchange trading library for Javascript, Python, and PHP. It is a trading API that supports more than 120 crypto exchanges and continues to add more. While my personal preference is to use in my python projects, it is nice to know that it can be used in Javascript and PHP based projects. For more details feel free to visit [CCXT GitHub page](https://github.com/ccxt/ccxt).
-
-What is really great about this library is that it provides access to many exchanges which include major exchanges like Coinbase, CoinbasePro, Binance, Bittrex, Huobi, etc. Various exchanges have their own python packages to interact with them. I think it is much better to have one interface that can connect to multiple exchanges, get necessary data, and even automate trading.
-
-Most of the functions are available as public and do not need API access credentials. However, for projects that need access to a trading account, we will need to obtain the API access credentials for specific exchanges that we have accounts at.
-
-This API can be used for simple things like getting data on what is being traded on exchanges, historical cryptocurrency prices. It can also be used for more complex projects like trading bots, web applications, etc.
-
-Getting started with this API is super easy. For python we need to first pip install ccxt. Once that is done we can start using it in our python code.
-
-To demonstrate how work with ccxt, I wanted to see what exchanges have HIVE and HBD listed, what trading pairs are available and the latest prices.
-
-First to see what exchanges are supported we can write the following code:
-
-```
-import ccxt
-
-print(ccxt.exchanges)
-```
-If we already know what exchange we would like to use in that list, we can start connecting to this exchange, and get trading pairs and latest data about this trading pairs as below:
-
-```
-import ccxt
-
-binance = ccxt.binance()
-print(binance.load_markets())
-```
-
-If we need to access our accounts we will need to pass api key and secrets as a dictionary argument like this:
-
-```
-import ccxt
-
-binance = ccxt.binance({
-    'apiKey': 'YOUR_PUBLIC_API_KEY',
-    'secret': 'YOUR_SECRET_PRIVATE_KEY',
-})
-
-```
-
-As you can see it is very easy to get started with CCXT. Exploring more available methods and properties we can write much more useful code.
-
-As I mentioned I was curious to see if I could use CCXT to see all the exchanges that have HIVE and HBD listed, what trading pairs they have available, and latest prices. Let's do that now.
-
-```
-import ccxt
-
-def create_table(prices):
-    table = '&lt;table&gt;&lt;tr&gt;&lt;th&gt;Ticker Symbol&lt;/th&gt;&lt;th&gt;Exchange&lt;/th&gt;&lt;th&gt;Price&lt;/th&gt;&lt;/tr&gt;'
-    for price in prices:
-        row = f'&lt;tr&gt;&lt;td&gt;{price[0]}&lt;/td&gt;&lt;td&gt;{price[1]}&lt;/td&gt;&lt;td&gt;{str(price[2])+&quot; &quot;+price[3]}&lt;/td&gt;&lt;/tr&gt;'
-        table += row
-    table += '&lt;/table&gt;'
-    return table
-
-prices = []
-for exchange_id in ccxt.exchanges:
-    if exchange_id == 'cdax':
-        continue
-
-    try:
-        exchange_class = getattr(ccxt, exchange_id)
-        exchange = exchange_class()
-        markets = exchange.load_markets()
-    except:
-        continue
-
-    for market in markets:
-        if 'HIVE' in market or 'HBD' in market:
-            if 'HBDC' in market:
-                continue
-            ticker = exchange.fetch_ticker(market)
-            if ticker['symbol'].split('/')[1] == 'BTC':
-                prices.append((market, exchange_id, format(ticker['close'], '.8f'), ticker['symbol'].split('/')[1]))
-            else:
-                prices.append((market, exchange_id, ticker['close'], ticker['symbol'].split('/')[1]))
-
-table = create_table(prices)
-print(table)
-```
-
-What the main part of the code doing is, first we are trying to identify all the exchanges, then we are getting the method by the same name to create the instance of the exchange. Then we are looking what ticker symbols are traded in the exchange. If any of the tickers include Hive or HBD we are storing ticker symbol, exchange name, last close price in prices list. `create_table` is a helper function that puts together the results in a table format, so I can include them in the post. You can scroll down to see the results.
-
-Initially when I was testing I was getting 12 exchanges that have Hive traded on. However, something went wrong when I tried to get the prices of **CDAX** exchange. After looking closely I was convinced Hive or HBD were not actually listed there. So I have do include a line of code to exclude **CDAX**. 
-
-Another interesting thing we can see is from the results is that, for some reason **HBTC** exchange named the ticker symbol as **HIVE1/USDT** instead of just HIVE without 1.
-
-I don't know what exchange **LATOKEN** is, but from the results we can see while HIVE seems to be listed, prices there are all zero.
-
-This is not a full list of exchanges that have Hive or HBD listed. We can see how some exchanges like ionomy, blocktrades, beaxy, mxc, are not there. It is still great to see that all the major exchanges like Binance, Bittrex, Huobi, Upbit are supported in CCXT.
-
-The code above can also be used for any other coins/tokens. If you learn about a new coin/token and would like to see if where it is traded, simply change the comparison logic from HIVE and HBD to that coin/token.
-
-&lt;center&gt;&lt;h1&gt;Hive and HBD Prices&amp;lt;/h2&amp;gt;&amp;lt;/center&amp;gt;
-
-&lt;center&gt;&lt;table&gt;&lt;tr&gt;&lt;th&gt;Ticker Symbol&lt;/th&gt;&lt;th&gt;Exchange&lt;/th&gt;&lt;th&gt;Price&lt;/th&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;HIVE/BNB&lt;/td&gt;&lt;td&gt;binance&lt;/td&gt;&lt;td&gt;0.00429 BNB&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;HIVE/BTC&lt;/td&gt;&lt;td&gt;binance&lt;/td&gt;&lt;td&gt;0.00000946 BTC&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;HIVE/USDT&lt;/td&gt;&lt;td&gt;binance&lt;/td&gt;&lt;td&gt;0.3521 USDT&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;HIVE/KRW&lt;/td&gt;&lt;td&gt;bithumb&lt;/td&gt;&lt;td&gt;410.3 KRW&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;HBD/BTC&lt;/td&gt;&lt;td&gt;bittrex&lt;/td&gt;&lt;td&gt;0.00002654 BTC&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;HIVE/BTC&lt;/td&gt;&lt;td&gt;bittrex&lt;/td&gt;&lt;td&gt;0.00000950 BTC&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;HIVE/USD&lt;/td&gt;&lt;td&gt;bittrex&lt;/td&gt;&lt;td&gt;0.35458 USD&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;HIVE/USDT&lt;/td&gt;&lt;td&gt;bittrex&lt;/td&gt;&lt;td&gt;0.35712 USDT&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;HIVE/USDT&lt;/td&gt;&lt;td&gt;gateio&lt;/td&gt;&lt;td&gt;0.3524 USDT&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;HIVE1/USDT&lt;/td&gt;&lt;td&gt;hbtc&lt;/td&gt;&lt;td&gt;0.358 USDT&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;HIVE/USDT&lt;/td&gt;&lt;td&gt;huobipro&lt;/td&gt;&lt;td&gt;0.3525 USDT&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;HIVE/HT&lt;/td&gt;&lt;td&gt;huobipro&lt;/td&gt;&lt;td&gt;0.025623 HT&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;HIVE/BTC&lt;/td&gt;&lt;td&gt;huobipro&lt;/td&gt;&lt;td&gt;0.00000947 BTC&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;HIVE/IDR&lt;/td&gt;&lt;td&gt;indodax&lt;/td&gt;&lt;td&gt;5063.0 IDR&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;HIVE/USDT&lt;/td&gt;&lt;td&gt;latoken&lt;/td&gt;&lt;td&gt;0.0 USDT&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;HIVE/BTC&lt;/td&gt;&lt;td&gt;latoken&lt;/td&gt;&lt;td&gt;0.00000000 BTC&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;HIVE/ETH&lt;/td&gt;&lt;td&gt;latoken&lt;/td&gt;&lt;td&gt;0.0 ETH&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;HIVE/KRW&lt;/td&gt;&lt;td&gt;probit&lt;/td&gt;&lt;td&gt;410.9 KRW&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;HIVE/USDT&lt;/td&gt;&lt;td&gt;probit&lt;/td&gt;&lt;td&gt;0.3526 USDT&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;HIVE/BTC&lt;/td&gt;&lt;td&gt;probit&lt;/td&gt;&lt;td&gt;0.00000948 BTC&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;HIVE/BTC&lt;/td&gt;&lt;td&gt;stex&lt;/td&gt;&lt;td&gt;0.00000107 BTC&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;HIVE/BTC&lt;/td&gt;&lt;td&gt;upbit&lt;/td&gt;&lt;td&gt;0.00000955 BTC&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;HBD/BTC&lt;/td&gt;&lt;td&gt;upbit&lt;/td&gt;&lt;td&gt;0.00002515 BTC&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;HIVE/KRW&lt;/td&gt;&lt;td&gt;upbit&lt;/td&gt;&lt;td&gt;413.0 KRW&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/center&gt;
-
-Posted Using [LeoFinance &lt;sup&gt;Beta&lt;/sup&gt;](https://leofinance.io/@geekgirl/cryptocurrency-exchange-trading-library-or-hive-and-hbd-prices)&amp;lt;/div&amp;gt;
-&lt;script crossorigin=&quot;anonymous&quot; integrity=&quot;sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=&quot; src=&quot;https://code.jquery.com/jquery-3.5.1.slim.min.js&quot;&gt;&lt;/script&gt;
-&lt;script src=&quot;https://unpkg.com/steem-content-renderer&quot;&gt;&lt;/script&gt;
-&lt;!-- &lt;script src=&quot;https://cdn.jsdelivr.net/npm/hive-content-renderer/dist/hive-content-renderer.min.js&quot;&gt;&lt;/script&gt; --&gt;
-&lt;script&gt;
-  $(document).ready(function() {
-    try {
-      const renderer = new SteemContentRenderer.DefaultRenderer({
-      // const renderer = new HiveContentRenderer({
-        baseUrl: &quot;https://hive.blog/&quot;,
-        breaks: true,
-        skipSanitization: false,
-        allowInsecureScriptTags: false,
-        addNofollowToLinks: true,
-        doNotShowImages: false,
-        ipfsPrefix: &quot;&quot;,
-        assetsWidth: 640,
-        assetsHeight: 480,
-        imageProxyFn: (url) =&gt; url,
-        usertagUrlFn: (account) =&gt; &quot;/@geekgirl&quot;,
-        hashtagUrlFn: (hashtag) =&gt; &quot;/cryptocurrency-exchange-trading-library-or-hive-and-hbd-prices&quot;,
-        isLinkSafeFn: (url) =&gt; true,
-      });
-      
-      const inputElem = $('#content-geekgirl-cryptocurrency-exchange-trading-library-or-hive-and-hbd-prices').html();
-      const outputElem = $('#content-geekgirl-cryptocurrency-exchange-trading-library-or-hive-and-hbd-prices');
-      const output = renderer.render(inputElem);
-      
-      outputElem.html(output);
-    } catch(e) {
-      console.log(e);
-    }
-  });
-&lt;/script&gt;
-&lt;style&gt;
-  #content-geekgirl-cryptocurrency-exchange-trading-library-or-hive-and-hbd-prices {
-    padding: 0 3rem;
-    color: #444444;
-    font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif;
-    font-size: 16px;
-    line-height: 1.8;
-    text-shadow: 0 1px 0 #ffffff;
-    padding: 0.5rem;
-  }
-  #content-geekgirl-cryptocurrency-exchange-trading-library-or-hive-and-hbd-prices code {
-    background: white;
-  }
-  #content-geekgirl-cryptocurrency-exchange-trading-library-or-hive-and-hbd-prices a {
-    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
-  }
-  #content-geekgirl-cryptocurrency-exchange-trading-library-or-hive-and-hbd-prices a:hover {
-    border-bottom: 0;
-  }
-  #content-geekgirl-cryptocurrency-exchange-trading-library-or-hive-and-hbd-prices h1 {
-    font-size: 2.2em;
-  }
-  #content-geekgirl-cryptocurrency-exchange-trading-library-or-hive-and-hbd-prices h2, h3, h4, h5 {
-    margin-bottom: 0;
-  }
-  #content-geekgirl-cryptocurrency-exchange-trading-library-or-hive-and-hbd-prices header small {
-    color: #999;
-    font-size: 50%;
-  }
-  #content-geekgirl-cryptocurrency-exchange-trading-library-or-hive-and-hbd-prices img {
-    max-width: 100%;
-  }
-&lt;/style&gt;
-
-&lt;hr /&gt;
-&lt;p&gt;
-  See: &lt;a href=&quot;https://leofinance.io/@geekgirl/cryptocurrency-exchange-trading-library-or-hive-and-hbd-prices&quot;&gt;CryptoCurrency eXchange Trading Library | Hive &amp;amp; HBD Prices&lt;/a&gt;
-  by
-  &lt;a href=&quot;https://hive.blog/@geekgirl&quot;&gt;@geekgirl&lt;/a&gt;
-&lt;/p&gt;
-
-&lt;/h1&gt;&lt;/center&gt;&lt;/div&gt;</content><author><name>geekgirl</name></author><category term="howto" /><category term="nodejs" /><category term="exchange" /><summary type="html">![ccxt.png](https://images.hive.blog/DQmP7AXNQQHk7FXFZruTqK3nagHuWBefrNA489MHsxVbH5a/ccxt.png) CCXT is a cryptocurrency exchange trading library for Javascript, Python, and PHP. It is a trading API that supports more than 120 crypto exchanges and continues to add more. While my personal preference is to use in my python projects, it is nice to know that it can be used in Javascript and PHP based projects. For more details feel free to visit [CCXT GitHub page](https://github.com/ccxt/ccxt). What is really great about this library is that it provides access to many exchanges which include major exchanges like Coinbase, CoinbasePro, Binance, Bittrex, Huobi, etc. Various exchanges have their own python packages to interact with them. I think it is much better to have one interface that can connect to multiple exchanges, get necessary data, and even automate trading. Most of the functions are available as public and do not need API access credentials. However, for projects that need access to a trading account, we will need to obtain the API access credentials for specific exchanges that we have accounts at. This API can be used for simple things like getting data on what is being traded on exchanges, historical cryptocurrency prices. It can also be used for more complex projects like trading bots, web applications, etc. Getting started with this API is super easy. For python we need to first pip install ccxt. Once that is done we can start using it in our python code. To demonstrate how work with ccxt, I wanted to see what exchanges have HIVE and HBD listed, what trading pairs are available and the latest prices. First to see what exchanges are supported we can write the following code: ``` import ccxt print(ccxt.exchanges) ``` If we already know what exchange we would like to use in that list, we can start connecting to this exchange, and get trading pairs and latest data about this trading pairs as below: ``` import ccxt binance = ccxt.binance() print(binance.load_markets()) ``` If we need to access our accounts we will need to pass api key and secrets as a dictionary argument like this: ``` import ccxt binance = ccxt.binance({ 'apiKey': 'YOUR_PUBLIC_API_KEY', 'secret': 'YOUR_SECRET_PRIVATE_KEY', }) ``` As you can see it is very easy to get started with CCXT. Exploring more available methods and properties we can write much more useful code. As I mentioned I was curious to see if I could use CCXT to see all the exchanges that have HIVE and HBD listed, what trading pairs they have available, and latest prices. Let's do that now. ``` import ccxt def create_table(prices): table = 'Ticker SymbolExchangePrice' for price in prices: row = f'{price[0]}{price[1]}{str(price[2])+&quot; &quot;+price[3]}' table += row table += '' return table prices = [] for exchange_id in ccxt.exchanges: if exchange_id == 'cdax': continue try: exchange_class = getattr(ccxt, exchange_id) exchange = exchange_class() markets = exchange.load_markets() except: continue for market in markets: if 'HIVE' in market or 'HBD' in market: if 'HBDC' in market: continue ticker = exchange.fetch_ticker(market) if ticker['symbol'].split('/')[1] == 'BTC': prices.append((market, exchange_id, format(ticker['close'], '.8f'), ticker['symbol'].split('/')[1])) else: prices.append((market, exchange_id, ticker['close'], ticker['symbol'].split('/')[1])) table = create_table(prices) print(table) ``` What the main part of the code doing is, first we are trying to identify all the exchanges, then we are getting the method by the same name to create the instance of the exchange. Then we are looking what ticker symbols are traded in the exchange. If any of the tickers include Hive or HBD we are storing ticker symbol, exchange name, last close price in prices list. `create_table` is a helper function that puts together the results in a table format, so I can include them in the post. You can scroll down to see the results. Initially when I was testing I was getting 12 exchanges that have Hive traded on. However, something went wrong when I tried to get the prices of **CDAX** exchange. After looking closely I was convinced Hive or HBD were not actually listed there. So I have do include a line of code to exclude **CDAX**. Another interesting thing we can see is from the results is that, for some reason **HBTC** exchange named the ticker symbol as **HIVE1/USDT** instead of just HIVE without 1. I don't know what exchange **LATOKEN** is, but from the results we can see while HIVE seems to be listed, prices there are all zero. This is not a full list of exchanges that have Hive or HBD listed. We can see how some exchanges like ionomy, blocktrades, beaxy, mxc, are not there. It is still great to see that all the major exchanges like Binance, Bittrex, Huobi, Upbit are supported in CCXT. The code above can also be used for any other coins/tokens. If you learn about a new coin/token and would like to see if where it is traded, simply change the comparison logic from HIVE and HBD to that coin/token. Hive and HBD Prices&amp;lt;/h2&amp;gt;&amp;lt;/center&amp;gt; Ticker SymbolExchangePriceHIVE/BNBbinance0.00429 BNBHIVE/BTCbinance0.00000946 BTCHIVE/USDTbinance0.3521 USDTHIVE/KRWbithumb410.3 KRWHBD/BTCbittrex0.00002654 BTCHIVE/BTCbittrex0.00000950 BTCHIVE/USDbittrex0.35458 USDHIVE/USDTbittrex0.35712 USDTHIVE/USDTgateio0.3524 USDTHIVE1/USDThbtc0.358 USDTHIVE/USDThuobipro0.3525 USDTHIVE/HThuobipro0.025623 HTHIVE/BTChuobipro0.00000947 BTCHIVE/IDRindodax5063.0 IDRHIVE/USDTlatoken0.0 USDTHIVE/BTClatoken0.00000000 BTCHIVE/ETHlatoken0.0 ETHHIVE/KRWprobit410.9 KRWHIVE/USDTprobit0.3526 USDTHIVE/BTCprobit0.00000948 BTCHIVE/BTCstex0.00000107 BTCHIVE/BTCupbit0.00000955 BTCHBD/BTCupbit0.00002515 BTCHIVE/KRWupbit413.0 KRW Posted Using [LeoFinance Beta](https://leofinance.io/@geekgirl/cryptocurrency-exchange-trading-library-or-hive-and-hbd-prices)&amp;lt;/div&amp;gt; See: CryptoCurrency eXchange Trading Library | Hive &amp;amp; HBD Prices by @geekgirl</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://images.hive.blog/DQmP7AXNQQHk7FXFZruTqK3nagHuWBefrNA489MHsxVbH5a/ccxt.png" /><media:content medium="image" url="https://images.hive.blog/DQmP7AXNQQHk7FXFZruTqK3nagHuWBefrNA489MHsxVbH5a/ccxt.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>
+&lt;/p&gt;</content><author><name>engrave</name></author><category term="news" /><category term="projects" /><summary type="html">![](https://files.peakd.com/file/peakd-hive/engrave/IHxPwBD1-hiveprojects_update.png) # What is [Hive Projects](https://hiveprojects.io)? [Hive Projects](https://hiveprojects.io) is the biggest directory of apps, sites, tools, and scripts created for the Hive ecosystem. This website is an entirely volunteer-driven effort. That includes coding time and hosting costs. If you wish to help or show your gratitude, there are plenty of ways in which you can do that: * upvote this post * reblog or cross-post it into your favorite community * contribute to HiveProjects, by adding a new project - everyone can do it! * let us know about new project, by posting about it in [Hive Projects Community](https://peakd.com/c/hive-192847) or by cross-posting to it or simply paste us a link at [Engrave Discord server](https://discord.gg/8NktdFh) * vote for our @engrave witness * write a comment :) *** Previous post: [Hive Projects weekly update: 4 projects added, 126 listed in total!](/@engrave/hiveprojects-weekly-update-2021-03-06-13937) *** # Newly added projects All published projects were moderated and accepted by our **Content Manager** @lukmarcus, who works hard to make [Hive Projects](https://hiveprojects.io) the best and most up-to-date directory of tools and apps in our ecosystem. The entire reward from this post goes to him. ## PizzaBox **Team:** @thebeardflex, @hivetrending ![](https://hiveprojects.io/media/imgs/136/1623453852443.png) **Category:** [Bots](https://hiveprojects.io/categories/bots/) **Description:** *HIVE tailored community Discord Bot focused around awareness and onboarding. Provides moderation tools for use by communities both on and off chain. Ban, Kick, Mute, Sticky, Slowmo, Lock Channel, Purge, Music Player, Ticket System etc. Giveaways Market information for second-layer Hive-Engine tokens HIVE market information Mini-games HIVE onboarding tools/tutorials. Some commands will be customizable per guild they exist in.* [PizzaBox on HiveProjects.io](https://hiveprojects.io/projects/p/pizzabox/) ## Beatzchain **Team:** @polarmystro, @lamarz7 ![](https://hiveprojects.io/media/imgs/134/1618985842320.png) **Category:** [Generic Hive Interfaces](https://hiveprojects.io/categories/generic-hive-interfaces/) **Description:** *Beatzchain project will be a platform that would run on the Hive Blockchain that would serve for Rappers and music producers. Beatzchain wants to change the Hip-Hop world with a network rap musicians can earn cryptocurrencies through Hive, Music producers can buy/sell beats, and rappers can use crypto to purchase beats including the ones they&amp;#39;ve earned through the Hive Blockchain. We would like to start an NFT exchange for rappers and producers called &amp;quot;Hip-Hop Stocks&amp;quot; where musicians can create music NFTs with their songs/beats and buyers could benefit off the equity appreciation. The goal is to give unsigned, independent, and major artists a better financial system for musicians where everyone with good talent who put the work in can sit by the table together.* [Beatzchain on HiveProjects.io](https://hiveprojects.io/projects/p/beatzchain/) ## Hive Chain Documentation **Team:** @inertia ![](https://hiveprojects.io/media/imgs/133/1615696720345.png) **Category:** [Programming Tools](https://hiveprojects.io/categories/programming-tools/) **Description:** *Your resource for various levels of Hive Documentation.* [Hive Chain Documentation on HiveProjects.io](https://hiveprojects.io/projects/p/hive-chain-documentation/) ## Votify **Team:** @dannychain ![](https://hiveprojects.io/media/imgs/132/1615069673826.png) **Category:** [Witness Tools](https://hiveprojects.io/categories/witness-tools/) **Description:** *An Open Source Voting Page for Hive-Engine Witnesses* [Votify on HiveProjects.io](https://hiveprojects.io/projects/p/votify/) ## Karaka **Team:** ![](https://hiveprojects.io/media/imgs/135/1619983488995.png) **Category:** [Bots](https://hiveprojects.io/categories/bots/) **Description:** *Karaka is an automation (clerk) for Hive and Hive-Engine blockchains. Use it to manage tokens across multiple accounts.* [Karaka on HiveProjects.io](https://hiveprojects.io/projects/p/karaka/) *** **That would be all for today. Stay tuned for the next update and consider contributing to Hive Projects. It is a community-driven website.** **Click on the image to vote for @engrave witness:** [![banner_engrave 100.png](https://images.hive.blog/DQmUghvic5TCPPvVkB4iB7eXmgQ3RQ4L8jkVizvuCBW8RMT/banner_engrave%20100.png)](https://hivesigner.com/sign/account-witness-vote?witness=engrave&amp;amp;approve=1) **Dont forget to follow @engrave account!** See: Hive Projects weekly update: 5 projects added, 131 listed in total! by @engrave</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://hivedocs.info/assets/images/favicon.png" /><media:content medium="image" url="https://hivedocs.info/assets/images/favicon.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>
