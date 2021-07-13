@@ -1,4 +1,243 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="https://hivedocs.info/feed.xml" rel="self" type="application/atom+xml" /><link href="https://hivedocs.info/" rel="alternate" type="text/html" /><updated>2021-07-06T21:45:58-07:00</updated><id>https://hivedocs.info/feed.xml</id><title type="html">Hive Chain Documentation</title><subtitle>Your resource for various levels of Hive Documentation.</subtitle><author><name>site curated by: @inertia</name></author><entry><title type="html">Ledger App updated with HF25 operations</title><link href="https://hivedocs.info/news/nano/nodejs/wallet/2021/07/06/ledger-app-updated-with-hf25-operations.html" rel="alternate" type="text/html" title="Ledger App updated with HF25 operations" /><published>2021-07-06T12:38:18-07:00</published><updated>2021-07-06T12:38:18-07:00</updated><id>https://hivedocs.info/news/nano/nodejs/wallet/2021/07/06/ledger-app-updated-with-hf25-operations</id><content type="html" xml:base="https://hivedocs.info/news/nano/nodejs/wallet/2021/07/06/ledger-app-updated-with-hf25-operations.html">&lt;div id=&quot;content-engrave-ledger-app-updated-with-hf25-operations&quot;&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="https://hivedocs.info/feed.xml" rel="self" type="application/atom+xml" /><link href="https://hivedocs.info/" rel="alternate" type="text/html" /><updated>2021-07-12T20:37:25-07:00</updated><id>https://hivedocs.info/feed.xml</id><title type="html">Hive Chain Documentation</title><subtitle>Your resource for various levels of Hive Documentation.</subtitle><author><name>site curated by: @inertia</name></author><entry><title type="html">Core development report #12: Good progress on direct rc delegations</title><link href="https://hivedocs.info/news/core/development/2021/07/12/core-development-report-12-good-progress-on-direct-rc-delegations.html" rel="alternate" type="text/html" title="Core development report #12: Good progress on direct rc delegations" /><published>2021-07-12T13:30:15-07:00</published><updated>2021-07-12T13:30:15-07:00</updated><id>https://hivedocs.info/news/core/development/2021/07/12/core-development-report-12-good-progress-on-direct-rc-delegations</id><content type="html" xml:base="https://hivedocs.info/news/core/development/2021/07/12/core-development-report-12-good-progress-on-direct-rc-delegations.html">&lt;div id=&quot;content-howo-core-development-report-12-good-progress-on-direct-rc-delegations&quot;&gt;
+![image.png](https://files.peakd.com/file/peakd-hive/howo/AJeaeqp3EAX2QSK997FwxcZdJuACo817654t7riwiGf3aSNSLCLRwP5yGvpwrcb.png)
+
+Hey,
+
+I usually do my reports via voice during the hive developers meeting, but due to some vacations here and there and rush with hard fork 25, we decided to postpone it a few times so I figured I'd make an update about my progress via text.
+
+Nowadays I am working on direct rc delegations, if you didn't follow, the initial implementation was judged too complex and there was a fear that this complexity could hide bug in the edge cases. Plus it makes it less user friendly. So I made a new specification here https://gitlab.syncad.com/hive/hive/-/issues/152.
+
+And now I'm implementing it, work is in progress on that branch https://gitlab.syncad.com/hive/hive/-/tree/feature/direct_rc_delegations
+
+The core core is done, you can delegate rc, update an existing delegation, delete a delegation and rc delegations are taken into account when calculating rc. I have also added some api endpoint so that when you call find_rc_account and list_rc_account the amount of RC received/delegated is reflected there.
+
+I also added an endpoint to fetch direct rc delegations but I'm having some issues with the indexes (it induces a uniqueness constraint in the blockchain which is a problem because then if you want to delegate to one person and then another person you end up with a conflict because &quot;from&quot; is unique).
+
+I've also included everything above in the cli_wallet for easy use. I'll update hive-js later on too so that most dapps will be able to play with it.
+
+Apart from that I need to handle the edge cases where you lose RC (you delegated all your rc but then you power downs so you can no longer sustain those delegations) and write a mountain of automated tests.
+
+Once that's done, I'll go through a bunch of reviews with @blocktrades' team (which I'm assuming won't happen until a few weeks as some of the core team is in vacations). Then we'll launch a testnet (or update the ongoing testnet, that part is unclear) so that some of the power users/ dapp users can test it out.
+
+@howo&lt;/div&gt;
+&lt;script crossorigin=&quot;anonymous&quot; integrity=&quot;sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=&quot; src=&quot;https://code.jquery.com/jquery-3.5.1.slim.min.js&quot;&gt;&lt;/script&gt;
+
+&lt;script src=&quot;https://unpkg.com/steem-content-renderer&quot;&gt;&lt;/script&gt;
+
+&lt;!-- &lt;script src=&quot;https://cdn.jsdelivr.net/npm/hive-content-renderer/dist/hive-content-renderer.min.js&quot;&gt;&lt;/script&gt; --&gt;
+&lt;script&gt;
+  $(document).ready(function() {
+    try {
+      const renderer = new SteemContentRenderer.DefaultRenderer({
+      // const renderer = new HiveContentRenderer({
+        baseUrl: &quot;https://hive.blog/&quot;,
+        breaks: true,
+        skipSanitization: false,
+        allowInsecureScriptTags: false,
+        addNofollowToLinks: true,
+        doNotShowImages: false,
+        ipfsPrefix: &quot;&quot;,
+        assetsWidth: 640,
+        assetsHeight: 480,
+        imageProxyFn: (url) =&gt; url,
+        usertagUrlFn: (account) =&gt; &quot;/@howo&quot;,
+        hashtagUrlFn: (hashtag) =&gt; &quot;/core-development-report-12-good-progress-on-direct-rc-delegations&quot;,
+        isLinkSafeFn: (url) =&gt; true,
+      });
+      
+      const inputElem = $('#content-howo-core-development-report-12-good-progress-on-direct-rc-delegations').html();
+      const outputElem = $('#content-howo-core-development-report-12-good-progress-on-direct-rc-delegations');
+      const output = renderer.render(inputElem);
+      
+      outputElem.html(output);
+    } catch(e) {
+      console.log(e);
+    }
+  });
+&lt;/script&gt;
+
+&lt;style&gt;
+  #content-howo-core-development-report-12-good-progress-on-direct-rc-delegations {
+    padding: 0 3rem;
+    color: #444444;
+    font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.8;
+    text-shadow: 0 1px 0 #ffffff;
+    padding: 0.5rem;
+  }
+  #content-howo-core-development-report-12-good-progress-on-direct-rc-delegations code {
+    background: white;
+  }
+  #content-howo-core-development-report-12-good-progress-on-direct-rc-delegations a {
+    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
+  }
+  #content-howo-core-development-report-12-good-progress-on-direct-rc-delegations a:hover {
+    border-bottom: 0;
+  }
+  #content-howo-core-development-report-12-good-progress-on-direct-rc-delegations h1 {
+    font-size: 2.2em;
+  }
+  #content-howo-core-development-report-12-good-progress-on-direct-rc-delegations h2, h3, h4, h5 {
+    margin-bottom: 0;
+  }
+  #content-howo-core-development-report-12-good-progress-on-direct-rc-delegations header small {
+    color: #999;
+    font-size: 50%;
+  }
+  #content-howo-core-development-report-12-good-progress-on-direct-rc-delegations img {
+    max-width: 100%;
+  }
+&lt;/style&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;
+  See: &lt;a href=&quot;https://peakd.com/core/@howo/core-development-report-12-good-progress-on-direct-rc-delegations&quot;&gt;Core development report #12: Good progress on direct rc delegations&lt;/a&gt;
+  by
+  &lt;a href=&quot;https://hive.blog/@howo&quot;&gt;@howo&lt;/a&gt;
+&lt;/p&gt;</content><author><name>howo</name></author><category term="news" /><category term="core" /><category term="development" /><summary type="html">![image.png](https://files.peakd.com/file/peakd-hive/howo/AJeaeqp3EAX2QSK997FwxcZdJuACo817654t7riwiGf3aSNSLCLRwP5yGvpwrcb.png) Hey, I usually do my reports via voice during the hive developers meeting, but due to some vacations here and there and rush with hard fork 25, we decided to postpone it a few times so I figured I'd make an update about my progress via text. Nowadays I am working on direct rc delegations, if you didn't follow, the initial implementation was judged too complex and there was a fear that this complexity could hide bug in the edge cases. Plus it makes it less user friendly. So I made a new specification here https://gitlab.syncad.com/hive/hive/-/issues/152. And now I'm implementing it, work is in progress on that branch https://gitlab.syncad.com/hive/hive/-/tree/feature/direct_rc_delegations The core core is done, you can delegate rc, update an existing delegation, delete a delegation and rc delegations are taken into account when calculating rc. I have also added some api endpoint so that when you call find_rc_account and list_rc_account the amount of RC received/delegated is reflected there. I also added an endpoint to fetch direct rc delegations but I'm having some issues with the indexes (it induces a uniqueness constraint in the blockchain which is a problem because then if you want to delegate to one person and then another person you end up with a conflict because &quot;from&quot; is unique). I've also included everything above in the cli_wallet for easy use. I'll update hive-js later on too so that most dapps will be able to play with it. Apart from that I need to handle the edge cases where you lose RC (you delegated all your rc but then you power downs so you can no longer sustain those delegations) and write a mountain of automated tests. Once that's done, I'll go through a bunch of reviews with @blocktrades' team (which I'm assuming won't happen until a few weeks as some of the core team is in vacations). Then we'll launch a testnet (or update the ongoing testnet, that part is unclear) so that some of the power users/ dapp users can test it out. @howo See: Core development report #12: Good progress on direct rc delegations by @howo</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://files.peakd.com/file/peakd-hive/howo/AJeaeqp3EAX2QSK997FwxcZdJuACo817654t7riwiGf3aSNSLCLRwP5yGvpwrcb.png" /><media:content medium="image" url="https://files.peakd.com/file/peakd-hive/howo/AJeaeqp3EAX2QSK997FwxcZdJuACo817654t7riwiGf3aSNSLCLRwP5yGvpwrcb.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">18th update of 2021 on BlockTrades work on Hive software</title><link href="https://hivedocs.info/news/core/development/2021/07/09/18th-update-of-2021-on-blocktrades-work-on-hive-software.html" rel="alternate" type="text/html" title="18th update of 2021 on BlockTrades work on Hive software" /><published>2021-07-09T14:26:30-07:00</published><updated>2021-07-09T14:26:30-07:00</updated><id>https://hivedocs.info/news/core/development/2021/07/09/18th-update-of-2021-on-blocktrades-work-on-hive-software</id><content type="html" xml:base="https://hivedocs.info/news/core/development/2021/07/09/18th-update-of-2021-on-blocktrades-work-on-hive-software.html">&lt;div id=&quot;content-blocktrades-18th-update-of-2021-on-blocktrades-work-on-hive-software&quot;&gt;![blocktrades update.png](https://images.hive.blog/DQmSihw8Kz4U7TuCQa98DDdCzqbqPFRumuVWAbareiYZW1Z/blocktrades%20update.png)
+
+Below is a list of Hive-related programming issues worked on by BlockTrades team since my last report. 
+
+# Hive network upgraded to Equilibrium
+The most significant accomplishment was successful upgrade of Hive via hardfork 25 (the Equilibrium release), and a lot of time was spent monitoring the upgrade and supporting Hive apps as needed during the transition.
+
+The Equilibrium upgrade did have one unanticipated side-effect: the change in curation rules resulted in votes cast after the hardfork being much stronger than votes cast before the hardfork with respect to curation weight, which meant that votes cast in the days before the hardfork generally didn’t receive much in the way of curation rewards. This was a temporary effect that has now been resolved since all posts being actively voted on now were created after the hardfork, but hopefully we’ll have enough traffic on our next iteration of the testnet that we’ll be able to detect such issues ahead of time.
+
+# Hived work (blockchain node software)
+
+Improvements to Testtools and tests used to verify hived functionality: https://gitlab.syncad.com/hive/hive/-/merge_requests/272
+
+Added new –exit-before-sync flag to hived’s command-line interface (useful for dumping a snapshot without then syncing, see https://gitlab.syncad.com/hive/hive/-/issues/66 for more details on why this option was added):
+https://gitlab.syncad.com/hive/hive/-/merge_requests/232
+https://gitlab.syncad.com/hive/hive/-/merge_requests/273
+
+We fixed the previously reported bug that requires a hived to be restarted after loading a snapshot:
+https://gitlab.syncad.com/hive/hive/-/merge_requests/274
+
+We have been analyzing the performance of our new “blockchain converter” tool for creating testnets quickly that mirror the mainnet and we’ve identified some code associated with nonces as the potential bottleneck.
+
+# Hivemind (social media middleware)
+
+We’ve added a new programmer to our hivemind team and he’ll initially be working on testing and minor bug fixes as a means of learning the code base. His first merge request is here:
+https://gitlab.syncad.com/hive/hivemind/-/merge_requests/518
+
+We added code for checking consistency of the hive_blocks table (this is part of previously mentioned plan to ensure robust operation in the case where hivemind’s postgres process shuts down suddenly or a rollback fails):
+https://gitlab.syncad.com/hive/hivemind/-/merge_requests/516
+
+
+We’re continuing work on improving performance of the update_rshares function immediately after massive sync of a hivemind instance. We’re trying two different alternatives to improve overall performance: 1) changing massive sync so that it updates rshares for paid posts on-the-fly, reducing the work of update_rshares to only updating rshares for unpaid posts (this approach requires introducing a new hived virtual_operation) and 2) adding an index (at least temporarily just after massive sync) to speed up update_rshares. Both approaches are currently undergoing testing.
+
+We also resumed research into the reason why some hivemind nodes consume more memory than others. It has been suggested that it may be related to differences in python or python-library installations on the different systems, which I’m inclined to believe at this point, as we’re no longer seeing unexpected memory consumption on any of our production nodes running the latest official hivemind version. So if we’re unable to replicate this issue in our forthcoming tests, we’ll likely drop this issue soon, after merging in our diagnostic changes that identify sources of memory usage better.
+
+# Hive Application Framework (HAF)
+
+Our primary dev for this work is currently on vacation. 
+
+I had hoped we would still be able to work on the psql_serializer plugin (which feeds data from hived to hivemind under the HAF system) in the meantime, but the dev tasked with that was tied up with other issues (e.g. fix of snapshot problem). A new dev has been assigned to work on psql_serializer this week (the previously tasked one is going on vacation for two weeks).
+
+# Condenser and wallet (open-source code base for https://hive.blog and other similar frontends)
+
+We reviewed and merged in a number of community-contributed upgrades to condenser and its wallet.
+
+From @quochuy: https://gitlab.syncad.com/hive/wallet/-/merge_requests/102
+
+From @guiltyparties: 
+https://gitlab.syncad.com/hive/wallet/-/merge_requests/101
+https://gitlab.syncad.com/hive/condenser/-/merge_requests/268
+
+From @eonwarped: https://gitlab.syncad.com/hive/condenser/-/merge_requests/269
+
+
+# What’s next?
+
+Several of our Hive devs are either on vacation now or going on vacation this coming week (they had been delaying their vacations to be available for the hardfork and any potential problems that might arise afterwards). So we’ll only have 8 BlockTrades devs working on Hive for the next two weeks, and our progress will inevitably slow some during this time. 
+
+After all our Hive devs return from vacation, we’ll take a couple of weeks to begin planning what work to schedule for the next hardfork (HF26). I have some preliminary ideas for improvements that our team will work on, but we’ll make a full list of proposed changes, then begin to prioritize what we want to fit on the roadmap for HF26. My plan at this time is to stick to our existing “upgrade Hive protocol every six months” schedule if possible.
+
+Also, as during previous hardforks, our roadmaps aren’t fixed in stone, so we may consider making other proposed changes even after the initial roadmap is published, assuming the changes aren’t too big.
+
+Note that the above process doesn’t mean we don’t have clear development goals prior to the completion of the HF26 roadmap. For one thing, we will be making performance upgrades to hived that don’t require an actual hardfork, and these changes will generally be released as they are completed.
+
+Even more importantly, at this point our highest priority tasks revolve around the creation of the HAF framework and HAF-based applications, and this is all layer 2 work that doesn’t require any Hive protocol changes that would necessitate a hardfork. In other words, we can also release HAF and associated apps to the dev community as soon as they are ready, without the labor and scheduling issues involved in getting nodes to upgrade as part of a hardfork.&lt;/div&gt;
+&lt;script crossorigin=&quot;anonymous&quot; integrity=&quot;sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=&quot; src=&quot;https://code.jquery.com/jquery-3.5.1.slim.min.js&quot;&gt;&lt;/script&gt;
+
+&lt;script src=&quot;https://unpkg.com/steem-content-renderer&quot;&gt;&lt;/script&gt;
+
+&lt;!-- &lt;script src=&quot;https://cdn.jsdelivr.net/npm/hive-content-renderer/dist/hive-content-renderer.min.js&quot;&gt;&lt;/script&gt; --&gt;
+&lt;script&gt;
+  $(document).ready(function() {
+    try {
+      const renderer = new SteemContentRenderer.DefaultRenderer({
+      // const renderer = new HiveContentRenderer({
+        baseUrl: &quot;https://hive.blog/&quot;,
+        breaks: true,
+        skipSanitization: false,
+        allowInsecureScriptTags: false,
+        addNofollowToLinks: true,
+        doNotShowImages: false,
+        ipfsPrefix: &quot;&quot;,
+        assetsWidth: 640,
+        assetsHeight: 480,
+        imageProxyFn: (url) =&gt; url,
+        usertagUrlFn: (account) =&gt; &quot;/@blocktrades&quot;,
+        hashtagUrlFn: (hashtag) =&gt; &quot;/18th-update-of-2021-on-blocktrades-work-on-hive-software&quot;,
+        isLinkSafeFn: (url) =&gt; true,
+      });
+      
+      const inputElem = $('#content-blocktrades-18th-update-of-2021-on-blocktrades-work-on-hive-software').html();
+      const outputElem = $('#content-blocktrades-18th-update-of-2021-on-blocktrades-work-on-hive-software');
+      const output = renderer.render(inputElem);
+      
+      outputElem.html(output);
+    } catch(e) {
+      console.log(e);
+    }
+  });
+&lt;/script&gt;
+
+&lt;style&gt;
+  #content-blocktrades-18th-update-of-2021-on-blocktrades-work-on-hive-software {
+    padding: 0 3rem;
+    color: #444444;
+    font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.8;
+    text-shadow: 0 1px 0 #ffffff;
+    padding: 0.5rem;
+  }
+  #content-blocktrades-18th-update-of-2021-on-blocktrades-work-on-hive-software code {
+    background: white;
+  }
+  #content-blocktrades-18th-update-of-2021-on-blocktrades-work-on-hive-software a {
+    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
+  }
+  #content-blocktrades-18th-update-of-2021-on-blocktrades-work-on-hive-software a:hover {
+    border-bottom: 0;
+  }
+  #content-blocktrades-18th-update-of-2021-on-blocktrades-work-on-hive-software h1 {
+    font-size: 2.2em;
+  }
+  #content-blocktrades-18th-update-of-2021-on-blocktrades-work-on-hive-software h2, h3, h4, h5 {
+    margin-bottom: 0;
+  }
+  #content-blocktrades-18th-update-of-2021-on-blocktrades-work-on-hive-software header small {
+    color: #999;
+    font-size: 50%;
+  }
+  #content-blocktrades-18th-update-of-2021-on-blocktrades-work-on-hive-software img {
+    max-width: 100%;
+  }
+&lt;/style&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;
+  See: &lt;a href=&quot;https://hive.blog/hive-139531/@blocktrades/18th-update-of-2021-on-blocktrades-work-on-hive-software&quot;&gt;18th update of 2021 on BlockTrades work on Hive software&lt;/a&gt;
+  by
+  &lt;a href=&quot;https://hive.blog/@blocktrades&quot;&gt;@blocktrades&lt;/a&gt;
+&lt;/p&gt;</content><author><name>blocktrades</name></author><category term="news" /><category term="core" /><category term="development" /><summary type="html">![blocktrades update.png](https://images.hive.blog/DQmSihw8Kz4U7TuCQa98DDdCzqbqPFRumuVWAbareiYZW1Z/blocktrades%20update.png) Below is a list of Hive-related programming issues worked on by BlockTrades team since my last report. # Hive network upgraded to Equilibrium The most significant accomplishment was successful upgrade of Hive via hardfork 25 (the Equilibrium release), and a lot of time was spent monitoring the upgrade and supporting Hive apps as needed during the transition. The Equilibrium upgrade did have one unanticipated side-effect: the change in curation rules resulted in votes cast after the hardfork being much stronger than votes cast before the hardfork with respect to curation weight, which meant that votes cast in the days before the hardfork generally didn’t receive much in the way of curation rewards. This was a temporary effect that has now been resolved since all posts being actively voted on now were created after the hardfork, but hopefully we’ll have enough traffic on our next iteration of the testnet that we’ll be able to detect such issues ahead of time. # Hived work (blockchain node software) Improvements to Testtools and tests used to verify hived functionality: https://gitlab.syncad.com/hive/hive/-/merge_requests/272 Added new –exit-before-sync flag to hived’s command-line interface (useful for dumping a snapshot without then syncing, see https://gitlab.syncad.com/hive/hive/-/issues/66 for more details on why this option was added): https://gitlab.syncad.com/hive/hive/-/merge_requests/232 https://gitlab.syncad.com/hive/hive/-/merge_requests/273 We fixed the previously reported bug that requires a hived to be restarted after loading a snapshot: https://gitlab.syncad.com/hive/hive/-/merge_requests/274 We have been analyzing the performance of our new “blockchain converter” tool for creating testnets quickly that mirror the mainnet and we’ve identified some code associated with nonces as the potential bottleneck. # Hivemind (social media middleware) We’ve added a new programmer to our hivemind team and he’ll initially be working on testing and minor bug fixes as a means of learning the code base. His first merge request is here: https://gitlab.syncad.com/hive/hivemind/-/merge_requests/518 We added code for checking consistency of the hive_blocks table (this is part of previously mentioned plan to ensure robust operation in the case where hivemind’s postgres process shuts down suddenly or a rollback fails): https://gitlab.syncad.com/hive/hivemind/-/merge_requests/516 We’re continuing work on improving performance of the update_rshares function immediately after massive sync of a hivemind instance. We’re trying two different alternatives to improve overall performance: 1) changing massive sync so that it updates rshares for paid posts on-the-fly, reducing the work of update_rshares to only updating rshares for unpaid posts (this approach requires introducing a new hived virtual_operation) and 2) adding an index (at least temporarily just after massive sync) to speed up update_rshares. Both approaches are currently undergoing testing. We also resumed research into the reason why some hivemind nodes consume more memory than others. It has been suggested that it may be related to differences in python or python-library installations on the different systems, which I’m inclined to believe at this point, as we’re no longer seeing unexpected memory consumption on any of our production nodes running the latest official hivemind version. So if we’re unable to replicate this issue in our forthcoming tests, we’ll likely drop this issue soon, after merging in our diagnostic changes that identify sources of memory usage better. # Hive Application Framework (HAF) Our primary dev for this work is currently on vacation. I had hoped we would still be able to work on the psql_serializer plugin (which feeds data from hived to hivemind under the HAF system) in the meantime, but the dev tasked with that was tied up with other issues (e.g. fix of snapshot problem). A new dev has been assigned to work on psql_serializer this week (the previously tasked one is going on vacation for two weeks). # Condenser and wallet (open-source code base for https://hive.blog and other similar frontends) We reviewed and merged in a number of community-contributed upgrades to condenser and its wallet. From @quochuy: https://gitlab.syncad.com/hive/wallet/-/merge_requests/102 From @guiltyparties: https://gitlab.syncad.com/hive/wallet/-/merge_requests/101 https://gitlab.syncad.com/hive/condenser/-/merge_requests/268 From @eonwarped: https://gitlab.syncad.com/hive/condenser/-/merge_requests/269 # What’s next? Several of our Hive devs are either on vacation now or going on vacation this coming week (they had been delaying their vacations to be available for the hardfork and any potential problems that might arise afterwards). So we’ll only have 8 BlockTrades devs working on Hive for the next two weeks, and our progress will inevitably slow some during this time. After all our Hive devs return from vacation, we’ll take a couple of weeks to begin planning what work to schedule for the next hardfork (HF26). I have some preliminary ideas for improvements that our team will work on, but we’ll make a full list of proposed changes, then begin to prioritize what we want to fit on the roadmap for HF26. My plan at this time is to stick to our existing “upgrade Hive protocol every six months” schedule if possible. Also, as during previous hardforks, our roadmaps aren’t fixed in stone, so we may consider making other proposed changes even after the initial roadmap is published, assuming the changes aren’t too big. Note that the above process doesn’t mean we don’t have clear development goals prior to the completion of the HF26 roadmap. For one thing, we will be making performance upgrades to hived that don’t require an actual hardfork, and these changes will generally be released as they are completed. Even more importantly, at this point our highest priority tasks revolve around the creation of the HAF framework and HAF-based applications, and this is all layer 2 work that doesn’t require any Hive protocol changes that would necessitate a hardfork. In other words, we can also release HAF and associated apps to the dev community as soon as they are ready, without the labor and scheduling issues involved in getting nodes to upgrade as part of a hardfork. See: 18th update of 2021 on BlockTrades work on Hive software by @blocktrades</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://images.hive.blog/DQmSihw8Kz4U7TuCQa98DDdCzqbqPFRumuVWAbareiYZW1Z/blocktrades%20update.png" /><media:content medium="image" url="https://images.hive.blog/DQmSihw8Kz4U7TuCQa98DDdCzqbqPFRumuVWAbareiYZW1Z/blocktrades%20update.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Ledger App updated with HF25 operations</title><link href="https://hivedocs.info/news/nano/nodejs/wallet/2021/07/06/ledger-app-updated-with-hf25-operations.html" rel="alternate" type="text/html" title="Ledger App updated with HF25 operations" /><published>2021-07-06T12:38:18-07:00</published><updated>2021-07-06T12:38:18-07:00</updated><id>https://hivedocs.info/news/nano/nodejs/wallet/2021/07/06/ledger-app-updated-with-hf25-operations</id><content type="html" xml:base="https://hivedocs.info/news/nano/nodejs/wallet/2021/07/06/ledger-app-updated-with-hf25-operations.html">&lt;div id=&quot;content-engrave-ledger-app-updated-with-hf25-operations&quot;&gt;
 ![image.png](https://files.peakd.com/file/peakd-hive/engrave/Eo23B9HfFGSxgkzJckVtC8WSMeoEwfMcitDDJBZYJzaiVGqirgAwMZmEHpr2WcufBP6.png)
 &lt;sup&gt;Image credit (@thepeakstudio)&lt;/sup&gt;
 
@@ -1212,299 +1451,4 @@ Even though during full sync database size peaks easily over 750GB, when restore
   See: &lt;a href=&quot;https://hive.blog/hive-160391/@gtg/hive-hardfork-25-jump-starter-kit&quot;&gt;Hive HardFork 25 Jump Starter Kit&lt;/a&gt;
   by
   &lt;a href=&quot;https://hive.blog/@gtg&quot;&gt;@gtg&lt;/a&gt;
-&lt;/p&gt;</content><author><name>gtg</name></author><category term="howto" /><category term="devops" /><summary type="html">Intended for the Hive API node operators, witnesses, and developers. At the time of Eclipse release I made a similar post that saved many (hours) of lives, so I’m creating an updated one for the upcoming Hard Fork 25. https://www.youtube.com/watch?v=mrwgrOhl7YwYes, new Hive Hard Fork, new fancy logo reveal. # Code ## GitLab https://gitlab.syncad.com/hive/hive Our core development efforts takes place in a community hosted GitLab repository (thanks @blocktrades). There's Hive core itself, but also many other Hive related software repositories. ## GitHub https://github.com/openhive-network/hive We use it as a push mirror for GitLab repository, mostly for visibility and decentralization - if you have an account on GitHub please fork at least [hive](https://github.com/openhive-network/hive) and [hivemind](https://github.com/openhive-network/hivemind) and star them if you haven’t done so yet. We haven't paid much attention to it but apparently it's important for some outside metrics. ![star_fork.png](https://images.hive.blog/DQmQbRRrtoTFPZA9QmDRjvswPtaGuXrWXje1WHp9CeeGbV2/star_fork.png) Please click both buttons # Services ## API node https://api.openhive.network Soon to be switched to `v1.25.0` but because it’s heavily used in Hive related R&amp;amp;D it might not be your best choice if you are looking for a fast API node without any rate limiting. During the maintenance mode, it will fall back to https://api.hive.blog ## Seed node `hived` `v1.25.0` listens on `gtg.openhive.network:2001` to use it in your `config.ini` file just add the line: ``` p2p-seed-node = gtg.openhive.network:2001 ``` If you don't have any `p2p-seed-node = ` entries in your config file, built-in defaults will be used (which contains my node too). # Stuff for download TL;DR https://gtg.openhive.network/get ## Binaries `./get/bin`contains `hived` and `cli_wallet` binaries built on `Ubuntu 18.04 LTS` which should also run fine on `Ubuntu 20.04 LTS` ## Blocks `./get/blockchain` As usual, the `block_log` file, roughly 350GB and counting. For testing needs there's also `block_log.5M` that is limited to first 5 million blocks. ## Snapshots ### API `./get/snapshot/api/` contains a relatively recent snapshot of the API node with all the fancy plugins. There’s a snapshot for the upcoming version `v1.25.0` but also for the old one `v1.24.8` if you need to switch back. Uncompressed snapshot takes roughly 480GB There’s also the `example-api-config.ini` file out there that contains settings compatible with the snapshot. To decompress, you can use simply run it through something like: `lbzip2 -dc | tar xv` (Using parallel bzip2 on multi-threaded systems might save you a lot of time) To use snapshot you need: - A `block_log` file, not smaller than the one used when the snapshot was made. - A `config.ini` file, compatible with the snapshot (see above), adjusted to your needs, without changes that could affect it in a way that changes the state. - A `hived` binary compatible with the snapshot All of that you can find above. Run `hived` with `--load-snapshot name`, assuming the snapshot is stored in `snapshot/name` `hived` API node runtime currently takes 823GB (incl. shm 19GB, excl. snapshot) ### Exchanges There’s also a snapshot meant for exchanges in `./get/snapshot/exchange/` that allows them to quickly get up and running, it requires a compatible configuration and that exchange account is one of those who are tracked by my node. If you run an exchange and want to be on that list to use a snapshot, just please let me know. ## Hivemind database dump `./get/hivemind/` contains a relatively recent dump of the Hivemind database. I use self-describing file names such as: `hivemind-20210616-47a41c96.dump` Date when dump was taken, revision of `hivemind` that was running it. You need at least that version, remember about `intarray` extension Consider running `pg_restore` with at least `-j 6` to run long running tasks in parallel After restoring the database, make sure to run the `db_upgrade` script. Even though during full sync database size peaks easily over 750GB, when restored from dump it takes roughly 500GB. Dump file itself is just 53GB. ### All resources are offered AS IS. See: Hive HardFork 25 Jump Starter Kit by @gtg</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://img.youtube.com/vi/mrwgrOhl7Yw/0.jpg" /><media:content medium="image" url="https://img.youtube.com/vi/mrwgrOhl7Yw/0.jpg" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Imagehoster cache purge for Cloudflare</title><link href="https://hivedocs.info/howto/devops/imagehoster/2021/06/14/imagehoster-cache-purge-for-cloudflare.html" rel="alternate" type="text/html" title="Imagehoster cache purge for Cloudflare" /><published>2021-06-14T01:43:48-07:00</published><updated>2021-06-14T01:43:48-07:00</updated><id>https://hivedocs.info/howto/devops/imagehoster/2021/06/14/imagehoster-cache-purge-for-cloudflare</id><content type="html" xml:base="https://hivedocs.info/howto/devops/imagehoster/2021/06/14/imagehoster-cache-purge-for-cloudflare.html">&lt;div id=&quot;content-good-karma-imagehoster-cache-purge-for-cloudflare&quot;&gt;Quick post about new script that helps with caching avatars on imagehoster instances hosted on Cloudflare.
-
-![ecency-imagehoster-caching](https://images.ecency.com/DQmecXYP57pagKtfrUvcRG5AZsrgnwdmbsmugKcv5han8Mn/cache_work.png)
-
-We have 2 imagehoster instances right now, one run by Ecency team and another from Blocktrades team. It is crucial part of platform without which user experience would really suffer. Images, avatars are face of every UI.
-
-https://images.ecency.com
-https://images.hive.blog
-
-They both run in front of Cloudflare and images were not utilizing Cloudflare cache properly. For couple reasons, one - avatars cannot be cached for long time, when person updates avatar via apps/websites then they expect it see it instantly, two - Cloudflare considers them dynamic content by default.
-
-If you force cache avatars with Cloudflare page rules then update only shown after cache is expired. That’s not acceptable for Blockchain that’s very fast but avatar update require cache expiry. On Ecency instance we had 10 seconds cache, while Hiveblog instance wasn’t using cache at first and couple days ago Blocktrades tried 4h. All other images could be cached for longer period because they don’t change at all, for avatars 4h. Which was still too long.
-
-To solve avatar caching issue, created simple script that would purge cache from Cloudflare when account gets update on blockchain. If imagehoster instances are down or in maintenance, all images would be served from Cloudflare cache which is really great for user experience as well.
-
-If you will be running Imagehoster instance in future or considering it, I would recommend running this script on separate server and set avatars caching to longer period safely. If you are not using Cloudflare, then consider removing caching avatars completely, it will put some load on your server but alternative is confusing user experience.
-
-https://github.com/ecency/cf-cache
-
-Both instances running above script now and whenever account update triggered on Blockchain, above script purges relevant user’s avatar to keep it fresh, use new avatar on all apps that depend on it. 
-
-images.ecency.com cache period for avatars 1 week 
-images.hive.blog cache period for avatar 5 hours
-
-After change, I noticed Ecency.com became even more faster... Caching images for sure improving performance of all apps.
-
-### Support proposals  
- 
-[`Ecency`](https://hivesigner.com/sign/update-proposal-votes?proposal_ids=%5B141%5D&amp;amp;approve=true) | [`Hivesearcher`](https://hivesigner.com/sign/update-proposal-votes?proposal_ids=%5B146%5D&amp;amp;approve=true) | [`Hivesigner`](https://hivesigner.com/sign/update-proposal-votes?proposal_ids=%5B88%5D&amp;amp;approve=true)&lt;/div&gt;
-&lt;script crossorigin=&quot;anonymous&quot; integrity=&quot;sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=&quot; src=&quot;https://code.jquery.com/jquery-3.5.1.slim.min.js&quot;&gt;&lt;/script&gt;
-
-&lt;script src=&quot;https://unpkg.com/steem-content-renderer&quot;&gt;&lt;/script&gt;
-
-&lt;!-- &lt;script src=&quot;https://cdn.jsdelivr.net/npm/hive-content-renderer/dist/hive-content-renderer.min.js&quot;&gt;&lt;/script&gt; --&gt;
-&lt;script&gt;
-  $(document).ready(function() {
-    try {
-      const renderer = new SteemContentRenderer.DefaultRenderer({
-      // const renderer = new HiveContentRenderer({
-        baseUrl: &quot;https://hive.blog/&quot;,
-        breaks: true,
-        skipSanitization: false,
-        allowInsecureScriptTags: false,
-        addNofollowToLinks: true,
-        doNotShowImages: false,
-        ipfsPrefix: &quot;&quot;,
-        assetsWidth: 640,
-        assetsHeight: 480,
-        imageProxyFn: (url) =&gt; url,
-        usertagUrlFn: (account) =&gt; &quot;/@good-karma&quot;,
-        hashtagUrlFn: (hashtag) =&gt; &quot;/imagehoster-cache-purge-for-cloudflare&quot;,
-        isLinkSafeFn: (url) =&gt; true,
-      });
-      
-      const inputElem = $('#content-good-karma-imagehoster-cache-purge-for-cloudflare').html();
-      const outputElem = $('#content-good-karma-imagehoster-cache-purge-for-cloudflare');
-      const output = renderer.render(inputElem);
-      
-      outputElem.html(output);
-    } catch(e) {
-      console.log(e);
-    }
-  });
-&lt;/script&gt;
-
-&lt;style&gt;
-  #content-good-karma-imagehoster-cache-purge-for-cloudflare {
-    padding: 0 3rem;
-    color: #444444;
-    font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif;
-    font-size: 16px;
-    line-height: 1.8;
-    text-shadow: 0 1px 0 #ffffff;
-    padding: 0.5rem;
-  }
-  #content-good-karma-imagehoster-cache-purge-for-cloudflare code {
-    background: white;
-  }
-  #content-good-karma-imagehoster-cache-purge-for-cloudflare a {
-    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
-  }
-  #content-good-karma-imagehoster-cache-purge-for-cloudflare a:hover {
-    border-bottom: 0;
-  }
-  #content-good-karma-imagehoster-cache-purge-for-cloudflare h1 {
-    font-size: 2.2em;
-  }
-  #content-good-karma-imagehoster-cache-purge-for-cloudflare h2, h3, h4, h5 {
-    margin-bottom: 0;
-  }
-  #content-good-karma-imagehoster-cache-purge-for-cloudflare header small {
-    color: #999;
-    font-size: 50%;
-  }
-  #content-good-karma-imagehoster-cache-purge-for-cloudflare img {
-    max-width: 100%;
-  }
-&lt;/style&gt;
-
-&lt;hr /&gt;
-
-&lt;p&gt;
-  See: &lt;a href=&quot;https://ecency.com/hive-139531/@good-karma/imagehoster-cache-purge-for-cloudflare&quot;&gt;Imagehoster cache purge for Cloudflare&lt;/a&gt;
-  by
-  &lt;a href=&quot;https://hive.blog/@good-karma&quot;&gt;@good-karma&lt;/a&gt;
-&lt;/p&gt;</content><author><name>good-karma</name></author><category term="howto" /><category term="devops" /><category term="imagehoster" /><summary type="html">Quick post about new script that helps with caching avatars on imagehoster instances hosted on Cloudflare. ![ecency-imagehoster-caching](https://images.ecency.com/DQmecXYP57pagKtfrUvcRG5AZsrgnwdmbsmugKcv5han8Mn/cache_work.png) We have 2 imagehoster instances right now, one run by Ecency team and another from Blocktrades team. It is crucial part of platform without which user experience would really suffer. Images, avatars are face of every UI. https://images.ecency.com https://images.hive.blog They both run in front of Cloudflare and images were not utilizing Cloudflare cache properly. For couple reasons, one - avatars cannot be cached for long time, when person updates avatar via apps/websites then they expect it see it instantly, two - Cloudflare considers them dynamic content by default. If you force cache avatars with Cloudflare page rules then update only shown after cache is expired. That’s not acceptable for Blockchain that’s very fast but avatar update require cache expiry. On Ecency instance we had 10 seconds cache, while Hiveblog instance wasn’t using cache at first and couple days ago Blocktrades tried 4h. All other images could be cached for longer period because they don’t change at all, for avatars 4h. Which was still too long. To solve avatar caching issue, created simple script that would purge cache from Cloudflare when account gets update on blockchain. If imagehoster instances are down or in maintenance, all images would be served from Cloudflare cache which is really great for user experience as well. If you will be running Imagehoster instance in future or considering it, I would recommend running this script on separate server and set avatars caching to longer period safely. If you are not using Cloudflare, then consider removing caching avatars completely, it will put some load on your server but alternative is confusing user experience. https://github.com/ecency/cf-cache Both instances running above script now and whenever account update triggered on Blockchain, above script purges relevant user’s avatar to keep it fresh, use new avatar on all apps that depend on it. images.ecency.com cache period for avatars 1 week images.hive.blog cache period for avatar 5 hours After change, I noticed Ecency.com became even more faster... Caching images for sure improving performance of all apps. ### Support proposals [`Ecency`](https://hivesigner.com/sign/update-proposal-votes?proposal_ids=%5B141%5D&amp;amp;approve=true) | [`Hivesearcher`](https://hivesigner.com/sign/update-proposal-votes?proposal_ids=%5B146%5D&amp;amp;approve=true) | [`Hivesigner`](https://hivesigner.com/sign/update-proposal-votes?proposal_ids=%5B88%5D&amp;amp;approve=true) See: Imagehoster cache purge for Cloudflare by @good-karma</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://images.ecency.com/DQmecXYP57pagKtfrUvcRG5AZsrgnwdmbsmugKcv5han8Mn/cache_work.png" /><media:content medium="image" url="https://images.ecency.com/DQmecXYP57pagKtfrUvcRG5AZsrgnwdmbsmugKcv5han8Mn/cache_work.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Hive Projects weekly update: 5 projects added, 131 listed in total!</title><link href="https://hivedocs.info/news/projects/2021/06/12/hiveprojects-weekly-update-2021-06-12-42368.html" rel="alternate" type="text/html" title="Hive Projects weekly update: 5 projects added, 131 listed in total!" /><published>2021-06-12T09:00:06-07:00</published><updated>2021-06-12T09:00:06-07:00</updated><id>https://hivedocs.info/news/projects/2021/06/12/hiveprojects-weekly-update-2021-06-12-42368</id><content type="html" xml:base="https://hivedocs.info/news/projects/2021/06/12/hiveprojects-weekly-update-2021-06-12-42368.html">&lt;div id=&quot;content-engrave-hiveprojects-weekly-update-2021-06-12-42368&quot;&gt;![](https://files.peakd.com/file/peakd-hive/engrave/IHxPwBD1-hiveprojects_update.png)
-
-# What is [Hive Projects](https://hiveprojects.io)?
-
-[Hive Projects](https://hiveprojects.io) is the biggest directory of apps, sites, tools, and scripts created for the Hive ecosystem. This website is an entirely volunteer-driven effort. That includes coding time and hosting costs. If you wish to help or show your gratitude, there are plenty of ways in which you can do that:
- * upvote this post
- * reblog or cross-post it into your favorite community
- * contribute to HiveProjects, by adding a new project - everyone can do it!
- * let us know about new project, by posting about it in [Hive Projects Community](https://peakd.com/c/hive-192847) or by cross-posting to it or simply paste us a link at [Engrave Discord server](https://discord.gg/8NktdFh)
- * vote for our @engrave witness
- * write a comment :)
-
-***
-
-
-Previous post: [Hive Projects weekly update: 4 projects added, 126 listed in total!](/@engrave/hiveprojects-weekly-update-2021-03-06-13937)
-
-***
-
-
-
-# Newly added projects 
-
-All published projects were moderated and accepted by our **Content Manager** @lukmarcus, who works hard to make [Hive Projects](https://hiveprojects.io) the best and most up-to-date directory of tools and apps in our ecosystem. The entire reward from this post goes to him.
-
-
-
-
-## PizzaBox
-**Team:** @thebeardflex, @hivetrending
-
-![](https://hiveprojects.io/media/imgs/136/1623453852443.png)
-
-**Category:** [Bots](https://hiveprojects.io/categories/bots/)
-
-**Description:** *HIVE tailored community Discord Bot focused around awareness and onboarding. Provides moderation tools for use by communities both on and off chain.
-
-Ban, Kick, Mute, Sticky, Slowmo, Lock Channel, Purge, Music Player, Ticket System etc.
-Giveaways
-Market information for second-layer Hive-Engine tokens
-HIVE market information
-Mini-games
-HIVE onboarding tools/tutorials. Some commands will be customizable per guild they exist in.*
-
-[PizzaBox on HiveProjects.io](https://hiveprojects.io/projects/p/pizzabox/)
-
-
-
-## Beatzchain
-**Team:** @polarmystro, @lamarz7
-
-![](https://hiveprojects.io/media/imgs/134/1618985842320.png)
-
-**Category:** [Generic Hive Interfaces](https://hiveprojects.io/categories/generic-hive-interfaces/)
-
-**Description:** *Beatzchain project will be a platform that would run on the Hive Blockchain that would serve for Rappers and music producers.  Beatzchain wants to change the Hip-Hop world with a network rap musicians can earn cryptocurrencies through Hive, Music producers can buy/sell beats, and rappers can use crypto to purchase beats including the ones they&amp;#39;ve earned through the Hive Blockchain.  We would like to start an NFT exchange for rappers and producers called &amp;quot;Hip-Hop Stocks&amp;quot; where musicians can create music NFTs with their songs/beats and buyers could benefit off the equity appreciation.  The goal is to give unsigned, independent, and major artists a better financial system for musicians where everyone with good talent who put the work in can sit by the table together.*
-
-[Beatzchain on HiveProjects.io](https://hiveprojects.io/projects/p/beatzchain/)
-
-
-
-## Hive Chain Documentation
-**Team:** @inertia
-
-![](https://hiveprojects.io/media/imgs/133/1615696720345.png)
-
-**Category:** [Programming Tools](https://hiveprojects.io/categories/programming-tools/)
-
-**Description:** *Your resource for various levels of Hive Documentation.*
-
-[Hive Chain Documentation on HiveProjects.io](https://hiveprojects.io/projects/p/hive-chain-documentation/)
-
-
-
-## Votify
-**Team:** @dannychain
-
-![](https://hiveprojects.io/media/imgs/132/1615069673826.png)
-
-**Category:** [Witness Tools](https://hiveprojects.io/categories/witness-tools/)
-
-**Description:** *An Open Source Voting Page for Hive-Engine Witnesses*
-
-[Votify on HiveProjects.io](https://hiveprojects.io/projects/p/votify/)
-
-
-
-## Karaka
-**Team:** 
-
-![](https://hiveprojects.io/media/imgs/135/1619983488995.png)
-
-**Category:** [Bots](https://hiveprojects.io/categories/bots/)
-
-**Description:** *Karaka is an automation (clerk) for Hive and Hive-Engine blockchains. Use it to manage tokens across multiple accounts.*
-
-[Karaka on HiveProjects.io](https://hiveprojects.io/projects/p/karaka/)
-
-
-
-***
-
-&lt;center&gt;
-
-**That would be all for today. Stay tuned for the next update and consider contributing to Hive Projects. It is a community-driven website.**
-
-**Click on the image to vote for @engrave witness:**
-
-[![banner_engrave 100.png](https://images.hive.blog/DQmUghvic5TCPPvVkB4iB7eXmgQ3RQ4L8jkVizvuCBW8RMT/banner_engrave%20100.png)](https://hivesigner.com/sign/account-witness-vote?witness=engrave&amp;amp;approve=1)
-
-**Dont forget to follow @engrave account!**
-
-&lt;/center&gt;
-&lt;/div&gt;
-&lt;script crossorigin=&quot;anonymous&quot; integrity=&quot;sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=&quot; src=&quot;https://code.jquery.com/jquery-3.5.1.slim.min.js&quot;&gt;&lt;/script&gt;
-
-&lt;script src=&quot;https://unpkg.com/steem-content-renderer&quot;&gt;&lt;/script&gt;
-
-&lt;!-- &lt;script src=&quot;https://cdn.jsdelivr.net/npm/hive-content-renderer/dist/hive-content-renderer.min.js&quot;&gt;&lt;/script&gt; --&gt;
-&lt;script&gt;
-  $(document).ready(function() {
-    try {
-      const renderer = new SteemContentRenderer.DefaultRenderer({
-      // const renderer = new HiveContentRenderer({
-        baseUrl: &quot;https://hive.blog/&quot;,
-        breaks: true,
-        skipSanitization: false,
-        allowInsecureScriptTags: false,
-        addNofollowToLinks: true,
-        doNotShowImages: false,
-        ipfsPrefix: &quot;&quot;,
-        assetsWidth: 640,
-        assetsHeight: 480,
-        imageProxyFn: (url) =&gt; url,
-        usertagUrlFn: (account) =&gt; &quot;/@engrave&quot;,
-        hashtagUrlFn: (hashtag) =&gt; &quot;/hiveprojects-weekly-update-2021-06-12-42368&quot;,
-        isLinkSafeFn: (url) =&gt; true,
-      });
-      
-      const inputElem = $('#content-engrave-hiveprojects-weekly-update-2021-06-12-42368').html();
-      const outputElem = $('#content-engrave-hiveprojects-weekly-update-2021-06-12-42368');
-      const output = renderer.render(inputElem);
-      
-      outputElem.html(output);
-    } catch(e) {
-      console.log(e);
-    }
-  });
-&lt;/script&gt;
-
-&lt;style&gt;
-  #content-engrave-hiveprojects-weekly-update-2021-06-12-42368 {
-    padding: 0 3rem;
-    color: #444444;
-    font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif;
-    font-size: 16px;
-    line-height: 1.8;
-    text-shadow: 0 1px 0 #ffffff;
-    padding: 0.5rem;
-  }
-  #content-engrave-hiveprojects-weekly-update-2021-06-12-42368 code {
-    background: white;
-  }
-  #content-engrave-hiveprojects-weekly-update-2021-06-12-42368 a {
-    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
-  }
-  #content-engrave-hiveprojects-weekly-update-2021-06-12-42368 a:hover {
-    border-bottom: 0;
-  }
-  #content-engrave-hiveprojects-weekly-update-2021-06-12-42368 h1 {
-    font-size: 2.2em;
-  }
-  #content-engrave-hiveprojects-weekly-update-2021-06-12-42368 h2, h3, h4, h5 {
-    margin-bottom: 0;
-  }
-  #content-engrave-hiveprojects-weekly-update-2021-06-12-42368 header small {
-    color: #999;
-    font-size: 50%;
-  }
-  #content-engrave-hiveprojects-weekly-update-2021-06-12-42368 img {
-    max-width: 100%;
-  }
-&lt;/style&gt;
-
-&lt;hr /&gt;
-
-&lt;p&gt;
-  See: &lt;a href=&quot;https://hive.blog/hive-192847/@engrave/hiveprojects-weekly-update-2021-06-12-42368&quot;&gt;Hive Projects weekly update: 5 projects added, 131 listed in total!&lt;/a&gt;
-  by
-  &lt;a href=&quot;https://hive.blog/@engrave&quot;&gt;@engrave&lt;/a&gt;
-&lt;/p&gt;</content><author><name>engrave</name></author><category term="news" /><category term="projects" /><summary type="html">![](https://files.peakd.com/file/peakd-hive/engrave/IHxPwBD1-hiveprojects_update.png) # What is [Hive Projects](https://hiveprojects.io)? [Hive Projects](https://hiveprojects.io) is the biggest directory of apps, sites, tools, and scripts created for the Hive ecosystem. This website is an entirely volunteer-driven effort. That includes coding time and hosting costs. If you wish to help or show your gratitude, there are plenty of ways in which you can do that: * upvote this post * reblog or cross-post it into your favorite community * contribute to HiveProjects, by adding a new project - everyone can do it! * let us know about new project, by posting about it in [Hive Projects Community](https://peakd.com/c/hive-192847) or by cross-posting to it or simply paste us a link at [Engrave Discord server](https://discord.gg/8NktdFh) * vote for our @engrave witness * write a comment :) *** Previous post: [Hive Projects weekly update: 4 projects added, 126 listed in total!](/@engrave/hiveprojects-weekly-update-2021-03-06-13937) *** # Newly added projects All published projects were moderated and accepted by our **Content Manager** @lukmarcus, who works hard to make [Hive Projects](https://hiveprojects.io) the best and most up-to-date directory of tools and apps in our ecosystem. The entire reward from this post goes to him. ## PizzaBox **Team:** @thebeardflex, @hivetrending ![](https://hiveprojects.io/media/imgs/136/1623453852443.png) **Category:** [Bots](https://hiveprojects.io/categories/bots/) **Description:** *HIVE tailored community Discord Bot focused around awareness and onboarding. Provides moderation tools for use by communities both on and off chain. Ban, Kick, Mute, Sticky, Slowmo, Lock Channel, Purge, Music Player, Ticket System etc. Giveaways Market information for second-layer Hive-Engine tokens HIVE market information Mini-games HIVE onboarding tools/tutorials. Some commands will be customizable per guild they exist in.* [PizzaBox on HiveProjects.io](https://hiveprojects.io/projects/p/pizzabox/) ## Beatzchain **Team:** @polarmystro, @lamarz7 ![](https://hiveprojects.io/media/imgs/134/1618985842320.png) **Category:** [Generic Hive Interfaces](https://hiveprojects.io/categories/generic-hive-interfaces/) **Description:** *Beatzchain project will be a platform that would run on the Hive Blockchain that would serve for Rappers and music producers. Beatzchain wants to change the Hip-Hop world with a network rap musicians can earn cryptocurrencies through Hive, Music producers can buy/sell beats, and rappers can use crypto to purchase beats including the ones they&amp;#39;ve earned through the Hive Blockchain. We would like to start an NFT exchange for rappers and producers called &amp;quot;Hip-Hop Stocks&amp;quot; where musicians can create music NFTs with their songs/beats and buyers could benefit off the equity appreciation. The goal is to give unsigned, independent, and major artists a better financial system for musicians where everyone with good talent who put the work in can sit by the table together.* [Beatzchain on HiveProjects.io](https://hiveprojects.io/projects/p/beatzchain/) ## Hive Chain Documentation **Team:** @inertia ![](https://hiveprojects.io/media/imgs/133/1615696720345.png) **Category:** [Programming Tools](https://hiveprojects.io/categories/programming-tools/) **Description:** *Your resource for various levels of Hive Documentation.* [Hive Chain Documentation on HiveProjects.io](https://hiveprojects.io/projects/p/hive-chain-documentation/) ## Votify **Team:** @dannychain ![](https://hiveprojects.io/media/imgs/132/1615069673826.png) **Category:** [Witness Tools](https://hiveprojects.io/categories/witness-tools/) **Description:** *An Open Source Voting Page for Hive-Engine Witnesses* [Votify on HiveProjects.io](https://hiveprojects.io/projects/p/votify/) ## Karaka **Team:** ![](https://hiveprojects.io/media/imgs/135/1619983488995.png) **Category:** [Bots](https://hiveprojects.io/categories/bots/) **Description:** *Karaka is an automation (clerk) for Hive and Hive-Engine blockchains. Use it to manage tokens across multiple accounts.* [Karaka on HiveProjects.io](https://hiveprojects.io/projects/p/karaka/) *** **That would be all for today. Stay tuned for the next update and consider contributing to Hive Projects. It is a community-driven website.** **Click on the image to vote for @engrave witness:** [![banner_engrave 100.png](https://images.hive.blog/DQmUghvic5TCPPvVkB4iB7eXmgQ3RQ4L8jkVizvuCBW8RMT/banner_engrave%20100.png)](https://hivesigner.com/sign/account-witness-vote?witness=engrave&amp;amp;approve=1) **Dont forget to follow @engrave account!** See: Hive Projects weekly update: 5 projects added, 131 listed in total! by @engrave</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://hivedocs.info/assets/images/favicon.png" /><media:content medium="image" url="https://hivedocs.info/assets/images/favicon.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>
+&lt;/p&gt;</content><author><name>gtg</name></author><category term="howto" /><category term="devops" /><summary type="html">Intended for the Hive API node operators, witnesses, and developers. At the time of Eclipse release I made a similar post that saved many (hours) of lives, so I’m creating an updated one for the upcoming Hard Fork 25. https://www.youtube.com/watch?v=mrwgrOhl7YwYes, new Hive Hard Fork, new fancy logo reveal. # Code ## GitLab https://gitlab.syncad.com/hive/hive Our core development efforts takes place in a community hosted GitLab repository (thanks @blocktrades). There's Hive core itself, but also many other Hive related software repositories. ## GitHub https://github.com/openhive-network/hive We use it as a push mirror for GitLab repository, mostly for visibility and decentralization - if you have an account on GitHub please fork at least [hive](https://github.com/openhive-network/hive) and [hivemind](https://github.com/openhive-network/hivemind) and star them if you haven’t done so yet. We haven't paid much attention to it but apparently it's important for some outside metrics. ![star_fork.png](https://images.hive.blog/DQmQbRRrtoTFPZA9QmDRjvswPtaGuXrWXje1WHp9CeeGbV2/star_fork.png) Please click both buttons # Services ## API node https://api.openhive.network Soon to be switched to `v1.25.0` but because it’s heavily used in Hive related R&amp;amp;D it might not be your best choice if you are looking for a fast API node without any rate limiting. During the maintenance mode, it will fall back to https://api.hive.blog ## Seed node `hived` `v1.25.0` listens on `gtg.openhive.network:2001` to use it in your `config.ini` file just add the line: ``` p2p-seed-node = gtg.openhive.network:2001 ``` If you don't have any `p2p-seed-node = ` entries in your config file, built-in defaults will be used (which contains my node too). # Stuff for download TL;DR https://gtg.openhive.network/get ## Binaries `./get/bin`contains `hived` and `cli_wallet` binaries built on `Ubuntu 18.04 LTS` which should also run fine on `Ubuntu 20.04 LTS` ## Blocks `./get/blockchain` As usual, the `block_log` file, roughly 350GB and counting. For testing needs there's also `block_log.5M` that is limited to first 5 million blocks. ## Snapshots ### API `./get/snapshot/api/` contains a relatively recent snapshot of the API node with all the fancy plugins. There’s a snapshot for the upcoming version `v1.25.0` but also for the old one `v1.24.8` if you need to switch back. Uncompressed snapshot takes roughly 480GB There’s also the `example-api-config.ini` file out there that contains settings compatible with the snapshot. To decompress, you can use simply run it through something like: `lbzip2 -dc | tar xv` (Using parallel bzip2 on multi-threaded systems might save you a lot of time) To use snapshot you need: - A `block_log` file, not smaller than the one used when the snapshot was made. - A `config.ini` file, compatible with the snapshot (see above), adjusted to your needs, without changes that could affect it in a way that changes the state. - A `hived` binary compatible with the snapshot All of that you can find above. Run `hived` with `--load-snapshot name`, assuming the snapshot is stored in `snapshot/name` `hived` API node runtime currently takes 823GB (incl. shm 19GB, excl. snapshot) ### Exchanges There’s also a snapshot meant for exchanges in `./get/snapshot/exchange/` that allows them to quickly get up and running, it requires a compatible configuration and that exchange account is one of those who are tracked by my node. If you run an exchange and want to be on that list to use a snapshot, just please let me know. ## Hivemind database dump `./get/hivemind/` contains a relatively recent dump of the Hivemind database. I use self-describing file names such as: `hivemind-20210616-47a41c96.dump` Date when dump was taken, revision of `hivemind` that was running it. You need at least that version, remember about `intarray` extension Consider running `pg_restore` with at least `-j 6` to run long running tasks in parallel After restoring the database, make sure to run the `db_upgrade` script. Even though during full sync database size peaks easily over 750GB, when restored from dump it takes roughly 500GB. Dump file itself is just 53GB. ### All resources are offered AS IS. See: Hive HardFork 25 Jump Starter Kit by @gtg</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://img.youtube.com/vi/mrwgrOhl7Yw/0.jpg" /><media:content medium="image" url="https://img.youtube.com/vi/mrwgrOhl7Yw/0.jpg" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>
