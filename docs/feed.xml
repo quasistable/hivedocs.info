@@ -1,4 +1,184 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.0">Jekyll</generator><link href="https://hivedocs.info/feed.xml" rel="self" type="application/atom+xml" /><link href="https://hivedocs.info/" rel="alternate" type="text/html" /><updated>2021-07-12T21:00:34-07:00</updated><id>https://hivedocs.info/feed.xml</id><title type="html">Hive Chain Documentation</title><subtitle>Your resource for various levels of Hive Documentation.</subtitle><author><name>site curated by: @inertia</name></author><entry><title type="html">Core development report #12: Good progress on direct rc delegations</title><link href="https://hivedocs.info/news/core/development/2021/07/12/core-development-report-12-good-progress-on-direct-rc-delegations.html" rel="alternate" type="text/html" title="Core development report #12: Good progress on direct rc delegations" /><published>2021-07-12T13:30:15-07:00</published><updated>2021-07-12T13:30:15-07:00</updated><id>https://hivedocs.info/news/core/development/2021/07/12/core-development-report-12-good-progress-on-direct-rc-delegations</id><content type="html" xml:base="https://hivedocs.info/news/core/development/2021/07/12/core-development-report-12-good-progress-on-direct-rc-delegations.html">&lt;div id=&quot;content-howo-core-development-report-12-good-progress-on-direct-rc-delegations&quot;&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.0">Jekyll</generator><link href="https://hivedocs.info/feed.xml" rel="self" type="application/atom+xml" /><link href="https://hivedocs.info/" rel="alternate" type="text/html" /><updated>2021-07-17T11:21:21-07:00</updated><id>https://hivedocs.info/feed.xml</id><title type="html">Hive Chain Documentation</title><subtitle>Your resource for various levels of Hive Documentation.</subtitle><author><name>site curated by: @inertia</name></author><entry><title type="html">Hive Pressure #3: Catching up with the head block.</title><link href="https://hivedocs.info/howto/devops/node/2021/07/14/hive-pressure-3-catching-up-with-the-head-block.html" rel="alternate" type="text/html" title="Hive Pressure #3: Catching up with the head block." /><published>2021-07-14T13:15:09-07:00</published><updated>2021-07-14T13:15:09-07:00</updated><id>https://hivedocs.info/howto/devops/node/2021/07/14/hive-pressure-3-catching-up-with-the-head-block</id><content type="html" xml:base="https://hivedocs.info/howto/devops/node/2021/07/14/hive-pressure-3-catching-up-with-the-head-block.html">&lt;div id=&quot;content-gtg-hive-pressure-3-catching-up-with-the-head-block&quot;&gt;Basic Hive node has a very simple configuration and with minor changes it can serve as a seed node, a witness node, a broadcaster node, a private node for your wallet (that’s what exchanges are using) or even a simple API node for your Hive microservices.
+
+Regardless of its role, as long as a node has unrestricted network access, it will be part of the Hive p2p network, thus supporting Hive reliability and resilience.
+
+Before your node becomes fully functional, it has to reach the head block of the blockchain.
+
+# Get the Hive daemon
+- Build it yourself from these sources:
+https://github.com/openhive-network/hive (push mirror)
+https://gitlab.syncad.com/hive/hive
+- Use docker:
+`docker pull hiveio/hive`
+- Or get the binary from a trusted source:
+https://gtg.openhive.network/get/bin/
+
+# Get the blocks
+The easy way or the fast way.
+
+- Sync from the p2p network
+By default, when a fresh Hive node starts, it connects to the Hive p2p network and retrieves blocks from it.
+See: `--resync-blockchain`
+
+- Get blocks yourself
+Hive node can use an existing `block_log` either from another instance or from a public source such as https://gtg.openhive.network/get/blockchain
+Our goal is to reach the head block as soon as possible so we chose that way.
+`block_log` currently takes over 350GB, so depending on your connection and source, downloading it might take less than an hour or even half a day (for 1Gbps and 100Mbps respectively).
+By default it’s expected to be located at `~/.hived/blockchain/block_log`.
+
+# Configure your node
+Configuration settings are by default in `~/.hived/config.ini`
+This should be enough:
+```
+plugin = witness
+plugin = rc
+
+shared-file-dir = &quot;/run/hive&quot;
+shared-file-size = 24G
+
+flush-state-interval = 0
+```
+Please note that I’m using a custom location for `shared_memory.bin` file, keeping it on a `tmpfs` volume for maximum performance, make sure you have enough space there if you are going to use it.
+
+# Process the blocks
+Having all the blocks is not enough, your node needs to be aware of the current state of Hive.
+Live nodes get blocks from the p2p network and process them updating state one block at a time (every three seconds), but when you start from scratch, you have to catch up.
+
+- Snapshot
+Snapshot is the fastest way because most of the job is already done.
+That however will work only for compatible configurations.
+We will play with snapshots another time.
+
+- Replay
+Once you have a `block_log` and `config.ini` files in place, you need to start `hived` with `--replay-blockchain`.
+Replay uses the existing `block_log` to build up the shared memory file up to the highest block stored there, and then it continues with sync, up to the head block.
+There's very little use of multi-threading here because every block depends on the previous one.
+A lot of data is being processed, so your hardware specs really do matter here.
+Not long ago Hive crossed the 55 millions block mark.
+Let’s see how long does it take to replay that many blocks using different hardware specs.
+
+`hived --force-replay --set-benchmark-interval 100000`
+# Test Setups
+### Alpha
+&amp;gt; A popular workstation setup. Good enough but will run out of storage soon.
+```
+Intel(R) Core(TM) i7-7700 CPU @ 3.60GHz
+64GB RAM (DDR4 4x16GB 2133MHz)
+2x256GB SSD in RAID0 (SAMSUNG MZ7LN256HMJP)
+```
+### Bravo
+&amp;gt; Old but not obsolete. CPU released in 2014. New disks after the old ones failed.
+```
+Intel(R) Core(TM) i7-4790K CPU @ 4.00GHz
+32GB RAM (DDR3 4x8GB 1600MHz)
+2x480GB SSD in RAID0 (KINGSTON SEDC500M480G)
+```
+### Charlie
+&amp;gt; The newest and the most expensive CPU in my list. Also the only AMD.
+```
+AMD Ryzen 5 3600
+64GB RAM (DDR4 4x16GB 2666MHz)
+2x512GB NVMe in RAID0 (SAMSUNG MZVLB512HBJQ)
+```
+### Delta
+&amp;gt; My favorite, high quality components for serious tasks.
+```
+Intel(R) Xeon(R) E-2136 CPU @ 3.30GHz
+64GB RAM (DDR4 4x16GB 2666MHz ECC)
+2x512GB NVMe in RAID0 (WD CL SN720)
+```
+# Warning: spoilers ahead
+What do you think? Which one will win the race?
+
+&lt;center&gt;https://www.youtube.com/watch?v=vlW9lDE3DuI&lt;/center&gt;
+
+# Results
+
+|Server  | [s] |  H:M:S |
+|--------|-----|--------|
+|Alpha   |28120|7h48m40s|
+|Bravo   |26280|7h18m00s|
+|Charlie |25032|6h57m12s|
+|Delta   |23314|6h28m34s|
+
+What are your `--replay` times?&lt;/div&gt;
+&lt;script crossorigin=&quot;anonymous&quot; integrity=&quot;sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=&quot; src=&quot;https://code.jquery.com/jquery-3.5.1.slim.min.js&quot;&gt;&lt;/script&gt;
+
+&lt;script src=&quot;https://unpkg.com/steem-content-renderer&quot;&gt;&lt;/script&gt;
+
+&lt;!-- &lt;script src=&quot;https://cdn.jsdelivr.net/npm/hive-content-renderer/dist/hive-content-renderer.min.js&quot;&gt;&lt;/script&gt; --&gt;
+&lt;script&gt;
+  $(document).ready(function() {
+    try {
+      const renderer = new SteemContentRenderer.DefaultRenderer({
+      // const renderer = new HiveContentRenderer({
+        baseUrl: &quot;https://hive.blog/&quot;,
+        breaks: true,
+        skipSanitization: false,
+        allowInsecureScriptTags: false,
+        addNofollowToLinks: true,
+        doNotShowImages: false,
+        ipfsPrefix: &quot;&quot;,
+        assetsWidth: 640,
+        assetsHeight: 480,
+        imageProxyFn: (url) =&gt; url,
+        usertagUrlFn: (account) =&gt; &quot;/@gtg&quot;,
+        hashtagUrlFn: (hashtag) =&gt; &quot;/hive-pressure-3-catching-up-with-the-head-block&quot;,
+        isLinkSafeFn: (url) =&gt; true,
+      });
+      
+      const inputElem = $('#content-gtg-hive-pressure-3-catching-up-with-the-head-block').html();
+      const outputElem = $('#content-gtg-hive-pressure-3-catching-up-with-the-head-block');
+      const output = renderer.render(inputElem);
+      
+      outputElem.html(output);
+    } catch(e) {
+      console.log(e);
+    }
+  });
+&lt;/script&gt;
+
+&lt;style&gt;
+  #content-gtg-hive-pressure-3-catching-up-with-the-head-block {
+    padding: 0 3rem;
+    color: #444444;
+    font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.8;
+    text-shadow: 0 1px 0 #ffffff;
+    padding: 0.5rem;
+  }
+  #content-gtg-hive-pressure-3-catching-up-with-the-head-block code {
+    background: white;
+  }
+  #content-gtg-hive-pressure-3-catching-up-with-the-head-block a {
+    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
+  }
+  #content-gtg-hive-pressure-3-catching-up-with-the-head-block a:hover {
+    border-bottom: 0;
+  }
+  #content-gtg-hive-pressure-3-catching-up-with-the-head-block h1 {
+    font-size: 2.2em;
+  }
+  #content-gtg-hive-pressure-3-catching-up-with-the-head-block h2, h3, h4, h5 {
+    margin-bottom: 0;
+  }
+  #content-gtg-hive-pressure-3-catching-up-with-the-head-block header small {
+    color: #999;
+    font-size: 50%;
+  }
+  #content-gtg-hive-pressure-3-catching-up-with-the-head-block img {
+    max-width: 100%;
+  }
+&lt;/style&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;
+  See: &lt;a href=&quot;https://hive.blog/hive-160391/@gtg/hive-pressure-3-catching-up-with-the-head-block&quot;&gt;Hive Pressure #3: Catching up with the head block.&lt;/a&gt;
+  by
+  &lt;a href=&quot;https://hive.blog/@gtg&quot;&gt;@gtg&lt;/a&gt;
+&lt;/p&gt;</content><author><name>gtg</name></author><category term="howto" /><category term="devops" /><category term="node" /><summary type="html">Basic Hive node has a very simple configuration and with minor changes it can serve as a seed node, a witness node, a broadcaster node, a private node for your wallet (that’s what exchanges are using) or even a simple API node for your Hive microservices. Regardless of its role, as long as a node has unrestricted network access, it will be part of the Hive p2p network, thus supporting Hive reliability and resilience. Before your node becomes fully functional, it has to reach the head block of the blockchain. # Get the Hive daemon - Build it yourself from these sources: https://github.com/openhive-network/hive (push mirror) https://gitlab.syncad.com/hive/hive - Use docker: `docker pull hiveio/hive` - Or get the binary from a trusted source: https://gtg.openhive.network/get/bin/ # Get the blocks The easy way or the fast way. - Sync from the p2p network By default, when a fresh Hive node starts, it connects to the Hive p2p network and retrieves blocks from it. See: `--resync-blockchain` - Get blocks yourself Hive node can use an existing `block_log` either from another instance or from a public source such as https://gtg.openhive.network/get/blockchain Our goal is to reach the head block as soon as possible so we chose that way. `block_log` currently takes over 350GB, so depending on your connection and source, downloading it might take less than an hour or even half a day (for 1Gbps and 100Mbps respectively). By default it’s expected to be located at `~/.hived/blockchain/block_log`. # Configure your node Configuration settings are by default in `~/.hived/config.ini` This should be enough: ``` plugin = witness plugin = rc shared-file-dir = &quot;/run/hive&quot; shared-file-size = 24G flush-state-interval = 0 ``` Please note that I’m using a custom location for `shared_memory.bin` file, keeping it on a `tmpfs` volume for maximum performance, make sure you have enough space there if you are going to use it. # Process the blocks Having all the blocks is not enough, your node needs to be aware of the current state of Hive. Live nodes get blocks from the p2p network and process them updating state one block at a time (every three seconds), but when you start from scratch, you have to catch up. - Snapshot Snapshot is the fastest way because most of the job is already done. That however will work only for compatible configurations. We will play with snapshots another time. - Replay Once you have a `block_log` and `config.ini` files in place, you need to start `hived` with `--replay-blockchain`. Replay uses the existing `block_log` to build up the shared memory file up to the highest block stored there, and then it continues with sync, up to the head block. There's very little use of multi-threading here because every block depends on the previous one. A lot of data is being processed, so your hardware specs really do matter here. Not long ago Hive crossed the 55 millions block mark. Let’s see how long does it take to replay that many blocks using different hardware specs. `hived --force-replay --set-benchmark-interval 100000` # Test Setups ### Alpha &amp;gt; A popular workstation setup. Good enough but will run out of storage soon. ``` Intel(R) Core(TM) i7-7700 CPU @ 3.60GHz 64GB RAM (DDR4 4x16GB 2133MHz) 2x256GB SSD in RAID0 (SAMSUNG MZ7LN256HMJP) ``` ### Bravo &amp;gt; Old but not obsolete. CPU released in 2014. New disks after the old ones failed. ``` Intel(R) Core(TM) i7-4790K CPU @ 4.00GHz 32GB RAM (DDR3 4x8GB 1600MHz) 2x480GB SSD in RAID0 (KINGSTON SEDC500M480G) ``` ### Charlie &amp;gt; The newest and the most expensive CPU in my list. Also the only AMD. ``` AMD Ryzen 5 3600 64GB RAM (DDR4 4x16GB 2666MHz) 2x512GB NVMe in RAID0 (SAMSUNG MZVLB512HBJQ) ``` ### Delta &amp;gt; My favorite, high quality components for serious tasks. ``` Intel(R) Xeon(R) E-2136 CPU @ 3.30GHz 64GB RAM (DDR4 4x16GB 2666MHz ECC) 2x512GB NVMe in RAID0 (WD CL SN720) ``` # Warning: spoilers ahead What do you think? Which one will win the race? https://www.youtube.com/watch?v=vlW9lDE3DuI # Results |Server | [s] | H:M:S | |--------|-----|--------| |Alpha |28120|7h48m40s| |Bravo |26280|7h18m00s| |Charlie |25032|6h57m12s| |Delta |23314|6h28m34s| What are your `--replay` times? See: Hive Pressure #3: Catching up with the head block. by @gtg</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://img.youtube.com/vi/vlW9lDE3DuI/0.jpg" /><media:content medium="image" url="https://img.youtube.com/vi/vlW9lDE3DuI/0.jpg" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Core development report #12: Good progress on direct rc delegations</title><link href="https://hivedocs.info/news/core/development/2021/07/12/core-development-report-12-good-progress-on-direct-rc-delegations.html" rel="alternate" type="text/html" title="Core development report #12: Good progress on direct rc delegations" /><published>2021-07-12T13:30:15-07:00</published><updated>2021-07-12T13:30:15-07:00</updated><id>https://hivedocs.info/news/core/development/2021/07/12/core-development-report-12-good-progress-on-direct-rc-delegations</id><content type="html" xml:base="https://hivedocs.info/news/core/development/2021/07/12/core-development-report-12-good-progress-on-direct-rc-delegations.html">&lt;div id=&quot;content-howo-core-development-report-12-good-progress-on-direct-rc-delegations&quot;&gt;
 ![image.png](https://files.peakd.com/file/peakd-hive/howo/AJeaeqp3EAX2QSK997FwxcZdJuACo817654t7riwiGf3aSNSLCLRwP5yGvpwrcb.png)
 
 Hey,
@@ -1296,159 +1476,4 @@ All dApps that rely on the functions outlined above should have started testing 
   See: &lt;a href=&quot;https://hive.blog/hive/@hiveio/hive-hardfork-25-is-on-the-way-hive-to-reach-equilibrium-on-june-30th-2021&quot;&gt;Hive Hardfork 25 is on the Way: Hive to reach Equilibrium on June 30th, 2021&lt;/a&gt;
   by
   &lt;a href=&quot;https://hive.blog/@hiveio&quot;&gt;@hiveio&lt;/a&gt;
-&lt;/p&gt;</content><author><name>hiveio</name></author><category term="news" /><category term="core" /><category term="development" /><summary type="html">![image.png](https://images.hive.blog/DQmfByqFD7d9ecpcYMhy7ucwhQLKKrrLjcp9vb378wSJwCP/image.png) Earlier this week we notified cryptocurrency exchanges that the upcoming hardfork to the Hive blockchain network, dubbed *Equilibrium*, is planned for the end of June. Today's official date announcement also has a pile of helpful information including a summary of changes coming with the new hardfork, links to the software, and details for those of you who may want to get involved in testing the new software! ## TL:DR the Code; A Quick Overview of the Upcoming Changes *Equilibrium* is a state of balance between multiple forces. In the case of the Hive blockchain network, the guiding mission from day one has been to create an ecosystem that allows anyone to become a part of our decentralized network, contribute to governance, and to own their data, connections, tokens and actions in a world where the current tech and social powers have an iron grip. This hardfork continues to empower people to use Hive the way they want and takes another few large steps forward in creating an ecosystem with better balanced rules and tools for building whatever we can dream up. Reaching equilibrium is finding a state of balance and readiness. It is the essential preparation for big moves, exciting changes, and sustained growth. ### Here's a quick summary of HF25: Below is a list of the consensus changes that are being made as part of this hardfork: - **changes to curation window and curation rewards calculation** - The most important aspect of this change is that the 5 minute reverse auction is going away, so there is no punishment for voting early. This will finally put manual voters on an equal footing with automated voters when it comes to competing for curation rewards. This change, more than any other, was the driving reason for the naming of this hardfork. - In addition, anyone voting in the first 24 hours will be rewarded based solely on their Hive Power and vote weight, and the reward curve applied from 24 hours to the end of the voting window will be much softer than currently, eliminating any need to feel rushed when voting in order to maximize curation rewards. - **new operation and API to convert HIVE to HBD** - HBD (Hive-backed Dollars) is intended to be a feeless, trustless, USD-pegged stablecoin, a feat that has yet to be achieved in the cryptocurrency world. This new operation will stabilize the price pegging of HBD, allowing it to achieve its full potential as a frictionless medium of exchange for digital commerce. - While you've always been able to convert your HBD to HIVE, this new operation will allow you to convert in the opposite direction (HIVE -&amp;gt; HBD). - Previously, HBD was only effectively price-pegged on the low side of USD pricing. This new conversion will create an equilibrium point where HBD will be pegged on both the low side AND the high side. - **interest only paid on HBD held in your savings account** - You might have missed that you're earning interest on your Hive-backed Dollars, so this could be a neat surprise: simply move HBD into your savings account (3 day withdrawal waiting period) to earn interest on it just for holding! No-risk DeFi, made easy. - **new operation and API to enable recurring payments** - These are periodic transfers which you schedule to happen automatically. They are intended for managing subscription payments, etc. - **disallow voting on expired proposals** - **witness and proposal votes by an account expire after one year if the account stops actively making governance-related votes** - This change was made to ensure that old votes from dormant accounts don't unduly impact governance decisions for Hive. It will enable Hive to find a new balance between incumbent block producers and new competitors for those positions. - **proposal creators can change the end date of their Decentralized Hive Fund (DHF) proposals** - This allows a proposal creator to reduce their funding request (by decreasing the number of payments they receive) without having to create a new proposal and start from zero in respect to community support for the proposal. - **re-allow vote operation for already paid posts** - Voting outside the rewards window should still be something you can do, to show appreciation for the content you like and to add to your curated feed. This is a quality of life change that does *not* impact anything to do with allocation of rewards. There are also new command-line options, a pile of bug fixes and performance optimizations, a new API call, and many other improvements to the code and documentation that the Hive blockchain relies on. Full details are available in the [release notes](https://gitlab.syncad.com/hive/hive/-/releases#v1.25.0) This is pretty critical work towards making it easier to understand, easier to run, and to create the best possible ecosystem for someone to hop in and start building with Hive. If you're not technical and don't want to do some hands-on testing, you're all caught up! You likely won't notice anything immediately when *Equilibrium* goes live. However, you may want to consider changing the way you vote for posts after the hardfork, especially if you've resorted to auto-voting to maximize your curation rewards. Now you'll have more time and flexibility to find the content you love in a relaxed way, and more time to engage with your favorite authors and communities! ### In the next 12 days... There is still time before the hardfork takes place. If you want to contribute to testing or if you are a dApp creator, project owner, or someone who just wants to start getting more involved with the ecosystem, here are some handy links so you can jump in before *Equilibrium* goes live. ## Some Technical ~~House~~Beekeeping **Here is the link to the final official release version of Hardfork 25:** https://gitlab.syncad.com/hive/hive/-/tags/v1.25.0 ...and here are some helpful posts that outline joining the testnet, including how to create a witness node on the testnet, if you want to dive into the decentralized tech that powers Hive. **A guide to starting up a testnet witness:** https://peakd.com/guide/@howo/how-to-run-a-witness-node-on-the-hf25-testnet **And more information on the public testnet itself:** https://peakd.com/@gtg/hf25-public-testnet-reloaded-rc2 **The testnet faucet page:** https://hivetestnetfaucet.org/ All dApps that rely on the functions outlined above should have started testing or be starting to test as soon as possible. *Equilibrium* is the second community-driven hardfork of the Hive blockchain and we are very excited for it! It marks a key milestone for Hive development and for the Hive ecosystem. ### Keep an eye out for updates here and on our various Hive social media channels! 🐝 See: Hive Hardfork 25 is on the Way: Hive to reach Equilibrium on June 30th, 2021 by @hiveio</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://images.hive.blog/DQmfByqFD7d9ecpcYMhy7ucwhQLKKrrLjcp9vb378wSJwCP/image.png" /><media:content medium="image" url="https://images.hive.blog/DQmfByqFD7d9ecpcYMhy7ucwhQLKKrrLjcp9vb378wSJwCP/image.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Hive HardFork 25 Jump Starter Kit</title><link href="https://hivedocs.info/howto/devops/2021/06/18/hive-hardfork-25-jump-starter-kit.html" rel="alternate" type="text/html" title="Hive HardFork 25 Jump Starter Kit" /><published>2021-06-18T12:31:45-07:00</published><updated>2021-06-18T12:31:45-07:00</updated><id>https://hivedocs.info/howto/devops/2021/06/18/hive-hardfork-25-jump-starter-kit</id><content type="html" xml:base="https://hivedocs.info/howto/devops/2021/06/18/hive-hardfork-25-jump-starter-kit.html">&lt;div id=&quot;content-gtg-hive-hardfork-25-jump-starter-kit&quot;&gt;Intended for the Hive API node operators, witnesses, and developers.
-
-At the time of Eclipse release I made a similar post that saved many (hours) of lives, so I’m creating an updated one for the upcoming Hard Fork 25.
-
-&lt;center&gt;https://www.youtube.com/watch?v=mrwgrOhl7Yw&lt;/center&gt;&lt;sup&gt;Yes, new Hive Hard Fork, new fancy logo reveal.&lt;/sup&gt;
-
-# Code
-## GitLab
-https://gitlab.syncad.com/hive/hive
-Our core development efforts takes place in a community hosted GitLab repository (thanks @blocktrades). There's Hive core itself, but also many other Hive related software repositories.
-
-## GitHub
-https://github.com/openhive-network/hive
-We use it as a push mirror for GitLab repository, mostly for visibility and decentralization - if you have an account on GitHub please fork at least [hive](https://github.com/openhive-network/hive) and [hivemind](https://github.com/openhive-network/hivemind) and star them if you haven’t done so yet. We haven't paid much attention to it but apparently it's important for some outside metrics.
-
-&lt;center&gt;![star_fork.png](https://images.hive.blog/DQmQbRRrtoTFPZA9QmDRjvswPtaGuXrWXje1WHp9CeeGbV2/star_fork.png)
-&lt;sup&gt;Please click both buttons&lt;/sup&gt;&lt;/center&gt;
-
-# Services
-## API node
-https://api.openhive.network
-Soon to be switched to `v1.25.0` but because it’s heavily used in Hive related R&amp;amp;D it might not be your best choice if you are looking for a fast API node without any rate limiting. During the maintenance mode, it will fall back to https://api.hive.blog 
-
-## Seed node
-`hived` `v1.25.0` listens on `gtg.openhive.network:2001`
-to use it in your `config.ini` file just add the line:
-```
-p2p-seed-node = gtg.openhive.network:2001
-```
-If you don't have any `p2p-seed-node = ` entries in your config file, built-in defaults will be used (which contains my node too).
-
-# Stuff for download
-TL;DR https://gtg.openhive.network/get
-
-## Binaries
-`./get/bin`contains `hived` and `cli_wallet` binaries built on `Ubuntu 18.04 LTS` which should also run fine on `Ubuntu 20.04 LTS`
-
-## Blocks
-`./get/blockchain`
-As usual, the `block_log` file, roughly 350GB and counting.
-For testing needs there's also `block_log.5M` that is limited to first 5 million blocks.
-
-## Snapshots
-
-### API
-`./get/snapshot/api/` contains a relatively recent snapshot of the API node with all the fancy plugins.
-There’s a snapshot for the upcoming version `v1.25.0` but also for the old one `v1.24.8` if you need to switch back.
-Uncompressed snapshot takes roughly 480GB
-There’s also the `example-api-config.ini` file out there that contains settings compatible with the snapshot.
-
-To decompress, you can use simply run it through something like: `lbzip2 -dc | tar xv`
-(Using parallel bzip2 on multi-threaded systems might save you a lot of time)
-
-To use snapshot you need:
-- A `block_log` file, not smaller than the one used when the snapshot was made.
-- A `config.ini` file, compatible with the snapshot (see above), adjusted to your needs, without changes that could affect it in a way that changes the state.
-- A `hived` binary compatible with the snapshot
-
-All of that you can find above.
-
- Run `hived` with `--load-snapshot name`, assuming the snapshot is stored in `snapshot/name`
-
-`hived` API node runtime currently takes 823GB (incl. shm 19GB, excl. snapshot)
-
-### Exchanges
-There’s also a snapshot meant for exchanges in `./get/snapshot/exchange/`  that allows them to quickly get up and running, it requires a compatible configuration and that exchange account is one of those who are tracked by my node. If you run an exchange and want to be on that list to use a snapshot, just please let me know.
-
-## Hivemind database dump
-`./get/hivemind/` contains a relatively recent dump of the Hivemind database.
-I use self-describing file names such as:
-`hivemind-20210616-47a41c96.dump`
-Date when dump was taken, revision of `hivemind` that was running it.
-You need at least that version, remember about `intarray` extension
-Consider running `pg_restore` with at least `-j 6` to run long running tasks in parallel
-After restoring the database, make sure to run the `db_upgrade` script.
-
-Even though during full sync database size peaks easily over 750GB, when restored from dump it takes roughly 500GB. Dump file itself is just 53GB.
-
-### All resources are offered AS IS.&lt;/div&gt;
-&lt;script crossorigin=&quot;anonymous&quot; integrity=&quot;sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=&quot; src=&quot;https://code.jquery.com/jquery-3.5.1.slim.min.js&quot;&gt;&lt;/script&gt;
-
-&lt;script src=&quot;https://unpkg.com/steem-content-renderer&quot;&gt;&lt;/script&gt;
-
-&lt;!-- &lt;script src=&quot;https://cdn.jsdelivr.net/npm/hive-content-renderer/dist/hive-content-renderer.min.js&quot;&gt;&lt;/script&gt; --&gt;
-&lt;script&gt;
-  $(document).ready(function() {
-    try {
-      const renderer = new SteemContentRenderer.DefaultRenderer({
-      // const renderer = new HiveContentRenderer({
-        baseUrl: &quot;https://hive.blog/&quot;,
-        breaks: true,
-        skipSanitization: false,
-        allowInsecureScriptTags: false,
-        addNofollowToLinks: true,
-        doNotShowImages: false,
-        ipfsPrefix: &quot;&quot;,
-        assetsWidth: 640,
-        assetsHeight: 480,
-        imageProxyFn: (url) =&gt; url,
-        usertagUrlFn: (account) =&gt; &quot;/@gtg&quot;,
-        hashtagUrlFn: (hashtag) =&gt; &quot;/hive-hardfork-25-jump-starter-kit&quot;,
-        isLinkSafeFn: (url) =&gt; true,
-      });
-      
-      const inputElem = $('#content-gtg-hive-hardfork-25-jump-starter-kit').html();
-      const outputElem = $('#content-gtg-hive-hardfork-25-jump-starter-kit');
-      const output = renderer.render(inputElem);
-      
-      outputElem.html(output);
-    } catch(e) {
-      console.log(e);
-    }
-  });
-&lt;/script&gt;
-
-&lt;style&gt;
-  #content-gtg-hive-hardfork-25-jump-starter-kit {
-    padding: 0 3rem;
-    color: #444444;
-    font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif;
-    font-size: 16px;
-    line-height: 1.8;
-    text-shadow: 0 1px 0 #ffffff;
-    padding: 0.5rem;
-  }
-  #content-gtg-hive-hardfork-25-jump-starter-kit code {
-    background: white;
-  }
-  #content-gtg-hive-hardfork-25-jump-starter-kit a {
-    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
-  }
-  #content-gtg-hive-hardfork-25-jump-starter-kit a:hover {
-    border-bottom: 0;
-  }
-  #content-gtg-hive-hardfork-25-jump-starter-kit h1 {
-    font-size: 2.2em;
-  }
-  #content-gtg-hive-hardfork-25-jump-starter-kit h2, h3, h4, h5 {
-    margin-bottom: 0;
-  }
-  #content-gtg-hive-hardfork-25-jump-starter-kit header small {
-    color: #999;
-    font-size: 50%;
-  }
-  #content-gtg-hive-hardfork-25-jump-starter-kit img {
-    max-width: 100%;
-  }
-&lt;/style&gt;
-
-&lt;hr /&gt;
-
-&lt;p&gt;
-  See: &lt;a href=&quot;https://hive.blog/hive-160391/@gtg/hive-hardfork-25-jump-starter-kit&quot;&gt;Hive HardFork 25 Jump Starter Kit&lt;/a&gt;
-  by
-  &lt;a href=&quot;https://hive.blog/@gtg&quot;&gt;@gtg&lt;/a&gt;
-&lt;/p&gt;</content><author><name>gtg</name></author><category term="howto" /><category term="devops" /><summary type="html">Intended for the Hive API node operators, witnesses, and developers. At the time of Eclipse release I made a similar post that saved many (hours) of lives, so I’m creating an updated one for the upcoming Hard Fork 25. https://www.youtube.com/watch?v=mrwgrOhl7YwYes, new Hive Hard Fork, new fancy logo reveal. # Code ## GitLab https://gitlab.syncad.com/hive/hive Our core development efforts takes place in a community hosted GitLab repository (thanks @blocktrades). There's Hive core itself, but also many other Hive related software repositories. ## GitHub https://github.com/openhive-network/hive We use it as a push mirror for GitLab repository, mostly for visibility and decentralization - if you have an account on GitHub please fork at least [hive](https://github.com/openhive-network/hive) and [hivemind](https://github.com/openhive-network/hivemind) and star them if you haven’t done so yet. We haven't paid much attention to it but apparently it's important for some outside metrics. ![star_fork.png](https://images.hive.blog/DQmQbRRrtoTFPZA9QmDRjvswPtaGuXrWXje1WHp9CeeGbV2/star_fork.png) Please click both buttons # Services ## API node https://api.openhive.network Soon to be switched to `v1.25.0` but because it’s heavily used in Hive related R&amp;amp;D it might not be your best choice if you are looking for a fast API node without any rate limiting. During the maintenance mode, it will fall back to https://api.hive.blog ## Seed node `hived` `v1.25.0` listens on `gtg.openhive.network:2001` to use it in your `config.ini` file just add the line: ``` p2p-seed-node = gtg.openhive.network:2001 ``` If you don't have any `p2p-seed-node = ` entries in your config file, built-in defaults will be used (which contains my node too). # Stuff for download TL;DR https://gtg.openhive.network/get ## Binaries `./get/bin`contains `hived` and `cli_wallet` binaries built on `Ubuntu 18.04 LTS` which should also run fine on `Ubuntu 20.04 LTS` ## Blocks `./get/blockchain` As usual, the `block_log` file, roughly 350GB and counting. For testing needs there's also `block_log.5M` that is limited to first 5 million blocks. ## Snapshots ### API `./get/snapshot/api/` contains a relatively recent snapshot of the API node with all the fancy plugins. There’s a snapshot for the upcoming version `v1.25.0` but also for the old one `v1.24.8` if you need to switch back. Uncompressed snapshot takes roughly 480GB There’s also the `example-api-config.ini` file out there that contains settings compatible with the snapshot. To decompress, you can use simply run it through something like: `lbzip2 -dc | tar xv` (Using parallel bzip2 on multi-threaded systems might save you a lot of time) To use snapshot you need: - A `block_log` file, not smaller than the one used when the snapshot was made. - A `config.ini` file, compatible with the snapshot (see above), adjusted to your needs, without changes that could affect it in a way that changes the state. - A `hived` binary compatible with the snapshot All of that you can find above. Run `hived` with `--load-snapshot name`, assuming the snapshot is stored in `snapshot/name` `hived` API node runtime currently takes 823GB (incl. shm 19GB, excl. snapshot) ### Exchanges There’s also a snapshot meant for exchanges in `./get/snapshot/exchange/` that allows them to quickly get up and running, it requires a compatible configuration and that exchange account is one of those who are tracked by my node. If you run an exchange and want to be on that list to use a snapshot, just please let me know. ## Hivemind database dump `./get/hivemind/` contains a relatively recent dump of the Hivemind database. I use self-describing file names such as: `hivemind-20210616-47a41c96.dump` Date when dump was taken, revision of `hivemind` that was running it. You need at least that version, remember about `intarray` extension Consider running `pg_restore` with at least `-j 6` to run long running tasks in parallel After restoring the database, make sure to run the `db_upgrade` script. Even though during full sync database size peaks easily over 750GB, when restored from dump it takes roughly 500GB. Dump file itself is just 53GB. ### All resources are offered AS IS. See: Hive HardFork 25 Jump Starter Kit by @gtg</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://img.youtube.com/vi/mrwgrOhl7Yw/0.jpg" /><media:content medium="image" url="https://img.youtube.com/vi/mrwgrOhl7Yw/0.jpg" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>
+&lt;/p&gt;</content><author><name>hiveio</name></author><category term="news" /><category term="core" /><category term="development" /><summary type="html">![image.png](https://images.hive.blog/DQmfByqFD7d9ecpcYMhy7ucwhQLKKrrLjcp9vb378wSJwCP/image.png) Earlier this week we notified cryptocurrency exchanges that the upcoming hardfork to the Hive blockchain network, dubbed *Equilibrium*, is planned for the end of June. Today's official date announcement also has a pile of helpful information including a summary of changes coming with the new hardfork, links to the software, and details for those of you who may want to get involved in testing the new software! ## TL:DR the Code; A Quick Overview of the Upcoming Changes *Equilibrium* is a state of balance between multiple forces. In the case of the Hive blockchain network, the guiding mission from day one has been to create an ecosystem that allows anyone to become a part of our decentralized network, contribute to governance, and to own their data, connections, tokens and actions in a world where the current tech and social powers have an iron grip. This hardfork continues to empower people to use Hive the way they want and takes another few large steps forward in creating an ecosystem with better balanced rules and tools for building whatever we can dream up. Reaching equilibrium is finding a state of balance and readiness. It is the essential preparation for big moves, exciting changes, and sustained growth. ### Here's a quick summary of HF25: Below is a list of the consensus changes that are being made as part of this hardfork: - **changes to curation window and curation rewards calculation** - The most important aspect of this change is that the 5 minute reverse auction is going away, so there is no punishment for voting early. This will finally put manual voters on an equal footing with automated voters when it comes to competing for curation rewards. This change, more than any other, was the driving reason for the naming of this hardfork. - In addition, anyone voting in the first 24 hours will be rewarded based solely on their Hive Power and vote weight, and the reward curve applied from 24 hours to the end of the voting window will be much softer than currently, eliminating any need to feel rushed when voting in order to maximize curation rewards. - **new operation and API to convert HIVE to HBD** - HBD (Hive-backed Dollars) is intended to be a feeless, trustless, USD-pegged stablecoin, a feat that has yet to be achieved in the cryptocurrency world. This new operation will stabilize the price pegging of HBD, allowing it to achieve its full potential as a frictionless medium of exchange for digital commerce. - While you've always been able to convert your HBD to HIVE, this new operation will allow you to convert in the opposite direction (HIVE -&amp;gt; HBD). - Previously, HBD was only effectively price-pegged on the low side of USD pricing. This new conversion will create an equilibrium point where HBD will be pegged on both the low side AND the high side. - **interest only paid on HBD held in your savings account** - You might have missed that you're earning interest on your Hive-backed Dollars, so this could be a neat surprise: simply move HBD into your savings account (3 day withdrawal waiting period) to earn interest on it just for holding! No-risk DeFi, made easy. - **new operation and API to enable recurring payments** - These are periodic transfers which you schedule to happen automatically. They are intended for managing subscription payments, etc. - **disallow voting on expired proposals** - **witness and proposal votes by an account expire after one year if the account stops actively making governance-related votes** - This change was made to ensure that old votes from dormant accounts don't unduly impact governance decisions for Hive. It will enable Hive to find a new balance between incumbent block producers and new competitors for those positions. - **proposal creators can change the end date of their Decentralized Hive Fund (DHF) proposals** - This allows a proposal creator to reduce their funding request (by decreasing the number of payments they receive) without having to create a new proposal and start from zero in respect to community support for the proposal. - **re-allow vote operation for already paid posts** - Voting outside the rewards window should still be something you can do, to show appreciation for the content you like and to add to your curated feed. This is a quality of life change that does *not* impact anything to do with allocation of rewards. There are also new command-line options, a pile of bug fixes and performance optimizations, a new API call, and many other improvements to the code and documentation that the Hive blockchain relies on. Full details are available in the [release notes](https://gitlab.syncad.com/hive/hive/-/releases#v1.25.0) This is pretty critical work towards making it easier to understand, easier to run, and to create the best possible ecosystem for someone to hop in and start building with Hive. If you're not technical and don't want to do some hands-on testing, you're all caught up! You likely won't notice anything immediately when *Equilibrium* goes live. However, you may want to consider changing the way you vote for posts after the hardfork, especially if you've resorted to auto-voting to maximize your curation rewards. Now you'll have more time and flexibility to find the content you love in a relaxed way, and more time to engage with your favorite authors and communities! ### In the next 12 days... There is still time before the hardfork takes place. If you want to contribute to testing or if you are a dApp creator, project owner, or someone who just wants to start getting more involved with the ecosystem, here are some handy links so you can jump in before *Equilibrium* goes live. ## Some Technical ~~House~~Beekeeping **Here is the link to the final official release version of Hardfork 25:** https://gitlab.syncad.com/hive/hive/-/tags/v1.25.0 ...and here are some helpful posts that outline joining the testnet, including how to create a witness node on the testnet, if you want to dive into the decentralized tech that powers Hive. **A guide to starting up a testnet witness:** https://peakd.com/guide/@howo/how-to-run-a-witness-node-on-the-hf25-testnet **And more information on the public testnet itself:** https://peakd.com/@gtg/hf25-public-testnet-reloaded-rc2 **The testnet faucet page:** https://hivetestnetfaucet.org/ All dApps that rely on the functions outlined above should have started testing or be starting to test as soon as possible. *Equilibrium* is the second community-driven hardfork of the Hive blockchain and we are very excited for it! It marks a key milestone for Hive development and for the Hive ecosystem. ### Keep an eye out for updates here and on our various Hive social media channels! 🐝 See: Hive Hardfork 25 is on the Way: Hive to reach Equilibrium on June 30th, 2021 by @hiveio</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://images.hive.blog/DQmfByqFD7d9ecpcYMhy7ucwhQLKKrrLjcp9vb378wSJwCP/image.png" /><media:content medium="image" url="https://images.hive.blog/DQmfByqFD7d9ecpcYMhy7ucwhQLKKrrLjcp9vb378wSJwCP/image.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>
