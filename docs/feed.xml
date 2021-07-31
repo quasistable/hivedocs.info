@@ -1,4 +1,379 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.0">Jekyll</generator><link href="https://hivedocs.info/feed.xml" rel="self" type="application/atom+xml" /><link href="https://hivedocs.info/" rel="alternate" type="text/html" /><updated>2021-07-21T21:28:27-07:00</updated><id>https://hivedocs.info/feed.xml</id><title type="html">Hive Chain Documentation</title><subtitle>Your resource for various levels of Hive Documentation.</subtitle><author><name>site curated by: @inertia</name></author><entry><title type="html">19th update of 2021 on BlockTrades work on Hive software</title><link href="https://hivedocs.info/news/core/development/2021/07/20/19th-update-of-2021-on-blocktrades-work-on-hive-software.html" rel="alternate" type="text/html" title="19th update of 2021 on BlockTrades work on Hive software" /><published>2021-07-20T12:56:42-07:00</published><updated>2021-07-20T12:56:42-07:00</updated><id>https://hivedocs.info/news/core/development/2021/07/20/19th-update-of-2021-on-blocktrades-work-on-hive-software</id><content type="html" xml:base="https://hivedocs.info/news/core/development/2021/07/20/19th-update-of-2021-on-blocktrades-work-on-hive-software.html">&lt;div id=&quot;content-blocktrades-19th-update-of-2021-on-blocktrades-work-on-hive-software&quot;&gt;![blocktrades update.png](https://images.hive.blog/DQmSihw8Kz4U7TuCQa98DDdCzqbqPFRumuVWAbareiYZW1Z/blocktrades%20update.png)
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.0">Jekyll</generator><link href="https://hivedocs.info/feed.xml" rel="self" type="application/atom+xml" /><link href="https://hivedocs.info/" rel="alternate" type="text/html" /><updated>2021-07-31T12:23:43-07:00</updated><id>https://hivedocs.info/feed.xml</id><title type="html">Hive Chain Documentation</title><subtitle>Your resource for various levels of Hive Documentation.</subtitle><author><name>site curated by: @inertia</name></author><entry><title type="html">20th update of 2021 on BlockTrades work on Hive software</title><link href="https://hivedocs.info/news/core/development/2021/07/29/20th-update-of-2021-on-blocktrades-work-on-hive-software.html" rel="alternate" type="text/html" title="20th update of 2021 on BlockTrades work on Hive software" /><published>2021-07-29T14:42:09-07:00</published><updated>2021-07-29T14:42:09-07:00</updated><id>https://hivedocs.info/news/core/development/2021/07/29/20th-update-of-2021-on-blocktrades-work-on-hive-software</id><content type="html" xml:base="https://hivedocs.info/news/core/development/2021/07/29/20th-update-of-2021-on-blocktrades-work-on-hive-software.html">&lt;div id=&quot;content-blocktrades-20th-update-of-2021-on-blocktrades-work-on-hive-software&quot;&gt;![blocktrades update.png](https://images.hive.blog/DQmSihw8Kz4U7TuCQa98DDdCzqbqPFRumuVWAbareiYZW1Z/blocktrades%20update.png)
+
+Below is a list of Hive-related programming issues worked on by BlockTrades team during last week or so:
+
+# Hived work (blockchain node software)
+
+### Continued development of TestTools framework
+We made a substantial number of changes to the new TestTools framework that we are now using to do blackbox testing on hived: https://gitlab.syncad.com/hive/hive/-/merge_requests/278
+
+There are too many changes to discuss individually (see the merge request for full details), but at a high-level, the new testing framework allows us to perform more complex tests faster and more efficiently than the previous framework.
+
+
+### Command-line interface (CLI) wallet enhancements
+We continued work on improvements to CLI wallet (refactoring to remove need for duplicate code to support legacy operations, upgrading cli wallet tests to use TestTools, support for signing of transactions based on authority) and I expect we’ll merge in these changes in the coming week.
+
+### Continuing work on blockhain converter tool
+We’re also continuing work on the blockchain converter that generates a testnet blockchain configuration form an existing blocklog. Most recently, we added multithreading support to speed it up and those changes are being tested now. You can follow the work on this task here: https://gitlab.syncad.com/hive/hive/-/commits/tm-blockchain-converter/
+
+# Hivemind (2nd layer applications + social media middleware)
+
+
+### Reduced peak memory consumption
+We reviewed and merged in the changes to reduce memory usage of hive sync (just over 4GB footprint now, whereas previous peak usage was approaching 14GB). Finalized changes that were merged in are here: https://gitlab.syncad.com/hive/hivemind/-/merge_requests/527/diffs
+
+
+### Optimized update_post_rshares
+
+We completed and merged in the code that I mentioned last week that creates a temporary index for faster execution of the update_post_rshares function and we were finally able to achieve the same speedup in a full sync of hivemind on one of our production systems after some tweaks to the code (function with temporary index processed 52 million blocks in 19 minutes). 
+
+To achieve the same results that we saw in our development testing, we found we had to perform a `vacuum analyze` on the `hive_votes` table prior to running the update_post_rshares function to ensure the query planner had the proper statistics to generate an efficient query plan. The merge request for the optimized code is here:
+https://gitlab.syncad.com/hive/hivemind/-/merge_requests/521
+
+### Optimized process of effective_comment_vote operation during massive sync
+
+When we know that a particular post will be paid out before end of massive sync block processing, we can skip processing of effective_comment_vote_operations for such posts. This optimization reduced the amount of post records that we need to flush to the database during massive sync by more than 50%. The merge request for this optimization is here: https://gitlab.syncad.com/hive/hivemind/-/merge_requests/525
+
+
+### Merged in new hive sync option --max-retries
+We also finished review and testing of the new –max-retries option that allows configuring how many retries (or an indefinite number of retries) before the hive sync process will shutdown if it loses contact with the hived serving blockchain data to it: https://gitlab.syncad.com/hive/hivemind/-/merge_requests/526
+
+# Optimized api.hive.blog servers (BlockTrades-supported API node)
+
+While there are number of API nodes available nowadays, many Hive apps default to using our node (which is often useful, since it allows us to quickly spot any scaling issue that might be arising as Hive API traffic increases with time). Here is a graph of how that traffic has increased over the last year:
+
+![image.png](https://images.hive.blog/DQmWoWKQctKxSMTj5YXm7JfmVdZN42c2NCJt28StVKqwLvd/image.png)
+
+As you can see, our incoming API traffic (the top part of the graph) has roughly tripled over the year.
+
+### Solved issue with transaction timeouts
+
+Yesterday we started getting some reports of timeouts on transactions processed via api.hive.blog. The immediate suspicion, of course, was that this was due to the increased traffic coming from splinterlands servers, which turned out to be the case. 
+
+But we weren’t seeing much CPU or IO loading on our servers, despite the increased traffic (in fact, we had substantial headroom there and we could likely easily handle 12x or more than the traffic we were receiving based on CPU bottlenecking just with our existing servers), so this lead us to suspect a network-related problem.
+
+As a quick fix, we tried making some changes to the network configuration parameters of our servers based on recommendations from @mahdiyari, and we had a report from him that this helped some, but we were still getting reports of a fair number of timeouts, so we decided to do a more thorough analysis of the issue.
+
+To properly analyze the network traffic, we first had to make some improvements to the jussi traffic analyzer that we use to analyze loading, because most of the increased traffic was encoding the nature of the request in the post bodies, which means the details of the request weren’t seen by the analyzer tool (e.g. we couldn’t see exactly what types of requests were creating the network problems). With these changes, the jussi analyzer can now distinguish what type of request is being made, allowing us to see which type of requests were slow and/or timing out.
+
+After making this change, we found that the requests that were timing out were mostly transaction broadcasts using the old style “pre-appbase” format. Requests of this type can’t be directly processed by a hived node, but we run a jussi gateway on api.hive.blog that converts these legacy-formatted requests into appbase-formatted requests (effectively making our node backwards-compatible with these old style requests). 
+
+So this was our first clue as to what the real problem was. After investigating how our jussi gateway was configured, we found that the converted requests were being sent to our hived nodes using the websocket protocol, unlike most other requests, which were sent via http. So, on a hunch, we modified the configuration of our jussi process to send translated requests as http requests instead of web socket requests and this eliminated the timeouts (as confirmed by both the jussi analyzer, beacon.peakd.com, and individual script testing by devs).
+
+At this point, our node is operating very smoothly, despite signs that traffic has further increased beyond even yesterday’s traffic, so I’m confident we’ve solved all immediate issues.
+
+### Replacement of calls to broadcast_transaction_synchronous with broadcast_transaction
+
+Despite handling traffic fine now, I’m also a bit concerned about the use of broadcast_transaction_synchronous calls. These are blocking calls that tend to hold a connection open for 1.5s or more on average (half a block interval) because they wait for the transaction be included in the blockchain before returning. 
+
+I’ve asked the library devs to look into changing their libraries to begin relying on the newer broadcast_transaction operation (a non-blocking call) and use the transaction_status API call to determine when their transaction has been included into the block, which should eliminate the large number of open connections that can occur when many transactions are being broadcast at once.
+
+@mahdiyari has already made changes to hive-js (the Javascript library for hive apps) along these lines (as well as replacing the use of legacy-formatted API calls with appbase formatted API calls) and apps developers are now beginning to test their apps with this beta version of hive-js. Assuming this process goes smoothly, I anticipate that other library devs will swiftly follow suit.
+
+# Hive Application Framework (HAF)
+
+Some enhancements to HAF have been made to support synchronizing of multiple Hive apps operating on a HAF server. This allows an app that relies on the data of other apps to be sure that those apps have   processed all blocks up to the point where the dependent app is currently working at. This enhancement also involved support for secure sharing of data between HAF apps on a HAF server (for example, a dependent app can read, but not write, data in the tables of the app it depends on).
+
+As I understand it, we now have a sample application built using HAF, but I haven’t had a chance to review it yet, as I was busy yesterday analyzing and optimizing our web infrastructure with our infrastructure team as discussed above. But this is high on my personal priority list, so I plan to review the work done here soon.
+
+# What’s next?
+
+We’ve resumed work on the sql_serializer plugin, which is one of the last key pieces needed before we can release HAF. Once those changes are completed, we’ll be able to do an end-to-end test with hived→sql_serializer→hivemind with a full sync of the blockchain. Perhaps I’m optimistic about the resulting speedup, but it’s possible we could have results as early as next Monday. I’m hoping we have some form of HAF ready for early beta testers within a week or two, but bear in mind that is a best case scenario.&lt;/div&gt;
+&lt;script crossorigin=&quot;anonymous&quot; integrity=&quot;sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=&quot; src=&quot;https://code.jquery.com/jquery-3.5.1.slim.min.js&quot;&gt;&lt;/script&gt;
+
+&lt;script src=&quot;https://unpkg.com/steem-content-renderer&quot;&gt;&lt;/script&gt;
+
+&lt;!-- &lt;script src=&quot;https://cdn.jsdelivr.net/npm/hive-content-renderer/dist/hive-content-renderer.min.js&quot;&gt;&lt;/script&gt; --&gt;
+&lt;script&gt;
+  $(document).ready(function() {
+    try {
+      const renderer = new SteemContentRenderer.DefaultRenderer({
+      // const renderer = new HiveContentRenderer({
+        baseUrl: &quot;https://hive.blog/&quot;,
+        breaks: true,
+        skipSanitization: false,
+        allowInsecureScriptTags: false,
+        addNofollowToLinks: true,
+        doNotShowImages: false,
+        ipfsPrefix: &quot;&quot;,
+        assetsWidth: 640,
+        assetsHeight: 480,
+        imageProxyFn: (url) =&gt; url,
+        usertagUrlFn: (account) =&gt; &quot;/@blocktrades&quot;,
+        hashtagUrlFn: (hashtag) =&gt; &quot;/20th-update-of-2021-on-blocktrades-work-on-hive-software&quot;,
+        isLinkSafeFn: (url) =&gt; true,
+      });
+      
+      const inputElem = $('#content-blocktrades-20th-update-of-2021-on-blocktrades-work-on-hive-software').html();
+      const outputElem = $('#content-blocktrades-20th-update-of-2021-on-blocktrades-work-on-hive-software');
+      const output = renderer.render(inputElem);
+      
+      outputElem.html(output);
+    } catch(e) {
+      console.log(e);
+    }
+  });
+&lt;/script&gt;
+
+&lt;style&gt;
+  #content-blocktrades-20th-update-of-2021-on-blocktrades-work-on-hive-software {
+    padding: 0 3rem;
+    color: #444444;
+    font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.8;
+    text-shadow: 0 1px 0 #ffffff;
+    padding: 0.5rem;
+  }
+  #content-blocktrades-20th-update-of-2021-on-blocktrades-work-on-hive-software code {
+    background: white;
+  }
+  #content-blocktrades-20th-update-of-2021-on-blocktrades-work-on-hive-software a {
+    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
+  }
+  #content-blocktrades-20th-update-of-2021-on-blocktrades-work-on-hive-software a:hover {
+    border-bottom: 0;
+  }
+  #content-blocktrades-20th-update-of-2021-on-blocktrades-work-on-hive-software h1 {
+    font-size: 2.2em;
+  }
+  #content-blocktrades-20th-update-of-2021-on-blocktrades-work-on-hive-software h2, h3, h4, h5 {
+    margin-bottom: 0;
+  }
+  #content-blocktrades-20th-update-of-2021-on-blocktrades-work-on-hive-software header small {
+    color: #999;
+    font-size: 50%;
+  }
+  #content-blocktrades-20th-update-of-2021-on-blocktrades-work-on-hive-software img {
+    max-width: 100%;
+  }
+&lt;/style&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;
+  See: &lt;a href=&quot;https://hive.blog/hive-139531/@blocktrades/20th-update-of-2021-on-blocktrades-work-on-hive-software&quot;&gt;20th update of 2021 on BlockTrades work on Hive software&lt;/a&gt;
+  by
+  &lt;a href=&quot;https://hive.blog/@blocktrades&quot;&gt;@blocktrades&lt;/a&gt;
+&lt;/p&gt;</content><author><name>blocktrades</name></author><category term="news" /><category term="core" /><category term="development" /><summary type="html">![blocktrades update.png](https://images.hive.blog/DQmSihw8Kz4U7TuCQa98DDdCzqbqPFRumuVWAbareiYZW1Z/blocktrades%20update.png) Below is a list of Hive-related programming issues worked on by BlockTrades team during last week or so: # Hived work (blockchain node software) ### Continued development of TestTools framework We made a substantial number of changes to the new TestTools framework that we are now using to do blackbox testing on hived: https://gitlab.syncad.com/hive/hive/-/merge_requests/278 There are too many changes to discuss individually (see the merge request for full details), but at a high-level, the new testing framework allows us to perform more complex tests faster and more efficiently than the previous framework. ### Command-line interface (CLI) wallet enhancements We continued work on improvements to CLI wallet (refactoring to remove need for duplicate code to support legacy operations, upgrading cli wallet tests to use TestTools, support for signing of transactions based on authority) and I expect we’ll merge in these changes in the coming week. ### Continuing work on blockhain converter tool We’re also continuing work on the blockchain converter that generates a testnet blockchain configuration form an existing blocklog. Most recently, we added multithreading support to speed it up and those changes are being tested now. You can follow the work on this task here: https://gitlab.syncad.com/hive/hive/-/commits/tm-blockchain-converter/ # Hivemind (2nd layer applications + social media middleware) ### Reduced peak memory consumption We reviewed and merged in the changes to reduce memory usage of hive sync (just over 4GB footprint now, whereas previous peak usage was approaching 14GB). Finalized changes that were merged in are here: https://gitlab.syncad.com/hive/hivemind/-/merge_requests/527/diffs ### Optimized update_post_rshares We completed and merged in the code that I mentioned last week that creates a temporary index for faster execution of the update_post_rshares function and we were finally able to achieve the same speedup in a full sync of hivemind on one of our production systems after some tweaks to the code (function with temporary index processed 52 million blocks in 19 minutes). To achieve the same results that we saw in our development testing, we found we had to perform a `vacuum analyze` on the `hive_votes` table prior to running the update_post_rshares function to ensure the query planner had the proper statistics to generate an efficient query plan. The merge request for the optimized code is here: https://gitlab.syncad.com/hive/hivemind/-/merge_requests/521 ### Optimized process of effective_comment_vote operation during massive sync When we know that a particular post will be paid out before end of massive sync block processing, we can skip processing of effective_comment_vote_operations for such posts. This optimization reduced the amount of post records that we need to flush to the database during massive sync by more than 50%. The merge request for this optimization is here: https://gitlab.syncad.com/hive/hivemind/-/merge_requests/525 ### Merged in new hive sync option --max-retries We also finished review and testing of the new –max-retries option that allows configuring how many retries (or an indefinite number of retries) before the hive sync process will shutdown if it loses contact with the hived serving blockchain data to it: https://gitlab.syncad.com/hive/hivemind/-/merge_requests/526 # Optimized api.hive.blog servers (BlockTrades-supported API node) While there are number of API nodes available nowadays, many Hive apps default to using our node (which is often useful, since it allows us to quickly spot any scaling issue that might be arising as Hive API traffic increases with time). Here is a graph of how that traffic has increased over the last year: ![image.png](https://images.hive.blog/DQmWoWKQctKxSMTj5YXm7JfmVdZN42c2NCJt28StVKqwLvd/image.png) As you can see, our incoming API traffic (the top part of the graph) has roughly tripled over the year. ### Solved issue with transaction timeouts Yesterday we started getting some reports of timeouts on transactions processed via api.hive.blog. The immediate suspicion, of course, was that this was due to the increased traffic coming from splinterlands servers, which turned out to be the case. But we weren’t seeing much CPU or IO loading on our servers, despite the increased traffic (in fact, we had substantial headroom there and we could likely easily handle 12x or more than the traffic we were receiving based on CPU bottlenecking just with our existing servers), so this lead us to suspect a network-related problem. As a quick fix, we tried making some changes to the network configuration parameters of our servers based on recommendations from @mahdiyari, and we had a report from him that this helped some, but we were still getting reports of a fair number of timeouts, so we decided to do a more thorough analysis of the issue. To properly analyze the network traffic, we first had to make some improvements to the jussi traffic analyzer that we use to analyze loading, because most of the increased traffic was encoding the nature of the request in the post bodies, which means the details of the request weren’t seen by the analyzer tool (e.g. we couldn’t see exactly what types of requests were creating the network problems). With these changes, the jussi analyzer can now distinguish what type of request is being made, allowing us to see which type of requests were slow and/or timing out. After making this change, we found that the requests that were timing out were mostly transaction broadcasts using the old style “pre-appbase” format. Requests of this type can’t be directly processed by a hived node, but we run a jussi gateway on api.hive.blog that converts these legacy-formatted requests into appbase-formatted requests (effectively making our node backwards-compatible with these old style requests). So this was our first clue as to what the real problem was. After investigating how our jussi gateway was configured, we found that the converted requests were being sent to our hived nodes using the websocket protocol, unlike most other requests, which were sent via http. So, on a hunch, we modified the configuration of our jussi process to send translated requests as http requests instead of web socket requests and this eliminated the timeouts (as confirmed by both the jussi analyzer, beacon.peakd.com, and individual script testing by devs). At this point, our node is operating very smoothly, despite signs that traffic has further increased beyond even yesterday’s traffic, so I’m confident we’ve solved all immediate issues. ### Replacement of calls to broadcast_transaction_synchronous with broadcast_transaction Despite handling traffic fine now, I’m also a bit concerned about the use of broadcast_transaction_synchronous calls. These are blocking calls that tend to hold a connection open for 1.5s or more on average (half a block interval) because they wait for the transaction be included in the blockchain before returning. I’ve asked the library devs to look into changing their libraries to begin relying on the newer broadcast_transaction operation (a non-blocking call) and use the transaction_status API call to determine when their transaction has been included into the block, which should eliminate the large number of open connections that can occur when many transactions are being broadcast at once. @mahdiyari has already made changes to hive-js (the Javascript library for hive apps) along these lines (as well as replacing the use of legacy-formatted API calls with appbase formatted API calls) and apps developers are now beginning to test their apps with this beta version of hive-js. Assuming this process goes smoothly, I anticipate that other library devs will swiftly follow suit. # Hive Application Framework (HAF) Some enhancements to HAF have been made to support synchronizing of multiple Hive apps operating on a HAF server. This allows an app that relies on the data of other apps to be sure that those apps have processed all blocks up to the point where the dependent app is currently working at. This enhancement also involved support for secure sharing of data between HAF apps on a HAF server (for example, a dependent app can read, but not write, data in the tables of the app it depends on). As I understand it, we now have a sample application built using HAF, but I haven’t had a chance to review it yet, as I was busy yesterday analyzing and optimizing our web infrastructure with our infrastructure team as discussed above. But this is high on my personal priority list, so I plan to review the work done here soon. # What’s next? We’ve resumed work on the sql_serializer plugin, which is one of the last key pieces needed before we can release HAF. Once those changes are completed, we’ll be able to do an end-to-end test with hived→sql_serializer→hivemind with a full sync of the blockchain. Perhaps I’m optimistic about the resulting speedup, but it’s possible we could have results as early as next Monday. I’m hoping we have some form of HAF ready for early beta testers within a week or two, but bear in mind that is a best case scenario. See: 20th update of 2021 on BlockTrades work on Hive software by @blocktrades</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://images.hive.blog/DQmSihw8Kz4U7TuCQa98DDdCzqbqPFRumuVWAbareiYZW1Z/blocktrades%20update.png" /><media:content medium="image" url="https://images.hive.blog/DQmSihw8Kz4U7TuCQa98DDdCzqbqPFRumuVWAbareiYZW1Z/blocktrades%20update.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Hive libraries for Microsoft .NET now fully support broadcasting transactions</title><link href="https://hivedocs.info/news/dotnet/2021/07/26/msnet-libraries-transactions.html" rel="alternate" type="text/html" title="Hive libraries for Microsoft .NET now fully support broadcasting transactions" /><published>2021-07-26T05:56:27-07:00</published><updated>2021-07-26T05:56:27-07:00</updated><id>https://hivedocs.info/news/dotnet/2021/07/26/msnet-libraries-transactions</id><content type="html" xml:base="https://hivedocs.info/news/dotnet/2021/07/26/msnet-libraries-transactions.html">&lt;div id=&quot;content-arcange-msnet-libraries-transactions&quot;&gt;![](https://i.imgur.com/uBDjiIT.png)
+
+Months ago, I introduced the [Hive library for Microsoft .NET  developers](/hive-139531/@arcange/msnet-libraries). This library provides developers used to VB.NET and C# languages with easy-to-use .NET classes, exposing almost all the APIs of the `hived` and `cli_wallet` daemons.
+
+It's also available as a &quot;COM library&quot;  (aka .dll) so people can use it directly in their favorites COM-enabled Windows applications like Word, Excel, ...
+
+### A missing feature
+
+Although the existing library was versatile enough to read information from the blockchain and even record transactions in it, it was however limited to operations that can be sent to the blockchain through the interfaces exposed by the cli_wallet.
+
+Although most of the usual operations are available through that interface, many new operations have been supported by the blockchain but not added to the cli_wallet API (yet).
+
+On the other hand, this way of sending transactions to the blockchain requires that you have a running daemon available at hand, and in case of failure you cannot easily switch to another.
+
+I had wanted for years to have the ability to connect my library directly to API servers that several Witnesses operate (including myself), but so far I have managed to postpone this work. Time to cut it out!
+
+### Taking matters into my own hands
+
+Broadcasting transactions directly to the blockchain means serializing the transaction and signing it before sending it to an RPC node.
+
+Easier said than done because it is an area that was new to me and I know several who have broken their teeth there. Never mind, I like to take up challenges and I often tell myself that nothing is impossible when approached with calm and patience.
+
+Thanks to the Hive developers portal [tutorial about transactions](https://developers.hive.io/tutorials-recipes/how-to-serialize-and-sign-using-js.html), I gradually integrated the understanding of the serialization and cryptography processes required to sign transactions.
+
+As a result, it is no longer necessary to go through cli_wallet to write operations into the blockchain, and **all** available operations can now be broadcasted using the hive.net library.
+
+### Code example
+
+The library is really easy to use. Here is a simple C# code example that broadcast a vote operation to the blockchain:
+
+```
+string strPosting = &quot;5...&quot;;   // Posting private key
+string strActive = &quot;5...&quot;;    // Active private key
+
+HttpClient oHTTP = new HttpClient();
+CHived oHived = new CHived(oHTTP, &quot;https://api.hive.blog&quot;);
+
+COperations.vote oVote = new COperations.vote {
+    voter = &quot;arcange&quot;, 
+    author = &quot;author&quot;, 
+    permlink = &quot;permlink&quot;,
+    weight = 100 
+    };
+
+try 
+{
+
+    string txid = oHived.broadcast_transaction(
+        new object[] { oVote }, 
+        new string[] { strPosting }
+        );
+
+    Console.Write(txid);
+}
+catch (Exception e)
+{
+    Console.Write(e.Message);
+}
+```
+
+Broadcasting multiple operations at once with a single transaction is also very easy:
+
+```
+COperations.transfer oTransfer1 = new COperations.transfer { 
+    from = &quot;arcange&quot;, 
+    to = &quot;account1&quot;, 
+    amount = new Asset(&quot;0.001 HIVE&quot;), 
+    memo = &quot;A first transfer&quot; 
+    };
+    
+COperations.transfer oTransfer2 = new COperations.transfer { 
+    from = &quot;arcange&quot;, 
+    to = &quot;account2&quot;, 
+    amount = new Asset(&quot;1.000 HBD&quot;), 
+    memo = &quot;A second transfer&quot; 
+    };
+    
+try
+{
+    string txid = oHived.broadcast_transaction(
+        new object[] { oTransfer1, oTransfer2 }, 
+        new string[] { strActive }
+        );
+    Console.Write(txid);
+}
+catch (Exception e)
+{
+    Console.Write(e.Message);
+}
+```
+
+Here is another example in VB.NET:
+
+```
+Dim strActive = &quot;5....&quot;    ' Posting private key
+Dim strPosting = &quot;5....&quot;   ' Active Private key
+
+Dim oHttp As HttpClient = New HttpClient()
+Dim oHiveAPI = New CHived(oHttp, &quot;https://api.hive.blog&quot;)
+
+Dim oWitnessUpdate As New COperations.witness_update With {
+    .owner = &quot;arcange&quot;,
+    .url = &quot;https://....&quot;,
+    .block_signing_key = New PublicKey(&quot;STM....&quot;),
+    .props = New ChainProperties With {
+        .account_creation_fee = New Asset(3, &quot;HIVE&quot;),
+        .maximum_block_size = 65536,
+        .hbd_interest_rate = 1000
+        },
+    .fee = New Asset(3, &quot;HIVE&quot;)
+    }
+
+Try
+    Dim txid = oHiveAPI.broadcast_transaction({oWitnessUpdate}, {strPosting})
+    Console.Write(txid)
+Catch ex As Exception
+    Console.Write(ex.Message)
+End Try
+```
+
+### What's next?
+
+There is still some work to do:
+
+- add a set of functions to simplify the generation of the most used operations.
+- create documentation
+- create some tutorials
+
+I plan to tackle these tasks in the next weeks.
+
+### Open source
+
+The libraries are open source and can be found on [GitLab](https://gitlab.syncad.com/hive/hive-net).
+
+If you have any comments or requests, please create an issue on GitLab too. You can also contact me on [Discord](https://discordapp.com/channels/@me/237480770933882881) or [Telegram](https://t.me/the_arcange)
+
+---
+&lt;center&gt;
+
+### Check out my apps and services
+&lt;a href=&quot;/hive/@hive.engage/stay-connected-with-your-hive-audience-and-catch-attention&quot;&gt;&lt;img src=&quot;https://i.imgur.com/GiNJqlm.png&quot; /&gt;&lt;/a&gt;&lt;a href=&quot;/@hivebuzz&quot;&gt;&lt;img src=&quot;https://i.imgur.com/B4UTun2.png&quot; /&gt;&lt;/a&gt;&lt;a href=&quot;/@hivesql&quot;&gt;&lt;img src=&quot;https://i.imgur.com/EPN8RW6.png&quot; /&gt;&lt;/a&gt;&lt;a href=&quot;/hive/@arcange/introducing-hive-account-recovery&quot;&gt;&lt;img src=&quot;https://i.imgur.com/6TWeW7V.png&quot; /&gt;&lt;/a&gt;&lt;a href=&quot;/@hive.autoclaim&quot;&gt;&lt;img src=&quot;https://i.imgur.com/ih2pEOw.png&quot; /&gt;&lt;/a&gt;&lt;/center&gt;
+&lt;center&gt;
+
+### [Vote for me as a witness ![](https://i.imgur.com/2bi4SnT.png)](https://hivesigner.com/sign/account-witness-vote?witness=arcange&amp;amp;approve=1)&amp;lt;/div&amp;gt;
+&lt;script crossorigin=&quot;anonymous&quot; integrity=&quot;sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=&quot; src=&quot;https://code.jquery.com/jquery-3.5.1.slim.min.js&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;https://unpkg.com/steem-content-renderer&quot;&gt;&lt;/script&gt;
+&lt;!-- &lt;script src=&quot;https://cdn.jsdelivr.net/npm/hive-content-renderer/dist/hive-content-renderer.min.js&quot;&gt;&lt;/script&gt; --&gt;
+&lt;script&gt;
+  $(document).ready(function() {
+    try {
+      const renderer = new SteemContentRenderer.DefaultRenderer({
+      // const renderer = new HiveContentRenderer({
+        baseUrl: &quot;https://hive.blog/&quot;,
+        breaks: true,
+        skipSanitization: false,
+        allowInsecureScriptTags: false,
+        addNofollowToLinks: true,
+        doNotShowImages: false,
+        ipfsPrefix: &quot;&quot;,
+        assetsWidth: 640,
+        assetsHeight: 480,
+        imageProxyFn: (url) =&gt; url,
+        usertagUrlFn: (account) =&gt; &quot;/@arcange&quot;,
+        hashtagUrlFn: (hashtag) =&gt; &quot;/msnet-libraries-transactions&quot;,
+        isLinkSafeFn: (url) =&gt; true,
+      });
+      
+      const inputElem = $('#content-arcange-msnet-libraries-transactions').html();
+      const outputElem = $('#content-arcange-msnet-libraries-transactions');
+      const output = renderer.render(inputElem);
+      
+      outputElem.html(output);
+    } catch(e) {
+      console.log(e);
+    }
+  });
+&lt;/script&gt;
+&lt;style&gt;
+  #content-arcange-msnet-libraries-transactions {
+    padding: 0 3rem;
+    color: #444444;
+    font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.8;
+    text-shadow: 0 1px 0 #ffffff;
+    padding: 0.5rem;
+  }
+  #content-arcange-msnet-libraries-transactions code {
+    background: white;
+  }
+  #content-arcange-msnet-libraries-transactions a {
+    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
+  }
+  #content-arcange-msnet-libraries-transactions a:hover {
+    border-bottom: 0;
+  }
+  #content-arcange-msnet-libraries-transactions h1 {
+    font-size: 2.2em;
+  }
+  #content-arcange-msnet-libraries-transactions h2, h3, h4, h5 {
+    margin-bottom: 0;
+  }
+  #content-arcange-msnet-libraries-transactions header small {
+    color: #999;
+    font-size: 50%;
+  }
+  #content-arcange-msnet-libraries-transactions img {
+    max-width: 100%;
+  }
+&lt;/style&gt;
+
+&lt;hr /&gt;
+&lt;p&gt;
+  See: &lt;a href=&quot;https://peakd.com/hive-139531/@arcange/msnet-libraries-transactions&quot;&gt;Hive libraries for Microsoft .NET now fully support broadcasting transactions&lt;/a&gt;
+  by
+  &lt;a href=&quot;https://hive.blog/@arcange&quot;&gt;@arcange&lt;/a&gt;
+&lt;/p&gt;
+
+&lt;/center&gt;&lt;/div&gt;</content><author><name>arcange</name></author><category term="news" /><category term="dotnet" /><summary type="html">![](https://i.imgur.com/uBDjiIT.png) Months ago, I introduced the [Hive library for Microsoft .NET developers](/hive-139531/@arcange/msnet-libraries). This library provides developers used to VB.NET and C# languages with easy-to-use .NET classes, exposing almost all the APIs of the `hived` and `cli_wallet` daemons. It's also available as a &quot;COM library&quot; (aka .dll) so people can use it directly in their favorites COM-enabled Windows applications like Word, Excel, ... ### A missing feature Although the existing library was versatile enough to read information from the blockchain and even record transactions in it, it was however limited to operations that can be sent to the blockchain through the interfaces exposed by the cli_wallet. Although most of the usual operations are available through that interface, many new operations have been supported by the blockchain but not added to the cli_wallet API (yet). On the other hand, this way of sending transactions to the blockchain requires that you have a running daemon available at hand, and in case of failure you cannot easily switch to another. I had wanted for years to have the ability to connect my library directly to API servers that several Witnesses operate (including myself), but so far I have managed to postpone this work. Time to cut it out! ### Taking matters into my own hands Broadcasting transactions directly to the blockchain means serializing the transaction and signing it before sending it to an RPC node. Easier said than done because it is an area that was new to me and I know several who have broken their teeth there. Never mind, I like to take up challenges and I often tell myself that nothing is impossible when approached with calm and patience. Thanks to the Hive developers portal [tutorial about transactions](https://developers.hive.io/tutorials-recipes/how-to-serialize-and-sign-using-js.html), I gradually integrated the understanding of the serialization and cryptography processes required to sign transactions. As a result, it is no longer necessary to go through cli_wallet to write operations into the blockchain, and **all** available operations can now be broadcasted using the hive.net library. ### Code example The library is really easy to use. Here is a simple C# code example that broadcast a vote operation to the blockchain: ``` string strPosting = &quot;5...&quot;; // Posting private key string strActive = &quot;5...&quot;; // Active private key HttpClient oHTTP = new HttpClient(); CHived oHived = new CHived(oHTTP, &quot;https://api.hive.blog&quot;); COperations.vote oVote = new COperations.vote { voter = &quot;arcange&quot;, author = &quot;author&quot;, permlink = &quot;permlink&quot;, weight = 100 }; try { string txid = oHived.broadcast_transaction( new object[] { oVote }, new string[] { strPosting } ); Console.Write(txid); } catch (Exception e) { Console.Write(e.Message); } ``` Broadcasting multiple operations at once with a single transaction is also very easy: ``` COperations.transfer oTransfer1 = new COperations.transfer { from = &quot;arcange&quot;, to = &quot;account1&quot;, amount = new Asset(&quot;0.001 HIVE&quot;), memo = &quot;A first transfer&quot; }; COperations.transfer oTransfer2 = new COperations.transfer { from = &quot;arcange&quot;, to = &quot;account2&quot;, amount = new Asset(&quot;1.000 HBD&quot;), memo = &quot;A second transfer&quot; }; try { string txid = oHived.broadcast_transaction( new object[] { oTransfer1, oTransfer2 }, new string[] { strActive } ); Console.Write(txid); } catch (Exception e) { Console.Write(e.Message); } ``` Here is another example in VB.NET: ``` Dim strActive = &quot;5....&quot; ' Posting private key Dim strPosting = &quot;5....&quot; ' Active Private key Dim oHttp As HttpClient = New HttpClient() Dim oHiveAPI = New CHived(oHttp, &quot;https://api.hive.blog&quot;) Dim oWitnessUpdate As New COperations.witness_update With { .owner = &quot;arcange&quot;, .url = &quot;https://....&quot;, .block_signing_key = New PublicKey(&quot;STM....&quot;), .props = New ChainProperties With { .account_creation_fee = New Asset(3, &quot;HIVE&quot;), .maximum_block_size = 65536, .hbd_interest_rate = 1000 }, .fee = New Asset(3, &quot;HIVE&quot;) } Try Dim txid = oHiveAPI.broadcast_transaction({oWitnessUpdate}, {strPosting}) Console.Write(txid) Catch ex As Exception Console.Write(ex.Message) End Try ``` ### What's next? There is still some work to do: - add a set of functions to simplify the generation of the most used operations. - create documentation - create some tutorials I plan to tackle these tasks in the next weeks. ### Open source The libraries are open source and can be found on [GitLab](https://gitlab.syncad.com/hive/hive-net). If you have any comments or requests, please create an issue on GitLab too. You can also contact me on [Discord](https://discordapp.com/channels/@me/237480770933882881) or [Telegram](https://t.me/the_arcange) --- ### Check out my apps and services ### [Vote for me as a witness ![](https://i.imgur.com/2bi4SnT.png)](https://hivesigner.com/sign/account-witness-vote?witness=arcange&amp;amp;approve=1)&amp;lt;/div&amp;gt; See: Hive libraries for Microsoft .NET now fully support broadcasting transactions by @arcange</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://i.imgur.com/uBDjiIT.png" /><media:content medium="image" url="https://i.imgur.com/uBDjiIT.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">19th update of 2021 on BlockTrades work on Hive software</title><link href="https://hivedocs.info/news/core/development/2021/07/20/19th-update-of-2021-on-blocktrades-work-on-hive-software.html" rel="alternate" type="text/html" title="19th update of 2021 on BlockTrades work on Hive software" /><published>2021-07-20T12:56:42-07:00</published><updated>2021-07-20T12:56:42-07:00</updated><id>https://hivedocs.info/news/core/development/2021/07/20/19th-update-of-2021-on-blocktrades-work-on-hive-software</id><content type="html" xml:base="https://hivedocs.info/news/core/development/2021/07/20/19th-update-of-2021-on-blocktrades-work-on-hive-software.html">&lt;div id=&quot;content-blocktrades-19th-update-of-2021-on-blocktrades-work-on-hive-software&quot;&gt;![blocktrades update.png](https://images.hive.blog/DQmSihw8Kz4U7TuCQa98DDdCzqbqPFRumuVWAbareiYZW1Z/blocktrades%20update.png)
 
 Below is a list of Hive-related programming issues worked on by BlockTrades team during last week or so:
 
@@ -1224,226 +1599,4 @@ Witnesses and devs alike will be “manning their keyboards” tomorrow (June 30
   See: &lt;a href=&quot;https://hive.blog/hive-139531/@blocktrades/17th-update-of-2021-on-blocktrades-work-on-hive-software&quot;&gt;17th update of 2021 on BlockTrades work on Hive software&lt;/a&gt;
   by
   &lt;a href=&quot;https://hive.blog/@blocktrades&quot;&gt;@blocktrades&lt;/a&gt;
-&lt;/p&gt;</content><author><name>blocktrades</name></author><category term="news" /><category term="core" /><category term="development" /><summary type="html">![blocktrades update.png](https://images.hive.blog/DQmSihw8Kz4U7TuCQa98DDdCzqbqPFRumuVWAbareiYZW1Z/blocktrades%20update.png) Below is a list of Hive-related programming issues worked on by BlockTrades team during last week or so: # Hived work (blockchain node software) Many users last week experienced problems getting their transactions accepted into the blockchain. It turns out there were two separate problems that could cause this issue, but to the outside observer they probably looked much the same: ### Beem had a problem detecting v1.25.0 Hive’s chainid, leading to invalidly signed transactions The first problem, discovered a few days ago, was that the python-based Beem API library used by several Hive apps was misdetecting v1.25.0 Hive nodes as Steem nodes, and therefore trying to sign with the wrong chain id. This, in turn, led to Beem-based Hive Apps creating transactions that would be rejected by any Hive node, because the transactions weren’t properly signed for Hive. We assisted Beem developers with identifying the source of the problem and suggested a solution. Beem now checks for the configuration constant HIVE_CHAIN_ID, before it checks for the constant STEEM_CHAIN_ID, giving precedence to Hive nodes over Steem nodes in the detection process and thus using the proper chainid during transaction signing. In related work, we replaced the name STEEM_CHAIN_ID with OLD_CHAIN_ID and eliminated some duplicated constant values returned by get_config (but note these changes will not be included in the master branch until after the hardfork, like other changes completed in the last week): https://gitlab.syncad.com/hive/hive/-/merge_requests/268 https://gitlab.syncad.com/hive/hive/-/merge_requests/267 ### Snapshot-based initialization of Hived-nodes requires a restart to properly initialize chainid The second problem appeared one day later, but a couple of days before the Beem library was updated, so the two problems overlapped in time, and this led to some confusion among app developers as to what was the source of the new problem. But by testing against various API nodes, we were able to determine that this second problem, although similar in appearance to the Beem problem, was occurring on non-Beem apps (e.g. hive.blog and peakd) and only occurring when those apps were using api.hive.blog as their API node. Since we hard recently updated the hived nodes on api.hive.blog, I suspected the problem has something to do with the update process. After comparing update procedures used by other API node operators, I noticed that most of the API node operators had done a replay to update their nodes, whereas we had updated our internal hived nodes from a snapshot. Ultimately this allowed us to identify a previously undetected error with nodes initialized from a snapshot: the variable that stores the chainid isn’t part of the database state that gets loaded from the snapshot data and the snapshot loading code didn’t trigger this variable to be updated. So a node updated in this way would reject validly signed transactions because it was operating with the wrong chainid (essentially the reverse of the Beem problem). ### Snapshot workaround We also found that this improperly set chainid problem was resolved by stopping and restarting the node that was initialized from a snapshot, and that’s how we have worked around the issue until we release a full fix for snapshot-based node initialization. The code fix is currently being implemented and tested, and will be released after the hardfork (to keep things simple, we’re avoiding making too many changes to the development branch until after the hardfork has triggered). ## Completed hived work Improvements to Testtools used to verify hived functionality: https://gitlab.syncad.com/hive/hive/-/merge_requests/266 Removed the copy/pasted version of secp256k1 library from hived and replaced with a submodule link: https://gitlab.syncad.com/hive/hive/-/merge_requests/264 Fixed issue where enum_virtual_ops sometimes returned non-virtual ops: https://gitlab.syncad.com/hive/hive/-/merge_requests/219 We completed work to eliminate duplicated code in the command-line wallet for hived, but we’re delaying merging those changes into the develop branch until later because of the sheer amount of changes involved. The still-open merge request for that work is here: https://gitlab.syncad.com/hive/hive/-/merge_requests/170 ## Continuing work on hived We’re working on speeding up the blockchain converter that we’ve developed to initialize and control a testnet configured in basically the same way as a mainnet. This is to allow for more realistic testing inside of a testnet environment (especially for better performance testing). So far, we’ve identified that the performance bottleneck seems to be related to the function that generates nonces. We’re continuing to work on the sql serializer plugin for hived that provides data to HAF-based applications. We expecting to complete that work this week, assuming no further distractions arise in the meantime (this work got delayed while we were troubleshooting the snapshot problem), then begin performance testing. We’re also continuing to work on the CI system to automate deployment of hived for more strenuous testing scenarios (e.g. long replay testing). # Hivemind (2nd layer applications + social media middleware) Fix for previously report list_subscribers bug: https://gitlab.syncad.com/hive/hivemind/-/merge_requests/513 We continue to investigate ways to improve performance of the update_rshares function immediately after massive sync of a hivemind instance. In addition to analyzing the cause of slowness of the current implementation, we’re also simultaneously looking at two different alternatives to improve overall performance: 1) eliminating the call completing and performing equivalent functionality during live sync and 2) adding an index (at least temporarily just after massive sync) to speed up update_rshares. The new index dramatically speeds up performance of update_rshares (time drops from 10 hours to 3 minutes and the index only takes about 10minutes to create), but it consumes 25GB of disk space (hence the idea to drop it after using it). We’re still running functional and performance tests related to the broken reputation/ordering issue because of multiple transactions used per block. As part of this work we’re also adding “completion markers” to the database state to better detect any database consistency error that can arise from an abrupt shutdown of postgres (notably, this can happen when postgres does an auto-upgrade for a security fix). We also resumed research into the reason why some hivemind nodes consume more memory than others. It has been suggested that it may be related to differences in python or python-library installations on the different systems. # Hive Application Framework We made good progress last week on both HAF code and the documentation for it, but our main dev for this work is now on vacation until June 19th, at which time the work will resume. But in the meantime, we should be able to do performance testing of this code using the new sql_serializer plugin, and I’m looking forward to seeing just how well we do. # Reminder: hardfork 25 triggers tomorrow Witnesses and devs alike will be “manning their keyboards” tomorrow (June 30th) as hardfork 25 triggers, ready for any potential problems that may arise. The hardfork is scheduled for approximately 14:00 UTC. See: 17th update of 2021 on BlockTrades work on Hive software by @blocktrades</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://images.hive.blog/DQmSihw8Kz4U7TuCQa98DDdCzqbqPFRumuVWAbareiYZW1Z/blocktrades%20update.png" /><media:content medium="image" url="https://images.hive.blog/DQmSihw8Kz4U7TuCQa98DDdCzqbqPFRumuVWAbareiYZW1Z/blocktrades%20update.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Hive SQL is ready for the hardfork 25 - Addendum</title><link href="https://hivedocs.info/news/sql/database/2021/06/29/hivesql-hf25-addendum.html" rel="alternate" type="text/html" title="Hive SQL is ready for the hardfork 25 - Addendum" /><published>2021-06-29T07:45:54-07:00</published><updated>2021-06-29T07:45:54-07:00</updated><id>https://hivedocs.info/news/sql/database/2021/06/29/hivesql-hf25-addendum</id><content type="html" xml:base="https://hivedocs.info/news/sql/database/2021/06/29/hivesql-hf25-addendum.html">&lt;div id=&quot;content-arcange-hivesql-hf25-addendum&quot;&gt;![](https://i.imgur.com/B5TI37I.png)
-
-The hardfork 25 (codename Equilibrium) should be activated in a few hours (less than 22 but many more than 2 at time of writing 😁) as all top 20 witnesses are now running the v1.25 code on their nodes ([see here](https://hive.arcange.eu/witnesses)).
-
-My API servers have also been upgraded to the new code and are now providing HiveSQL with new data. Therefore, I added a few updates to the HiveSQL database.
-
-## What's new?
-
-### 1. Existing table updates
-
-* **DynamicGlobalProperties**
-
-New columns
-
-|Column|Description|
-|-|-|
-|current_remove_threshold|number of objects that can be removed in one automatic operation (only applies to situations where many objects can accumulate over time but need to be removed in a single operation f.e. proposal votes)|
-|early_voting_seconds|Duration of the first period where all votes are considered equally regarding vote time and the linear rewards curve is applied (equal weight to all voters in that window) - currently 24 hours|
-|mid_voting_seconds|Duration of the second period where with reward weight/2 is applied - currently 48 hours|
-|max_consecutive_recurrent_transfer_failures|Maximum number of consecutive failures for a recurring transfer before it is automatically canceled |
-|max_recurrent_transfer_end_date|Maximum difference between start and end of a recurring payment - currently 730 days (2 years)|
-|min_recurrent_transfers_recurrence|Minimum time to elapse between two recurring transfer - currently 24 hours|
-|max_open_recurrent_transfers|Maximum number of recurring payments that can be scheduled for execution per account - currently 255|
-
-
-* **Account**
-
-New columns
-
-|Column|Description|
-|-|-|
-|post_voting_power|Effective HP that are used for curation (vesting_shares - delegated_vesting_shares + received_vesting_shares)|
-|post_voting_power_symbol|VESTS|
-|pending_transfers|Pending transfers for escrow operations|
-|governance_vote_expiration_ts|date and time that the account governance votes for witnesses and proposals will expire|
-|delayed_votes_time|date and time that the additional HP recently powered up will be taken into account for governance|
-|delayed_votes_val|value of the additional HP that will be taken into account for governance after delay|
-|open_recurrent_transfers|Number of recurring transfers scheduled for execution|
-
-
-## Documentation
-
-HiveSQL documentation has been updated and can be viewed at https://docs.hivesql.io
-
-## Support
-
-If you have any questions or remarks, support is provided on the [HiveSQL Discord Channel](https://discord.gg/kyEFDfT).
-
-**Happy Hardfork 25!**
-
----
-&lt;sub&gt; 
-
-#### &lt;center&gt;Check out my apps and services
-&lt;a href=&quot;/hive/@hive.engage/stay-connected-with-your-hive-audience-and-catch-attention&quot;&gt;&lt;img src=&quot;https://i.imgur.com/GiNJqlm.png&quot; /&gt;&lt;/a&gt;&lt;a href=&quot;/@hivebuzz&quot;&gt;&lt;img src=&quot;https://i.imgur.com/B4UTun2.png&quot; /&gt;&lt;/a&gt;&lt;a href=&quot;/@hivesql&quot;&gt;&lt;img src=&quot;https://i.imgur.com/EPN8RW6.png&quot; /&gt;&lt;/a&gt;&lt;a href=&quot;/hive/@arcange/introducing-hive-account-recovery&quot;&gt;&lt;img src=&quot;https://i.imgur.com/6TWeW7V.png&quot; /&gt;&lt;/a&gt;&lt;a href=&quot;/@hive.autoclaim&quot;&gt;&lt;img src=&quot;https://i.imgur.com/ih2pEOw.png&quot; /&gt;&lt;/a&gt;&lt;/center&gt;
-&lt;center&gt;
-
-### [Vote for me as a witness ![](https://i.imgur.com/2bi4SnT.png)](https://hivesigner.com/sign/account-witness-vote?witness=arcange&amp;amp;approve=1)&amp;lt;/div&amp;gt;
-&lt;script crossorigin=&quot;anonymous&quot; integrity=&quot;sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=&quot; src=&quot;https://code.jquery.com/jquery-3.5.1.slim.min.js&quot;&gt;&lt;/script&gt;
-&lt;script src=&quot;https://unpkg.com/steem-content-renderer&quot;&gt;&lt;/script&gt;
-&lt;!-- &lt;script src=&quot;https://cdn.jsdelivr.net/npm/hive-content-renderer/dist/hive-content-renderer.min.js&quot;&gt;&lt;/script&gt; --&gt;
-&lt;script&gt;
-  $(document).ready(function() {
-    try {
-      const renderer = new SteemContentRenderer.DefaultRenderer({
-      // const renderer = new HiveContentRenderer({
-        baseUrl: &quot;https://hive.blog/&quot;,
-        breaks: true,
-        skipSanitization: false,
-        allowInsecureScriptTags: false,
-        addNofollowToLinks: true,
-        doNotShowImages: false,
-        ipfsPrefix: &quot;&quot;,
-        assetsWidth: 640,
-        assetsHeight: 480,
-        imageProxyFn: (url) =&gt; url,
-        usertagUrlFn: (account) =&gt; &quot;/@arcange&quot;,
-        hashtagUrlFn: (hashtag) =&gt; &quot;/hivesql-hf25-addendum&quot;,
-        isLinkSafeFn: (url) =&gt; true,
-      });
-      
-      const inputElem = $('#content-arcange-hivesql-hf25-addendum').html();
-      const outputElem = $('#content-arcange-hivesql-hf25-addendum');
-      const output = renderer.render(inputElem);
-      
-      outputElem.html(output);
-    } catch(e) {
-      console.log(e);
-    }
-  });
-&lt;/script&gt;
-&lt;style&gt;
-  #content-arcange-hivesql-hf25-addendum {
-    padding: 0 3rem;
-    color: #444444;
-    font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif;
-    font-size: 16px;
-    line-height: 1.8;
-    text-shadow: 0 1px 0 #ffffff;
-    padding: 0.5rem;
-  }
-  #content-arcange-hivesql-hf25-addendum code {
-    background: white;
-  }
-  #content-arcange-hivesql-hf25-addendum a {
-    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
-  }
-  #content-arcange-hivesql-hf25-addendum a:hover {
-    border-bottom: 0;
-  }
-  #content-arcange-hivesql-hf25-addendum h1 {
-    font-size: 2.2em;
-  }
-  #content-arcange-hivesql-hf25-addendum h2, h3, h4, h5 {
-    margin-bottom: 0;
-  }
-  #content-arcange-hivesql-hf25-addendum header small {
-    color: #999;
-    font-size: 50%;
-  }
-  #content-arcange-hivesql-hf25-addendum img {
-    max-width: 100%;
-  }
-&lt;/style&gt;
-
-&lt;hr /&gt;
-&lt;p&gt;
-  See: &lt;a href=&quot;https://peakd.com/hive-139531/@arcange/hivesql-hf25-addendum&quot;&gt;Hive SQL is ready for the hardfork 25 - Addendum&lt;/a&gt;
-  by
-  &lt;a href=&quot;https://hive.blog/@arcange&quot;&gt;@arcange&lt;/a&gt;
-&lt;/p&gt;
-
-&lt;/center&gt;&lt;/sub&gt;&lt;/div&gt;</content><author><name>arcange</name></author><category term="news" /><category term="sql" /><category term="database" /><summary type="html">![](https://i.imgur.com/B5TI37I.png) The hardfork 25 (codename Equilibrium) should be activated in a few hours (less than 22 but many more than 2 at time of writing 😁) as all top 20 witnesses are now running the v1.25 code on their nodes ([see here](https://hive.arcange.eu/witnesses)). My API servers have also been upgraded to the new code and are now providing HiveSQL with new data. Therefore, I added a few updates to the HiveSQL database. ## What's new? ### 1. Existing table updates * **DynamicGlobalProperties** New columns |Column|Description| |-|-| |current_remove_threshold|number of objects that can be removed in one automatic operation (only applies to situations where many objects can accumulate over time but need to be removed in a single operation f.e. proposal votes)| |early_voting_seconds|Duration of the first period where all votes are considered equally regarding vote time and the linear rewards curve is applied (equal weight to all voters in that window) - currently 24 hours| |mid_voting_seconds|Duration of the second period where with reward weight/2 is applied - currently 48 hours| |max_consecutive_recurrent_transfer_failures|Maximum number of consecutive failures for a recurring transfer before it is automatically canceled | |max_recurrent_transfer_end_date|Maximum difference between start and end of a recurring payment - currently 730 days (2 years)| |min_recurrent_transfers_recurrence|Minimum time to elapse between two recurring transfer - currently 24 hours| |max_open_recurrent_transfers|Maximum number of recurring payments that can be scheduled for execution per account - currently 255| * **Account** New columns |Column|Description| |-|-| |post_voting_power|Effective HP that are used for curation (vesting_shares - delegated_vesting_shares + received_vesting_shares)| |post_voting_power_symbol|VESTS| |pending_transfers|Pending transfers for escrow operations| |governance_vote_expiration_ts|date and time that the account governance votes for witnesses and proposals will expire| |delayed_votes_time|date and time that the additional HP recently powered up will be taken into account for governance| |delayed_votes_val|value of the additional HP that will be taken into account for governance after delay| |open_recurrent_transfers|Number of recurring transfers scheduled for execution| ## Documentation HiveSQL documentation has been updated and can be viewed at https://docs.hivesql.io ## Support If you have any questions or remarks, support is provided on the [HiveSQL Discord Channel](https://discord.gg/kyEFDfT). **Happy Hardfork 25!** --- #### Check out my apps and services ### [Vote for me as a witness ![](https://i.imgur.com/2bi4SnT.png)](https://hivesigner.com/sign/account-witness-vote?witness=arcange&amp;amp;approve=1)&amp;lt;/div&amp;gt; See: Hive SQL is ready for the hardfork 25 - Addendum by @arcange</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://i.imgur.com/B5TI37I.png" /><media:content medium="image" url="https://i.imgur.com/B5TI37I.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Hive core developer meeting #25</title><link href="https://hivedocs.info/news/core/development/2021/06/22/hive-core-developer-meeting-25.html" rel="alternate" type="text/html" title="Hive core developer meeting #25" /><published>2021-06-22T12:40:21-07:00</published><updated>2021-06-22T12:40:21-07:00</updated><id>https://hivedocs.info/news/core/development/2021/06/22/hive-core-developer-meeting-25</id><content type="html" xml:base="https://hivedocs.info/news/core/development/2021/06/22/hive-core-developer-meeting-25.html">&lt;div id=&quot;content-howo-hive-core-developer-meeting-25&quot;&gt;https://www.youtube.com/watch?v=D2iS7B7-8rg
-
-I basically recommend that you listen to the whole thing, usually it's pretty easy to tl;dr but on this one we talk about a lot of various subjects that are basically dev/testnet sync.
-
-Topics touched upon
-Dev sync
-Testnet sync
-future testnet that mirrors the main net even more closely
-List of tests/cases to focus on for remainder of testing.
-State of libraries/key dapps/services ahead of HF -- ready?
-
-as always if you have questions, feel free to ask them in the comments :)
-
-@howo&lt;/div&gt;
-&lt;script crossorigin=&quot;anonymous&quot; integrity=&quot;sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=&quot; src=&quot;https://code.jquery.com/jquery-3.5.1.slim.min.js&quot;&gt;&lt;/script&gt;
-
-&lt;script src=&quot;https://unpkg.com/steem-content-renderer&quot;&gt;&lt;/script&gt;
-
-&lt;!-- &lt;script src=&quot;https://cdn.jsdelivr.net/npm/hive-content-renderer/dist/hive-content-renderer.min.js&quot;&gt;&lt;/script&gt; --&gt;
-&lt;script&gt;
-  $(document).ready(function() {
-    try {
-      const renderer = new SteemContentRenderer.DefaultRenderer({
-      // const renderer = new HiveContentRenderer({
-        baseUrl: &quot;https://hive.blog/&quot;,
-        breaks: true,
-        skipSanitization: false,
-        allowInsecureScriptTags: false,
-        addNofollowToLinks: true,
-        doNotShowImages: false,
-        ipfsPrefix: &quot;&quot;,
-        assetsWidth: 640,
-        assetsHeight: 480,
-        imageProxyFn: (url) =&gt; url,
-        usertagUrlFn: (account) =&gt; &quot;/@howo&quot;,
-        hashtagUrlFn: (hashtag) =&gt; &quot;/hive-core-developer-meeting-25&quot;,
-        isLinkSafeFn: (url) =&gt; true,
-      });
-      
-      const inputElem = $('#content-howo-hive-core-developer-meeting-25').html();
-      const outputElem = $('#content-howo-hive-core-developer-meeting-25');
-      const output = renderer.render(inputElem);
-      
-      outputElem.html(output);
-    } catch(e) {
-      console.log(e);
-    }
-  });
-&lt;/script&gt;
-
-&lt;style&gt;
-  #content-howo-hive-core-developer-meeting-25 {
-    padding: 0 3rem;
-    color: #444444;
-    font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif;
-    font-size: 16px;
-    line-height: 1.8;
-    text-shadow: 0 1px 0 #ffffff;
-    padding: 0.5rem;
-  }
-  #content-howo-hive-core-developer-meeting-25 code {
-    background: white;
-  }
-  #content-howo-hive-core-developer-meeting-25 a {
-    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
-  }
-  #content-howo-hive-core-developer-meeting-25 a:hover {
-    border-bottom: 0;
-  }
-  #content-howo-hive-core-developer-meeting-25 h1 {
-    font-size: 2.2em;
-  }
-  #content-howo-hive-core-developer-meeting-25 h2, h3, h4, h5 {
-    margin-bottom: 0;
-  }
-  #content-howo-hive-core-developer-meeting-25 header small {
-    color: #999;
-    font-size: 50%;
-  }
-  #content-howo-hive-core-developer-meeting-25 img {
-    max-width: 100%;
-  }
-&lt;/style&gt;
-
-&lt;hr /&gt;
-
-&lt;p&gt;
-  See: &lt;a href=&quot;https://peakd.com/meeting/@howo/hive-core-developer-meeting-25&quot;&gt;Hive core developer meeting #25&lt;/a&gt;
-  by
-  &lt;a href=&quot;https://hive.blog/@howo&quot;&gt;@howo&lt;/a&gt;
-&lt;/p&gt;</content><author><name>howo</name></author><category term="news" /><category term="core" /><category term="development" /><summary type="html">https://www.youtube.com/watch?v=D2iS7B7-8rg I basically recommend that you listen to the whole thing, usually it's pretty easy to tl;dr but on this one we talk about a lot of various subjects that are basically dev/testnet sync. Topics touched upon Dev sync Testnet sync future testnet that mirrors the main net even more closely List of tests/cases to focus on for remainder of testing. State of libraries/key dapps/services ahead of HF -- ready? as always if you have questions, feel free to ask them in the comments :) @howo See: Hive core developer meeting #25 by @howo</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://hivedocs.info/assets/images/favicon.png" /><media:content medium="image" url="https://hivedocs.info/assets/images/favicon.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>
+&lt;/p&gt;</content><author><name>blocktrades</name></author><category term="news" /><category term="core" /><category term="development" /><summary type="html">![blocktrades update.png](https://images.hive.blog/DQmSihw8Kz4U7TuCQa98DDdCzqbqPFRumuVWAbareiYZW1Z/blocktrades%20update.png) Below is a list of Hive-related programming issues worked on by BlockTrades team during last week or so: # Hived work (blockchain node software) Many users last week experienced problems getting their transactions accepted into the blockchain. It turns out there were two separate problems that could cause this issue, but to the outside observer they probably looked much the same: ### Beem had a problem detecting v1.25.0 Hive’s chainid, leading to invalidly signed transactions The first problem, discovered a few days ago, was that the python-based Beem API library used by several Hive apps was misdetecting v1.25.0 Hive nodes as Steem nodes, and therefore trying to sign with the wrong chain id. This, in turn, led to Beem-based Hive Apps creating transactions that would be rejected by any Hive node, because the transactions weren’t properly signed for Hive. We assisted Beem developers with identifying the source of the problem and suggested a solution. Beem now checks for the configuration constant HIVE_CHAIN_ID, before it checks for the constant STEEM_CHAIN_ID, giving precedence to Hive nodes over Steem nodes in the detection process and thus using the proper chainid during transaction signing. In related work, we replaced the name STEEM_CHAIN_ID with OLD_CHAIN_ID and eliminated some duplicated constant values returned by get_config (but note these changes will not be included in the master branch until after the hardfork, like other changes completed in the last week): https://gitlab.syncad.com/hive/hive/-/merge_requests/268 https://gitlab.syncad.com/hive/hive/-/merge_requests/267 ### Snapshot-based initialization of Hived-nodes requires a restart to properly initialize chainid The second problem appeared one day later, but a couple of days before the Beem library was updated, so the two problems overlapped in time, and this led to some confusion among app developers as to what was the source of the new problem. But by testing against various API nodes, we were able to determine that this second problem, although similar in appearance to the Beem problem, was occurring on non-Beem apps (e.g. hive.blog and peakd) and only occurring when those apps were using api.hive.blog as their API node. Since we hard recently updated the hived nodes on api.hive.blog, I suspected the problem has something to do with the update process. After comparing update procedures used by other API node operators, I noticed that most of the API node operators had done a replay to update their nodes, whereas we had updated our internal hived nodes from a snapshot. Ultimately this allowed us to identify a previously undetected error with nodes initialized from a snapshot: the variable that stores the chainid isn’t part of the database state that gets loaded from the snapshot data and the snapshot loading code didn’t trigger this variable to be updated. So a node updated in this way would reject validly signed transactions because it was operating with the wrong chainid (essentially the reverse of the Beem problem). ### Snapshot workaround We also found that this improperly set chainid problem was resolved by stopping and restarting the node that was initialized from a snapshot, and that’s how we have worked around the issue until we release a full fix for snapshot-based node initialization. The code fix is currently being implemented and tested, and will be released after the hardfork (to keep things simple, we’re avoiding making too many changes to the development branch until after the hardfork has triggered). ## Completed hived work Improvements to Testtools used to verify hived functionality: https://gitlab.syncad.com/hive/hive/-/merge_requests/266 Removed the copy/pasted version of secp256k1 library from hived and replaced with a submodule link: https://gitlab.syncad.com/hive/hive/-/merge_requests/264 Fixed issue where enum_virtual_ops sometimes returned non-virtual ops: https://gitlab.syncad.com/hive/hive/-/merge_requests/219 We completed work to eliminate duplicated code in the command-line wallet for hived, but we’re delaying merging those changes into the develop branch until later because of the sheer amount of changes involved. The still-open merge request for that work is here: https://gitlab.syncad.com/hive/hive/-/merge_requests/170 ## Continuing work on hived We’re working on speeding up the blockchain converter that we’ve developed to initialize and control a testnet configured in basically the same way as a mainnet. This is to allow for more realistic testing inside of a testnet environment (especially for better performance testing). So far, we’ve identified that the performance bottleneck seems to be related to the function that generates nonces. We’re continuing to work on the sql serializer plugin for hived that provides data to HAF-based applications. We expecting to complete that work this week, assuming no further distractions arise in the meantime (this work got delayed while we were troubleshooting the snapshot problem), then begin performance testing. We’re also continuing to work on the CI system to automate deployment of hived for more strenuous testing scenarios (e.g. long replay testing). # Hivemind (2nd layer applications + social media middleware) Fix for previously report list_subscribers bug: https://gitlab.syncad.com/hive/hivemind/-/merge_requests/513 We continue to investigate ways to improve performance of the update_rshares function immediately after massive sync of a hivemind instance. In addition to analyzing the cause of slowness of the current implementation, we’re also simultaneously looking at two different alternatives to improve overall performance: 1) eliminating the call completing and performing equivalent functionality during live sync and 2) adding an index (at least temporarily just after massive sync) to speed up update_rshares. The new index dramatically speeds up performance of update_rshares (time drops from 10 hours to 3 minutes and the index only takes about 10minutes to create), but it consumes 25GB of disk space (hence the idea to drop it after using it). We’re still running functional and performance tests related to the broken reputation/ordering issue because of multiple transactions used per block. As part of this work we’re also adding “completion markers” to the database state to better detect any database consistency error that can arise from an abrupt shutdown of postgres (notably, this can happen when postgres does an auto-upgrade for a security fix). We also resumed research into the reason why some hivemind nodes consume more memory than others. It has been suggested that it may be related to differences in python or python-library installations on the different systems. # Hive Application Framework We made good progress last week on both HAF code and the documentation for it, but our main dev for this work is now on vacation until June 19th, at which time the work will resume. But in the meantime, we should be able to do performance testing of this code using the new sql_serializer plugin, and I’m looking forward to seeing just how well we do. # Reminder: hardfork 25 triggers tomorrow Witnesses and devs alike will be “manning their keyboards” tomorrow (June 30th) as hardfork 25 triggers, ready for any potential problems that may arise. The hardfork is scheduled for approximately 14:00 UTC. See: 17th update of 2021 on BlockTrades work on Hive software by @blocktrades</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://images.hive.blog/DQmSihw8Kz4U7TuCQa98DDdCzqbqPFRumuVWAbareiYZW1Z/blocktrades%20update.png" /><media:content medium="image" url="https://images.hive.blog/DQmSihw8Kz4U7TuCQa98DDdCzqbqPFRumuVWAbareiYZW1Z/blocktrades%20update.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>
