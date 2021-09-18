@@ -1,4 +1,160 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.0">Jekyll</generator><link href="https://hivedocs.info/feed.xml" rel="self" type="application/atom+xml" /><link href="https://hivedocs.info/" rel="alternate" type="text/html" /><updated>2021-09-08T13:30:09-07:00</updated><id>https://hivedocs.info/feed.xml</id><title type="html">Hive Chain Documentation</title><subtitle>Your resource for various levels of Hive Documentation.</subtitle><author><name>site curated by: @inertia</name></author><entry><title type="html">22nd update of 2021 on BlockTrades work on Hive software</title><link href="https://hivedocs.info/news/core/development/2021/09/07/22nd-update-of-2021-on-blocktrades-work-on-hive-software.html" rel="alternate" type="text/html" title="22nd update of 2021 on BlockTrades work on Hive software" /><published>2021-09-07T14:31:30-07:00</published><updated>2021-09-07T14:31:30-07:00</updated><id>https://hivedocs.info/news/core/development/2021/09/07/22nd-update-of-2021-on-blocktrades-work-on-hive-software</id><content type="html" xml:base="https://hivedocs.info/news/core/development/2021/09/07/22nd-update-of-2021-on-blocktrades-work-on-hive-software.html">&lt;div id=&quot;content-blocktrades-22nd-update-of-2021-on-blocktrades-work-on-hive-software&quot;&gt;![blocktrades update.png](https://images.hive.blog/DQmSihw8Kz4U7TuCQa98DDdCzqbqPFRumuVWAbareiYZW1Z/blocktrades%20update.png)
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.0">Jekyll</generator><link href="https://hivedocs.info/feed.xml" rel="self" type="application/atom+xml" /><link href="https://hivedocs.info/" rel="alternate" type="text/html" /><updated>2021-09-17T20:08:06-07:00</updated><id>https://hivedocs.info/feed.xml</id><title type="html">Hive Chain Documentation</title><subtitle>Your resource for various levels of Hive Documentation.</subtitle><author><name>site curated by: @inertia</name></author><entry><title type="html">23rd update of 2021 on BlockTrades work on Hive software</title><link href="https://hivedocs.info/news/core/development/2021/09/16/23rd-update-of-2021-on-blocktrades-work-on-hive-software.html" rel="alternate" type="text/html" title="23rd update of 2021 on BlockTrades work on Hive software" /><published>2021-09-16T16:06:57-07:00</published><updated>2021-09-16T16:06:57-07:00</updated><id>https://hivedocs.info/news/core/development/2021/09/16/23rd-update-of-2021-on-blocktrades-work-on-hive-software</id><content type="html" xml:base="https://hivedocs.info/news/core/development/2021/09/16/23rd-update-of-2021-on-blocktrades-work-on-hive-software.html">&lt;div id=&quot;content-blocktrades-23rd-update-of-2021-on-blocktrades-work-on-hive-software&quot;&gt;![blocktrades update.png](https://images.hive.blog/DQmSihw8Kz4U7TuCQa98DDdCzqbqPFRumuVWAbareiYZW1Z/blocktrades%20update.png)
+Below is a list of Hive-related programming issues worked on by BlockTrades team during last week:
+
+# Hived work (blockchain node software)
+
+We moved hived tavern tests and improved the `get_account_history` test to allow testing results against a golden reference server. This will enable us to verify a HAF-based account history server against a known-good hived-based account history server.
+https://gitlab.syncad.com/hive/hive/-/merge_requests/261
+
+
+#  TestTools work (python-based test system for hived)
+
+https://gitlab.syncad.com/hive/hive/-/merge_requests/259
+#### Visible changes for test developers
+
+* Added support for test parallelization (in processes with pytest-xdist)
+  * Run following jobs in parallel:
+     * `cli_wallet_extended_tests`
+     * `test_tools_tests`
+   * Rewrote loggers system
+   * Rewrote managing of directories for data generated in tests
+
+* Improved interaction with snapshots
+  - Added support for loading snapshots from a custom path
+  - Added snapshots comparison
+  - Removed generated snapshot files (after automated tests only)
+
+- Added remote node (Use remote node for `main_net` implementation)
+
+* Extended documentation
+  - Added tutorials about replays and snapshots
+  - Document cleanup policies
+
+#### Internal changes
+
+* Checked TestTools sources and tests with pylint
+  - Fixed or temporary suppressed all reported problems
+  - Added CI job running linter
+
+- Introduced scopes which allows easier resource management. Use them for loggers and directories for data generated in tests.
+
+# Hivemind (2nd layer applications + social media middleware)
+
+We’re planning to move to Ubuntu 20 (from Ubuntu 18) as the recommended Hive development platform soon, and this also entails a move to Postgres 12 (from Postgres 10) because that’s the default version of Postgres that ships with Ubuntu 20. So we’re working thru performance regressions associated with differences in the way Postgres 12 query planner works. 
+
+As reported last week, we changed the query for `update_post_rshares` to fix a performance killer and changed when we executed some vacuum analyze calls. One of the fixes involved temporarily disabling just-in-time compiling for this query(https://gitlab.syncad.com/hive/hivemind/-/merge_requests/513). 
+
+We now have benchmarks for the overall performance improvement for update_post_rshares after massive sync (where this performance regression was particularly noticeable although it is also an important enhancement for live sync performance as well):
+* Old performance: 6.9 hours
+* New performance: 38 minutes
+
+
+# Hive Application Framework: framework for building robust and scalable Hive apps
+
+### Fixing/Optimizing HAF-based account history app (Hafah)
+
+We’re currently optimizing and testing our first HAF-based app (codenamed Hafah) that emulates the functionality of hived’s account history plugin (and ultimately will replace it). Our initial benchmarks at 5M blocks had good performance, but we saw a slowdown in indexing performance when operating with a fully populated database (i.e. 50M blocks). 
+
+### Benchmarking time to fill a Hafah database
+
+This week we’ve fixed this slowdown and have some preliminary performance benchmarks for filling up a Hafah database from scratch. As reported previously, a full replay to fill up a HAF database with 57M blocks (i.e. the entire hive blockchain) for Hafah usage takes 5.5 hours. Next, we can run a Hafah index and it creates all its tables in 4.3 hours, taking 5.5 + 4.3 = 9.8 hours for the entire process. This compares very favorably against the time required for a hived account history node to replay: ~17 hours. Also, we haven’t yet tried to run both of these tasks concurrently, but there’s reason to believe that this will allow us to further reduce the time required to fill up a Hafah database.
+
+### Benchmarking API performance for Hafah
+
+We also need to benchmark the API performance of a Hafah server. We’ve created a script that uses jmeter to measure how quickly Hafah can process the various account_history API calls under heavy loading conditions. The script currently compares performance of  three types of servers: a) direct query to postgres server holding Hafah data, b) json-rpc call to Hafah’s python-based jsonrpc server, and c) a hived node. 
+
+Preliminary benchmarks show that the Hafah queries are very fast when served directly from postgres itself, but under loading conditions, we have observed that the python-based jsonrpc server is restricted to one cpu and becomes a bottleneck to performance. It is also worth noting that this is essentially the same code used by hivemind to handle jsonrpc calls, so this bottleneck probably also exists in hivemind, but just wasn’t noticed because the query times for a typical hivemind API call is much longer than the query time for a Hafah API call. In any event, we’ll be investigating ways to eliminate this bottleneck in the coming week, and hopefully it will allow for further scaling of hivemind API performance as well.
+
+### Conversion of hivemind to HAF-based app
+
+We’ve completed the first step in converting Hivemind to a HAF-based app (converted hivemind’s massive sync code to use HAF methods). I’ve been told massive sync indexing time is already faster than old-style hivemind, but I don’t have firm numbers yet to report. Also, I expect further improvements as we restructure hivemind’s massive sync procedures to take better advantage of the new way it is being fed data.
+
+# Upcoming work for next week
+
+For hived, we’re adding a command-line based option to allow a hived node to wait during a replay if it loses contact with a HAF database that it is filling (this issue arose when one of our devs restarted our HAF postgres server during mid-replay, but it seems like a generally useful feature).
+
+For HAF testing, we’ll be using the hived fork generator to verify that Hafah functions robustly under heavy forking activity on the blockchain. Once we’re further along with Haf-based hivemind, we’ll likely test it the same way.
+
+For Hafah, we’ll be 1) investigating the jsonrpc bottleneck, 2) further benchmarking API performance, 3) verifying results against a hived account history node, 4) benchmarking concurrent hived replay and Hafah massive sync, and 5) setting up continuous integration testing for Hafah.
+
+For Haf-based hivemind, we plan to restructure its massive sync process to simplify and optimize performance by taking advantage of HAF-based design. Next we’ll modify live sync operation to only use HAF data (currently it still makes some calls to hived during live sync).&lt;/div&gt;
+&lt;script crossorigin=&quot;anonymous&quot; integrity=&quot;sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=&quot; src=&quot;https://code.jquery.com/jquery-3.5.1.slim.min.js&quot;&gt;&lt;/script&gt;
+
+&lt;script src=&quot;https://unpkg.com/steem-content-renderer&quot;&gt;&lt;/script&gt;
+
+&lt;!-- &lt;script src=&quot;https://cdn.jsdelivr.net/npm/hive-content-renderer/dist/hive-content-renderer.min.js&quot;&gt;&lt;/script&gt; --&gt;
+&lt;script&gt;
+  $(document).ready(function() {
+    try {
+      const renderer = new SteemContentRenderer.DefaultRenderer({
+      // const renderer = new HiveContentRenderer({
+        baseUrl: &quot;https://hive.blog/&quot;,
+        breaks: true,
+        skipSanitization: false,
+        allowInsecureScriptTags: false,
+        addNofollowToLinks: true,
+        doNotShowImages: false,
+        ipfsPrefix: &quot;&quot;,
+        assetsWidth: 640,
+        assetsHeight: 480,
+        imageProxyFn: (url) =&gt; url,
+        usertagUrlFn: (account) =&gt; &quot;/@blocktrades&quot;,
+        hashtagUrlFn: (hashtag) =&gt; &quot;/23rd-update-of-2021-on-blocktrades-work-on-hive-software&quot;,
+        isLinkSafeFn: (url) =&gt; true,
+      });
+      
+      const inputElem = $('#content-blocktrades-23rd-update-of-2021-on-blocktrades-work-on-hive-software').html();
+      const outputElem = $('#content-blocktrades-23rd-update-of-2021-on-blocktrades-work-on-hive-software');
+      const output = renderer.render(inputElem);
+      
+      outputElem.html(output);
+    } catch(e) {
+      console.log(e);
+    }
+  });
+&lt;/script&gt;
+
+&lt;style&gt;
+  #content-blocktrades-23rd-update-of-2021-on-blocktrades-work-on-hive-software {
+    padding: 0 3rem;
+    color: #444444;
+    font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.8;
+    text-shadow: 0 1px 0 #ffffff;
+    padding: 0.5rem;
+  }
+  #content-blocktrades-23rd-update-of-2021-on-blocktrades-work-on-hive-software code {
+    background: white;
+  }
+  #content-blocktrades-23rd-update-of-2021-on-blocktrades-work-on-hive-software a {
+    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
+  }
+  #content-blocktrades-23rd-update-of-2021-on-blocktrades-work-on-hive-software a:hover {
+    border-bottom: 0;
+  }
+  #content-blocktrades-23rd-update-of-2021-on-blocktrades-work-on-hive-software h1 {
+    font-size: 2.2em;
+  }
+  #content-blocktrades-23rd-update-of-2021-on-blocktrades-work-on-hive-software h2, h3, h4, h5 {
+    margin-bottom: 0;
+  }
+  #content-blocktrades-23rd-update-of-2021-on-blocktrades-work-on-hive-software header small {
+    color: #999;
+    font-size: 50%;
+  }
+  #content-blocktrades-23rd-update-of-2021-on-blocktrades-work-on-hive-software img {
+    max-width: 100%;
+  }
+&lt;/style&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;
+  See: &lt;a href=&quot;https://hive.blog/hive-139531/@blocktrades/23rd-update-of-2021-on-blocktrades-work-on-hive-software&quot;&gt;23rd update of 2021 on BlockTrades work on Hive software&lt;/a&gt;
+  by
+  &lt;a href=&quot;https://hive.blog/@blocktrades&quot;&gt;@blocktrades&lt;/a&gt;
+&lt;/p&gt;</content><author><name>blocktrades</name></author><category term="news" /><category term="core" /><category term="development" /><summary type="html">![blocktrades update.png](https://images.hive.blog/DQmSihw8Kz4U7TuCQa98DDdCzqbqPFRumuVWAbareiYZW1Z/blocktrades%20update.png) Below is a list of Hive-related programming issues worked on by BlockTrades team during last week: # Hived work (blockchain node software) We moved hived tavern tests and improved the `get_account_history` test to allow testing results against a golden reference server. This will enable us to verify a HAF-based account history server against a known-good hived-based account history server. https://gitlab.syncad.com/hive/hive/-/merge_requests/261 # TestTools work (python-based test system for hived) https://gitlab.syncad.com/hive/hive/-/merge_requests/259 #### Visible changes for test developers * Added support for test parallelization (in processes with pytest-xdist) * Run following jobs in parallel: * `cli_wallet_extended_tests` * `test_tools_tests` * Rewrote loggers system * Rewrote managing of directories for data generated in tests * Improved interaction with snapshots - Added support for loading snapshots from a custom path - Added snapshots comparison - Removed generated snapshot files (after automated tests only) - Added remote node (Use remote node for `main_net` implementation) * Extended documentation - Added tutorials about replays and snapshots - Document cleanup policies #### Internal changes * Checked TestTools sources and tests with pylint - Fixed or temporary suppressed all reported problems - Added CI job running linter - Introduced scopes which allows easier resource management. Use them for loggers and directories for data generated in tests. # Hivemind (2nd layer applications + social media middleware) We’re planning to move to Ubuntu 20 (from Ubuntu 18) as the recommended Hive development platform soon, and this also entails a move to Postgres 12 (from Postgres 10) because that’s the default version of Postgres that ships with Ubuntu 20. So we’re working thru performance regressions associated with differences in the way Postgres 12 query planner works. As reported last week, we changed the query for `update_post_rshares` to fix a performance killer and changed when we executed some vacuum analyze calls. One of the fixes involved temporarily disabling just-in-time compiling for this query(https://gitlab.syncad.com/hive/hivemind/-/merge_requests/513). We now have benchmarks for the overall performance improvement for update_post_rshares after massive sync (where this performance regression was particularly noticeable although it is also an important enhancement for live sync performance as well): * Old performance: 6.9 hours * New performance: 38 minutes # Hive Application Framework: framework for building robust and scalable Hive apps ### Fixing/Optimizing HAF-based account history app (Hafah) We’re currently optimizing and testing our first HAF-based app (codenamed Hafah) that emulates the functionality of hived’s account history plugin (and ultimately will replace it). Our initial benchmarks at 5M blocks had good performance, but we saw a slowdown in indexing performance when operating with a fully populated database (i.e. 50M blocks). ### Benchmarking time to fill a Hafah database This week we’ve fixed this slowdown and have some preliminary performance benchmarks for filling up a Hafah database from scratch. As reported previously, a full replay to fill up a HAF database with 57M blocks (i.e. the entire hive blockchain) for Hafah usage takes 5.5 hours. Next, we can run a Hafah index and it creates all its tables in 4.3 hours, taking 5.5 + 4.3 = 9.8 hours for the entire process. This compares very favorably against the time required for a hived account history node to replay: ~17 hours. Also, we haven’t yet tried to run both of these tasks concurrently, but there’s reason to believe that this will allow us to further reduce the time required to fill up a Hafah database. ### Benchmarking API performance for Hafah We also need to benchmark the API performance of a Hafah server. We’ve created a script that uses jmeter to measure how quickly Hafah can process the various account_history API calls under heavy loading conditions. The script currently compares performance of three types of servers: a) direct query to postgres server holding Hafah data, b) json-rpc call to Hafah’s python-based jsonrpc server, and c) a hived node. Preliminary benchmarks show that the Hafah queries are very fast when served directly from postgres itself, but under loading conditions, we have observed that the python-based jsonrpc server is restricted to one cpu and becomes a bottleneck to performance. It is also worth noting that this is essentially the same code used by hivemind to handle jsonrpc calls, so this bottleneck probably also exists in hivemind, but just wasn’t noticed because the query times for a typical hivemind API call is much longer than the query time for a Hafah API call. In any event, we’ll be investigating ways to eliminate this bottleneck in the coming week, and hopefully it will allow for further scaling of hivemind API performance as well. ### Conversion of hivemind to HAF-based app We’ve completed the first step in converting Hivemind to a HAF-based app (converted hivemind’s massive sync code to use HAF methods). I’ve been told massive sync indexing time is already faster than old-style hivemind, but I don’t have firm numbers yet to report. Also, I expect further improvements as we restructure hivemind’s massive sync procedures to take better advantage of the new way it is being fed data. # Upcoming work for next week For hived, we’re adding a command-line based option to allow a hived node to wait during a replay if it loses contact with a HAF database that it is filling (this issue arose when one of our devs restarted our HAF postgres server during mid-replay, but it seems like a generally useful feature). For HAF testing, we’ll be using the hived fork generator to verify that Hafah functions robustly under heavy forking activity on the blockchain. Once we’re further along with Haf-based hivemind, we’ll likely test it the same way. For Hafah, we’ll be 1) investigating the jsonrpc bottleneck, 2) further benchmarking API performance, 3) verifying results against a hived account history node, 4) benchmarking concurrent hived replay and Hafah massive sync, and 5) setting up continuous integration testing for Hafah. For Haf-based hivemind, we plan to restructure its massive sync process to simplify and optimize performance by taking advantage of HAF-based design. Next we’ll modify live sync operation to only use HAF data (currently it still makes some calls to hived during live sync). See: 23rd update of 2021 on BlockTrades work on Hive software by @blocktrades</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://images.hive.blog/DQmSihw8Kz4U7TuCQa98DDdCzqbqPFRumuVWAbareiYZW1Z/blocktrades%20update.png" /><media:content medium="image" url="https://images.hive.blog/DQmSihw8Kz4U7TuCQa98DDdCzqbqPFRumuVWAbareiYZW1Z/blocktrades%20update.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">22nd update of 2021 on BlockTrades work on Hive software</title><link href="https://hivedocs.info/news/core/development/2021/09/07/22nd-update-of-2021-on-blocktrades-work-on-hive-software.html" rel="alternate" type="text/html" title="22nd update of 2021 on BlockTrades work on Hive software" /><published>2021-09-07T14:31:30-07:00</published><updated>2021-09-07T14:31:30-07:00</updated><id>https://hivedocs.info/news/core/development/2021/09/07/22nd-update-of-2021-on-blocktrades-work-on-hive-software</id><content type="html" xml:base="https://hivedocs.info/news/core/development/2021/09/07/22nd-update-of-2021-on-blocktrades-work-on-hive-software.html">&lt;div id=&quot;content-blocktrades-22nd-update-of-2021-on-blocktrades-work-on-hive-software&quot;&gt;![blocktrades update.png](https://images.hive.blog/DQmSihw8Kz4U7TuCQa98DDdCzqbqPFRumuVWAbareiYZW1Z/blocktrades%20update.png)
 Below is a list of Hive-related programming issues worked on by BlockTrades team during last week or so:
 
 # Hived work (blockchain node software)
@@ -1293,203 +1449,4 @@ We swapped over hive.blog to use the new calls earlier today and we swapped over
   See: &lt;a href=&quot;https://hive.blog/hive-102930/@blocktrades/reconfiguration-notice-for-api-hive-blog-api-node-infrastructure&quot;&gt;Reconfiguration notice for api.hive.blog API node infrastructure&lt;/a&gt;
   by
   &lt;a href=&quot;https://hive.blog/@blocktrades&quot;&gt;@blocktrades&lt;/a&gt;
-&lt;/p&gt;</content><author><name>blocktrades</name></author><category term="news" /><category term="core" /><category term="development" /><summary type="html">As I mentioned in my last post on development progress at BlockTrades, we’ve been asking Hive-based apps to change the way they broadcast transactions. Transactions are used to add user-generated operations such as voting, posting, transferring funds, delegating HP, etcetera to the Hive blockchain. In this post I’m going to briefly describe why we’re requesting this change and also describe a change we’ve made to our API node infrastructure to better handle the increased traffic from bots playing Splinterlands with “bad” API calls. This latter information will likely be interesting to other API node operators. # Apps should use broadcast_transaction call Most Hive-based apps previously used the call `broadcast_transaction_synchronous` to broadcast transactions. This call, as the name implies, waits for a transaction to be included into the blockchain before it returns to the calling application. The problem with this call is that we’ve measured it takes about 3 seconds on average to complete on our API node infrastructure even under normal loading conditions. That’s a long time to a computer. So if one of our hived nodes gets a lot of these calls, the calls keep all of that hived’s worker threads busy, effectively slowing down all API calls made to that hived server. By adding additional logging to one of our hived nodes, we were able to observe that even read-only API calls arriving at the loaded hived node could wait 2 seconds (or even more under very heavy loads) before they got assigned a worker thread to process them. A few days ago, this was noticeable as a slowdown on not only web sites that broadcast transactions such as hive.blog, ecency, and peakd, but even on read-only Hive-based sites (e.g. Hive block explorers such as https://hiveblocks.com). The ideal solution to this problem is for apps to replace all these slow calls with the newer, faster `broadcast_transaction` call. This call doesn’t wait for the transaction to be included into the blockchain, and it completes on api.hive.blog within an average of 0.027 seconds (more than 100x faster than the synchronous version). ## Most hive apps have already migrated to the better API call Most of the major Hive apps have moved to the faster broadcast call within the past few days, as app devs saw how much more responsive their app became with the new calls (i.e. they became faster than they ever were before, even when we had less loading on the Hive network). And I expect the few remaining big apps, such as hive.blog, to convert to using the new calls within the next couple of days (we have an engineer working now to fix one known issue preventing us from rolling out the latest version of condenser with the broadcast_transaction fix). # Mitigating bad traffic from misbehaving bots But despite movement of the major Hive apps to the faster call, we still see a lot of broadcast_transaction_synchronous traffic on our node being generated by presumably home-grown bots playing Splinterlands for their users. I suppose these bot devs will eventually fix their bots, but in the meantime, we have no easy way to contact them, so we’ve made a change to our API node infrastructure so that this “bad” traffic doesn’t impact the apps generating “good traffic”. We have redirected all incoming broadcast_transaction_synchronous traffic to a single hived node that only processes this type of API traffic, and all other API calls (including the “good” broadcast_transaction) are routed to our other hived nodes. This means that apps using the proper calls will not be slowed down by the bad traffic. And it will probably ultimately encourage the bad traffic generators to change their bots as well, although I’m not holding my breath for when that will happen. # Add an extra consensus hived to manage broadcast_transaction_synchronous traffic If other API nodes want to be capable of serving all the traffic from the Hive network right now, here’s the relatively easy way to do it: * add one additional consensus (not account history) hived node to your server. Since consensus nodes don’t require much memory (around 4GB), the main additional resource cost is around 370GB of disk space for the additional block_log file. You only need a consensus node because it is only going to be processing broadcast calls and nothing else. * Modify your jussi config file to redirect all below types of traffic to your consensus node: ** steemd.network_broadcast_api.broadcast_transaction_synchronous ** appbase.condenser_api.broadcast_transaction_synchronous ** appbase.network_broadcast_api.broadcast_transaction_synchronous With the above steps, your regular account_history node(s) will process all the good traffic and the bad traffic will be offloaded to the light weight consensus node. Also, if you want to further improve quality of service for the bad traffic, you can increase the web-threads setting in your consensus node’s configuration file from the default value of 32 to 64 (or higher), at the cost of increased memory usage. # Quick Update We swapped over hive.blog to use the new calls earlier today and we swapped over wallet.hive.blog about an hour ago. The UX feels much more responsive now. See: Reconfiguration notice for api.hive.blog API node infrastructure by @blocktrades</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://hivedocs.info/assets/images/favicon.png" /><media:content medium="image" url="https://hivedocs.info/assets/images/favicon.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Everything can be faster on Hive - hive-js &amp;amp; dhive new changes</title><link href="https://hivedocs.info/howto/nodejs/2021/08/02/everything-can-be-faster-on-hive-hive-js-and-dhive-new-changes.html" rel="alternate" type="text/html" title="Everything can be faster on Hive - hive-js &amp;amp; dhive new changes" /><published>2021-08-02T00:07:03-07:00</published><updated>2021-08-02T00:07:03-07:00</updated><id>https://hivedocs.info/howto/nodejs/2021/08/02/everything-can-be-faster-on-hive-hive-js-and-dhive-new-changes</id><content type="html" xml:base="https://hivedocs.info/howto/nodejs/2021/08/02/everything-can-be-faster-on-hive-hive-js-and-dhive-new-changes.html">&lt;div id=&quot;content-mahdiyari-everything-can-be-faster-on-hive-hive-js-and-dhive-new-changes&quot;&gt;&lt;center&gt;![alien-hive.jpg](https://files.peakd.com/file/peakd-hive/mahdiyari/23zS3SZnJwHE4qThdmvWRdRpLARpcFMm1Vq8LfDLqscHen53JFeNqq7EEGVfvhd2xcpTo.jpg)&lt;/center&gt;
-
-Explaining why there were problems with RPC nodes and what was the problem and why you must update your application.
-
-### Target audience
-I explained everything as simple as I could. The main call is for the app owners to update their applications with the updated libraries.
-
-After the recent timeout problems, it was necessary to take these steps and update the libraries.
-
-I updated 2 major JS libraries, hive-js and dhive, to help resolve the timeout problems.
-
-### The &quot;call&quot; method
-The &quot;call&quot; method was a way of talking to hived (the hive blockchain's application). This method got deprecated and removed from hived with the appbase update (HF19?).
-
-So what has happened since then? Well, we were still using the &quot;call&quot; method for most of our applications. But the &quot;call&quot; method is not known to hived anymore, so the requests have to go through a proxy called &quot;jussi&quot;. Jussi is installed in front of all the public RPC nodes.
-
-Jussi takes the &quot;call&quot; method and translates it into the correct format then sends it to the hived. The problem is, you are adding an extra step for the API requests and it slows them down.
-
-An example of the &quot;call&quot; method:
-```
-{&quot;id&quot;:0,&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;method&quot;:&quot;call&quot;,&quot;params&quot;:[&quot;database_api&quot;,&quot;get_dynamic_global_properties&quot;,[]]}
-```
-Notice `&quot;method&quot;:&quot;call&quot;`. So jussi takes that and translates it into the new format:
-```
-{&quot;id&quot;:0,&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;method&quot;:&quot;condenser_api.get_dynamic_global_properties&quot;,&quot;params&quot;: []}
-```
-See what happened? The user thinks the call was going to `database_api` but actually, jussi translates it into `condenser_api`.
-
-To be honest, this is not the best way of doing things. The idea behind jussi was good but implementation was a mess.
-
-***
-### What is the &quot;new&quot; format?
-The &quot;appbase&quot; style calls are the calls that are supported directly by hived and don't need a translation.
-
-It's not new and has been there for years but we didn't bother updating our libraries to use the supported methods.
-
-With switching to the appbase calls, every request to the RPC nodes becomes faster.
-
-
-This is the first change to both hive-js and dhive libraries. They both were using the deprecated &quot;call&quot; method.
-***
-### You might not need jussi
-Till now, hive-js wouldn't work with hived nodes until you added jussi in front of them. But with this update, hive-js will work with hived nodes. But remember, you will still need jussi for the hivemind calls. Also, there might be caching benefits in using jussi.
-***
-### Broadcasting transactions
-This is the important part. There are two methods for broadcasting a transaction.
-1. `broadcast_transaction_synchronous`
-2. `broadcast_transaction`
-
-The first method sends the transaction to the RPC node, the RPC node validates the transaction, then waits for the transaction to be included in a block, then sends back a response including the transaction id and block number.
-
-The second method sends the transaction to the RPC node, the RPC node validates the transaction, then sends an empty success response back.
-
-In the second method, the library has to generate the transaction id locally. Which is way too much faster. In this method, the only way for a transaction to fail is expiration or micro forking maybe. So in most cases, it's good enough.
-
-Of course, hive-js and dhive both were using the first method. When many people connect to the RPC node and wait there, it becomes problematic. The best way for handling huge traffic is to release a connection as soon as possible so other connections can be made.
-
-Both libraries now use the second method for broadcasting transactions. You may already notice its huge impact on the speed of your votes and comments.
-
-Peakd is already updated. Keychain is waiting for google approval and the mobile version will be soon updated. Some apps are catching up like Hivesigner, and Ecency. There was a problem updating hive.blog and that will be also updated.
-
-***
-### Why bother updating
-- Everything becomes faster for the end-user
-- RPC nodes don't suffer overloading
-- Apps become future proof
-- It's easy as running a command
-
-***
-### How to update your apps
-**hvie-js v2.0.1** - [Release notes](https://gitlab.syncad.com/hive/hive-js/-/releases)
-Used in hive.blog, peakd, keychain, and many other apps.
-```
-npm install @hiveio/hive-js@latest --save
-```
-The minified JS for browsers:
-```
-https://cdn.jsdelivr.net/npm/@hiveio/hive-js@2/dist/hive.min.js
-```
-***
-**dhive v1.0.0** - [Release notes](https://gitlab.syncad.com/hive/dhive/-/releases)
-Used in ecency (mobile &amp;amp; web) and many other apps.
-```
-npm install @hiveio/dhive@latest --save
-```
-The minified JS for browsers:
-```
-https://cdn.jsdelivr.net/npm/@hiveio/dhive@1/dist/dhive.js
-```
-***
-**hive-tx v4.0.0** - [Release notes](https://github.com/mahdiyari/hive-tx-js/releases)
-Used in keychain mobile and other apps.
-
-hive-tx already is using the appbase methods and there is a function called `.broadcastNoResult()` for the fast transaction broadcasting. But I did update hive-tx so now the `.broadcast()` function is also updated.
-```
-npm install hive-tx@latest --save
-```
-The minified JS for browsers:
-```
-https://cdn.jsdelivr.net/npm/hive-tx@4/dist/hive-tx.min.js
-```
-
-
-***
-Note:
-@foxon and @emrebeyler confirmed that `beem` doesn't need an update.
-***
-
-### Scaling problems?
-The recent problem doesn't seem to be a scaling problem. It's more related to the libraries and apps using the deprecated methods.
-
-The recent library changes seem to be solving most of the problems. Although there are investigations still going on by @blocktrades regarding the timeout problems.
-
-Hive blockchain in theory can handle much more activity than this. Some say like 1,000 transactions per second. But there might be minor problems because those scenarios are not actually tested.
-***
-
-### Final words
-I'm sure all the problems will be solved and we will see much better growth. I'm bullish on Hive and will continue my contributions as far as I can.
-
-Thanks to the other devs who updated their applications on time to help with the problem.
-
-***
-&lt;sub&gt;Image source: pixabay.com&lt;/sub&gt;&lt;/div&gt;
-&lt;script crossorigin=&quot;anonymous&quot; integrity=&quot;sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=&quot; src=&quot;https://code.jquery.com/jquery-3.5.1.slim.min.js&quot;&gt;&lt;/script&gt;
-
-&lt;script src=&quot;https://unpkg.com/steem-content-renderer&quot;&gt;&lt;/script&gt;
-
-&lt;!-- &lt;script src=&quot;https://cdn.jsdelivr.net/npm/hive-content-renderer/dist/hive-content-renderer.min.js&quot;&gt;&lt;/script&gt; --&gt;
-&lt;script&gt;
-  $(document).ready(function() {
-    try {
-      const renderer = new SteemContentRenderer.DefaultRenderer({
-      // const renderer = new HiveContentRenderer({
-        baseUrl: &quot;https://hive.blog/&quot;,
-        breaks: true,
-        skipSanitization: false,
-        allowInsecureScriptTags: false,
-        addNofollowToLinks: true,
-        doNotShowImages: false,
-        ipfsPrefix: &quot;&quot;,
-        assetsWidth: 640,
-        assetsHeight: 480,
-        imageProxyFn: (url) =&gt; url,
-        usertagUrlFn: (account) =&gt; &quot;/@mahdiyari&quot;,
-        hashtagUrlFn: (hashtag) =&gt; &quot;/everything-can-be-faster-on-hive-hive-js-and-dhive-new-changes&quot;,
-        isLinkSafeFn: (url) =&gt; true,
-      });
-      
-      const inputElem = $('#content-mahdiyari-everything-can-be-faster-on-hive-hive-js-and-dhive-new-changes').html();
-      const outputElem = $('#content-mahdiyari-everything-can-be-faster-on-hive-hive-js-and-dhive-new-changes');
-      const output = renderer.render(inputElem);
-      
-      outputElem.html(output);
-    } catch(e) {
-      console.log(e);
-    }
-  });
-&lt;/script&gt;
-
-&lt;style&gt;
-  #content-mahdiyari-everything-can-be-faster-on-hive-hive-js-and-dhive-new-changes {
-    padding: 0 3rem;
-    color: #444444;
-    font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif;
-    font-size: 16px;
-    line-height: 1.8;
-    text-shadow: 0 1px 0 #ffffff;
-    padding: 0.5rem;
-  }
-  #content-mahdiyari-everything-can-be-faster-on-hive-hive-js-and-dhive-new-changes code {
-    background: white;
-  }
-  #content-mahdiyari-everything-can-be-faster-on-hive-hive-js-and-dhive-new-changes a {
-    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
-  }
-  #content-mahdiyari-everything-can-be-faster-on-hive-hive-js-and-dhive-new-changes a:hover {
-    border-bottom: 0;
-  }
-  #content-mahdiyari-everything-can-be-faster-on-hive-hive-js-and-dhive-new-changes h1 {
-    font-size: 2.2em;
-  }
-  #content-mahdiyari-everything-can-be-faster-on-hive-hive-js-and-dhive-new-changes h2, h3, h4, h5 {
-    margin-bottom: 0;
-  }
-  #content-mahdiyari-everything-can-be-faster-on-hive-hive-js-and-dhive-new-changes header small {
-    color: #999;
-    font-size: 50%;
-  }
-  #content-mahdiyari-everything-can-be-faster-on-hive-hive-js-and-dhive-new-changes img {
-    max-width: 100%;
-  }
-&lt;/style&gt;
-
-&lt;hr /&gt;
-
-&lt;p&gt;
-  See: &lt;a href=&quot;https://peakd.com/hive-139531/@mahdiyari/everything-can-be-faster-on-hive-hive-js-and-dhive-new-changes&quot;&gt;Everything can be faster on Hive - hive-js &amp;amp; dhive new changes&lt;/a&gt;
-  by
-  &lt;a href=&quot;https://hive.blog/@mahdiyari&quot;&gt;@mahdiyari&lt;/a&gt;
-&lt;/p&gt;</content><author><name>mahdiyari</name></author><category term="howto" /><category term="nodejs" /><summary type="html">![alien-hive.jpg](https://files.peakd.com/file/peakd-hive/mahdiyari/23zS3SZnJwHE4qThdmvWRdRpLARpcFMm1Vq8LfDLqscHen53JFeNqq7EEGVfvhd2xcpTo.jpg) Explaining why there were problems with RPC nodes and what was the problem and why you must update your application. ### Target audience I explained everything as simple as I could. The main call is for the app owners to update their applications with the updated libraries. After the recent timeout problems, it was necessary to take these steps and update the libraries. I updated 2 major JS libraries, hive-js and dhive, to help resolve the timeout problems. ### The &quot;call&quot; method The &quot;call&quot; method was a way of talking to hived (the hive blockchain's application). This method got deprecated and removed from hived with the appbase update (HF19?). So what has happened since then? Well, we were still using the &quot;call&quot; method for most of our applications. But the &quot;call&quot; method is not known to hived anymore, so the requests have to go through a proxy called &quot;jussi&quot;. Jussi is installed in front of all the public RPC nodes. Jussi takes the &quot;call&quot; method and translates it into the correct format then sends it to the hived. The problem is, you are adding an extra step for the API requests and it slows them down. An example of the &quot;call&quot; method: ``` {&quot;id&quot;:0,&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;method&quot;:&quot;call&quot;,&quot;params&quot;:[&quot;database_api&quot;,&quot;get_dynamic_global_properties&quot;,[]]} ``` Notice `&quot;method&quot;:&quot;call&quot;`. So jussi takes that and translates it into the new format: ``` {&quot;id&quot;:0,&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;method&quot;:&quot;condenser_api.get_dynamic_global_properties&quot;,&quot;params&quot;: []} ``` See what happened? The user thinks the call was going to `database_api` but actually, jussi translates it into `condenser_api`. To be honest, this is not the best way of doing things. The idea behind jussi was good but implementation was a mess. *** ### What is the &quot;new&quot; format? The &quot;appbase&quot; style calls are the calls that are supported directly by hived and don't need a translation. It's not new and has been there for years but we didn't bother updating our libraries to use the supported methods. With switching to the appbase calls, every request to the RPC nodes becomes faster. This is the first change to both hive-js and dhive libraries. They both were using the deprecated &quot;call&quot; method. *** ### You might not need jussi Till now, hive-js wouldn't work with hived nodes until you added jussi in front of them. But with this update, hive-js will work with hived nodes. But remember, you will still need jussi for the hivemind calls. Also, there might be caching benefits in using jussi. *** ### Broadcasting transactions This is the important part. There are two methods for broadcasting a transaction. 1. `broadcast_transaction_synchronous` 2. `broadcast_transaction` The first method sends the transaction to the RPC node, the RPC node validates the transaction, then waits for the transaction to be included in a block, then sends back a response including the transaction id and block number. The second method sends the transaction to the RPC node, the RPC node validates the transaction, then sends an empty success response back. In the second method, the library has to generate the transaction id locally. Which is way too much faster. In this method, the only way for a transaction to fail is expiration or micro forking maybe. So in most cases, it's good enough. Of course, hive-js and dhive both were using the first method. When many people connect to the RPC node and wait there, it becomes problematic. The best way for handling huge traffic is to release a connection as soon as possible so other connections can be made. Both libraries now use the second method for broadcasting transactions. You may already notice its huge impact on the speed of your votes and comments. Peakd is already updated. Keychain is waiting for google approval and the mobile version will be soon updated. Some apps are catching up like Hivesigner, and Ecency. There was a problem updating hive.blog and that will be also updated. *** ### Why bother updating - Everything becomes faster for the end-user - RPC nodes don't suffer overloading - Apps become future proof - It's easy as running a command *** ### How to update your apps **hvie-js v2.0.1** - [Release notes](https://gitlab.syncad.com/hive/hive-js/-/releases) Used in hive.blog, peakd, keychain, and many other apps. ``` npm install @hiveio/hive-js@latest --save ``` The minified JS for browsers: ``` https://cdn.jsdelivr.net/npm/@hiveio/hive-js@2/dist/hive.min.js ``` *** **dhive v1.0.0** - [Release notes](https://gitlab.syncad.com/hive/dhive/-/releases) Used in ecency (mobile &amp;amp; web) and many other apps. ``` npm install @hiveio/dhive@latest --save ``` The minified JS for browsers: ``` https://cdn.jsdelivr.net/npm/@hiveio/dhive@1/dist/dhive.js ``` *** **hive-tx v4.0.0** - [Release notes](https://github.com/mahdiyari/hive-tx-js/releases) Used in keychain mobile and other apps. hive-tx already is using the appbase methods and there is a function called `.broadcastNoResult()` for the fast transaction broadcasting. But I did update hive-tx so now the `.broadcast()` function is also updated. ``` npm install hive-tx@latest --save ``` The minified JS for browsers: ``` https://cdn.jsdelivr.net/npm/hive-tx@4/dist/hive-tx.min.js ``` *** Note: @foxon and @emrebeyler confirmed that `beem` doesn't need an update. *** ### Scaling problems? The recent problem doesn't seem to be a scaling problem. It's more related to the libraries and apps using the deprecated methods. The recent library changes seem to be solving most of the problems. Although there are investigations still going on by @blocktrades regarding the timeout problems. Hive blockchain in theory can handle much more activity than this. Some say like 1,000 transactions per second. But there might be minor problems because those scenarios are not actually tested. *** ### Final words I'm sure all the problems will be solved and we will see much better growth. I'm bullish on Hive and will continue my contributions as far as I can. Thanks to the other devs who updated their applications on time to help with the problem. *** Image source: pixabay.com See: Everything can be faster on Hive - hive-js &amp;amp; dhive new changes by @mahdiyari</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://files.peakd.com/file/peakd-hive/mahdiyari/23zS3SZnJwHE4qThdmvWRdRpLARpcFMm1Vq8LfDLqscHen53JFeNqq7EEGVfvhd2xcpTo.jpg" /><media:content medium="image" url="https://files.peakd.com/file/peakd-hive/mahdiyari/23zS3SZnJwHE4qThdmvWRdRpLARpcFMm1Vq8LfDLqscHen53JFeNqq7EEGVfvhd2xcpTo.jpg" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>
+&lt;/p&gt;</content><author><name>blocktrades</name></author><category term="news" /><category term="core" /><category term="development" /><summary type="html">As I mentioned in my last post on development progress at BlockTrades, we’ve been asking Hive-based apps to change the way they broadcast transactions. Transactions are used to add user-generated operations such as voting, posting, transferring funds, delegating HP, etcetera to the Hive blockchain. In this post I’m going to briefly describe why we’re requesting this change and also describe a change we’ve made to our API node infrastructure to better handle the increased traffic from bots playing Splinterlands with “bad” API calls. This latter information will likely be interesting to other API node operators. # Apps should use broadcast_transaction call Most Hive-based apps previously used the call `broadcast_transaction_synchronous` to broadcast transactions. This call, as the name implies, waits for a transaction to be included into the blockchain before it returns to the calling application. The problem with this call is that we’ve measured it takes about 3 seconds on average to complete on our API node infrastructure even under normal loading conditions. That’s a long time to a computer. So if one of our hived nodes gets a lot of these calls, the calls keep all of that hived’s worker threads busy, effectively slowing down all API calls made to that hived server. By adding additional logging to one of our hived nodes, we were able to observe that even read-only API calls arriving at the loaded hived node could wait 2 seconds (or even more under very heavy loads) before they got assigned a worker thread to process them. A few days ago, this was noticeable as a slowdown on not only web sites that broadcast transactions such as hive.blog, ecency, and peakd, but even on read-only Hive-based sites (e.g. Hive block explorers such as https://hiveblocks.com). The ideal solution to this problem is for apps to replace all these slow calls with the newer, faster `broadcast_transaction` call. This call doesn’t wait for the transaction to be included into the blockchain, and it completes on api.hive.blog within an average of 0.027 seconds (more than 100x faster than the synchronous version). ## Most hive apps have already migrated to the better API call Most of the major Hive apps have moved to the faster broadcast call within the past few days, as app devs saw how much more responsive their app became with the new calls (i.e. they became faster than they ever were before, even when we had less loading on the Hive network). And I expect the few remaining big apps, such as hive.blog, to convert to using the new calls within the next couple of days (we have an engineer working now to fix one known issue preventing us from rolling out the latest version of condenser with the broadcast_transaction fix). # Mitigating bad traffic from misbehaving bots But despite movement of the major Hive apps to the faster call, we still see a lot of broadcast_transaction_synchronous traffic on our node being generated by presumably home-grown bots playing Splinterlands for their users. I suppose these bot devs will eventually fix their bots, but in the meantime, we have no easy way to contact them, so we’ve made a change to our API node infrastructure so that this “bad” traffic doesn’t impact the apps generating “good traffic”. We have redirected all incoming broadcast_transaction_synchronous traffic to a single hived node that only processes this type of API traffic, and all other API calls (including the “good” broadcast_transaction) are routed to our other hived nodes. This means that apps using the proper calls will not be slowed down by the bad traffic. And it will probably ultimately encourage the bad traffic generators to change their bots as well, although I’m not holding my breath for when that will happen. # Add an extra consensus hived to manage broadcast_transaction_synchronous traffic If other API nodes want to be capable of serving all the traffic from the Hive network right now, here’s the relatively easy way to do it: * add one additional consensus (not account history) hived node to your server. Since consensus nodes don’t require much memory (around 4GB), the main additional resource cost is around 370GB of disk space for the additional block_log file. You only need a consensus node because it is only going to be processing broadcast calls and nothing else. * Modify your jussi config file to redirect all below types of traffic to your consensus node: ** steemd.network_broadcast_api.broadcast_transaction_synchronous ** appbase.condenser_api.broadcast_transaction_synchronous ** appbase.network_broadcast_api.broadcast_transaction_synchronous With the above steps, your regular account_history node(s) will process all the good traffic and the bad traffic will be offloaded to the light weight consensus node. Also, if you want to further improve quality of service for the bad traffic, you can increase the web-threads setting in your consensus node’s configuration file from the default value of 32 to 64 (or higher), at the cost of increased memory usage. # Quick Update We swapped over hive.blog to use the new calls earlier today and we swapped over wallet.hive.blog about an hour ago. The UX feels much more responsive now. See: Reconfiguration notice for api.hive.blog API node infrastructure by @blocktrades</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://hivedocs.info/assets/images/favicon.png" /><media:content medium="image" url="https://hivedocs.info/assets/images/favicon.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>
