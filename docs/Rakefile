@@ -30,7 +30,7 @@ task :grab, :url do |t, args|
     
     canonical_url = "https://hive.blog/#{content.category}/@#{content.author}/#{content.permlink}"
     
-    scrape = open(canonical_url).read
+    scrape = URI.open(canonical_url).read
     
     if scrape.include? 'rel="canonical"'
       canonical_url = scrape.split('rel="canonical"')[1].split('"')[1]
@@ -95,4 +95,11 @@ task commit: [:build] do
   cmd = 'git add docs && git commit docs -m "jekyll base sources"'
     
   sh cmd
+end
+
+namespace :dump do
+  desc 'Dump authors.'
+  task :authors do
+    puts `cat _site/authors.json | jq -r '. | values[]' | sort | uniq`
+  end
 end

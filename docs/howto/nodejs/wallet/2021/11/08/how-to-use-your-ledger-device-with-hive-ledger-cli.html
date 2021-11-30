@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta property="og:image" content="/assets/images/sticker.png" /><!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>How to use your ledger device with hive-ledger-cli | Hive Chain Documentation</title>
+<meta name="generator" content="Jekyll v4.2.1" />
+<meta property="og:title" content="How to use your ledger device with hive-ledger-cli" />
+<meta name="author" content="engrave" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="A guide for advanced users that would like to use Hive application with a CLI." />
+<meta property="og:description" content="A guide for advanced users that would like to use Hive application with a CLI." />
+<link rel="canonical" href="https://hive.blog/hive-139531/@engrave/how-to-use-your-ledger-device-with-hive-ledger-cli" />
+<meta property="og:url" content="https://hive.blog/hive-139531/@engrave/how-to-use-your-ledger-device-with-hive-ledger-cli" />
+<meta property="og:site_name" content="Hive Chain Documentation" />
+<meta property="og:image" content="https://i.imgur.com/PRL7SLu.jpg" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2021-11-08T15:28:09-08:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="https://i.imgur.com/PRL7SLu.jpg" />
+<meta property="twitter:title" content="How to use your ledger device with hive-ledger-cli" />
+<script type="application/ld+json">
+{"description":"A guide for advanced users that would like to use Hive application with a CLI.","image":"https://i.imgur.com/PRL7SLu.jpg","headline":"How to use your ledger device with hive-ledger-cli","dateModified":"2021-11-08T15:28:09-08:00","datePublished":"2021-11-08T15:28:09-08:00","url":"https://hive.blog/hive-139531/@engrave/how-to-use-your-ledger-device-with-hive-ledger-cli","author":{"@type":"Person","name":"engrave"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://hive.blog/hive-139531/@engrave/how-to-use-your-ledger-device-with-hive-ledger-cli"},"@type":"BlogPosting","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://hivedocs.info/feed.xml" title="Hive Chain Documentation" /><script>
+if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNotTrack === "yes" || navigator.msDoNotTrack === "1")) {
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-161692811-1', 'auto');
+  ga('send', 'pageview');
+}
+</script>
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+  
+  <!-- jQuery Modal -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.css" />
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/turbolinks/5.2.0/turbolinks.js" integrity="sha256-iM4Yzi/zLj/IshPWMC1IluRxTtRjMqjPGd97TZ9yYpU=" crossorigin="anonymous"></script>
+  <script src='https://unpkg.com/steem-content-renderer'></script>
+  <script>
+    (function () {
+      if (Turbolinks.supported) {
+        Turbolinks.setProgressBarDelay(500);
+      }
+    })();
+  </script>
+  <script src="/assets/javascript/universal-bridge-against-phishing.js"></script>
+  <script src="/assets/javascript/lazysizes.min.js" async=""></script>
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Cousine|Inconsolata" rel="stylesheet">
+  <link rel="shortcut icon" type="image/png" href="/assets/images/favicon.png">
+</head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Hive Chain Documentation</a>
+
+      <nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/news/">News</a><a class="page-link" href="/howto/">How To</a><a class="page-link" href="/links/">Useful Links</a><a class="page-link" href="/authors/">Authors</a><!-- HTML elements for search -->
+          <input type="text" id="search-input" placeholder="Search" />
+          
+          <ul id="results-container"></ul>
+
+          <script src="/assets/javascript/search.js"></script>
+          <script>
+            var sjs = SimpleJekyllSearch({
+              searchInput: document.getElementById('search-input'),
+              resultsContainer: document.getElementById('results-container'),
+              json: '/search.json'
+            })
+          </script>
+          <!-- <form style="float: right;" class="form-inline" method="get" action="http://www.google.com/search">
+            <input type="hidden" name="sitesearch" value="hivedocs.info" />
+            <input type="text" name="q" maxlength="255" placeholder="Search" />
+          </form> -->
+          
+          <!-- <a href="#" onclick="try { $('#authors-container').slideToggle(); } catch { document.getElementById('authors-container').style.display = 'block'; }; return false;">Authors &#187;</a>
+          <a href="#" onclick="try { $('#topics-container').slideToggle(); } catch { document.getElementById('topics-container').style.display = 'block'; }; return false;">Topics &#187;</a> -->
+          
+          <a href="#topics-container" rel="modal:open">Topics &#187;</a>
+          
+          <div id="topics-container" class="modal">
+            <h3>Topics</h3>
+            <ul><li><a class="page-link" href="/account-recovery/"><nobr>Account Recovery</nobr></a></li><li><a class="page-link" href="/core-development/"><nobr>Core Development</nobr></a></li><li><a class="page-link" href="/dapps/"><nobr>Dapps</nobr></a></li><li><a class="page-link" href="/docker/"><nobr>Docker</nobr></a></li><li><a class="page-link" href="/hardfork/"><nobr>Hardfork</nobr></a></li><li><a class="page-link" href="/hivemind/"><nobr>Hivemind</nobr></a></li><li><a class="page-link" href="/javascript/"><nobr>Javascript</nobr></a></li><li><a class="page-link" href="/multisig/"><nobr>Multisig</nobr></a></li><li><a class="page-link" href="/python/"><nobr>Python</nobr></a></li><li><a class="page-link" href="/ruby/"><nobr>Ruby</nobr></a></li><li><a class="page-link" href="/testnet/"><nobr>Testnet</nobr></a></li><li><a class="page-link" href="/tools/"><nobr>Tools</nobr></a></li><li><a class="page-link" href="/witness/"><nobr>Witness</nobr></a></li></ul>
+          </div>
+        </div>
+      </nav>
+  </div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <div class="pull-right well">
+      <img src="https://images.hive.blog/u/engrave/avatar" width="128" height="128" class="lazyload" />
+    </div>
+    
+    <h1 class="post-title p-name" itemprop="name headline">How to use your ledger device with hive-ledger-cli</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2021-11-08T15:28:09-08:00" itemprop="datePublished">Nov 8, 2021
+      </time>• <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">
+          <a href="/authors/#author-engrave">engrave</a>
+        </span></span></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <div id="content-engrave-how-to-use-your-ledger-device-with-hive-ledger-cli">![](https://i.imgur.com/PRL7SLu.jpg)
+
+The purpose of this post is to fulfill Ledger documentation requirements. It is a guide for advanced users that would like to use Hive application with a CLI (Command-line interface). In the near future I will provide an updated tutorial with user-friendly wallet supporting Ledger Hive application.
+
+**Support me with your witness vote! Click on the image below:**
+
+[![banner_engrave 100.png](https://images.hive.blog/DQmUghvic5TCPPvVkB4iB7eXmgQ3RQ4L8jkVizvuCBW8RMT/banner_engrave%20100.png)](https://hivesigner.com/sign/account-witness-vote?witness=engrave&amp;approve=1)
+
+# Introduction
+
+Hardware wallets are considered to be the most secure way to keep your crypto assets. From now on, Ledger Nano S and X can be used to protect your Hive account. This guide will help you protecting your Hive account with keys derived on your ledger device and treat is as a cold wallet. This is the ultimate protection for your account.
+
+## Quickly about Hive
+
+Hive is different than most blockchains. It has two native assets: HIVE and HBD (Hive Backed Dollar) and usernames instead of public addresses. Those accounts have different keys associated with different roles (owner, active, posting and memo). Every role can contain different key. To ultimately protect your Hive account it is recommended to replace your Owner key with the one derived from your device - this will protect you from leaking your private key by mistake.
+
+# Requirements
+
+Before you start, make sure you have
+ * Initialized Ledger device with newest firmware (2.0 for S and 1.3.0 for X)
+ * Hive application installed on your device
+
+# Install `hive-ledger-cli`
+
+`hive-ledger-cli` is a npm package that can be installed globally on your system. In order to use it, you need to have NodeJS installed on your system. 
+
+To install `hive-ledger-cli` simply paste
+
+```bash=
+sudo npm install -g hive-ledger-cli --unsafe-perm
+```
+
+Validate your installation with following command which should show you the CLI help
+
+```bash=
+hive-ledger-cli --help
+```
+
+# Get an account
+
+**If you already have Hive account, you can skip this part.**
+
+Hive accounts are not free - they need to be created by another user and it costs 3 HIVE. There are multiple providers of Hive accounts. Most of them requires some sort of validation (i.e phone or email) and some can utilize different crypto assets (like BTC) to pay the fee.
+
+Visit and choose what fits you best:
+
+https://signup.hive.io
+
+# How to validate public key
+
+In order to validate public key derived from a specified [SLIP-0048](https://github.com/satoshilabs/slips/blob/master/slip-0048.md) path, you can use `get-public-key` command:
+
+
+```
+USAGE
+  $ hive-ledger-cli get-public-key PATH
+
+ARGUMENTS
+  PATH  BIP 32 path to derive key from
+
+OPTIONS
+  -c, --confirm  Force confirmation on Ledger device
+  -h, --help     show CLI help
+
+EXAMPLE
+  $ hive-ledger-cli get-public-key "m/48'/13'/0'/0'/0'"
+  Establishing transport with Hive application... done
+  STM5m57x4BXEePAzVNrjUqYeh9C2a7eez1Ya2wPo7ngWLQUdEXjKn
+
+```
+
+1. Connect your device, unlock and open Hive application.
+
+![](https://i.imgur.com/E5vdx3o.jpg)
+
+3. Select [SLIP-0048](https://github.com/satoshilabs/slips/blob/master/slip-0048.md) path you want to generate and validate public key for. Example key valid for Hive is `m/48'/13'/0'/0'/0'`
+4. Type `hive-ledger-cli get-public-key "m/48'/13'/0'/0'/0'" -c`
+
+![](https://i.imgur.com/55oecOv.png)
+
+
+4. Navigate using left and right buttons to inspect public key. Make sure it's the same that in your terminal
+
+![](https://i.imgur.com/Gnggq0f.jpg)
+
+![](https://i.imgur.com/M8HeJ7v.jpg)
+
+![](https://i.imgur.com/yKceFr5.jpg)
+
+![](https://i.imgur.com/sFxsNIh.jpg)
+
+![](https://i.imgur.com/zYvqRBO.jpg)
+
+6. Confirm public key by pressing both buttons on "Approve" screen.
+
+![](https://i.imgur.com/YDvVEQV.jpg)
+
+![](https://i.imgur.com/7Ied1zR.png)
+
+
+# How to associate Hive account with your Ledger device
+
+If you already have your Hive username, you can use your ledger device to ultimately protect it by changing all your keys to the ones derived from your device.
+
+In the example below, we will associate existing account called `test.ledger` with the device. You will need current owner private key in Hive supported WIF format.
+
+```
+USAGE
+  $ hive-ledger-cli associate-account USERNAME
+
+ARGUMENTS
+  USERNAME  Account to associate
+
+OPTIONS
+  -d, --dry              dry run will only print signed transaction instead broadcasting it
+  -h, --help             show CLI help
+  -k, --key-gap=key-gap  [default: 5] Gap limit for unused key indexes on which the software decides that SLIP-0048 account index is not used
+  -t, --testnet          use testnet configuration
+
+EXAMPLE
+  $ hive-ledger-cli associate-account test.ledger
+  Found existing account:  test.ledger
+
+  This operation will replace ALL your keys with those from your device. First, we need to find new keys for your owner, active and posting authorities.
+
+  Press any key to continue or q to exit:
+  Establishing transport with Hive application... done
+  Searching for unused keys on your device... done
+
+  New owner key:  STM7ZEBoDotbYpnyNHdARYMDBMNnLWpV7fiiGa6pvHbXhfRo9ZrDf
+  Derivation path:  m/48'/13'/0'/1'/0'
+  Please confirm this public key on your device... done
+
+  New active key:  STM5zpFRqa73yFULSwUYfPSftx4fE7kha9YfkAPR9yKvNLKU2QDFu
+  Derivation path:  m/48'/13'/1'/1'/0'
+  Please confirm this public key on your device... done
+
+  New posting key:  STM6YGUesBwuotbZvcfqoXfjQUrfVXGYwJZ9DCHEiFLQfxUsLK9M1
+  Derivation path:  m/48'/13'/4'/1'/0'
+  Please confirm this public key on your device... done
+
+  Now you need to enter your CURRENT OWNER PRIVATE KEY in WIF format. It will be used to update your account with a new keys. Please be aware that this operation will replace ALL of your current keys
+
+  Enter your current PRIVATE OWNER KEY for test.ledger:
+```
+
+1. Connect your device, unlock and open Hive application.
+
+![](https://i.imgur.com/E5vdx3o.jpg)
+
+2. Type in your terminal (replace `test.ledger` with your own username) and follow the instruction
+
+```bash
+hive-ledger-cli associate-account test.ledger
+```
+
+3. Software will derive a new set of public keys and will make sure those are unused by searching in blockchain for those keys. 
+
+4. Validate and approve three keys from on your device.
+
+![](https://i.imgur.com/Gnggq0f.jpg)
+
+![](https://i.imgur.com/M8HeJ7v.jpg)
+
+![](https://i.imgur.com/yKceFr5.jpg)
+
+![](https://i.imgur.com/sFxsNIh.jpg)
+
+![](https://i.imgur.com/zYvqRBO.jpg)
+
+6. Confirm public key by pressing both buttons on "Approve" screen.
+
+![](https://i.imgur.com/YDvVEQV.jpg)
+
+5. Repeat this step for next two keys.
+
+6. Enter your current owner private key in WIF format
+
+7. Your account is now associated with your device. You can validate it with ["How to find accounts associated with your device"](#how-to-find-accounts-associated-with-your-device) tutorial.
+
+# How to find accounts associated with your device
+
+You can quickly check which accounts are associated with your device (those will have owner authority derived from your device).
+
+
+1. Connect your device, unlock and open Hive application.
+
+![](https://i.imgur.com/E5vdx3o.jpg)
+
+2. Type in your terminal
+
+```bash=
+hive-ledger-cli discover-accounts
+```
+
+3. Wait for the result with your accounts listed in a table
+
+![](https://i.imgur.com/XRbhz5h.png)
+
+# How to receive HIVE or HBD
+
+If you know your account username, you can use it as a receiver address from any other wallet or exchange for HIVE or HBD. If you don't remember it, use `hive-ledger-cli` to determine account names associated with your device.
+
+```
+USAGE
+  $ hive-ledger-cli discover-accounts [ROLE]
+
+ARGUMENTS
+  ROLE  (owner|active|memo|posting) [default: owner] Role to check for
+
+OPTIONS
+  -a, --account-gap=account-gap  [default: 5] Gap limit for unused account indexes after which the software decides that device is not used
+  -d, --dry                      dry run will only print signed transaction instead broadcasting it
+  -h, --help                     show CLI help
+  -k, --key-gap=key-gap          [default: 5] Gap limit for unused key indexes on which the software decides that device is not used
+  -t, --testnet                  use testnet configuration
+
+EXAMPLE
+  $ hive-ledger-cli discover-accounts
+
+```
+1. Connect your device, unlock and open Hive application.
+
+![](https://i.imgur.com/E5vdx3o.jpg)
+
+3. Type `hive-ledger-cli discover-accounts` and wait for process to finish
+
+![](https://i.imgur.com/rjhOrXf.png)
+
+3. You can see two accounts connected with this ledger: `acronyms` and `test.ledger`. Both can be used to receive funds.
+
+4. You can validate path and public key with ["How to validate public key"](#how-to-validate-public-key) tutorial
+
+# How to transfer HIVE or HBD to another account
+
+You can send liquid tokens (HIVE or HBD) withing 3 seconds to any other existing Hive account. 
+
+```
+USAGE
+  $ hive-ledger-cli transfer PATH FROM TO AMOUNT [MEMO]
+
+ARGUMENTS
+  PATH    BIP 32 (SLIP-0048) path to derive key from and use to sign the transaction
+  FROM    sender
+  TO      receiver
+  AMOUNT  amount to send
+  MEMO    optional transfer memo
+```
+
+To send `0.001 HIVE` from `test.ledger` to `engrave` account:
+
+1. Connect your device, unlock and open Hive application.
+
+![](https://i.imgur.com/E5vdx3o.jpg)
+
+2. Type in your terminal
+
+```bash=
+hive-ledger-cli transfer "m/48'/13'/0'/2'/0'" test.ledger engrave "0.001 HIVE" "Sent using ledger device!"
+```
+
+![](https://i.imgur.com/u2NCGSr.png)
+
+3. Use left and right buttons to verify transaction on your hardware wallet.
+
+![](https://i.imgur.com/sh2zh9X.jpg)
+
+![](https://i.imgur.com/nqvYQUi.jpg)
+
+![](https://i.imgur.com/BKg8pW1.jpg)
+
+![](https://i.imgur.com/v0eTCE0.jpg)
+
+![](https://i.imgur.com/toFCSW5.jpg)
+
+![](https://i.imgur.com/jzxeaAM.jpg)
+
+![](https://i.imgur.com/y1UBY9m.jpg)
+
+![](https://i.imgur.com/bxgL0oz.jpg)
+
+4. Accept the transaction by pressing both buttons on "Approve" screen.
+
+![](https://i.imgur.com/YDvVEQV.jpg)
+
+![](https://i.imgur.com/Lus0eYw.png)
+
+# How to stake HIVE
+
+
+To gain more governance power over Hive blockchain, you can convert your HIVE into Hive Power. We call it "powering up" and other blockchains calls it "staking". Underneath, your tokens are converted to VESTS. Withdrawal of your staked HIVE (converting it back to liquid HIVE) will take 13 weeks.
+
+To convert HIVE into HP (Hive Power), use `hive-ledger-cli`.
+
+```
+USAGE
+  $ hive-ledger-cli transfer-to-vesting PATH FROM TO AMOUNT
+
+ARGUMENTS
+  PATH    BIP 32 (SLIP-0048) path to derive key from and use to sign the transaction
+  FROM    source account
+  TO      target account
+  AMOUNT  amount to stake
+
+OPTIONS
+  -d, --dry      dry run will only print signed transaction instead broadcasting it
+  -h, --help     show CLI help
+  -t, --testnet  use testnet configuration
+```
+
+1. Connect your device, unlock and open Hive application.
+
+![](https://i.imgur.com/E5vdx3o.jpg)
+
+2. Type in your terminal
+
+```bash=
+hive-ledger-cli transfer-to-vesting "m/48'/13'/0'/2'/0'" test.ledger test.ledger "0.001 HIVE"
+```
+
+3. Use left and right keys to verify transaction on your hardware wallet
+
+![](https://i.imgur.com/sh2zh9X.jpg)
+
+![](https://i.imgur.com/nqvYQUi.jpg)
+
+![](https://i.imgur.com/OnL6Lgc.jpg)
+
+![](https://i.imgur.com/v0eTCE0.jpg)
+
+![](https://i.imgur.com/SWf4uAH.jpg)
+
+![](https://i.imgur.com/jzxeaAM.jpg)
+
+4. Accept the transaction by pressing both buttons on "Approve" screen.
+
+![](https://i.imgur.com/YDvVEQV.jpg)
+
+![](https://i.imgur.com/jDupcLj.png)
+
+# Where to find account balance
+
+You can use `hive-ledger-cli` package to check any account balance:
+
+```
+$ hive-ledger-cli balance test.ledger
+```
+Will produce
+```
+Balances for @test.ledger account
+----------------
+Liquid:  0.998 HIVE, 0.001 HBD
+Savings: 0.000 HIVE, 0.000 HBD
+Staked:  0.001 HP
+----------------
+Pending rewards: 0.000 HP, 0.000 HIVE, 0.000 HBD
+```
+
+You can view your account balance on multiple block explorer and Hive powered social media frontends. Most of them support `/@username` standard. For example:
+
+https://hiveblocks.com/@test.ledger
+https://hiveblockexplorer.com/@test.ledger
+https://hive.ausbit.dev/@test.ledger
+https://peakd.com/@test.ledger/wallet
+https://wallet.hive.blog/@test.ledger
+
+***
+<center><sup>Originally posted on [Hive Ledger Support](http://blog.hiveledger.io/how-to-use-your-ledger-device-with-hive-ledger-cli). Hive blog powered by [ENGRAVE](https://dblog.org).</sup></center></div>
+<script crossorigin="anonymous" integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=" src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+
+<script src="https://unpkg.com/steem-content-renderer"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/hive-content-renderer/dist/hive-content-renderer.min.js"></script> -->
+<script>
+  $(document).ready(function() {
+    try {
+      const renderer = new SteemContentRenderer.DefaultRenderer({
+      // const renderer = new HiveContentRenderer({
+        baseUrl: "https://hive.blog/",
+        breaks: true,
+        skipSanitization: false,
+        allowInsecureScriptTags: false,
+        addNofollowToLinks: true,
+        doNotShowImages: false,
+        ipfsPrefix: "",
+        assetsWidth: 640,
+        assetsHeight: 480,
+        imageProxyFn: (url) => url,
+        usertagUrlFn: (account) => "/@engrave",
+        hashtagUrlFn: (hashtag) => "/how-to-use-your-ledger-device-with-hive-ledger-cli",
+        isLinkSafeFn: (url) => true,
+      });
+      
+      const inputElem = $('#content-engrave-how-to-use-your-ledger-device-with-hive-ledger-cli').html();
+      const outputElem = $('#content-engrave-how-to-use-your-ledger-device-with-hive-ledger-cli');
+      const output = renderer.render(inputElem);
+      
+      outputElem.html(output);
+    } catch(e) {
+      console.log(e);
+    }
+  });
+</script>
+
+<style>
+  #content-engrave-how-to-use-your-ledger-device-with-hive-ledger-cli {
+    padding: 0 3rem;
+    color: #444444;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.8;
+    text-shadow: 0 1px 0 #ffffff;
+    padding: 0.5rem;
+  }
+  #content-engrave-how-to-use-your-ledger-device-with-hive-ledger-cli code {
+    background: white;
+  }
+  #content-engrave-how-to-use-your-ledger-device-with-hive-ledger-cli a {
+    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
+  }
+  #content-engrave-how-to-use-your-ledger-device-with-hive-ledger-cli a:hover {
+    border-bottom: 0;
+  }
+  #content-engrave-how-to-use-your-ledger-device-with-hive-ledger-cli h1 {
+    font-size: 2.2em;
+  }
+  #content-engrave-how-to-use-your-ledger-device-with-hive-ledger-cli h2, h3, h4, h5 {
+    margin-bottom: 0;
+  }
+  #content-engrave-how-to-use-your-ledger-device-with-hive-ledger-cli header small {
+    color: #999;
+    font-size: 50%;
+  }
+  #content-engrave-how-to-use-your-ledger-device-with-hive-ledger-cli img {
+    max-width: 100%;
+  }
+</style>
+
+<hr />
+
+<p>
+  See: <a href="https://hive.blog/hive-139531/@engrave/how-to-use-your-ledger-device-with-hive-ledger-cli">How to use your ledger device with hive-ledger-cli</a>
+  by
+  <a href="https://hive.blog/@engrave">@engrave</a>
+</p>
+
+
+  </div><a class="u-url" href="/howto/nodejs/wallet/2021/11/08/how-to-use-your-ledger-device-with-hive-ledger-cli.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading"><a rel="author" href="/">Hive Chain Documentation</a></h2>
+    
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">site curated by: @inertia</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>Your resource for various levels of Hive Documentation.</p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+</body>
+
+</html>
