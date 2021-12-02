@@ -1,4 +1,147 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.1">Jekyll</generator><link href="https://hivedocs.info/feed.xml" rel="self" type="application/atom+xml" /><link href="https://hivedocs.info/" rel="alternate" type="text/html" /><updated>2021-11-30T13:14:31-08:00</updated><id>https://hivedocs.info/feed.xml</id><title type="html">Hive Chain Documentation</title><subtitle>Your resource for various levels of Hive Documentation.</subtitle><author><name>site curated by: @inertia</name></author><entry><title type="html">30th update of 2021 on BlockTrades work on Hive software</title><link href="https://hivedocs.info/news/core/development/2021/11/23/30th-update-of-2021-on-blocktrades-work-on-hive-software.html" rel="alternate" type="text/html" title="30th update of 2021 on BlockTrades work on Hive software" /><published>2021-11-23T17:00:27-08:00</published><updated>2021-11-23T17:00:27-08:00</updated><id>https://hivedocs.info/news/core/development/2021/11/23/30th-update-of-2021-on-blocktrades-work-on-hive-software</id><content type="html" xml:base="https://hivedocs.info/news/core/development/2021/11/23/30th-update-of-2021-on-blocktrades-work-on-hive-software.html">&lt;div id=&quot;content-blocktrades-30th-update-of-2021-on-blocktrades-work-on-hive-software&quot;&gt;![blocktrades update.png](https://images.hive.blog/DQmSihw8Kz4U7TuCQa98DDdCzqbqPFRumuVWAbareiYZW1Z/blocktrades%20update.png)
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.1">Jekyll</generator><link href="https://hivedocs.info/feed.xml" rel="self" type="application/atom+xml" /><link href="https://hivedocs.info/" rel="alternate" type="text/html" /><updated>2021-12-02T10:07:36-08:00</updated><id>https://hivedocs.info/feed.xml</id><title type="html">Hive Chain Documentation</title><subtitle>Your resource for various levels of Hive Documentation.</subtitle><author><name>site curated by: @inertia</name></author><entry><title type="html">31st update of 2021 on BlockTrades work on Hive software</title><link href="https://hivedocs.info/news/core/development/2021/12/01/31st-update-of-2021-on-blocktrades-work-on-hive-software.html" rel="alternate" type="text/html" title="31st update of 2021 on BlockTrades work on Hive software" /><published>2021-12-01T23:07:54-08:00</published><updated>2021-12-01T23:07:54-08:00</updated><id>https://hivedocs.info/news/core/development/2021/12/01/31st-update-of-2021-on-blocktrades-work-on-hive-software</id><content type="html" xml:base="https://hivedocs.info/news/core/development/2021/12/01/31st-update-of-2021-on-blocktrades-work-on-hive-software.html">&lt;div id=&quot;content-blocktrades-31st-update-of-2021-on-blocktrades-work-on-hive-software&quot;&gt;![blocktrades update.png](https://images.hive.blog/DQmSihw8Kz4U7TuCQa98DDdCzqbqPFRumuVWAbareiYZW1Z/blocktrades%20update.png)
+Below is a list of some of the Hive-related programming issues worked on by BlockTrades team during the past work period. I haven’t had time to check in with all our Hive developers this week, so this report will just focus on the devs I’ve been working with directly, and I’ll report on work done by other devs in my next report.
+
+# Hive Application Framework: framework for building robust and scalable Hive apps
+
+While running benchmarks of the HAF sql_serializer plugin over the past few weeks, I noticed that while the sql_serializer indexed most of the blocks very quickly, its performance was considerably slower once it dropped out of “massive sync” mode (where many blocks are processed simultaneously) into “single block” live sync mode. It also appeared that the sql_serializer was dropping out of massive sync mode earlier than it should, which could result in hundreds of thousands or even a million or more blocks being processed in this slower single block mode.
+
+Benchmarks this week showed that the serializer can only process about 6.7 blocks/second on average in live sync mode, whereas in massive sync mode, it can process about 2300 blocks per second.
+
+
+#### Live sync will always be slower than massive sync, but probably we can do better
+
+Slower performance was expected in live sync mode, because this mode requires the sql tables to maintain several indexes and these indexes slow down the rate at which data can be added to the tables, but the magnitude of the slowdown was surprising (to me at least). 
+
+So one of the first things we’re looking at to improve this situation is optimizing live sync performance. I believe there’s a good chance that we can improve the speed of live sync mode considerably still, because the live sync coding so far was only focused on proper functional behavior.
+
+But even if we get a 4x speedup in live sync performance, it is still much slower than massive sync mode, so we also need to reduce the amount of old blocks that get processed in live sync mode.
+
+### Performance impacts of swapping to live sync mode too early
+
+As a real-world measurement of the impact of this, we replayed a hived with a block_log that was 6.5 days old, so it was missing about 189K blocks, and it only took 7.15 hours to process the 59M blocks in the block log. But it took another 10 hours to process the remaining 189K new blocks that it received from the peer-to-peer network that were missing from the block_log (plus it had to process new blocks that got created while processing the old blocks). 
+
+We can envision an impractical “worst case” scenario where we sync a hived with an empty block_log with the sql_serializer enabled. This would currently take 59M blocks / 6.7 blocks/s / 3600 seconds/hr / 24 hrs/day = 101 days! I say this is an impractical scenario, because this can be worked around by first performing a normal sync of the hived node without the sql_serializer (which takes about 14 hours), then replaying with the sql_serializer with a fully filled block_log (so add another 7.5 hrs). But it does demonstrate one motivation for improving performance of the serializer with regard to live sync mode.
+
+### Why does sql_serializer switch from massive sync to live sync so early?
+
+Originally I believed that this transition from massive sync to live sync was accidentally happening too early because of an incorrect implementation of the `psql_index_threshold` setting. This setting helps hived decide whether it should start in massive sync mode or live sync mode, but I thought it might also be telling hived when to change from massive sync mode to live sync mode, so I expected we could fix the problem very easily and this issue was created to address the problem: https://gitlab.syncad.com/hive/haf/-/issues/9
+
+But after further discussions this week with the devs working on the sql_serializer, it turns out that this flag wasn’t the problem. 
+
+The real reason the sql_serializer was switching from massive_sync to live sync mode was because massive_sync mode can only be used for processing irreversible blocks (blocks that can’t be removed from the blockchain due to a fork), so as soon as the serializer was no longer sure that a block wasn’t irreversible, it swapped to live sync mode. 
+
+The only way that the serializer knows a block is irreversible is if the block is in the block_log. So it first processes all the blocks in the block_log in massive sync mode, then switches to live sync mode to process all blocks it receives from the P2P network (this includes old blocks that were generated since hived was last running, plus new blocks that get generated while hived is processing old blocks).
+
+So, ultimately the problem is that the serializer is processing new blocks as soon as it receives them from the P2P network, but these blocks only get marked as irreversible and added to the block_log after they are confirmed by later blocks received via the P2P network.
+
+### How to stay in massive sync mode longer?
+
+I’ve proposed a tentative solution to this problem that we’ll be trying to implement in the coming week: the serializer will continue to process blocks as they are received from the P2P network (this is important because the serializer makes use of information that must be computed at this time), but the resulting data will not be immediately sent to the SQL database, instead the data for the blocks will be stored in a queue in hived.
+
+During massive sync mode, a task will be stepping through the blocks in the block_log and dispatching the associated SQL statements in the serializer queue. The serializer will stay in massive sync mode until it determines that the hived node has synced to within one minute of the head block of the chain AND all the serializer data for all blocks in the block_log has been sent to the SQL database, then it will switch to live sync mode. Switching to live sync mode currently takes about 30 minutes to build all the associated table indexes. Then the serializer will need to flush the queue of all blocks that have built up during the building of the table indexes. Finally, once the queue is flushed, new blocks from the P2P network can be sent immediately to the database, with no need to first store them in the local hived queue.
+
+
+### Another possible improvement: make sql_serializer use non-blocking writes
+Based on the benchmarks I ran, I believe that currently the sql_serializer writes data to the database as a blocking call (in other words, it waits for the SQL server to reply back that the block data has been written to the database before it allows hived to process another block). 
+
+Using a blocking call ensures that hived’s state stays in sync with the state of the HAF database, but this comes at the cost of less parallelism, which means processing each block takes longer, and it also places additional strain on hived in a critical execution path (during the time that hived is processing a block, hived can’t safely do much else, so the block writing time should be kept as short as possible to lower the hardware requirements needed to operate a hived node).
+
+To avoid this problem, we will take a look at converting the database write to a non-blocking call and only block if and when the queue of unprocessed non-blocking calls gets too large. This will make replays with the sql_serializer faster and will also reduce the amount of time that hived is blocked and unable to process new blocks from the P2P network.
+
+The only potential scenario I can think at the moment where using using a non-blocking call could cause a problem would be the case where the postgres server failed to write a block to the database (for example, if the database storage device filled up). With a non-blocking call, hived would continue to process blocks for a while instead of immediately shutting down, and hived’s state would become out of sync with the state of the HAF database. 
+
+Postgres servers tend to be very reliable, so this is an unlikely scenario, but even if it happens, in the worst case, it would only require the state of hived and the HAF database to be cleared and a replay from block 0. And more likely, a system admin would just re-initialize hived and HAF database using a relatively recent snapshot and a HAF database restore file, and then they could quickly be synced up to the head block again.
+
+
+### Two new programmers working on balance_tracker app
+
+We have  two new Hive devs (a python programmer and a web developer) working on creating an API and web interface for balance_tracker (an example HAF app) as an introduction to the Hive programming environment.
+
+
+### Investigating defining HAF APIs with PostgREST web server
+
+In hivemind and in our previous HAF apps, we’ve been using a Python-based jsonrpc server that translate the RPC calls to manually written python functions that then make SQL queries to the HAF database. This works pretty well and we recently optimized it to perform better when heavily loaded, but there is a certain amount of boilerplate Python code that must be written with this methodology, which requires someone familiar with Python (not a difficult requirement) and also increases the chance for errors during the intermediate translation of data back and forth between Python and SQL.
+
+To make this task a little more interesting, Bartek suggested we investigate an alternative way to define the API interface to a HAF app using a web server called [PostgREST](https://postgrest.org) to replace the python-based server.
+
+This approach could be very interesting for experienced SQL developers, I think. Instead of writing Python code, APIs are defined directly in SQL as table views and/or stored procedures. API clients can then make REST calls to the PostgREST server and it converts the REST calls to equivalent SQL queries. So far this approach looks like a promising alternative for SQL programmers, and it will also be interesting to compare the performance between the PostgREST web server and the Python-based one.&lt;/div&gt;
+&lt;script crossorigin=&quot;anonymous&quot; integrity=&quot;sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=&quot; src=&quot;https://code.jquery.com/jquery-3.5.1.slim.min.js&quot;&gt;&lt;/script&gt;
+
+&lt;script src=&quot;https://unpkg.com/steem-content-renderer&quot;&gt;&lt;/script&gt;
+
+&lt;!-- &lt;script src=&quot;https://cdn.jsdelivr.net/npm/hive-content-renderer/dist/hive-content-renderer.min.js&quot;&gt;&lt;/script&gt; --&gt;
+&lt;script&gt;
+  $(document).ready(function() {
+    try {
+      const renderer = new SteemContentRenderer.DefaultRenderer({
+      // const renderer = new HiveContentRenderer({
+        baseUrl: &quot;https://hive.blog/&quot;,
+        breaks: true,
+        skipSanitization: false,
+        allowInsecureScriptTags: false,
+        addNofollowToLinks: true,
+        doNotShowImages: false,
+        ipfsPrefix: &quot;&quot;,
+        assetsWidth: 640,
+        assetsHeight: 480,
+        imageProxyFn: (url) =&gt; url,
+        usertagUrlFn: (account) =&gt; &quot;/@blocktrades&quot;,
+        hashtagUrlFn: (hashtag) =&gt; &quot;/31st-update-of-2021-on-blocktrades-work-on-hive-software&quot;,
+        isLinkSafeFn: (url) =&gt; true,
+      });
+      
+      const inputElem = $('#content-blocktrades-31st-update-of-2021-on-blocktrades-work-on-hive-software').html();
+      const outputElem = $('#content-blocktrades-31st-update-of-2021-on-blocktrades-work-on-hive-software');
+      const output = renderer.render(inputElem);
+      
+      outputElem.html(output);
+    } catch(e) {
+      console.log(e);
+    }
+  });
+&lt;/script&gt;
+
+&lt;style&gt;
+  #content-blocktrades-31st-update-of-2021-on-blocktrades-work-on-hive-software {
+    padding: 0 3rem;
+    color: #444444;
+    font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.8;
+    text-shadow: 0 1px 0 #ffffff;
+    padding: 0.5rem;
+  }
+  #content-blocktrades-31st-update-of-2021-on-blocktrades-work-on-hive-software code {
+    background: white;
+  }
+  #content-blocktrades-31st-update-of-2021-on-blocktrades-work-on-hive-software a {
+    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
+  }
+  #content-blocktrades-31st-update-of-2021-on-blocktrades-work-on-hive-software a:hover {
+    border-bottom: 0;
+  }
+  #content-blocktrades-31st-update-of-2021-on-blocktrades-work-on-hive-software h1 {
+    font-size: 2.2em;
+  }
+  #content-blocktrades-31st-update-of-2021-on-blocktrades-work-on-hive-software h2, h3, h4, h5 {
+    margin-bottom: 0;
+  }
+  #content-blocktrades-31st-update-of-2021-on-blocktrades-work-on-hive-software header small {
+    color: #999;
+    font-size: 50%;
+  }
+  #content-blocktrades-31st-update-of-2021-on-blocktrades-work-on-hive-software img {
+    max-width: 100%;
+  }
+&lt;/style&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;
+  See: &lt;a href=&quot;https://hive.blog/hive-139531/@blocktrades/31st-update-of-2021-on-blocktrades-work-on-hive-software&quot;&gt;31st update of 2021 on BlockTrades work on Hive software&lt;/a&gt;
+  by
+  &lt;a href=&quot;https://hive.blog/@blocktrades&quot;&gt;@blocktrades&lt;/a&gt;
+&lt;/p&gt;</content><author><name>blocktrades</name></author><category term="news" /><category term="core" /><category term="development" /><summary type="html">![blocktrades update.png](https://images.hive.blog/DQmSihw8Kz4U7TuCQa98DDdCzqbqPFRumuVWAbareiYZW1Z/blocktrades%20update.png) Below is a list of some of the Hive-related programming issues worked on by BlockTrades team during the past work period. I haven’t had time to check in with all our Hive developers this week, so this report will just focus on the devs I’ve been working with directly, and I’ll report on work done by other devs in my next report. # Hive Application Framework: framework for building robust and scalable Hive apps While running benchmarks of the HAF sql_serializer plugin over the past few weeks, I noticed that while the sql_serializer indexed most of the blocks very quickly, its performance was considerably slower once it dropped out of “massive sync” mode (where many blocks are processed simultaneously) into “single block” live sync mode. It also appeared that the sql_serializer was dropping out of massive sync mode earlier than it should, which could result in hundreds of thousands or even a million or more blocks being processed in this slower single block mode. Benchmarks this week showed that the serializer can only process about 6.7 blocks/second on average in live sync mode, whereas in massive sync mode, it can process about 2300 blocks per second. #### Live sync will always be slower than massive sync, but probably we can do better Slower performance was expected in live sync mode, because this mode requires the sql tables to maintain several indexes and these indexes slow down the rate at which data can be added to the tables, but the magnitude of the slowdown was surprising (to me at least). So one of the first things we’re looking at to improve this situation is optimizing live sync performance. I believe there’s a good chance that we can improve the speed of live sync mode considerably still, because the live sync coding so far was only focused on proper functional behavior. But even if we get a 4x speedup in live sync performance, it is still much slower than massive sync mode, so we also need to reduce the amount of old blocks that get processed in live sync mode. ### Performance impacts of swapping to live sync mode too early As a real-world measurement of the impact of this, we replayed a hived with a block_log that was 6.5 days old, so it was missing about 189K blocks, and it only took 7.15 hours to process the 59M blocks in the block log. But it took another 10 hours to process the remaining 189K new blocks that it received from the peer-to-peer network that were missing from the block_log (plus it had to process new blocks that got created while processing the old blocks). We can envision an impractical “worst case” scenario where we sync a hived with an empty block_log with the sql_serializer enabled. This would currently take 59M blocks / 6.7 blocks/s / 3600 seconds/hr / 24 hrs/day = 101 days! I say this is an impractical scenario, because this can be worked around by first performing a normal sync of the hived node without the sql_serializer (which takes about 14 hours), then replaying with the sql_serializer with a fully filled block_log (so add another 7.5 hrs). But it does demonstrate one motivation for improving performance of the serializer with regard to live sync mode. ### Why does sql_serializer switch from massive sync to live sync so early? Originally I believed that this transition from massive sync to live sync was accidentally happening too early because of an incorrect implementation of the `psql_index_threshold` setting. This setting helps hived decide whether it should start in massive sync mode or live sync mode, but I thought it might also be telling hived when to change from massive sync mode to live sync mode, so I expected we could fix the problem very easily and this issue was created to address the problem: https://gitlab.syncad.com/hive/haf/-/issues/9 But after further discussions this week with the devs working on the sql_serializer, it turns out that this flag wasn’t the problem. The real reason the sql_serializer was switching from massive_sync to live sync mode was because massive_sync mode can only be used for processing irreversible blocks (blocks that can’t be removed from the blockchain due to a fork), so as soon as the serializer was no longer sure that a block wasn’t irreversible, it swapped to live sync mode. The only way that the serializer knows a block is irreversible is if the block is in the block_log. So it first processes all the blocks in the block_log in massive sync mode, then switches to live sync mode to process all blocks it receives from the P2P network (this includes old blocks that were generated since hived was last running, plus new blocks that get generated while hived is processing old blocks). So, ultimately the problem is that the serializer is processing new blocks as soon as it receives them from the P2P network, but these blocks only get marked as irreversible and added to the block_log after they are confirmed by later blocks received via the P2P network. ### How to stay in massive sync mode longer? I’ve proposed a tentative solution to this problem that we’ll be trying to implement in the coming week: the serializer will continue to process blocks as they are received from the P2P network (this is important because the serializer makes use of information that must be computed at this time), but the resulting data will not be immediately sent to the SQL database, instead the data for the blocks will be stored in a queue in hived. During massive sync mode, a task will be stepping through the blocks in the block_log and dispatching the associated SQL statements in the serializer queue. The serializer will stay in massive sync mode until it determines that the hived node has synced to within one minute of the head block of the chain AND all the serializer data for all blocks in the block_log has been sent to the SQL database, then it will switch to live sync mode. Switching to live sync mode currently takes about 30 minutes to build all the associated table indexes. Then the serializer will need to flush the queue of all blocks that have built up during the building of the table indexes. Finally, once the queue is flushed, new blocks from the P2P network can be sent immediately to the database, with no need to first store them in the local hived queue. ### Another possible improvement: make sql_serializer use non-blocking writes Based on the benchmarks I ran, I believe that currently the sql_serializer writes data to the database as a blocking call (in other words, it waits for the SQL server to reply back that the block data has been written to the database before it allows hived to process another block). Using a blocking call ensures that hived’s state stays in sync with the state of the HAF database, but this comes at the cost of less parallelism, which means processing each block takes longer, and it also places additional strain on hived in a critical execution path (during the time that hived is processing a block, hived can’t safely do much else, so the block writing time should be kept as short as possible to lower the hardware requirements needed to operate a hived node). To avoid this problem, we will take a look at converting the database write to a non-blocking call and only block if and when the queue of unprocessed non-blocking calls gets too large. This will make replays with the sql_serializer faster and will also reduce the amount of time that hived is blocked and unable to process new blocks from the P2P network. The only potential scenario I can think at the moment where using using a non-blocking call could cause a problem would be the case where the postgres server failed to write a block to the database (for example, if the database storage device filled up). With a non-blocking call, hived would continue to process blocks for a while instead of immediately shutting down, and hived’s state would become out of sync with the state of the HAF database. Postgres servers tend to be very reliable, so this is an unlikely scenario, but even if it happens, in the worst case, it would only require the state of hived and the HAF database to be cleared and a replay from block 0. And more likely, a system admin would just re-initialize hived and HAF database using a relatively recent snapshot and a HAF database restore file, and then they could quickly be synced up to the head block again. ### Two new programmers working on balance_tracker app We have two new Hive devs (a python programmer and a web developer) working on creating an API and web interface for balance_tracker (an example HAF app) as an introduction to the Hive programming environment. ### Investigating defining HAF APIs with PostgREST web server In hivemind and in our previous HAF apps, we’ve been using a Python-based jsonrpc server that translate the RPC calls to manually written python functions that then make SQL queries to the HAF database. This works pretty well and we recently optimized it to perform better when heavily loaded, but there is a certain amount of boilerplate Python code that must be written with this methodology, which requires someone familiar with Python (not a difficult requirement) and also increases the chance for errors during the intermediate translation of data back and forth between Python and SQL. To make this task a little more interesting, Bartek suggested we investigate an alternative way to define the API interface to a HAF app using a web server called [PostgREST](https://postgrest.org) to replace the python-based server. This approach could be very interesting for experienced SQL developers, I think. Instead of writing Python code, APIs are defined directly in SQL as table views and/or stored procedures. API clients can then make REST calls to the PostgREST server and it converts the REST calls to equivalent SQL queries. So far this approach looks like a promising alternative for SQL programmers, and it will also be interesting to compare the performance between the PostgREST web server and the Python-based one. See: 31st update of 2021 on BlockTrades work on Hive software by @blocktrades</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://images.hive.blog/DQmSihw8Kz4U7TuCQa98DDdCzqbqPFRumuVWAbareiYZW1Z/blocktrades%20update.png" /><media:content medium="image" url="https://images.hive.blog/DQmSihw8Kz4U7TuCQa98DDdCzqbqPFRumuVWAbareiYZW1Z/blocktrades%20update.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">30th update of 2021 on BlockTrades work on Hive software</title><link href="https://hivedocs.info/news/core/development/2021/11/23/30th-update-of-2021-on-blocktrades-work-on-hive-software.html" rel="alternate" type="text/html" title="30th update of 2021 on BlockTrades work on Hive software" /><published>2021-11-23T17:00:27-08:00</published><updated>2021-11-23T17:00:27-08:00</updated><id>https://hivedocs.info/news/core/development/2021/11/23/30th-update-of-2021-on-blocktrades-work-on-hive-software</id><content type="html" xml:base="https://hivedocs.info/news/core/development/2021/11/23/30th-update-of-2021-on-blocktrades-work-on-hive-software.html">&lt;div id=&quot;content-blocktrades-30th-update-of-2021-on-blocktrades-work-on-hive-software&quot;&gt;![blocktrades update.png](https://images.hive.blog/DQmSihw8Kz4U7TuCQa98DDdCzqbqPFRumuVWAbareiYZW1Z/blocktrades%20update.png)
 Below is a list of some of the Hive-related programming issues worked on by BlockTrades team during the past week:
 
 # Hived work (blockchain node software)
@@ -1585,127 +1728,4 @@ I worked with @quochuy and jsalyers on a number of condenser-related issues:
   See: &lt;a href=&quot;https://hive.blog/hive-139531/@blocktrades/25th-update-of-2021-on-blocktrades-work-on-hive-software&quot;&gt;25th update of 2021 on BlockTrades work on Hive software&lt;/a&gt;
   by
   &lt;a href=&quot;https://hive.blog/@blocktrades&quot;&gt;@blocktrades&lt;/a&gt;
-&lt;/p&gt;</content><author><name>blocktrades</name></author><category term="news" /><category term="core" /><category term="development" /><summary type="html">![blocktrades update.png](https://images.hive.blog/DQmSihw8Kz4U7TuCQa98DDdCzqbqPFRumuVWAbareiYZW1Z/blocktrades%20update.png) Below is a list of Hive-related programming issues worked on by BlockTrades team during the past two weeks: # Hived work (blockchain node software) ### sql_serializer plugin (writes blockchain data to a HAF database) Our primary hived work this week was focused on testing, benchmarking, and making improvements to the SQL serializer plugin: * [Speed up sql_serializer by maintaining database connection (previously it was connecting and disconnecting between writes to the database)](https://gitlab.syncad.com/hive/hive/-/merge_requests/284) * A timestamp field was added to the HAF operations table to handle issue with virtual operations where the operation’s effective time is different from the block where it is generated: https://gitlab.syncad.com/hive/hive/-/merge_requests/274 https://gitlab.syncad.com/hive/psql_tools/-/merge_requests/17 * [Fixed a bug where the wrong block number was sent to hive fork manager during a fork](https://gitlab.syncad.com/hive/hive/-/merge_requests/281) * [sql_serializer now uses future to start threads for better error handling and cleanup of threads](https://gitlab.syncad.com/hive/hive/-/merge_requests/268). Further work on this issue will be completed next week. * [Fixed another fork-related bug in sql_serializer](https://gitlab.syncad.com/hive/hive/-/merge_requests/271) [We modified fc’s json serializer to use a string with preallocated memory instead of a stream in order to speedup replays with the sql_serializer plugin (we saw speedups as much as 40% on some systems)](https://gitlab.syncad.com/hive/hive/-/merge_requests/278). We expect this optimization will also result in significant speedups in hived's API response time, but we haven’t done any benchmarks for that yet. ### Miscellaneous code cleanup * [Field `active` removed from post-related API responses (and code)](https://gitlab.syncad.com/hive/hive/-/merge_requests/269) * [Removed obsolete plugins: tags_api and follow_api](https://gitlab.syncad.com/hive/hive/-/merge_requests/276) * [Removed legacy plugins](https://gitlab.syncad.com/hive/hive/-/merge_requests/277) * [Updated CI to use rebuilt docker images containing updated certificates](https://gitlab.syncad.com/hive/hive/-/merge_requests/283) * [Minor doc fix and updated seed nodes](https://gitlab.syncad.com/hive/hive/-/merge_requests/262) * [Function `get_impacted_accounts` moved into `protocol` folder](https://gitlab.syncad.com/hive/hive/-/merge_requests/282) * [Optimization: objects related to vesting delegation encapsulated and reduced in size](https://gitlab.syncad.com/hive/hive/-/merge_requests/279) ### Test tool improvements (New python library for testing hived) * Added support for connecting wallet to remote node * Enabled passing command line arguments to wallet * Fixed random fail on CI related to implementation of empty directory removing * Updated existing tests to use new TestTools interface * Made current directory available to user (via context.get_current_directory()) * Removed main net singleton https://gitlab.syncad.com/hive/hive/-/merge_requests/270 We're also incorporating a library into TestTools called faketime that will enable us to make our fork testing repeatable. It will also allow us to speedup hived tests by using small, pre-generated block_logs as testing fixtures. Instead of requiring us to execute a sequence of transactions to setup a test case, the test will just replay hived using the pre-generated block log to create the desired testing environment. ### Command-line wallet for Hived * [Added default value to the server-rpc-endpoint option](https://gitlab.syncad.com/hive/hive/-/merge_requests/273) * [Added exit function to the wallet api](https://gitlab.syncad.com/hive/hive/-/merge_requests/272) * [Continued work on supporting offline operation of the cli wallet](https://gitlab.syncad.com/hive/hive/-/merge_requests/265) # Hivemind (2nd layer applications + social media middleware) As mentioned previously, we’re planning to migrate to Ubuntu 20 as the recommended deployment environment for hived and hivemind. As part of this change, we’re planning to move to postgres 12 for hivemind, because this is the default version of postgres shipped with Ubuntu 20. We’ve modified the continuous integration (CI) system to test the develop branch against postgres 12 and we’ll probably release the final version of hivemind for postgres 10 in a day or so (with support for upgrading existing hivemind installations to the latest database schema changes). # Hive Application Framework: framework for building robust and scalable Hive apps ### Fixing/Optimizing HAF-based account history app (Hafah) We’re currently optimizing and testing our first HAF-based app (code-named Hafah) that emulates the functionality of hived’s account history plugin (and ultimately will replace it). A lot of our recent benchmarks focused on testing on different systems, with different numbers of threads allocated to the sql_serializer and the Hafah plugin. We’ve also created a fully python-based implementation of Hafah (the indexer for the original Hafah implementation is C++ based) to better showcase how a typical HAF-based app will look. In preliminary benchmarks, the python-based application was about 20% slower to index 5M blocks than the one with a C++ based indexer, but we still need to do full benchmark testing to see how the two implementations compare over a more realistic data set (e.g. 50M+ blocks). In terms of API performance, both should perform the same, as that python code is shared between the two implementations. ### Multi-threading the jsonrpc server used by HAF We’ve completed a preliminary implementation of a multi-threaded jsonrpc server for use by HAF applications (and traditional hivemind). As mentioned in my previous report, we discovered that this becomes a bottleneck for API traffic at high loads when the API calls themselves are fast. In the next week we’ll begin testing, benchmarking, and optimization. ### Conversion of hivemind to HAF-based app We didn’t have a chance to work on HAF-based hivemind during the previous week as we were tied up with HAF and the HAF account history app (and one of the key devs for this work was sick), but we’ll be resuming work on it during the upcoming week, and preliminary analysis leads us to believe we may be able to complete the work in just a week. ### Condenser (source code for hive.blog and a number of other Hive frontend web sites) I worked with @quochuy and jsalyers on a number of condenser-related issues: * Support for tiktok videos * Fixes for youtube videos and instagram * Fix for muted, blacklisted, and followed pages * Major code cleanup * Investigated issues related to letsencrypt certificate delisting # Upcoming work for next week * Release a final official version of hivemind with postgres 10 support, then update hivemind CI to start testing using postgres 12 instead of 10. We also want to run a full sync to headblock of it against current develop version of hived. * Finish testing fixes and optimizations to HAF base-level components (sql_serializer and forkmanager). * For Hafah, we’ll be 1) testing/optimizing the new multithreaded jsonrpc server, 2) further benchmarking of API performance, 3) verifying results against a hived account history node, and 4) continuing set up of continuous integration testing for Hafah. * Resume work on HAF-based hivemind. Once we’re further along with HAF-based hivemind, we’ll test it using the fork-inducing tool. * Continue work on speedup of TestTools-based tests. * Investigate possible changes required to increase haircut limit for Hive-backed dollars (HBD) in hardfork 26. Public discussion is still needed as to the amount to increase the limit (personally I'm inclined to either 20% or 30%, with my preference for 30% to allow for a robust expansion of HBD supply). See: 25th update of 2021 on BlockTrades work on Hive software by @blocktrades</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://images.hive.blog/DQmSihw8Kz4U7TuCQa98DDdCzqbqPFRumuVWAbareiYZW1Z/blocktrades%20update.png" /><media:content medium="image" url="https://images.hive.blog/DQmSihw8Kz4U7TuCQa98DDdCzqbqPFRumuVWAbareiYZW1Z/blocktrades%20update.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Vessel v1.0.1 Release</title><link href="https://hivedocs.info/news/vessel/2021/10/06/vessel-v101-release.html" rel="alternate" type="text/html" title="Vessel v1.0.1 Release" /><published>2021-10-06T00:11:00-07:00</published><updated>2021-10-06T00:11:00-07:00</updated><id>https://hivedocs.info/news/vessel/2021/10/06/vessel-v101-release</id><content type="html" xml:base="https://hivedocs.info/news/vessel/2021/10/06/vessel-v101-release.html">&lt;div id=&quot;content-therealwolf-vessel-v101-release&quot;&gt;![](https://i.imgur.com/i2F5VL7.png)
-
----
-
-[Vessel](https://gitlab.syncad.com/hive/vessel/-/releases/1.0.1), the Hive Desktop Wallet for Mac has a new version - v1.0.1.
-
-**It's still experimental, so please use it at your own risk!**
-
-If there are any problems or bugs, please let me know as comment on this post or on Gitlab.
-
-Full List for v1.0.1:
-
-- Added Conversion (HBD =&amp;gt; HIVE) and Collateralised Conversion (HIVE =&amp;gt; HBD) *// Tip: to check your pending conversions please use [peakd.com](https://peakd.com)*
-- Improved Send page to make it easier to deposit to/withdraw from savings
-
-Repository: https://gitlab.syncad.com/hive/vessel
-Releases: https://gitlab.syncad.com/hive/vessel/-/releases/1.0.1
-Binaries: https://github.com/Rishi556/vessel/releases/tag/V1.0.1
-
-**How to build binaries yourself**
-
-```
-#Install Wine if you want to build for windows
-sudo dpkg --add-architecture i386
-wget -nc https://dl.winehq.org/wine-builds/winehq.key
-sudo apt-key add winehq.key
-sudo add-apt-repository 'deb https://dl.winehq.org/wine-builds/ubuntu/ focal main'
-sudo apt update
-sudo apt install --install-recommends winehq-stable
-
-# install dependencies if not done yet
-yarn
-
-# build files
-yarn run build
-
-# create binaries
-# m = mac / w = windows / l = linux
-# if you only need one of those, i.e. mac
-# =&amp;gt; run npx electron-builder -m
-npx electron-builder -mwl
-
-```
-
----
-
-*@mahdiyari and @rishi556 were added as beneficiaries to these post's rewards. Thanks guys, your work around Hive is much appreciated!*&lt;/div&gt;
-&lt;script crossorigin=&quot;anonymous&quot; integrity=&quot;sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=&quot; src=&quot;https://code.jquery.com/jquery-3.5.1.slim.min.js&quot;&gt;&lt;/script&gt;
-
-&lt;script src=&quot;https://unpkg.com/steem-content-renderer&quot;&gt;&lt;/script&gt;
-
-&lt;!-- &lt;script src=&quot;https://cdn.jsdelivr.net/npm/hive-content-renderer/dist/hive-content-renderer.min.js&quot;&gt;&lt;/script&gt; --&gt;
-&lt;script&gt;
-  $(document).ready(function() {
-    try {
-      const renderer = new SteemContentRenderer.DefaultRenderer({
-      // const renderer = new HiveContentRenderer({
-        baseUrl: &quot;https://hive.blog/&quot;,
-        breaks: true,
-        skipSanitization: false,
-        allowInsecureScriptTags: false,
-        addNofollowToLinks: true,
-        doNotShowImages: false,
-        ipfsPrefix: &quot;&quot;,
-        assetsWidth: 640,
-        assetsHeight: 480,
-        imageProxyFn: (url) =&gt; url,
-        usertagUrlFn: (account) =&gt; &quot;/@therealwolf&quot;,
-        hashtagUrlFn: (hashtag) =&gt; &quot;/vessel-v101-release&quot;,
-        isLinkSafeFn: (url) =&gt; true,
-      });
-      
-      const inputElem = $('#content-therealwolf-vessel-v101-release').html();
-      const outputElem = $('#content-therealwolf-vessel-v101-release');
-      const output = renderer.render(inputElem);
-      
-      outputElem.html(output);
-    } catch(e) {
-      console.log(e);
-    }
-  });
-&lt;/script&gt;
-
-&lt;style&gt;
-  #content-therealwolf-vessel-v101-release {
-    padding: 0 3rem;
-    color: #444444;
-    font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif;
-    font-size: 16px;
-    line-height: 1.8;
-    text-shadow: 0 1px 0 #ffffff;
-    padding: 0.5rem;
-  }
-  #content-therealwolf-vessel-v101-release code {
-    background: white;
-  }
-  #content-therealwolf-vessel-v101-release a {
-    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
-  }
-  #content-therealwolf-vessel-v101-release a:hover {
-    border-bottom: 0;
-  }
-  #content-therealwolf-vessel-v101-release h1 {
-    font-size: 2.2em;
-  }
-  #content-therealwolf-vessel-v101-release h2, h3, h4, h5 {
-    margin-bottom: 0;
-  }
-  #content-therealwolf-vessel-v101-release header small {
-    color: #999;
-    font-size: 50%;
-  }
-  #content-therealwolf-vessel-v101-release img {
-    max-width: 100%;
-  }
-&lt;/style&gt;
-
-&lt;hr /&gt;
-
-&lt;p&gt;
-  See: &lt;a href=&quot;https://peakd.com/hive-102930/@therealwolf/vessel-v101-release&quot;&gt;Vessel v1.0.1 Release&lt;/a&gt;
-  by
-  &lt;a href=&quot;https://hive.blog/@therealwolf&quot;&gt;@therealwolf&lt;/a&gt;
-&lt;/p&gt;</content><author><name>therealwolf</name></author><category term="news" /><category term="vessel" /><summary type="html">![](https://i.imgur.com/i2F5VL7.png) --- [Vessel](https://gitlab.syncad.com/hive/vessel/-/releases/1.0.1), the Hive Desktop Wallet for Mac has a new version - v1.0.1. **It's still experimental, so please use it at your own risk!** If there are any problems or bugs, please let me know as comment on this post or on Gitlab. Full List for v1.0.1: - Added Conversion (HBD =&amp;gt; HIVE) and Collateralised Conversion (HIVE =&amp;gt; HBD) *// Tip: to check your pending conversions please use [peakd.com](https://peakd.com)* - Improved Send page to make it easier to deposit to/withdraw from savings Repository: https://gitlab.syncad.com/hive/vessel Releases: https://gitlab.syncad.com/hive/vessel/-/releases/1.0.1 Binaries: https://github.com/Rishi556/vessel/releases/tag/V1.0.1 **How to build binaries yourself** ``` #Install Wine if you want to build for windows sudo dpkg --add-architecture i386 wget -nc https://dl.winehq.org/wine-builds/winehq.key sudo apt-key add winehq.key sudo add-apt-repository 'deb https://dl.winehq.org/wine-builds/ubuntu/ focal main' sudo apt update sudo apt install --install-recommends winehq-stable # install dependencies if not done yet yarn # build files yarn run build # create binaries # m = mac / w = windows / l = linux # if you only need one of those, i.e. mac # =&amp;gt; run npx electron-builder -m npx electron-builder -mwl ``` --- *@mahdiyari and @rishi556 were added as beneficiaries to these post's rewards. Thanks guys, your work around Hive is much appreciated!* See: Vessel v1.0.1 Release by @therealwolf</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://i.imgur.com/i2F5VL7.png" /><media:content medium="image" url="https://i.imgur.com/i2F5VL7.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>
+&lt;/p&gt;</content><author><name>blocktrades</name></author><category term="news" /><category term="core" /><category term="development" /><summary type="html">![blocktrades update.png](https://images.hive.blog/DQmSihw8Kz4U7TuCQa98DDdCzqbqPFRumuVWAbareiYZW1Z/blocktrades%20update.png) Below is a list of Hive-related programming issues worked on by BlockTrades team during the past two weeks: # Hived work (blockchain node software) ### sql_serializer plugin (writes blockchain data to a HAF database) Our primary hived work this week was focused on testing, benchmarking, and making improvements to the SQL serializer plugin: * [Speed up sql_serializer by maintaining database connection (previously it was connecting and disconnecting between writes to the database)](https://gitlab.syncad.com/hive/hive/-/merge_requests/284) * A timestamp field was added to the HAF operations table to handle issue with virtual operations where the operation’s effective time is different from the block where it is generated: https://gitlab.syncad.com/hive/hive/-/merge_requests/274 https://gitlab.syncad.com/hive/psql_tools/-/merge_requests/17 * [Fixed a bug where the wrong block number was sent to hive fork manager during a fork](https://gitlab.syncad.com/hive/hive/-/merge_requests/281) * [sql_serializer now uses future to start threads for better error handling and cleanup of threads](https://gitlab.syncad.com/hive/hive/-/merge_requests/268). Further work on this issue will be completed next week. * [Fixed another fork-related bug in sql_serializer](https://gitlab.syncad.com/hive/hive/-/merge_requests/271) [We modified fc’s json serializer to use a string with preallocated memory instead of a stream in order to speedup replays with the sql_serializer plugin (we saw speedups as much as 40% on some systems)](https://gitlab.syncad.com/hive/hive/-/merge_requests/278). We expect this optimization will also result in significant speedups in hived's API response time, but we haven’t done any benchmarks for that yet. ### Miscellaneous code cleanup * [Field `active` removed from post-related API responses (and code)](https://gitlab.syncad.com/hive/hive/-/merge_requests/269) * [Removed obsolete plugins: tags_api and follow_api](https://gitlab.syncad.com/hive/hive/-/merge_requests/276) * [Removed legacy plugins](https://gitlab.syncad.com/hive/hive/-/merge_requests/277) * [Updated CI to use rebuilt docker images containing updated certificates](https://gitlab.syncad.com/hive/hive/-/merge_requests/283) * [Minor doc fix and updated seed nodes](https://gitlab.syncad.com/hive/hive/-/merge_requests/262) * [Function `get_impacted_accounts` moved into `protocol` folder](https://gitlab.syncad.com/hive/hive/-/merge_requests/282) * [Optimization: objects related to vesting delegation encapsulated and reduced in size](https://gitlab.syncad.com/hive/hive/-/merge_requests/279) ### Test tool improvements (New python library for testing hived) * Added support for connecting wallet to remote node * Enabled passing command line arguments to wallet * Fixed random fail on CI related to implementation of empty directory removing * Updated existing tests to use new TestTools interface * Made current directory available to user (via context.get_current_directory()) * Removed main net singleton https://gitlab.syncad.com/hive/hive/-/merge_requests/270 We're also incorporating a library into TestTools called faketime that will enable us to make our fork testing repeatable. It will also allow us to speedup hived tests by using small, pre-generated block_logs as testing fixtures. Instead of requiring us to execute a sequence of transactions to setup a test case, the test will just replay hived using the pre-generated block log to create the desired testing environment. ### Command-line wallet for Hived * [Added default value to the server-rpc-endpoint option](https://gitlab.syncad.com/hive/hive/-/merge_requests/273) * [Added exit function to the wallet api](https://gitlab.syncad.com/hive/hive/-/merge_requests/272) * [Continued work on supporting offline operation of the cli wallet](https://gitlab.syncad.com/hive/hive/-/merge_requests/265) # Hivemind (2nd layer applications + social media middleware) As mentioned previously, we’re planning to migrate to Ubuntu 20 as the recommended deployment environment for hived and hivemind. As part of this change, we’re planning to move to postgres 12 for hivemind, because this is the default version of postgres shipped with Ubuntu 20. We’ve modified the continuous integration (CI) system to test the develop branch against postgres 12 and we’ll probably release the final version of hivemind for postgres 10 in a day or so (with support for upgrading existing hivemind installations to the latest database schema changes). # Hive Application Framework: framework for building robust and scalable Hive apps ### Fixing/Optimizing HAF-based account history app (Hafah) We’re currently optimizing and testing our first HAF-based app (code-named Hafah) that emulates the functionality of hived’s account history plugin (and ultimately will replace it). A lot of our recent benchmarks focused on testing on different systems, with different numbers of threads allocated to the sql_serializer and the Hafah plugin. We’ve also created a fully python-based implementation of Hafah (the indexer for the original Hafah implementation is C++ based) to better showcase how a typical HAF-based app will look. In preliminary benchmarks, the python-based application was about 20% slower to index 5M blocks than the one with a C++ based indexer, but we still need to do full benchmark testing to see how the two implementations compare over a more realistic data set (e.g. 50M+ blocks). In terms of API performance, both should perform the same, as that python code is shared between the two implementations. ### Multi-threading the jsonrpc server used by HAF We’ve completed a preliminary implementation of a multi-threaded jsonrpc server for use by HAF applications (and traditional hivemind). As mentioned in my previous report, we discovered that this becomes a bottleneck for API traffic at high loads when the API calls themselves are fast. In the next week we’ll begin testing, benchmarking, and optimization. ### Conversion of hivemind to HAF-based app We didn’t have a chance to work on HAF-based hivemind during the previous week as we were tied up with HAF and the HAF account history app (and one of the key devs for this work was sick), but we’ll be resuming work on it during the upcoming week, and preliminary analysis leads us to believe we may be able to complete the work in just a week. ### Condenser (source code for hive.blog and a number of other Hive frontend web sites) I worked with @quochuy and jsalyers on a number of condenser-related issues: * Support for tiktok videos * Fixes for youtube videos and instagram * Fix for muted, blacklisted, and followed pages * Major code cleanup * Investigated issues related to letsencrypt certificate delisting # Upcoming work for next week * Release a final official version of hivemind with postgres 10 support, then update hivemind CI to start testing using postgres 12 instead of 10. We also want to run a full sync to headblock of it against current develop version of hived. * Finish testing fixes and optimizations to HAF base-level components (sql_serializer and forkmanager). * For Hafah, we’ll be 1) testing/optimizing the new multithreaded jsonrpc server, 2) further benchmarking of API performance, 3) verifying results against a hived account history node, and 4) continuing set up of continuous integration testing for Hafah. * Resume work on HAF-based hivemind. Once we’re further along with HAF-based hivemind, we’ll test it using the fork-inducing tool. * Continue work on speedup of TestTools-based tests. * Investigate possible changes required to increase haircut limit for Hive-backed dollars (HBD) in hardfork 26. Public discussion is still needed as to the amount to increase the limit (personally I'm inclined to either 20% or 30%, with my preference for 30% to allow for a robust expansion of HBD supply). See: 25th update of 2021 on BlockTrades work on Hive software by @blocktrades</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://images.hive.blog/DQmSihw8Kz4U7TuCQa98DDdCzqbqPFRumuVWAbareiYZW1Z/blocktrades%20update.png" /><media:content medium="image" url="https://images.hive.blog/DQmSihw8Kz4U7TuCQa98DDdCzqbqPFRumuVWAbareiYZW1Z/blocktrades%20update.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>
