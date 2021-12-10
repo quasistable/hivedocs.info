@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta property="og:image" content="/assets/images/sticker.png" /><!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>Hive Authentication Services - How to run your own PKSA - Code is now open-source | Hive Chain Documentation</title>
+<meta name="generator" content="Jekyll v4.2.1" />
+<meta property="og:title" content="Hive Authentication Services - How to run your own PKSA - Code is now open-source" />
+<meta name="author" content="arcange" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Check out how to run your own Private Key Storage Application to play with HAS. The code is now open-source." />
+<meta property="og:description" content="Check out how to run your own Private Key Storage Application to play with HAS. The code is now open-source." />
+<link rel="canonical" href="https://peakd.com/hive-139531/@arcange/hive-authentication-services-pksa" />
+<meta property="og:url" content="https://peakd.com/hive-139531/@arcange/hive-authentication-services-pksa" />
+<meta property="og:site_name" content="Hive Chain Documentation" />
+<meta property="og:image" content="https://i.imgur.com/ePqTuLS.png" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2021-12-09T05:59:42-08:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="https://i.imgur.com/ePqTuLS.png" />
+<meta property="twitter:title" content="Hive Authentication Services - How to run your own PKSA - Code is now open-source" />
+<script type="application/ld+json">
+{"description":"Check out how to run your own Private Key Storage Application to play with HAS. The code is now open-source.","image":"https://i.imgur.com/ePqTuLS.png","headline":"Hive Authentication Services - How to run your own PKSA - Code is now open-source","dateModified":"2021-12-09T05:59:42-08:00","datePublished":"2021-12-09T05:59:42-08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://peakd.com/hive-139531/@arcange/hive-authentication-services-pksa"},"url":"https://peakd.com/hive-139531/@arcange/hive-authentication-services-pksa","author":{"@type":"Person","name":"arcange"},"@type":"BlogPosting","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://hivedocs.info/feed.xml" title="Hive Chain Documentation" /><script>
+if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNotTrack === "yes" || navigator.msDoNotTrack === "1")) {
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-161692811-1', 'auto');
+  ga('send', 'pageview');
+}
+</script>
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+  
+  <!-- jQuery Modal -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.css" />
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/turbolinks/5.2.0/turbolinks.js" integrity="sha256-iM4Yzi/zLj/IshPWMC1IluRxTtRjMqjPGd97TZ9yYpU=" crossorigin="anonymous"></script>
+  <script src='https://unpkg.com/steem-content-renderer'></script>
+  <script>
+    (function () {
+      if (Turbolinks.supported) {
+        Turbolinks.setProgressBarDelay(500);
+      }
+    })();
+  </script>
+  <script src="/assets/javascript/universal-bridge-against-phishing.js"></script>
+  <script src="/assets/javascript/lazysizes.min.js" async=""></script>
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Cousine|Inconsolata" rel="stylesheet">
+  <link rel="shortcut icon" type="image/png" href="/assets/images/favicon.png">
+</head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Hive Chain Documentation</a>
+
+      <nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/news/">News</a><a class="page-link" href="/howto/">How To</a><a class="page-link" href="/links/">Useful Links</a><a class="page-link" href="/authors/">Authors</a><!-- HTML elements for search -->
+          <input type="text" id="search-input" placeholder="Search" />
+          
+          <ul id="results-container"></ul>
+
+          <script src="/assets/javascript/search.js"></script>
+          <script>
+            var sjs = SimpleJekyllSearch({
+              searchInput: document.getElementById('search-input'),
+              resultsContainer: document.getElementById('results-container'),
+              json: '/search.json'
+            })
+          </script>
+          <!-- <form style="float: right;" class="form-inline" method="get" action="http://www.google.com/search">
+            <input type="hidden" name="sitesearch" value="hivedocs.info" />
+            <input type="text" name="q" maxlength="255" placeholder="Search" />
+          </form> -->
+          
+          <!-- <a href="#" onclick="try { $('#authors-container').slideToggle(); } catch { document.getElementById('authors-container').style.display = 'block'; }; return false;">Authors &#187;</a>
+          <a href="#" onclick="try { $('#topics-container').slideToggle(); } catch { document.getElementById('topics-container').style.display = 'block'; }; return false;">Topics &#187;</a> -->
+          
+          <a href="#topics-container" rel="modal:open">Topics &#187;</a>
+          
+          <div id="topics-container" class="modal">
+            <h3>Topics</h3>
+            <ul><li><a class="page-link" href="/account-recovery/"><nobr>Account Recovery</nobr></a></li><li><a class="page-link" href="/core-development/"><nobr>Core Development</nobr></a></li><li><a class="page-link" href="/dapps/"><nobr>Dapps</nobr></a></li><li><a class="page-link" href="/docker/"><nobr>Docker</nobr></a></li><li><a class="page-link" href="/hardfork/"><nobr>Hardfork</nobr></a></li><li><a class="page-link" href="/hivemind/"><nobr>Hivemind</nobr></a></li><li><a class="page-link" href="/javascript/"><nobr>Javascript</nobr></a></li><li><a class="page-link" href="/multisig/"><nobr>Multisig</nobr></a></li><li><a class="page-link" href="/python/"><nobr>Python</nobr></a></li><li><a class="page-link" href="/ruby/"><nobr>Ruby</nobr></a></li><li><a class="page-link" href="/testnet/"><nobr>Testnet</nobr></a></li><li><a class="page-link" href="/tools/"><nobr>Tools</nobr></a></li><li><a class="page-link" href="/witness/"><nobr>Witness</nobr></a></li></ul>
+          </div>
+        </div>
+      </nav>
+  </div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <div class="pull-right well">
+      <img src="https://images.hive.blog/u/arcange/avatar" width="128" height="128" class="lazyload" />
+    </div>
+    
+    <h1 class="post-title p-name" itemprop="name headline">Hive Authentication Services - How to run your own PKSA - Code is now open-source</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2021-12-09T05:59:42-08:00" itemprop="datePublished">Dec 9, 2021
+      </time>• <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">
+          <a href="/authors/#author-arcange">arcange</a>
+        </span></span></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <div id="content-arcange-hive-authentication-services-pksa">![](https://i.imgur.com/ePqTuLS.png)
+
+The integration of the HAS protocol in existing Private Key Storage Applications (PKSA) such as Hive Keychain Mobile or HiveWallet is well underway.
+
+If you wish to integrate and test HAS in your (d)App, you can request access to the beta version of [Keychain Mobile with HAS support](/@keychain/hive-keychain-dhf-3-weeks-20and21-starting-hive-authentication-service-integration) on their [discord](https://discord.gg/Pr3VSUTseC) server.
+
+Playing with HiveWallet will take a bit longer because @roelandp recently learned that a few libraries he was using are now [discontinued](/@roelandp/hivewallet-bugfixing-update-on-android-need-to-access-your-keys-and-whats-next). A bit more work for him before releasing a new HAS compatible version.
+
+In the meantime, you might be interested in running your own PKSA so that you can perform your tests in a safe and peaceful environment.
+
+For the more paranoid, this is an option that allows you to benefit from the advantages offered by HAS while maintaining full control over your private keys.
+
+###### If you haven't already done so, **support the project and vote for its proposal** on [Peakd](https://peakd.com/me/proposals/194), [Ecency](https://ecency.com/proposals/194), [hive.blog](https://wallet.hive.blog/proposals) or using [HiveSigner](https://hivesigner.com/sign/update_proposal_votes?proposal_ids=%5B%22194%22%5D&amp;approve=true)
+
+I also invite you to read:
+- [the HAS introductory post](https://peakd.com/hive-139531/@arcange/hive-authentication-services-proposal) to discover the project and its related proposal.
+- [the HAS protocol description](/@arcange/hive-authentication-services-protocol-description) to get a better understanding on how HAS parties interact together.
+- [the HAS developer guide - App integration](/@arcange/hive-authentication-services-developer-guide-part-1)
+- [the HAS developer guide - PKSA integration](/@arcange/hive-authentication-services-developer-guide-part-2)
+
+## 1. PKSA with a User Interface
+
+Developing a PKSA with a user interface can be seen as reinventing the wheel since applications like Keychain Mobile or HiveWallet already exist and will soon be available with full HAS support.
+
+Nevertheless, you might not trust them and want to use your own PKSA. 
+
+However, the source code of these two applications being open-sourced, the easiest way to create your own PKSA with a UI is to draw inspiration from it.
+
+If you are in a hurry and do not want to wait, you can create your own user interface, integrate the PKSA service mode code described below and implement user interactions where indicated in the source code.
+
+## 2. PKSA in Service Mode
+
+A "Service Mode" PKSA is software without a user interface running on a computer connected to the internet and waiting for authentication and transactions requests.
+
+<center>![](https://i.imgur.com/5GdZ1aN.png)</center>
+
+Depending on how you configure it, it can register the account(s) you want it to manage without processing an offline authentication payload.
+
+From then, the applications you use will have to connect to the same HAS server as your PKSA to be able to communicate with it.
+
+Your PKSA can then store and provide your App(s) with a valid authentication token. It can also (automatically) approve transactions requests coming from your App if you enable it to do so.
+
+### About security
+
+If you want your PKSA to run as a service, you will have to take care of additional security measures.
+
+The first problem to deal with is the fact that, as a PKSA service does not have a user interface, it cannot scan a QR code to obtain a communication encryption key.
+
+The second issue is that it should **NOT** accept authentication requests from known or unknown applications unless being explicitly told to do so! This can be the case when its operator wishes to initialize an application authentication token, for example.
+
+**1. Securing communication**
+
+Remember that the authentication key (`auth_key`) that is used to encrypt the communication between an App and a PKSA is usually provided offline and changes with each authentication request.
+
+The first way to solve this problem is to manually create an authentication token, an encryption key and add them manually in the configurations of your App and PKSA. This is my most secure method, but not the easiest to perform.
+
+Another way to do it would be to provide the `auth_key` to the PKSA with the authentication payload, but this would allow the HAS server to decrypt all your communication. Unless you run your own HAS server, that's not a good idea. Even with your own HAS server, it could be that another PKSA where you registered your account could receive the authentication request (and the `auth_key` that would come with it).
+
+To solve this issue, the App can use a secret pre-shared with the PKSA (`auth_req_secret`) to encrypt the `auth_key`. This means that only that specific PKSA service will be able to decrypt the `auth_key` provided by the App. Up to the App to have the `auth_req_secret` hard-coded or retrieve it from a config file or user input.
+
+**2. Securing authentication request**
+
+The next security measure to implement is to deny any authentication request that doesn't come with a valid token and only allow them for a short moment when we want to provide an app with a new valid token.
+
+When you want to authorize a new session (an application on a specific device for a specific user), you temporarily tell your PKSA to accept authentication requests without a valid token. Your PKSA will create a new token and send it to the app. Once authenticated in the app, your instruct your PKSA to block any new request coming without a token.
+
+In order to avoid too often having to renew a token for an App, a PKSA service can also consider providing new tokens to the App with a longer expiration time.
+
+### An Open-Source PKSA example
+
+I have been running a PKSA in service mode for more than a few months now. The code has been battle-tested and, as promised in the [HAS funding proposal](https://peakd.com/me/proposals/194), it is now open-source [**on GitHub**](https://github.com/VIM-Arcange/hive-auth-pksa).
+
+The provided PKSA code has the following features implemented:
+- reconnect the PKSA to the HAS server when the connection is unintentionally interrupted.
+- generate a detailed log of interactions with HAS
+- validate all commands against the HAS protocol definition.
+- manage the many different possible exceptions
+
+I won't make this post too long and stodgy for non-tech-savvy people by describing the code in-depth here. I have done my best to document the code with as many comments as possible, and I'm pretty sure it makes it easy to understand the proper functioning of a PKSA in service mode.
+
+The detailed explanation will be available in the HAS documentation that I am busy writing and that should be released in the coming days.
+
+Meantime, feel free to play with and create an issue if you find any bug.
+
+My **HAS Server** is available at **wss://hive-auth.arcange.eu**
+
+## What's next?
+
+Now that you can run your own PKSA and process your authentication et transactions requests, I will show you in another post how to easily integrate the HAS protocol into our app. Stay tuned!
+
+Thanks for reading.
+
+---
+
+|<center><div class="phishy"><h5>**Support the **HAS** project!**</h5></div></center>|
+|-|
+|<center>[Vote for the proposal on PeakD](https://peakd.com/me/proposals/194)<br />[Vote for the proposal on Ecency](https://ecency.com/proposals/194)<br />[vote for the proposal on Hive.blog](https://wallet.hive.blog/proposals)<br />[Vote for the proposal using HiveSigner](https://hivesigner.com/sign/update_proposal_votes?proposal_ids=%5B%22194%22%5D&amp;approve=true)</center>|
+
+---
+<center>
+
+### Check out my apps and services
+<a href="/hive/@hive.engage/stay-connected-with-your-hive-audience-and-catch-attention"><img src="https://i.imgur.com/GiNJqlm.png" /></a><a href="/@hivebuzz"><img src="https://i.imgur.com/B4UTun2.png" /></a><a href="/@hivesql"><img src="https://i.imgur.com/EPN8RW6.png" /></a><a href="/hive/@arcange/introducing-hive-account-recovery"><img src="https://i.imgur.com/6TWeW7V.png" /></a><a href="/@hive.autoclaim"><img src="https://i.imgur.com/ih2pEOw.png" /></a></center>
+<center>
+
+### [Vote for me as a witness ![](https://i.imgur.com/2bi4SnT.png)](https://hivesigner.com/sign/account-witness-vote?witness=arcange&amp;approve=1)&lt;/div&gt;
+<script crossorigin="anonymous" integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=" src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://unpkg.com/steem-content-renderer"></script>
+<!-- <script src="https://cdn.jsdelivr.net/npm/hive-content-renderer/dist/hive-content-renderer.min.js"></script> -->
+<script>
+  $(document).ready(function() {
+    try {
+      const renderer = new SteemContentRenderer.DefaultRenderer({
+      // const renderer = new HiveContentRenderer({
+        baseUrl: "https://hive.blog/",
+        breaks: true,
+        skipSanitization: false,
+        allowInsecureScriptTags: false,
+        addNofollowToLinks: true,
+        doNotShowImages: false,
+        ipfsPrefix: "",
+        assetsWidth: 640,
+        assetsHeight: 480,
+        imageProxyFn: (url) => url,
+        usertagUrlFn: (account) => "/@arcange",
+        hashtagUrlFn: (hashtag) => "/hive-authentication-services-pksa",
+        isLinkSafeFn: (url) => true,
+      });
+      
+      const inputElem = $('#content-arcange-hive-authentication-services-pksa').html();
+      const outputElem = $('#content-arcange-hive-authentication-services-pksa');
+      const output = renderer.render(inputElem);
+      
+      outputElem.html(output);
+    } catch(e) {
+      console.log(e);
+    }
+  });
+</script>
+<style>
+  #content-arcange-hive-authentication-services-pksa {
+    padding: 0 3rem;
+    color: #444444;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.8;
+    text-shadow: 0 1px 0 #ffffff;
+    padding: 0.5rem;
+  }
+  #content-arcange-hive-authentication-services-pksa code {
+    background: white;
+  }
+  #content-arcange-hive-authentication-services-pksa a {
+    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
+  }
+  #content-arcange-hive-authentication-services-pksa a:hover {
+    border-bottom: 0;
+  }
+  #content-arcange-hive-authentication-services-pksa h1 {
+    font-size: 2.2em;
+  }
+  #content-arcange-hive-authentication-services-pksa h2, h3, h4, h5 {
+    margin-bottom: 0;
+  }
+  #content-arcange-hive-authentication-services-pksa header small {
+    color: #999;
+    font-size: 50%;
+  }
+  #content-arcange-hive-authentication-services-pksa img {
+    max-width: 100%;
+  }
+</style>
+
+<hr />
+<p>
+  See: <a href="https://peakd.com/hive-139531/@arcange/hive-authentication-services-pksa">Hive Authentication Services - How to run your own PKSA - Code is now open-source</a>
+  by
+  <a href="https://hive.blog/@arcange">@arcange</a>
+</p>
+
+</center></div>
+
+  </div><a class="u-url" href="/howto/nodejs/authentication/2021/12/09/hive-authentication-services-pksa.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading"><a rel="author" href="/">Hive Chain Documentation</a></h2>
+    
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">site curated by: @inertia</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>Your resource for various levels of Hive Documentation.</p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+</body>
+
+</html>
