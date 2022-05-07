@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta property="og:image" content="/assets/images/sticker.png" /><!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>A developer’s introduction to the Hive Application Framework | Hive Chain Documentation</title>
+<meta name="generator" content="Jekyll v4.2.1" />
+<meta property="og:title" content="A developer’s introduction to the Hive Application Framework" />
+<meta name="author" content="blocktrades" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="A framework to ease the process of creating decentralized apps with Hive." />
+<meta property="og:description" content="A framework to ease the process of creating decentralized apps with Hive." />
+<link rel="canonical" href="https://hive.blog/hive-139531/@blocktrades/a-developer-s-introduction-to-the-hive-application-framework" />
+<meta property="og:url" content="https://hive.blog/hive-139531/@blocktrades/a-developer-s-introduction-to-the-hive-application-framework" />
+<meta property="og:site_name" content="Hive Chain Documentation" />
+<meta property="og:image" content="https://gitlab.syncad.com/hive/haf/-/raw/develop/doc/c2_haf.png" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2022-02-09T14:02:57-08:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="https://gitlab.syncad.com/hive/haf/-/raw/develop/doc/c2_haf.png" />
+<meta property="twitter:title" content="A developer’s introduction to the Hive Application Framework" />
+<script type="application/ld+json">
+{"author":{"@type":"Person","name":"blocktrades"},"description":"A framework to ease the process of creating decentralized apps with Hive.","url":"https://hive.blog/hive-139531/@blocktrades/a-developer-s-introduction-to-the-hive-application-framework","mainEntityOfPage":{"@type":"WebPage","@id":"https://hive.blog/hive-139531/@blocktrades/a-developer-s-introduction-to-the-hive-application-framework"},"image":"https://gitlab.syncad.com/hive/haf/-/raw/develop/doc/c2_haf.png","headline":"A developer’s introduction to the Hive Application Framework","dateModified":"2022-02-09T14:02:57-08:00","datePublished":"2022-02-09T14:02:57-08:00","@type":"BlogPosting","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://hivedocs.info/feed.xml" title="Hive Chain Documentation" /><script>
+if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNotTrack === "yes" || navigator.msDoNotTrack === "1")) {
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-161692811-1', 'auto');
+  ga('send', 'pageview');
+}
+</script>
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+  
+  <!-- jQuery Modal -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.css" />
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/turbolinks/5.2.0/turbolinks.js" integrity="sha256-iM4Yzi/zLj/IshPWMC1IluRxTtRjMqjPGd97TZ9yYpU=" crossorigin="anonymous"></script>
+  <script src='https://unpkg.com/steem-content-renderer'></script>
+  <script>
+    (function () {
+      if (Turbolinks.supported) {
+        Turbolinks.setProgressBarDelay(500);
+      }
+    })();
+  </script>
+  <script src="/assets/javascript/universal-bridge-against-phishing.js"></script>
+  <script src="/assets/javascript/lazysizes.min.js" async=""></script>
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Cousine|Inconsolata" rel="stylesheet">
+  <link rel="shortcut icon" type="image/png" href="/assets/images/favicon.png">
+</head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Hive Chain Documentation</a>
+
+      <nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/news/">News</a><a class="page-link" href="/howto/">How To</a><a class="page-link" href="/links/">Useful Links</a><a class="page-link" href="/authors/">Authors</a><!-- HTML elements for search -->
+          <input type="text" id="search-input" placeholder="Search" />
+          
+          <ul id="results-container"></ul>
+
+          <script src="/assets/javascript/search.js"></script>
+          <script>
+            var sjs = SimpleJekyllSearch({
+              searchInput: document.getElementById('search-input'),
+              resultsContainer: document.getElementById('results-container'),
+              json: '/search.json'
+            })
+          </script>
+          <!-- <form style="float: right;" class="form-inline" method="get" action="http://www.google.com/search">
+            <input type="hidden" name="sitesearch" value="hivedocs.info" />
+            <input type="text" name="q" maxlength="255" placeholder="Search" />
+          </form> -->
+          
+          <!-- <a href="#" onclick="try { $('#authors-container').slideToggle(); } catch { document.getElementById('authors-container').style.display = 'block'; }; return false;">Authors &#187;</a>
+          <a href="#" onclick="try { $('#topics-container').slideToggle(); } catch { document.getElementById('topics-container').style.display = 'block'; }; return false;">Topics &#187;</a> -->
+          
+          <a href="#topics-container" rel="modal:open">Topics &#187;</a>
+          
+          <div id="topics-container" class="modal">
+            <h3>Topics</h3>
+            <ul><li><a class="page-link" href="/account-recovery/"><nobr>Account Recovery</nobr></a></li><li><a class="page-link" href="/core-development/"><nobr>Core Development</nobr></a></li><li><a class="page-link" href="/dapps/"><nobr>Dapps</nobr></a></li><li><a class="page-link" href="/docker/"><nobr>Docker</nobr></a></li><li><a class="page-link" href="/hardfork/"><nobr>Hardfork</nobr></a></li><li><a class="page-link" href="/hivemind/"><nobr>Hivemind</nobr></a></li><li><a class="page-link" href="/javascript/"><nobr>Javascript</nobr></a></li><li><a class="page-link" href="/multisig/"><nobr>Multisig</nobr></a></li><li><a class="page-link" href="/python/"><nobr>Python</nobr></a></li><li><a class="page-link" href="/ruby/"><nobr>Ruby</nobr></a></li><li><a class="page-link" href="/testnet/"><nobr>Testnet</nobr></a></li><li><a class="page-link" href="/tools/"><nobr>Tools</nobr></a></li><li><a class="page-link" href="/witness/"><nobr>Witness</nobr></a></li></ul>
+          </div>
+        </div>
+      </nav>
+  </div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <div class="pull-right well">
+      <img src="https://images.hive.blog/u/blocktrades/avatar" width="128" height="128" class="lazyload" />
+    </div>
+    
+    <h1 class="post-title p-name" itemprop="name headline">A developer’s introduction to the Hive Application Framework</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2022-02-09T14:02:57-08:00" itemprop="datePublished">Feb 9, 2022
+      </time>• <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">
+          <a href="/authors/#author-blocktrades">blocktrades</a>
+        </span></span></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <div id="content-blocktrades-a-developer-s-introduction-to-the-hive-application-framework">As many of my readers know, the BlockTrades team has been devoting a lot of effort in the past year to  creating a framework to ease the process of creating decentralized apps with Hive. 
+
+We recently completed some scripts to ease setting up a HAF server, thereby removing the last roadblock to HAF server deployment, so I thought it would be a good time to create an overview for Hive app developers about what HAF is, what problems it solves, and how to deploy HAF-based apps.
+
+# What is the Hive Application Framework (HAF)?
+
+HAF is an application framework for creating highly scalable decentralized apps that operate on the Hive blockchain-based network. With HAF, data from the blockchain network are pushed into a SQL database (PostgreSQL) for easy consumption by HAF apps. **This means that HAF-based apps can easily be designed and maintained by database programmers with no previous experience with blockchain-based programming.**
+
+
+Below is a diagram that shows how HAF apps consume and create state data stored on a HAF server. As new blocks are created in the blockchain, the transactions contained in these blocks are stored into the HAF database by a plugin within hived (the blockchain node software) called sql_serializer. HAF apps get notified of this new block data by the hive_fork_manager and process this data independently at their own speed.
+
+https://gitlab.syncad.com/hive/haf/-/raw/develop/doc/c2_haf.png
+
+## Hive Fork Manager postgres extension
+
+The Hive Fork Manager is the primary way that HAF apps interface with blockchain data. It consists of several SQL stored procedures defined in a Postgres extension which are called by HAF apps to receive notifications of new block data. 
+
+One of the most powerful features offered by HAF as a service to apps is that it enables apps to easily maintain consistent internal state when transactions are reverted by a blockchain fork. To take advantage of this feature, HAF apps will normally register all the auxiliary tables that they create inside the HAF database to manage their own internal state. Once an application’s tables have been registered with the fork manager via stored procedure calls, the fork manager will automatically revert any state data in the event that blockchain data gets reverted by a fork in the blockchain network.
+
+To understand the benefit of this, let’s consider a social media app that tracks how many times a user posts and all the upvotes on their posts. The raw blockchain data that the app processes just consists of transactions such as posts and votes which have been signed by users. The social media app maintains state data such as post counts and upvotes for each post inside SQL tables. 
+
+In the case of a blockchain fork, the transactions for a post and all its votes could be reverted (either temporarily or even permanently). When this happens, the app has to undo all its internal state changes that occurred because of those reverted transactions. In other words, a normal blockchain app has to build an “undo” action for every internal state change it makes when it processes a new blockchain transaction, then apply all those undo actions in reverse order when a fork occurs. 
+
+The hive fork manager eliminates the need for such undo code: it keeps a record of each change in state caused by transactions in a block and automatically performs the undo actions when blocks get reverted by a fork. **In practice, this should cut in half the amount of code that is required to write a blockchain-based dapp and it also eliminates the chance for errors that can result if manually-written undo actions don’t get properly updated as the app’s functionality gets updated over time.**
+
+Note that this does imply that HAF apps should maintain all their state data inside a database and avoid maintaining any state data in memory. But this restriction also offers another important advantage: a HAF app can easily recover from system crashes and power outages since all its state data is kept in non-volatile storage. It is expected that HAF servers will typically store any performance-critical data on high-speed storage such as NVME drives, so this restriction should pose no problems for overall app performance.
+
+## Creating HAF apps that perform undo-able actions
+
+Some HAF apps may need to perform actions that can’t be undone. For example, a game might make a blockchain-based payout to a winner in the game. Once the payout transaction is broadcast, the game may not be able retract such a payment if a blockchain fork occurs. 
+
+There’s two straightforward ways that a HAF app can manage the processing of undo-able actions: 1) a HAF app can be configured so that it only receives block data that can’t be reverted or 2) the HAF app can receive current block data like a regular HAF app, but it can have a scheduling system where all actions like payouts that can’t be undone are placed into a holding area, and only performed after the block which triggered the actions become irreversible. 
+
+Option 1 is the easiest method to program, of course, and this will probably be the most suitable method for designing financial apps, but option 2 may be useful for apps like games that require faster real-time response to user actions.
+
+# Anatomy of a HAF app
+
+Most HAF apps will be divided into a backend component that contains the business logic and a frontend component that manages user interaction.
+
+The backend processes blockchain data, modifies the app’s internal state data, and provides an app-specific API to the frontend for reading that state data. The backend is the component that talks to the hive fork manager and to the HAF database in general. 
+
+Backends will typically be coded as a combination of SQL stored procedures plus any language that supports a SQL binding. We have created example HAF apps written in pure SQL, SQL plus Python, and SQL plus C++. [Here is a very simple pure SQL example including a frontend UI.](https://gitlab.syncad.com/hive/balance_tracker/-/tree/develop) [Some small SQL/python example backends are located inside the HAF repo itself.](https://gitlab.syncad.com/hive/haf/-/tree/develop/src/hive_fork_manager/doc/applications)
+
+The frontend (typically a web application, but can also be a desktop GUI app) formats and displays app state data to the user and allows the user to construct and sign transactions related to the app. For example, the frontend for the aforementioned social media app would allow a user to create and sign blockchain transactions to create and vote on posts. 
+
+The frontend communicates with the backend component to get state data, and it broadcasts user transactions to a blockchain node to get the transactions included into the blockchain. Once the transactions get included into the blockchain, the backend can then update its internal state based on the new transactions.
+
+# First step BEFORE creating your first HAF app
+
+Before you begin creating your own HAF app, I strongly recommend setting up a HAF server with some of the existing HAF apps, then reviewing the example apps to see some of the options you have in creating your own HAF app.
+
+## Recommended hardware for a general purpose HAF server
+
+
+At Hive’s current block height of 60M+ blocks, a general purpose HAF database capable of running all HAF apps takes up about 2.7TB of storage before accounting for storage consumed by app-specific data. So, at a bare minimum, you will want at least 4TB of storage for a general purpose HAF server. 
+
+Note that it will soon be possible to setup app-specific HAF servers that have much smaller storage requirements, but when first learning about HAF you will need a general purpose HAF server to experiment with the example apps. 
+
+You will also want this storage to be fast to allow for faster initial filling of your HAF database, so with currently available hardware, my recommendation is to use 2 or 3 striped 2TB NVME drives configured as a 4TB or 6TB drive.
+
+## Setting up a HAF server
+
+HAF servers get their blockchain data from a hived node. For maximum performance, it is best if the hived node is running on the same computer as your HAF server.
+
+The easiest way to setup a HAF server is to start with a clean Ubuntu 20 system and follow the steps below (more options are possible, I’m just showing the simple one). For these steps, I’m assuming you are logged into an account that has sudoer privileges and default privileges to write to your “bad and fast” drive.
+```
+1. cd to a directory on your “big and fast” drive where you want to store your HAF database
+2. git clone https://gitlab.syncad.com/hive/haf.git 
+2. cd haf
+3. git checkout develop
+4. ./scripts/setup_haf_instance.sh (note you may wish to use the –help option first to see useful options to optimally configure your HAF server on your particular computer)
+```
+
+The setup script above will install postgres 12 if it is not already installed, configures a HAF database in a tablespace on the big/fast drive, creates all database roles needed to administer your HAF database, and sets up and launches a hived node process that will begin feeding data to your HAF database.
+
+### Faster setup with an existing block_log file
+
+It can take quite a while to sync a hived node via the p2p network from scratch, so if you’re already familiar with setting up a hived node, you will probably want to create a hived datadir with a config.ini file that includes configuration of the sql_serializer plugin and a blockchain subdirectory, copy a trusted block_log file into the blockchain directory that contains a recent list of blocks, then run the setup script as follows instead of using step 4 above:
+
+```
+alternate step 4. ./scripts/setup_haf_instance.sh –hived-data-dir=/my_fast_storage/.hived –hived-option=--force-replay
+```
+
+A replay of an existing block_log takes about 10 hours on one of our fast computers (fast here means a fast multi-core CPU and fast disk storage). 
+
+Next the hived node will enter p2p sync and grab any new blocks that were created since your block_log was created. Unless your block_log is old, this should only take a few minutes. 
+
+Once your hived node has finished p2p sync and reached the head block of the chain, it will create additional indexes for the HAF database tables to allow apps to efficiently search the database. This process takes about 3 hours on a fast system at the current block height of 60M blocks. 
+
+After these indexes are created, it will fetch and process blocks that were generated while the indexes were created until it reaches the head block. Once it reaches the head block, hived will display “LIVE SYNC” messages on its console to indicate that it is processing new blocks as soon as they are generated by the  Hive network. 
+
+After hived enters live sync, any HAF apps that you may have configured on your server will begin to process the accumulated blocks of the blockchain, until they too are caught up to the head block and can enter their own livesync mode. Note: HAF apps don’t begin processing blockchain data before the HAF table indexes are added by the sql_serializer, because app queries would be too slow without these indexes.
+
+Note we’re still planning some tweaks to the scripts that deploy a HAF server (for example, I want to add a command-line option to automatically download trusted block_log files and indexes). I also to improve the scripts so that they can be downloaded without requiring a git clone of HAF as a first step (with the current process, the HAF server ends up with a top-level haf directory that is just used to run the scripts and a “real” haf directory that it builds and runs with).
+
+## Setting up a HAF app
+
+New HAF apps can be added to a general purpose HAF server at any time. A new app will begin by processing all the old blocks stored in the server, then enter live sync mode and begin processing new blocks one-by-one. 
+
+It is often useful to design your HAF app to be able to operate in a “massive sync” mode where it can process transactions from more than one old block simultaneously to reach live sync state faster. 
+
+The balance_tracker application is one example of a HAF app that has a massive-sync mode. To setup the balance tracker app on your HAF server:
+
+1. git clone https://gitlab.syncad.com/hive/balance_tracker.git
+2. Follow installation instructions in repo’s README.md file
+
+## Inspecting your HAF database and trying sample SQL queries
+
+Once your hived node enters live sync mode, you should probably login into your haf database (the script uses haf_block_log as the default name for this database) and get familiar with the “hive” schema views that organize the raw blockchain data. You can do this with the psql command-line tool (e.g. `psql -d haf_block_log` followed by commands such as `\dv+ hive.*` to see the available views of the data and `\dS+ hive.accounts_view` to see the structure of a view) or with web-based tools that connect to a postgres server such as [pgadmin](https://www.pgadmin.org/), [adminer](https://www.adminer.org/), etc. You can also begin to experiment in these tools with SQL queries of the views that your app might use to get blockchain data.
+
+# Reading the docs for HAF app design
+
+As mentioned previously, a HAF app interacts with the HAF database via the hive_fork_manager. Details of how to design HAF apps and how HAF apps interact with the hive_fork_manager can be found in: https://gitlab.syncad.com/hive/haf/-/blob/develop/src/hive_fork_manager/Readme.md
+
+Currently this document probably contains too much “internal information” about how the hive_fork_manager itself works. Despite that, I still recommend reading all of it, but apps designers should mainly focus on the parts of this document that discuss actual app design.</div>
+<script crossorigin="anonymous" integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=" src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+
+<script src="https://unpkg.com/steem-content-renderer"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/hive-content-renderer/dist/hive-content-renderer.min.js"></script> -->
+<script>
+  $(document).ready(function() {
+    try {
+      const renderer = new SteemContentRenderer.DefaultRenderer({
+      // const renderer = new HiveContentRenderer({
+        baseUrl: "https://hive.blog/",
+        breaks: true,
+        skipSanitization: false,
+        allowInsecureScriptTags: false,
+        addNofollowToLinks: true,
+        doNotShowImages: false,
+        ipfsPrefix: "",
+        assetsWidth: 640,
+        assetsHeight: 480,
+        imageProxyFn: (url) => url,
+        usertagUrlFn: (account) => "/@blocktrades",
+        hashtagUrlFn: (hashtag) => "/a-developer-s-introduction-to-the-hive-application-framework",
+        isLinkSafeFn: (url) => true,
+      });
+      
+      const inputElem = $('#content-blocktrades-a-developer-s-introduction-to-the-hive-application-framework').html();
+      const outputElem = $('#content-blocktrades-a-developer-s-introduction-to-the-hive-application-framework');
+      const output = renderer.render(inputElem);
+      
+      outputElem.html(output);
+    } catch(e) {
+      console.log(e);
+    }
+  });
+</script>
+
+<style>
+  #content-blocktrades-a-developer-s-introduction-to-the-hive-application-framework {
+    padding: 0 3rem;
+    color: #444444;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.8;
+    text-shadow: 0 1px 0 #ffffff;
+    padding: 0.5rem;
+  }
+  #content-blocktrades-a-developer-s-introduction-to-the-hive-application-framework code {
+    background: white;
+  }
+  #content-blocktrades-a-developer-s-introduction-to-the-hive-application-framework a {
+    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
+  }
+  #content-blocktrades-a-developer-s-introduction-to-the-hive-application-framework a:hover {
+    border-bottom: 0;
+  }
+  #content-blocktrades-a-developer-s-introduction-to-the-hive-application-framework h1 {
+    font-size: 2.2em;
+  }
+  #content-blocktrades-a-developer-s-introduction-to-the-hive-application-framework h2, h3, h4, h5 {
+    margin-bottom: 0;
+  }
+  #content-blocktrades-a-developer-s-introduction-to-the-hive-application-framework header small {
+    color: #999;
+    font-size: 50%;
+  }
+  #content-blocktrades-a-developer-s-introduction-to-the-hive-application-framework img {
+    max-width: 100%;
+  }
+</style>
+
+<hr />
+
+<p>
+  See: <a href="https://hive.blog/hive-139531/@blocktrades/a-developer-s-introduction-to-the-hive-application-framework">A developer’s introduction to the Hive Application Framework</a>
+  by
+  <a href="https://hive.blog/@blocktrades">@blocktrades</a>
+</p>
+
+
+  </div><a class="u-url" href="/howto/haf/2022/02/09/a-developer-s-introduction-to-the-hive-application-framework.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading"><a rel="author" href="/">Hive Chain Documentation</a></h2>
+    
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">site curated by: @inertia</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>Your resource for various levels of Hive Documentation.</p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+</body>
+
+</html>
