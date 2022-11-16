@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta property="og:image" content="/assets/images/sticker.png" />
+  <meta name="apple-mobile-web-app-title" content="Hive Docs" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" /><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>How to build and run a hive node - witness/seed/consensus and account history nodes | Hive Chain Documentation</title>
+<meta name="generator" content="Jekyll v4.2.2" />
+<meta property="og:title" content="How to build and run a hive node - witness/seed/consensus and account history nodes" />
+<meta name="author" content="mahdiyari" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="A guide for building hived node on ubuntu from scratch. This guide covers witness, seed, and account history node." />
+<meta property="og:description" content="A guide for building hived node on ubuntu from scratch. This guide covers witness, seed, and account history node." />
+<link rel="canonical" href="https://peakd.com/hive-139531/@mahdiyari/how-to-build-and-run-a-hive-node-witnessseedconsensus-and-account-history-nodes" />
+<meta property="og:url" content="https://peakd.com/hive-139531/@mahdiyari/how-to-build-and-run-a-hive-node-witnessseedconsensus-and-account-history-nodes" />
+<meta property="og:site_name" content="Hive Chain Documentation" />
+<meta property="og:image" content="https://files.peakd.com/file/peakd-hive/mahdiyari/23vhTijKR5KkPV6ed3kJResajUvnSbCuX9GGUatFA1Sffbs7aJmbLdSvhxtD8mRoB8wdn.jpg" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2022-06-14T03:03:21-07:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="https://files.peakd.com/file/peakd-hive/mahdiyari/23vhTijKR5KkPV6ed3kJResajUvnSbCuX9GGUatFA1Sffbs7aJmbLdSvhxtD8mRoB8wdn.jpg" />
+<meta property="twitter:title" content="How to build and run a hive node - witness/seed/consensus and account history nodes" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"mahdiyari"},"dateModified":"2022-06-14T03:03:21-07:00","datePublished":"2022-06-14T03:03:21-07:00","description":"A guide for building hived node on ubuntu from scratch. This guide covers witness, seed, and account history node.","headline":"How to build and run a hive node - witness/seed/consensus and account history nodes","image":"https://files.peakd.com/file/peakd-hive/mahdiyari/23vhTijKR5KkPV6ed3kJResajUvnSbCuX9GGUatFA1Sffbs7aJmbLdSvhxtD8mRoB8wdn.jpg","mainEntityOfPage":{"@type":"WebPage","@id":"https://peakd.com/hive-139531/@mahdiyari/how-to-build-and-run-a-hive-node-witnessseedconsensus-and-account-history-nodes"},"url":"https://peakd.com/hive-139531/@mahdiyari/how-to-build-and-run-a-hive-node-witnessseedconsensus-and-account-history-nodes"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://hivedocs.info/feed.xml" title="Hive Chain Documentation" /><script>
+if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNotTrack === "yes" || navigator.msDoNotTrack === "1")) {
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-161692811-1', 'auto');
+  ga('send', 'pageview');
+}
+</script>
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+  
+  <!-- jQuery Modal -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.css" />
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/turbolinks/5.2.0/turbolinks.js" integrity="sha256-iM4Yzi/zLj/IshPWMC1IluRxTtRjMqjPGd97TZ9yYpU=" crossorigin="anonymous"></script>
+  <script src='https://unpkg.com/steem-content-renderer'></script>
+  <script>
+    (function () {
+      if (Turbolinks.supported) {
+        Turbolinks.setProgressBarDelay(500);
+      }
+    })();
+  </script>
+  <script src="/assets/javascript/universal-bridge-against-phishing.js"></script>
+  <script src="/assets/javascript/lazysizes.min.js" async=""></script>
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css?family=Cousine|Inconsolata" rel="stylesheet" />
+  <link rel="shortcut icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="152x152" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="167x167" href="/assets/images/favicon-80x80.png" />
+</head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Hive Chain Documentation</a>
+
+      <nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/news/">News</a><a class="page-link" href="/howto/">How To</a><a class="page-link" href="/links/">Useful Links</a><a class="page-link" href="/authors/">Authors</a><!-- HTML elements for search -->
+          <input type="text" id="search-input" placeholder="Search" />
+          
+          <ul id="results-container"></ul>
+
+          <script src="/assets/javascript/search.js"></script>
+          <script>
+            var sjs = SimpleJekyllSearch({
+              searchInput: document.getElementById('search-input'),
+              resultsContainer: document.getElementById('results-container'),
+              json: '/search.json'
+            })
+          </script>
+          <!-- <form style="float: right;" class="form-inline" method="get" action="http://www.google.com/search">
+            <input type="hidden" name="sitesearch" value="hivedocs.info" />
+            <input type="text" name="q" maxlength="255" placeholder="Search" />
+          </form> -->
+          
+          <!-- <a href="#" onclick="try { $('#authors-container').slideToggle(); } catch { document.getElementById('authors-container').style.display = 'block'; }; return false;">Authors &#187;</a>
+          <a href="#" onclick="try { $('#topics-container').slideToggle(); } catch { document.getElementById('topics-container').style.display = 'block'; }; return false;">Topics &#187;</a> -->
+          
+          <a href="#topics-container" rel="modal:open">Topics &#187;</a>
+          
+          <div id="topics-container" class="modal">
+            <h3>Topics</h3>
+            <ul><li><a class="page-link" href="/account-recovery/"><nobr>Account Recovery</nobr></a></li><li><a class="page-link" href="/core-development/"><nobr>Core Development</nobr></a></li><li><a class="page-link" href="/dapps/"><nobr>Dapps</nobr></a></li><li><a class="page-link" href="/docker/"><nobr>Docker</nobr></a></li><li><a class="page-link" href="/hardfork/"><nobr>Hardfork</nobr></a></li><li><a class="page-link" href="/hivemind/"><nobr>Hivemind</nobr></a></li><li><a class="page-link" href="/javascript/"><nobr>Javascript</nobr></a></li><li><a class="page-link" href="/multisig/"><nobr>Multisig</nobr></a></li><li><a class="page-link" href="/python/"><nobr>Python</nobr></a></li><li><a class="page-link" href="/ruby/"><nobr>Ruby</nobr></a></li><li><a class="page-link" href="/testnet/"><nobr>Testnet</nobr></a></li><li><a class="page-link" href="/tools/"><nobr>Tools</nobr></a></li><li><a class="page-link" href="/witness/"><nobr>Witness</nobr></a></li></ul>
+          </div>
+        </div>
+      </nav>
+  </div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <div class="pull-right well">
+      <img src="https://images.hive.blog/u/mahdiyari/avatar" width="128" height="128" class="lazyload" />
+    </div>
+    
+    <h1 class="post-title p-name" itemprop="name headline">How to build and run a hive node - witness/seed/consensus and account history nodes</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2022-06-14T03:03:21-07:00" itemprop="datePublished">Jun 14, 2022
+      </time>• <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">
+          <a href="/authors/#author-mahdiyari">mahdiyari</a>
+        </span></span></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <div id="content-mahdiyari-how-to-build-and-run-a-hive-node-witnessseedconsensus-and-account-history-nodes"><center>
+![hive-node-build.jpg](https://files.peakd.com/file/peakd-hive/mahdiyari/23vhTijKR5KkPV6ed3kJResajUvnSbCuX9GGUatFA1Sffbs7aJmbLdSvhxtD8mRoB8wdn.jpg)
+</center>
+
+This guide is for building on Ubuntu. It should work on Ubuntu 20. It is not recommended to go with older versions. It is recommended to start with a fresh install.
+
+### System requirements
+
+Consensus/witness/seed node:
+- 1TB storage**
+- 32GB RAM*
+
+Account history node:
+<sub>Note: This type of node will be deprecated and replaced by HAFAH after the hard fork 26. But will still work.</sub>
+- 2TB storage**
+- 32GB RAM*
+
+*: The required RAM goes up over time
+**: The required storage goes up over time
+
+### Building
+Install dependencies:
+```
+sudo apt-get update
+
+sudo apt-get install git wget
+
+sudo apt-get install \
+    autoconf \
+    automake \
+    cmake \
+    g++ \
+    git \
+    zlib1g-dev \
+    libbz2-dev \
+    libsnappy-dev \
+    libssl-dev \
+    libtool \
+    make \
+    pkg-config \
+    doxygen \
+    libncurses5-dev \
+    libreadline-dev \
+    perl \
+    python3 \
+    python3-jinja2
+
+sudo apt-get install \
+    libboost-chrono-dev \
+    libboost-context-dev \
+    libboost-coroutine-dev \
+    libboost-date-time-dev \
+    libboost-filesystem-dev \
+    libboost-iostreams-dev \
+    libboost-locale-dev \
+    libboost-program-options-dev \
+    libboost-serialization-dev \
+    libboost-system-dev \
+    libboost-test-dev \
+    libboost-thread-dev
+```
+Clone the repository and select the version:
+```
+git clone https://gitlab.syncad.com/hive/hive
+cd hive
+git checkout v1.25.0
+git submodule update --init --recursive
+```
+We selected the tag `v1.25.0`. You can checkout `master` for the latest version but it's not recommended for the witness nodes. Because witnesses vote for a hard fork by running the version of that hard fork.
+This version will not work after hard fork 26.
+```
+mkdir build &amp;&amp; cd build
+cmake -DCMAKE_BUILD_TYPE=Release ..
+make -j$(nproc) hived
+make -j$(nproc) cli_wallet
+make install
+```
+<sub>In case the original repository is down, you can use the mirror at `https://gitlab.com/hiveblocks/hive`</sub>
+
+### Data directory
+Now you can make another folder as a data directory to hold block_log and the config file. I will use `/root/hive-data` directory.
+```
+cd /root
+mkdir hive-data
+hived -d /root/hive-data --dump-config
+```
+The above command will create the config file. We will edit that later depending on the type of node that we need.
+
+It is highly recommended to download `block_log` to speed up the sync/replay time. The one I linked below is hosted by the great wizard @gtg (make sure to vote him as a witness).
+```
+cd /root/hive-data/blockchain
+wget https://gtg.openhive.network/get/blockchain/block_log
+```
+After downloading the block_log, choose one of the configs from below and move on to the replay section.
+***
+### Seed node
+The config file is located at `hive-data/config.ini`.
+Edit the following parameters in the config file. Add them if they don't exist.
+```
+# Plugin(s) to enable, may be specified multiple times
+plugin = witness condenser_api network_broadcast_api database_api block_api
+# account_by_key is enabled by default - required to use 'get_witness' and 'get_account' in cli_wallet
+plugin = account_by_key account_by_key_api
+# required for creating and importing Hive 1.24+ State Snapshots
+plugin = state_snapshot
+
+shared-file-size = 30G
+shared-file-dir = /dev/shm/
+p2p-endpoint = 0.0.0.0:2001
+```
+The seed node will be open on port 2001.
+Ready to replay the node.
+***
+### Account history node
+The exact same config as the seed node but with additional config:
+```
+# open the port for RPC connections
+webserver-http-endpoint = 127.0.0.1:8091
+
+# edit depending on the load on the RPC node - 64-256 for high traffic
+webserver-thread-pool-size = 2
+
+# additional alongside the other plugins
+plugin = account_history_rocksdb account_history_api
+
+# The location of the rocksdb database for account history. By default it is $DATA_DIR/blockchain/account-history-rocksdb-storage
+account-history-rocksdb-path = "blockchain/account-history-rocksdb-storage"
+
+# optionally you can comment out this
+#p2p-endpoint = 0.0.0.0:2001
+```
+Ready to replay the node.
+
+***
+### Witness node
+
+To run cli_wallet in offline mode, you will need to build it from the `develop` branch instead of `v1.25.0` or `master`. Or just replay the node and then come back here and run the cli_wallet without -o.
+
+Run cli_wallet in offline mode and generate a pair of keys.
+```
+cli_wallet -o # important notes are above
+```
+Then
+```
+suggest_brain_key
+```
+You should get a pair of keys like this.
+```
+{
+  "brain_priv_key": "LOGIUM SPANNEL QUETCH LOOPIST NUTGALL LAMINAR PASMO SPRUE TEINDER ECHO WIVE AGREER LOON DIELIKE HIVE MERROW",
+  "wif_priv_key": "5HqrGLNrHVuKUHCW5VopRykStsek9WA4tWWhtcx9zjnSUHg38kX",
+  "pub_key": "STM8SqT7hHVyzuxkt6yVdUH6rzvCUDqAmaPLZx3UtSDTxPHRMNLFa"
+}
+```
+Copy both the private and public keys. We will add the public key to our witness account's signing key. And the private key will be added to the config file only to sign the blocks that we produce.
+
+The config file is located at `hive-data/config.ini`.
+Edit the following parameters in the config file. Add them if they don't exist.
+```
+# witness account - with double quotes
+witness= "username"
+# witness account's signing private key - NO double quotes
+private-key= 5HqrGLNrHVuKUHCW5VopRykStsek9WA4tWWhtcx9zjnSUHg38kX
+
+# Plugin(s) to enable, may be specified multiple times
+plugin = witness condenser_api network_broadcast_api database_api block_api
+# account_by_key is enabled by default - required to use 'get_witness' and 'get_account' in cli_wallet
+plugin = account_by_key account_by_key_api
+# required for creating and importing Hive 1.24+ State Snapshots
+plugin = state_snapshot
+
+shared-file-size = 30G
+shared-file-dir = /dev/shm/
+# open the ports for cli_wallet connections
+webserver-http-endpoint = 127.0.0.1:8091
+webserver-ws-endpoint = 127.0.0.1:8090
+
+# Remove the following if exists
+#p2p-endpoint = 0.0.0.0:2001
+```
+Replace the `witness` and `private_key` values with your username and the private key generated by cli_wallet.
+Ready to replay the node.
+
+*** Come back here after replaying. The guide is available under this section.
+
+After finishing the replay, you need to broadcast an operation on your witness account to add/edit the signing key on your account and enable production.
+We can use cli_wallet to do so but there are open source witness tools that can do the same thing. cli_wallet will connect to the local node that we are running.
+
+```
+cli_wallet
+# OR
+cli_wallet -s ws://127.0.0.1:8090
+```
+Add a password, unlock, and import your `active private key`.
+```
+set_password "mypoassword"
+unlock "mypassword"
+import_key 5jxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+```
+Edit the following operation before broadcasting:
+```
+update_witness "username" "https://hive.blog/witness-category/@username/my-witness-thread" "STMxxxxxxx" {"account_creation_fee":"3.000 HIVE","maximum_block_size":65536,"hbd_interest_rate":0} true
+```
+I think it is very clear what you need to edit. Your username, a link to post (or something similar), and signing public key (generated by cli_wallet).
+Note: If you take too long inside cli_wallet, it might time out and not broadcast the operation.
+
+After broadcasting, you can see the signing key at https://hiveblocks.com/@username under the "Authorities" tab on the left side.
+
+Your witness information will be visible on the witnesses lists only after producing a block.
+***
+
+### tmux/screen
+You will need screen or tmux to keep hived running. I prefer tmux.
+```
+sudo apt-get install tmux
+```
+A simple cheatsheet for tmux:
+```
+tmux # start a new session
+tmux attach # open the recently created session
+tmux ls # list all the active sessions
+tmux attach -t <target> # attach to a certain session
+
+# Commands while attached to a tmux session:
+ctrl+b, d # detach from session
+ctrl+d # end the session
+```
+### Replay
+First, adjust the size for /dev/shm on your machine:
+<sub>Note: This is where we hold the shared_memory.bin file. It is growing over time so keep an eye on it. /dev/shm is on RAM. You can edit the config file and choose another location for shared_memory on storage but it will greatly increase the time of replay.</sub>
+```
+sudo mount -o "remount,size=30G" /dev/shm
+```
+
+Depending on your CPU/RAM/storage speed, this will take a few hours. We open a tmux session by typing `tmux` and run the following command.
+```
+hived -d /root/hive-data --replay-blockchain
+```
+You can detach by `ctrl+b` then `d` and let it run in the background.
+You can `tmux attach` to attach and see the progress. Remember to not press `ctrl+c` inside the session, as it will terminate the hived.
+
+When the replay is done, you should see the newly produced blocks in your logs every 3 seconds.
+```
+2022-06-14T08:46:38.741642 p2p_plugin.cpp:187            handle_block         ] Got 47 transactions on block 65253208 by deathwing -- Block Time Offset: -258 ms
+2022-06-14T08:46:41.789187 p2p_plugin.cpp:187            handle_block         ] Got 64 transactions on block 65253209 by pharesim -- Block Time Offset: -210 ms
+2022-06-14T08:46:44.790889 p2p_plugin.cpp:187            handle_block         ] Got 56 transactions on block 65253210 by therealwolf -- Block Time Offset: -209 ms
+2022-06-14T08:46:47.749655 p2p_plugin.cpp:187            handle_block         ] Got 58 transactions on block 65253211 by blocktrades -- Block Time Offset: -250 ms
+2022-06-14T08:46:50.704510 p2p_plugin.cpp:187            handle_block         ] Got 70 transactions on block 65253212 by stoodkev -- Block Time Offset: -295 ms
+2022-06-14T08:46:54.577980 p2p_plugin.cpp:187            handle_block         ] Got 49 transactions on block 65253213 by jesta -- Block Time Offset: 577 ms
+```
+***
+### Start/Stop
+After finishing the replay, you can just stop and start the node again.
+`ctrl+c` one time to gracefully stop the node
+`hived -d /root/hive-data` to start the node
+
+### Notes
+
+Note #1: If you reboot the system, you have to replay the node again. Because the `shared_memory.bin` file is located on the ram at `/dev/shm` and it will be removed on reboot. You can back up that file after gracefully closing the node before rebooting.
+
+Note #2: If you close the hived node forcefully, most likely you will have to replay the node again. You might need to redownload the block_log file too.
+
+Note #3: If your block_log file gets corrupted by forcefully closing the node or by a crash, instead of redownloading you can trim the end of the file by a few MB or GB and fix it using `wget -c https://gtg.openhive.network/get/blockchain/block_log`. This will only download the remaining end of the file.
+
+Note #4: You need to stop/start the node after editing the config.ini file for changes to take effect.
+
+Note #5: Make sure the time on your machine is in sync with an online source.
+
+Note #6: It is recommended to not share the IP of your witness node.
+***
+And 3 cute kittens as bonus content.
+<center>![cute-kittens.jpg](https://files.peakd.com/file/peakd-hive/mahdiyari/23uFTQiwv1EvaU8zFekrQPWrb5tDitR4n51cjR31K355adj1ndmtQzVrgyFKXo9n23XeT.jpg)</center>
+
+I read all the comments. Ask your questions or add anything that I missed in the post.&lt;/div&gt;
+<script crossorigin="anonymous" integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=" src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://unpkg.com/steem-content-renderer"></script>
+<!-- <script src="https://cdn.jsdelivr.net/npm/hive-content-renderer/dist/hive-content-renderer.min.js"></script> -->
+<script>
+  $(document).ready(function() {
+    try {
+      const renderer = new SteemContentRenderer.DefaultRenderer({
+      // const renderer = new HiveContentRenderer({
+        baseUrl: "https://hive.blog/",
+        breaks: true,
+        skipSanitization: false,
+        allowInsecureScriptTags: false,
+        addNofollowToLinks: true,
+        doNotShowImages: false,
+        ipfsPrefix: "",
+        assetsWidth: 640,
+        assetsHeight: 480,
+        imageProxyFn: (url) => url,
+        usertagUrlFn: (account) => "/@mahdiyari",
+        hashtagUrlFn: (hashtag) => "/how-to-build-and-run-a-hive-node-witnessseedconsensus-and-account-history-nodes",
+        isLinkSafeFn: (url) => true,
+      });
+      
+      const inputElem = $('#content-mahdiyari-how-to-build-and-run-a-hive-node-witnessseedconsensus-and-account-history-nodes').html();
+      const outputElem = $('#content-mahdiyari-how-to-build-and-run-a-hive-node-witnessseedconsensus-and-account-history-nodes');
+      const output = renderer.render(inputElem);
+      
+      outputElem.html(output);
+    } catch(e) {
+      console.log(e);
+    }
+  });
+</script>
+<style>
+  #content-mahdiyari-how-to-build-and-run-a-hive-node-witnessseedconsensus-and-account-history-nodes {
+    padding: 0 3rem;
+    color: #444444;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.8;
+    text-shadow: 0 1px 0 #ffffff;
+    padding: 0.5rem;
+  }
+  #content-mahdiyari-how-to-build-and-run-a-hive-node-witnessseedconsensus-and-account-history-nodes code {
+    background: white;
+  }
+  #content-mahdiyari-how-to-build-and-run-a-hive-node-witnessseedconsensus-and-account-history-nodes a {
+    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
+  }
+  #content-mahdiyari-how-to-build-and-run-a-hive-node-witnessseedconsensus-and-account-history-nodes a:hover {
+    border-bottom: 0;
+  }
+  #content-mahdiyari-how-to-build-and-run-a-hive-node-witnessseedconsensus-and-account-history-nodes h1 {
+    font-size: 2.2em;
+  }
+  #content-mahdiyari-how-to-build-and-run-a-hive-node-witnessseedconsensus-and-account-history-nodes h2, h3, h4, h5 {
+    margin-bottom: 0;
+  }
+  #content-mahdiyari-how-to-build-and-run-a-hive-node-witnessseedconsensus-and-account-history-nodes header small {
+    color: #999;
+    font-size: 50%;
+  }
+  #content-mahdiyari-how-to-build-and-run-a-hive-node-witnessseedconsensus-and-account-history-nodes img {
+    max-width: 100%;
+  }
+</style>
+
+<hr />
+<p>
+  See: <a href="https://peakd.com/hive-139531/@mahdiyari/how-to-build-and-run-a-hive-node-witnessseedconsensus-and-account-history-nodes">How to build and run a hive node - witness/seed/consensus and account history nodes</a>
+  by
+  <a href="https://hive.blog/@mahdiyari">@mahdiyari</a>
+</p>
+
+</target></div>
+
+  </div><a class="u-url" href="/howto/witness/node/2022/06/14/how-to-build-and-run-a-hive-node-witnessseedconsensus-and-account-history-nodes.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading"><a rel="author" href="/">Hive Chain Documentation</a></h2>
+    
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">site curated by: @inertia</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>Your resource for various levels of Hive Documentation.</p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+</body>
+
+</html>

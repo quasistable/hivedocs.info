@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta property="og:image" content="/assets/images/sticker.png" />
+  <meta name="apple-mobile-web-app-title" content="Hive Docs" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" /><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Direct RC delegation documentation | Hive Chain Documentation</title>
+<meta name="generator" content="Jekyll v4.2.2" />
+<meta property="og:title" content="Direct RC delegation documentation" />
+<meta name="author" content="howo" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Now while this is a basic example, I’ll dive into some more specifics." />
+<meta property="og:description" content="Now while this is a basic example, I’ll dive into some more specifics." />
+<link rel="canonical" href="https://peakd.com/rc/@howo/direct-rc-delegation-documentation" />
+<meta property="og:url" content="https://peakd.com/rc/@howo/direct-rc-delegation-documentation" />
+<meta property="og:site_name" content="Hive Chain Documentation" />
+<meta property="og:image" content="https://i.imgur.com/IWiqQAj.png" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2022-08-14T20:56:33-07:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="https://i.imgur.com/IWiqQAj.png" />
+<meta property="twitter:title" content="Direct RC delegation documentation" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"howo"},"dateModified":"2022-08-14T20:56:33-07:00","datePublished":"2022-08-14T20:56:33-07:00","description":"Now while this is a basic example, I’ll dive into some more specifics.","headline":"Direct RC delegation documentation","image":"https://i.imgur.com/IWiqQAj.png","mainEntityOfPage":{"@type":"WebPage","@id":"https://peakd.com/rc/@howo/direct-rc-delegation-documentation"},"url":"https://peakd.com/rc/@howo/direct-rc-delegation-documentation"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://hivedocs.info/feed.xml" title="Hive Chain Documentation" /><script>
+if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNotTrack === "yes" || navigator.msDoNotTrack === "1")) {
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-161692811-1', 'auto');
+  ga('send', 'pageview');
+}
+</script>
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+  
+  <!-- jQuery Modal -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.css" />
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/turbolinks/5.2.0/turbolinks.js" integrity="sha256-iM4Yzi/zLj/IshPWMC1IluRxTtRjMqjPGd97TZ9yYpU=" crossorigin="anonymous"></script>
+  <script src='https://unpkg.com/steem-content-renderer'></script>
+  <script>
+    (function () {
+      if (Turbolinks.supported) {
+        Turbolinks.setProgressBarDelay(500);
+      }
+    })();
+  </script>
+  <script src="/assets/javascript/universal-bridge-against-phishing.js"></script>
+  <script src="/assets/javascript/lazysizes.min.js" async=""></script>
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css?family=Cousine|Inconsolata" rel="stylesheet" />
+  <link rel="shortcut icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="152x152" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="167x167" href="/assets/images/favicon-80x80.png" />
+</head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Hive Chain Documentation</a>
+
+      <nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/news/">News</a><a class="page-link" href="/howto/">How To</a><a class="page-link" href="/links/">Useful Links</a><a class="page-link" href="/authors/">Authors</a><!-- HTML elements for search -->
+          <input type="text" id="search-input" placeholder="Search" />
+          
+          <ul id="results-container"></ul>
+
+          <script src="/assets/javascript/search.js"></script>
+          <script>
+            var sjs = SimpleJekyllSearch({
+              searchInput: document.getElementById('search-input'),
+              resultsContainer: document.getElementById('results-container'),
+              json: '/search.json'
+            })
+          </script>
+          <!-- <form style="float: right;" class="form-inline" method="get" action="http://www.google.com/search">
+            <input type="hidden" name="sitesearch" value="hivedocs.info" />
+            <input type="text" name="q" maxlength="255" placeholder="Search" />
+          </form> -->
+          
+          <!-- <a href="#" onclick="try { $('#authors-container').slideToggle(); } catch { document.getElementById('authors-container').style.display = 'block'; }; return false;">Authors &#187;</a>
+          <a href="#" onclick="try { $('#topics-container').slideToggle(); } catch { document.getElementById('topics-container').style.display = 'block'; }; return false;">Topics &#187;</a> -->
+          
+          <a href="#topics-container" rel="modal:open">Topics &#187;</a>
+          
+          <div id="topics-container" class="modal">
+            <h3>Topics</h3>
+            <ul><li><a class="page-link" href="/account-recovery/"><nobr>Account Recovery</nobr></a></li><li><a class="page-link" href="/core-development/"><nobr>Core Development</nobr></a></li><li><a class="page-link" href="/dapps/"><nobr>Dapps</nobr></a></li><li><a class="page-link" href="/docker/"><nobr>Docker</nobr></a></li><li><a class="page-link" href="/hardfork/"><nobr>Hardfork</nobr></a></li><li><a class="page-link" href="/hivemind/"><nobr>Hivemind</nobr></a></li><li><a class="page-link" href="/javascript/"><nobr>Javascript</nobr></a></li><li><a class="page-link" href="/multisig/"><nobr>Multisig</nobr></a></li><li><a class="page-link" href="/python/"><nobr>Python</nobr></a></li><li><a class="page-link" href="/ruby/"><nobr>Ruby</nobr></a></li><li><a class="page-link" href="/testnet/"><nobr>Testnet</nobr></a></li><li><a class="page-link" href="/tools/"><nobr>Tools</nobr></a></li><li><a class="page-link" href="/witness/"><nobr>Witness</nobr></a></li></ul>
+          </div>
+        </div>
+      </nav>
+  </div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <div class="pull-right well">
+      <img src="https://images.hive.blog/u/howo/avatar" width="128" height="128" class="lazyload" />
+    </div>
+    
+    <h1 class="post-title p-name" itemprop="name headline">Direct RC delegation documentation</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2022-08-14T20:56:33-07:00" itemprop="datePublished">Aug 14, 2022
+      </time>• <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">
+          <a href="/authors/#author-howo">howo</a>
+        </span></span></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <div id="content-howo-direct-rc-delegation-documentation"># Direct RC delegations 
+
+## Forewords:
+You may have heard about RC pools, direct RC delegations are **not** the same. RC pools got deprecated in favor of RC delegations. Although they are quite similar in name, their function is very different. If you're interested in the difference between the two see this post: https://peakd.com/rc/@howo/direct-rc-delegations-vs-rc-pools-and-tentative-direct-rc-delegations-spec
+
+## Direct RC delegations
+
+Direct RC delegations are the simplest version of RC delegation you can think of:
+Bob is out of RC, Alice has 200 RC, so she uses her posting key to delegate 100 RC to Bob. Bob now has 100 rc that he is free to use.
+
+Now while this is a basic example, I'll dive into some more specifics.
+
+### Max RC vs RC
+
+It's important to differentiate between the two resources we are dealing with: ![](https://i.imgur.com/IWiqQAj.png)
+
+Here I have 77 million RC out of 87 million **max** RC. When a user executes a direct RC delegation, they delegate **max** RC. This has two effects:
+- Once spent, the delegated RC will regenerate on the delegatee's account
+- Delegating RC will increase the amount of RC you regenerate. The more max RC you have the more you regenerate RC over time, in theory you could delegate 100 million RC on someone with 10k RC to make him regenerate his RC much more quickly and then undelegate. (Although this is unpractical due to the fact that undelegating burns unspent RC).
+
+### Constraints &amp; details
+
+- You cannot delegate delegated RC, this is to avoid expensive chain computations.
+- You delegate max RC **and** RC, so you can't do a delegation when you are out of RC.
+- When undelegating, the delegator only gets his max RC back, all unspent RC is burned. The delegator will regenerate the RC over time.
+- Delegating is done over `custom_json` and requires posting authority (more on that later)
+- You can delegate to as many accounts as you want.
+- You can't delegate all your RC (and end up with 0 RC), you have to always keep the RC equivalent of the account creation fee (3 HIVE as the time of writing).
+- You can delegate up to 100 accounts in a single operation.
+
+### RC reserve
+
+When an account is created, the `account_creation_fee` is burned (as the time of writing, 3 HIVE), that amount is converted in RC, this is why even 0 HP account have some RC. (this is also true for accounts created with account creation tokens).
+
+This "RC reserve" is not delegatable, this is to prevent a bad actor from delegating all your RC away effectively soft-locking your account.
+
+## RC delegations in action
+
+There is only one operation used for everything. `delegate_rc` the operations is sent in the form a custom json, here's an example where `howo` delegates 100 max RC to `alice`.
+
+```
+{
+  "id": "rc",
+  "json": [
+    "delegate_rc",
+    {
+      "from": "howo",
+      "delegatees": [
+        "alice"
+      ],
+      "max_rc": 100
+    }
+  ]
+}
+```
+
+I will be basing the rest of this guide using hive-js, all the examples, also note that all the keys in this example are from a testnet, they are worthless.
+
+### Creating an RC delegation
+
+The parameters are pretty straightforward:
+
+from: Person who delegates the max RC
+`delegatees`: array of account names that you want to delegate to (max 100)
+`max_rc`: max RC amount you want to delegate.
+
+```
+function delegate_rc(delegator, posting_key, delegatees, max_rc) {
+    return new Promise(resolve =&gt; {
+        const json = JSON.stringify(['delegate_rc', {
+            from: delegator,
+            delegatees: delegatees,
+            max_rc: max_rc,
+        }]);
+
+        hive.broadcast.customJson(posting_key, [], [delegator], 'rc', json, function (err, result) {
+            resolve(err)
+        });
+    });
+}
+```
+
+### Updating a delegation
+
+Updating a delegation is done with the same operation, just input a different max RC amount and the delegation will be increased/reduced.
+
+Keep in mind that if you reduce the delegation, the max RC will come back to you but the RC will be burned.
+
+### Deleting a delegation 
+
+Deleting a delegation is done by calling delegate_rc with `max_rc` set to 0.
+
+### Getting RC from an account
+
+This api endpoint has existed since HF20 but has been updated with RC delegations, it's simply called by passing in an array of accounts
+
+```
+function get_rc(accounts) {
+    return new Promise(resolve =&gt; {
+        hive.api.call('rc_api.find_rc_accounts', {accounts: accounts}, function (err, result) {
+            return resolve(result)
+        })
+    });
+}
+async function main() {
+    let rc_accounts = await get_rc(["initminer", "miners"])
+}
+```
+
+output is an array of `rc_account` objects, note the new fields: `delegated_rc` and `received_delegated_rc`
+
+```
+[
+  {
+    "account": "initminer",
+    "rc_manabar": {
+      "current_mana": 3153959569,
+      "last_update_time": 1660535262
+    },
+    "max_rc_creation_adjustment": {
+      "amount": "2020748973",
+      "precision": 6,
+      "nai": "@@000000037"
+    },
+    "max_rc": 3153959569,
+    "delegated_rc": 150,
+    "received_delegated_rc": 0
+  },
+  {
+    "account": "miners",
+    "rc_manabar": {
+      "current_mana": 2020748983,
+      "last_update_time": 1660535259
+    },
+    "max_rc_creation_adjustment": {
+      "amount": "2020748973",
+      "precision": 6,
+      "nai": "@@000000037"
+    },
+    "max_rc": 2020748983,
+    "delegated_rc": 0,
+    "received_delegated_rc": 10
+  }
+]
+```
+
+### Listing RC accounts:
+
+If you don't have the full list, you can request the RC accounts:
+
+```
+function list_rc_accounts(start, limit) {
+    return new Promise(resolve =&gt; {
+        hive.api.call('rc_api.list_rc_accounts', {start:start, limit: limit}, function (err, result) {
+            return resolve(result)
+        })
+    });
+}
+
+async function main() {
+    let rc_accounts = await list_rc_accounts("initminer", 2)
+}
+```
+
+The ordering is alphabetical, so you input the start and how many users you want to fetch (limited to 1000) and there you go, think of it as pagination.
+If you reach the end of the 1000 and didn't find your account, put the last account as "start" and get the next 1000.
+
+### Listing all delegations
+
+So this is where it gets a tad tricky, the `start` param is an array.
+- The first element of the array is `from`, who is delegating
+- The second element of the array is `to`, who is delegated to
+
+The second parameter, `limit` is pretty self explanatory. it's limited to 1000 elements per query. 
+
+Both parameters are used for pagination.
+
+If you want to fetch a specific delegation, fill both `from` and `to`
+If you want to get all the delegations from an account, set `from` as the account and leave `to` as empty
+
+If you only input `from` and reach the end of `limit` (for instance if an account delegated more than 1000 users), you can continue by inputting the last delegatee in the `to` field.
+
+Here's a few examples:
+```
+function list_rc_direct_delegations(from, to, limit) {
+    return new Promise(resolve =&gt; {
+        hive.api.call('rc_api.list_rc_direct_delegations', {start:[from, to], limit: limit}, function (err, result) {
+            return resolve(result)
+        })
+    });
+}
+
+async function main() {
+    // List the first 100 delegations from initminer 
+    await list_rc_direct_delegations("initminer", "", 100)
+    // get the delegation from initminer to howo
+    await list_rc_direct_delegations("initminer", "howo", 1)
+    // List 100 delegations starting with the initminer -&gt; howo delegation
+    await list_rc_direct_delegations("initminer", "howo", 100)
+}
+```
+
+The output is an array of delegation objects:
+
+```
+[
+  {
+    "from": "initminer",
+    "to": "howo",
+    "delegated_rc": 70
+  },
+  {
+    "from": "initminer",
+    "to": "alice",
+    "delegated_rc": 70
+  }
+]
+```
+
+**Important** tidbit about the ordering, you may be confused that this list is not in alphabetical order, this is because under the hood, we index with account numbers, not account names.
+
+So the reason why `howo` comes up before `alice` in this testnet, is because if you look at the get_account api call:
+
+```
+[{
+    "id": 6,
+    "name": "howo",
+    ...
+  },{
+    "id": 7,
+    "name": "alice",
+    ....
+  }
+]
+```
+
+`alice`'s id is 7 and `howo`'s id is 6. If you want to get a bit more in depth, I talk about it in this issue (among other things): https://gitlab.syncad.com/hive/hive/-/issues/271
+
+Note that due to technical limitations, it's not possible to only input `to` and get all the inbound delegations, this has to be built on an L2 api (eg: HAF/hivemind/hiveSQL).
+
+# Conclusion
+
+I hope you found this documentation useful, if you want to check the direct RC delegation code yourself it's here: https://gitlab.syncad.com/hive/hive/-/merge_requests/245/diffs
+
+I'll be glad to answer any questions that come up in the comments and hope to see a lot of use for rc delegations once hard fork 26 hits !
+
+@howo
+
+![](https://i.imgur.com/oPJ63jA.png)
+<center><sup>You can vote for our witness directly using Hivesigner <a href="https://hivesigner.com/sign/account-witness-vote?witness=steempress&amp;approve=1">here</a>.</sup></center></div>
+<script crossorigin="anonymous" integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=" src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+
+<script src="https://unpkg.com/steem-content-renderer"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/hive-content-renderer/dist/hive-content-renderer.min.js"></script> -->
+<script>
+  $(document).ready(function() {
+    try {
+      const renderer = new SteemContentRenderer.DefaultRenderer({
+      // const renderer = new HiveContentRenderer({
+        baseUrl: "https://hive.blog/",
+        breaks: true,
+        skipSanitization: false,
+        allowInsecureScriptTags: false,
+        addNofollowToLinks: true,
+        doNotShowImages: false,
+        ipfsPrefix: "",
+        assetsWidth: 640,
+        assetsHeight: 480,
+        imageProxyFn: (url) => url,
+        usertagUrlFn: (account) => "/@howo",
+        hashtagUrlFn: (hashtag) => "/direct-rc-delegation-documentation",
+        isLinkSafeFn: (url) => true,
+      });
+      
+      const inputElem = $('#content-howo-direct-rc-delegation-documentation').html();
+      const outputElem = $('#content-howo-direct-rc-delegation-documentation');
+      const output = renderer.render(inputElem);
+      
+      outputElem.html(output);
+    } catch(e) {
+      console.log(e);
+    }
+  });
+</script>
+
+<style>
+  #content-howo-direct-rc-delegation-documentation {
+    padding: 0 3rem;
+    color: #444444;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.8;
+    text-shadow: 0 1px 0 #ffffff;
+    padding: 0.5rem;
+  }
+  #content-howo-direct-rc-delegation-documentation code {
+    background: white;
+  }
+  #content-howo-direct-rc-delegation-documentation a {
+    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
+  }
+  #content-howo-direct-rc-delegation-documentation a:hover {
+    border-bottom: 0;
+  }
+  #content-howo-direct-rc-delegation-documentation h1 {
+    font-size: 2.2em;
+  }
+  #content-howo-direct-rc-delegation-documentation h2, h3, h4, h5 {
+    margin-bottom: 0;
+  }
+  #content-howo-direct-rc-delegation-documentation header small {
+    color: #999;
+    font-size: 50%;
+  }
+  #content-howo-direct-rc-delegation-documentation img {
+    max-width: 100%;
+  }
+</style>
+
+<hr />
+
+<p>
+  See: <a href="https://peakd.com/rc/@howo/direct-rc-delegation-documentation">Direct RC delegation documentation</a>
+  by
+  <a href="https://hive.blog/@howo">@howo</a>
+</p>
+
+
+  </div><a class="u-url" href="/tools/rc/delegation/2022/08/14/direct-rc-delegation-documentation.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading"><a rel="author" href="/">Hive Chain Documentation</a></h2>
+    
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">site curated by: @inertia</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>Your resource for various levels of Hive Documentation.</p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+</body>
+
+</html>

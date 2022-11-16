@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta property="og:image" content="/assets/images/sticker.png" />
+  <meta name="apple-mobile-web-app-title" content="Hive Docs" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" /><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Preparing Hive Mirrornet (a.k.a. fakenet) for the release candidate testing | Hive Chain Documentation</title>
+<meta name="generator" content="Jekyll v4.2.2" />
+<meta property="og:title" content="Preparing Hive Mirrornet (a.k.a. fakenet) for the release candidate testing" />
+<meta name="author" content="gtg" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="I’ll use this post for on-chain coordination on the progress of its deployment." />
+<meta property="og:description" content="I’ll use this post for on-chain coordination on the progress of its deployment." />
+<link rel="canonical" href="https://hive.blog/hive-160391/@gtg/preparing-hive-mirrornet-a-k-a-fakenet-for-the-release-candidate-testing-wip" />
+<meta property="og:url" content="https://hive.blog/hive-160391/@gtg/preparing-hive-mirrornet-a-k-a-fakenet-for-the-release-candidate-testing-wip" />
+<meta property="og:site_name" content="Hive Chain Documentation" />
+<meta property="og:image" content="https://images.hive.blog/DQmeqQQWELKtRktXbyJxxXA1Moye54bXDcY59YrUeQsUxsx/hive-mirror.gif" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2022-08-05T12:04:45-07:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="https://images.hive.blog/DQmeqQQWELKtRktXbyJxxXA1Moye54bXDcY59YrUeQsUxsx/hive-mirror.gif" />
+<meta property="twitter:title" content="Preparing Hive Mirrornet (a.k.a. fakenet) for the release candidate testing" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"gtg"},"dateModified":"2022-08-05T12:04:45-07:00","datePublished":"2022-08-05T12:04:45-07:00","description":"I’ll use this post for on-chain coordination on the progress of its deployment.","headline":"Preparing Hive Mirrornet (a.k.a. fakenet) for the release candidate testing","image":"https://images.hive.blog/DQmeqQQWELKtRktXbyJxxXA1Moye54bXDcY59YrUeQsUxsx/hive-mirror.gif","mainEntityOfPage":{"@type":"WebPage","@id":"https://hive.blog/hive-160391/@gtg/preparing-hive-mirrornet-a-k-a-fakenet-for-the-release-candidate-testing-wip"},"url":"https://hive.blog/hive-160391/@gtg/preparing-hive-mirrornet-a-k-a-fakenet-for-the-release-candidate-testing-wip"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://hivedocs.info/feed.xml" title="Hive Chain Documentation" /><script>
+if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNotTrack === "yes" || navigator.msDoNotTrack === "1")) {
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-161692811-1', 'auto');
+  ga('send', 'pageview');
+}
+</script>
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+  
+  <!-- jQuery Modal -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.css" />
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/turbolinks/5.2.0/turbolinks.js" integrity="sha256-iM4Yzi/zLj/IshPWMC1IluRxTtRjMqjPGd97TZ9yYpU=" crossorigin="anonymous"></script>
+  <script src='https://unpkg.com/steem-content-renderer'></script>
+  <script>
+    (function () {
+      if (Turbolinks.supported) {
+        Turbolinks.setProgressBarDelay(500);
+      }
+    })();
+  </script>
+  <script src="/assets/javascript/universal-bridge-against-phishing.js"></script>
+  <script src="/assets/javascript/lazysizes.min.js" async=""></script>
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css?family=Cousine|Inconsolata" rel="stylesheet" />
+  <link rel="shortcut icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="152x152" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="167x167" href="/assets/images/favicon-80x80.png" />
+</head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Hive Chain Documentation</a>
+
+      <nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/news/">News</a><a class="page-link" href="/howto/">How To</a><a class="page-link" href="/links/">Useful Links</a><a class="page-link" href="/authors/">Authors</a><!-- HTML elements for search -->
+          <input type="text" id="search-input" placeholder="Search" />
+          
+          <ul id="results-container"></ul>
+
+          <script src="/assets/javascript/search.js"></script>
+          <script>
+            var sjs = SimpleJekyllSearch({
+              searchInput: document.getElementById('search-input'),
+              resultsContainer: document.getElementById('results-container'),
+              json: '/search.json'
+            })
+          </script>
+          <!-- <form style="float: right;" class="form-inline" method="get" action="http://www.google.com/search">
+            <input type="hidden" name="sitesearch" value="hivedocs.info" />
+            <input type="text" name="q" maxlength="255" placeholder="Search" />
+          </form> -->
+          
+          <!-- <a href="#" onclick="try { $('#authors-container').slideToggle(); } catch { document.getElementById('authors-container').style.display = 'block'; }; return false;">Authors &#187;</a>
+          <a href="#" onclick="try { $('#topics-container').slideToggle(); } catch { document.getElementById('topics-container').style.display = 'block'; }; return false;">Topics &#187;</a> -->
+          
+          <a href="#topics-container" rel="modal:open">Topics &#187;</a>
+          
+          <div id="topics-container" class="modal">
+            <h3>Topics</h3>
+            <ul><li><a class="page-link" href="/account-recovery/"><nobr>Account Recovery</nobr></a></li><li><a class="page-link" href="/core-development/"><nobr>Core Development</nobr></a></li><li><a class="page-link" href="/dapps/"><nobr>Dapps</nobr></a></li><li><a class="page-link" href="/docker/"><nobr>Docker</nobr></a></li><li><a class="page-link" href="/hardfork/"><nobr>Hardfork</nobr></a></li><li><a class="page-link" href="/hivemind/"><nobr>Hivemind</nobr></a></li><li><a class="page-link" href="/javascript/"><nobr>Javascript</nobr></a></li><li><a class="page-link" href="/multisig/"><nobr>Multisig</nobr></a></li><li><a class="page-link" href="/python/"><nobr>Python</nobr></a></li><li><a class="page-link" href="/ruby/"><nobr>Ruby</nobr></a></li><li><a class="page-link" href="/testnet/"><nobr>Testnet</nobr></a></li><li><a class="page-link" href="/tools/"><nobr>Tools</nobr></a></li><li><a class="page-link" href="/witness/"><nobr>Witness</nobr></a></li></ul>
+          </div>
+        </div>
+      </nav>
+  </div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <div class="pull-right well">
+      <img src="https://images.hive.blog/u/gtg/avatar" width="128" height="128" class="lazyload" />
+    </div>
+    
+    <h1 class="post-title p-name" itemprop="name headline">Preparing Hive Mirrornet (a.k.a. fakenet) for the release candidate testing</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2022-08-05T12:04:45-07:00" itemprop="datePublished">Aug 5, 2022
+      </time>• <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">
+          <a href="/authors/#author-gtg">gtg</a>
+        </span></span></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <div id="content-gtg-preparing-hive-mirrornet-a-k-a-fakenet-for-the-release-candidate-testing-wip"># Yet another Hive mirror instance
+I’ll use this post for on-chain coordination on the progress of its deployment.
+It will evolve for the next few days as the new instance of the mirror is brought to life.
+
+Three months ago I started the first public mirror net instance for Hive.
+There were three more instances running and it was of great help to all core devs involved in making Hive better. Now I’m in the process of updating it to the release candidate version for HF26.
+
+When?
+Soon<sup>(TM)</sup>.
+
+As you can see in my posts… I mean, by the lack of them, there’s a lot of work going on.
+
+# RTFM
+You can find some more info on the mirrornet (a.k.a. fakenet) in my
+[previous post](/@gtg/hive-mirrornet-a-k-a-fakenet-is-up-and-running)
+
+I strongly recommend you read it before doing anything that involves Hive Mirrornet.
+
+<center>![Hive Mirror](https://images.hive.blog/DQmeqQQWELKtRktXbyJxxXA1Moye54bXDcY59YrUeQsUxsx/hive-mirror.gif)
+<sup>Logo reveal video that I’ve featured in my previous post converted to a fancy animated GIF</sup></center>
+
+# Notes
+- ~~The "Recipe for Copy&amp;Paste Experts" will currently not work~~
+- Conversion process is time consuming and resource hungry (like everything that runs on such a huge amount of data), fortunately it needs to be done only once for the whole mirror. Other participants will just download the converted one.
+- To have a better idea about the amount of data, we are processing `629GB` of data, just getting md5 checksum for the input file could take a couple of minutes (on a regular HDD it might take more than an hour). With a 1Gbps network you will need roughly two hours to just download it.
+- I've used a trick to speed things up - knowing that there were no significant changes in the blockchain converter itself, I’m reusing converted `block_log` that was used for a previous instance of the mirror and resume feature so I could just convert blocks in range `66000000-66755355`. That saves us two days if the replay will succeed.
+- It wasn't possible to just replay previous instance because the gap between the blocks that was too big and caused unexpected issues. (In the real world scenario it is very unlikely for Hive to be stopped for more than 7 days!)
+- Sleeping is such a waste of time.
+- Replay on my node took unexpectedly long time so I used plan B (that is I borrowed @blocktrades resources) - before my node reached 50M blocks, I was able to move data there, do the replay, do the snapshot, get the snapshot back to my infrastructure, load it and start production).
+- Mirrornet (converted) `block_log` and binaries are already uploaded to my server (the usual place where you can get the useful Hive stuff from), so those who are willing to run their own nodes can start downloading it. Before you download it, I will have a snapshot ready.
+- The "Recipe for Copy&amp;Paste Experts" should work again (see my
+[previous post](/@gtg/hive-mirrornet-a-k-a-fakenet-is-up-and-running))
+- The original "Recipe for Copy&amp;Paste Experts" used `block_log.index` file instead of the new fancy `block_log.artifacts`, so those who would use that would have to recreate artifacts on their own. Now with the updated recipe it's downloaded which saves some time (assuming fast Internet connection). (IO+CPU) vs (Bandwidth) trade-off.
+- Please note, that if you want to build a `hived` binary yourself, you need to configure it properly to work with the mirror, i.e. with cmake's `-DHIVE_CONVERTER_BUILD=ON`.
+- New instance started, please make sure that you are using `hived` at `9b1e913acafd42ef1fe30e97310fa2dab8241ea7` or later, because otherwise you will fork out (due to witness schedule change)
+- Providing a fully functional Mirrornet API node is far more tricky than just running a bunch of consensus nodes, I already have an Account History node up, and Hivemind sync in progress. Once it's done I will be able to patch all the pieces together.
+
+# Changelog
+- Using current latest `develop` i.e. `5885515c2e99064213b3b2b33708ada28a8702e0`.
+- Using the current state of the mainnet, i.e. as the input for the converter.
+  - Mainnet uncompressed `block_log` at block `66755355`
+    - size `674947358456`
+    - md5 `0a686f863ab32cc8d6265b3c82384994`
+- Conversion started (incremental, see Notes above)
+- Conversion finished
+- Mirrornet compressed `block_log` at block `66755355`
+    - size `368370305268`
+    - md5 `0e7d66af3c757f1c71bb34b96ea3180e`
+- Production on Mirrornet started
+    - `Generated block #66755356 with timestamp 2022-08-06T06:39:09 at time 2022-08-06T06:39:09`
+- Mirrornet `block_log` and binaries uploaded  to https://gtg.openhive.network/get/testnet/mirror/
+- Updated `mirror-consensus-bootstrap` snapshot is now available.
+- Attached `config.ini` file that's compatible with the snapshot.
+- Updated original "Recipe for Copy&amp;Paste Experts" to include the `block_log.artifacts` file instead of the obsolete `block_log.index`.
+- Processing Mainnet transactions (through node based converter) starting at block `66866000` (that's 66840234 on the Mirrornet).
+- `HARDFORK 26 at block 66840644`
+- I've found some issues #350, #351, #352 related to different versions with different witness schedules, which forces me to reinitialize the whole Mirrornet.
+- New instance of the Mirrornet started, same `block_log` height as previous one, with `HIVE_HF26_TIME` unchanged.
+  - Using current latest develop i.e. `9b1e913acafd42ef1fe30e97310fa2dab8241ea7`
+- `HARDFORK 26 at block 66755388`
+- Processing Mainnet transactions (through node based converter) starting at block `66906969` (that's 66756449 on the Mirrornet).
+- Another node with extra validation was started.
+- Account history node that's needed for Hivemind was revived from the snapshot.
+- Hivemind sync from scratch survived replacing the AH node.
+- Apparently a bug in RocksDB based account history node requires an update, so replaced binaries with current latest develop i.e. `0ace05ebfbcdf8ac887e1ad5c5b2a2dcf082b5fd`
+
+# Work in progress...
+This post will be updated during the next few days until the mirror consensus will be fully functional and other participants could join it. That of course will include a "starter pack" to download and bootstrap your nodes. So please, pay attention, and then, once it's up and running, please participate.
+(That's a mirror so you will participate to some extent even if you don't know it ;-) )</div>
+<script crossorigin="anonymous" integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=" src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+
+<script src="https://unpkg.com/steem-content-renderer"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/hive-content-renderer/dist/hive-content-renderer.min.js"></script> -->
+<script>
+  $(document).ready(function() {
+    try {
+      const renderer = new SteemContentRenderer.DefaultRenderer({
+      // const renderer = new HiveContentRenderer({
+        baseUrl: "https://hive.blog/",
+        breaks: true,
+        skipSanitization: false,
+        allowInsecureScriptTags: false,
+        addNofollowToLinks: true,
+        doNotShowImages: false,
+        ipfsPrefix: "",
+        assetsWidth: 640,
+        assetsHeight: 480,
+        imageProxyFn: (url) => url,
+        usertagUrlFn: (account) => "/@gtg",
+        hashtagUrlFn: (hashtag) => "/preparing-hive-mirrornet-a-k-a-fakenet-for-the-release-candidate-testing-wip",
+        isLinkSafeFn: (url) => true,
+      });
+      
+      const inputElem = $('#content-gtg-preparing-hive-mirrornet-a-k-a-fakenet-for-the-release-candidate-testing-wip').html();
+      const outputElem = $('#content-gtg-preparing-hive-mirrornet-a-k-a-fakenet-for-the-release-candidate-testing-wip');
+      const output = renderer.render(inputElem);
+      
+      outputElem.html(output);
+    } catch(e) {
+      console.log(e);
+    }
+  });
+</script>
+
+<style>
+  #content-gtg-preparing-hive-mirrornet-a-k-a-fakenet-for-the-release-candidate-testing-wip {
+    padding: 0 3rem;
+    color: #444444;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.8;
+    text-shadow: 0 1px 0 #ffffff;
+    padding: 0.5rem;
+  }
+  #content-gtg-preparing-hive-mirrornet-a-k-a-fakenet-for-the-release-candidate-testing-wip code {
+    background: white;
+  }
+  #content-gtg-preparing-hive-mirrornet-a-k-a-fakenet-for-the-release-candidate-testing-wip a {
+    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
+  }
+  #content-gtg-preparing-hive-mirrornet-a-k-a-fakenet-for-the-release-candidate-testing-wip a:hover {
+    border-bottom: 0;
+  }
+  #content-gtg-preparing-hive-mirrornet-a-k-a-fakenet-for-the-release-candidate-testing-wip h1 {
+    font-size: 2.2em;
+  }
+  #content-gtg-preparing-hive-mirrornet-a-k-a-fakenet-for-the-release-candidate-testing-wip h2, h3, h4, h5 {
+    margin-bottom: 0;
+  }
+  #content-gtg-preparing-hive-mirrornet-a-k-a-fakenet-for-the-release-candidate-testing-wip header small {
+    color: #999;
+    font-size: 50%;
+  }
+  #content-gtg-preparing-hive-mirrornet-a-k-a-fakenet-for-the-release-candidate-testing-wip img {
+    max-width: 100%;
+  }
+</style>
+
+<hr />
+
+<p>
+  See: <a href="https://hive.blog/hive-160391/@gtg/preparing-hive-mirrornet-a-k-a-fakenet-for-the-release-candidate-testing-wip">Preparing Hive Mirrornet (a.k.a. fakenet) for the release candidate testing</a>
+  by
+  <a href="https://hive.blog/@gtg">@gtg</a>
+</p>
+
+
+  </div><a class="u-url" href="/howto/witness/testnet/2022/08/05/preparing-hive-mirrornet-a-k-a-fakenet-for-the-release-candidate-testing-wip.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading"><a rel="author" href="/">Hive Chain Documentation</a></h2>
+    
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">site curated by: @inertia</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>Your resource for various levels of Hive Documentation.</p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+</body>
+
+</html>

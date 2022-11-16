@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta property="og:image" content="/assets/images/sticker.png" />
+  <meta name="apple-mobile-web-app-title" content="Hive Docs" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" /><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Engine Light Node and Snapshot Update | Hive Chain Documentation</title>
+<meta name="generator" content="Jekyll v4.2.2" />
+<meta property="og:title" content="Engine Light Node and Snapshot Update" />
+<meta name="author" content="primersion" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="In this post I will be giving an update on how Hive-Engine light nodes are coming along and an update on a few other small changes." />
+<meta property="og:description" content="In this post I will be giving an update on how Hive-Engine light nodes are coming along and an update on a few other small changes." />
+<link rel="canonical" href="https://ecency.com/hive-169321/@primersion/engine-light-node-and-snapshot" />
+<meta property="og:url" content="https://ecency.com/hive-169321/@primersion/engine-light-node-and-snapshot" />
+<meta property="og:site_name" content="Hive Chain Documentation" />
+<meta property="og:image" content="https://images.ecency.com/DQmVDrrfKW3M5xtaLfwsXWDWyRXSt6AyTaEZfMfaqA6J5gQ/image.png" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2022-09-18T14:43:12-07:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="https://images.ecency.com/DQmVDrrfKW3M5xtaLfwsXWDWyRXSt6AyTaEZfMfaqA6J5gQ/image.png" />
+<meta property="twitter:title" content="Engine Light Node and Snapshot Update" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"primersion"},"dateModified":"2022-09-18T14:43:12-07:00","datePublished":"2022-09-18T14:43:12-07:00","description":"In this post I will be giving an update on how Hive-Engine light nodes are coming along and an update on a few other small changes.","headline":"Engine Light Node and Snapshot Update","image":"https://images.ecency.com/DQmVDrrfKW3M5xtaLfwsXWDWyRXSt6AyTaEZfMfaqA6J5gQ/image.png","mainEntityOfPage":{"@type":"WebPage","@id":"https://ecency.com/hive-169321/@primersion/engine-light-node-and-snapshot"},"url":"https://ecency.com/hive-169321/@primersion/engine-light-node-and-snapshot"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://hivedocs.info/feed.xml" title="Hive Chain Documentation" /><script>
+if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNotTrack === "yes" || navigator.msDoNotTrack === "1")) {
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-161692811-1', 'auto');
+  ga('send', 'pageview');
+}
+</script>
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+  
+  <!-- jQuery Modal -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.css" />
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/turbolinks/5.2.0/turbolinks.js" integrity="sha256-iM4Yzi/zLj/IshPWMC1IluRxTtRjMqjPGd97TZ9yYpU=" crossorigin="anonymous"></script>
+  <script src='https://unpkg.com/steem-content-renderer'></script>
+  <script>
+    (function () {
+      if (Turbolinks.supported) {
+        Turbolinks.setProgressBarDelay(500);
+      }
+    })();
+  </script>
+  <script src="/assets/javascript/universal-bridge-against-phishing.js"></script>
+  <script src="/assets/javascript/lazysizes.min.js" async=""></script>
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css?family=Cousine|Inconsolata" rel="stylesheet" />
+  <link rel="shortcut icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="152x152" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="167x167" href="/assets/images/favicon-80x80.png" />
+</head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Hive Chain Documentation</a>
+
+      <nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/news/">News</a><a class="page-link" href="/howto/">How To</a><a class="page-link" href="/links/">Useful Links</a><a class="page-link" href="/authors/">Authors</a><!-- HTML elements for search -->
+          <input type="text" id="search-input" placeholder="Search" />
+          
+          <ul id="results-container"></ul>
+
+          <script src="/assets/javascript/search.js"></script>
+          <script>
+            var sjs = SimpleJekyllSearch({
+              searchInput: document.getElementById('search-input'),
+              resultsContainer: document.getElementById('results-container'),
+              json: '/search.json'
+            })
+          </script>
+          <!-- <form style="float: right;" class="form-inline" method="get" action="http://www.google.com/search">
+            <input type="hidden" name="sitesearch" value="hivedocs.info" />
+            <input type="text" name="q" maxlength="255" placeholder="Search" />
+          </form> -->
+          
+          <!-- <a href="#" onclick="try { $('#authors-container').slideToggle(); } catch { document.getElementById('authors-container').style.display = 'block'; }; return false;">Authors &#187;</a>
+          <a href="#" onclick="try { $('#topics-container').slideToggle(); } catch { document.getElementById('topics-container').style.display = 'block'; }; return false;">Topics &#187;</a> -->
+          
+          <a href="#topics-container" rel="modal:open">Topics &#187;</a>
+          
+          <div id="topics-container" class="modal">
+            <h3>Topics</h3>
+            <ul><li><a class="page-link" href="/account-recovery/"><nobr>Account Recovery</nobr></a></li><li><a class="page-link" href="/core-development/"><nobr>Core Development</nobr></a></li><li><a class="page-link" href="/dapps/"><nobr>Dapps</nobr></a></li><li><a class="page-link" href="/docker/"><nobr>Docker</nobr></a></li><li><a class="page-link" href="/hardfork/"><nobr>Hardfork</nobr></a></li><li><a class="page-link" href="/hivemind/"><nobr>Hivemind</nobr></a></li><li><a class="page-link" href="/javascript/"><nobr>Javascript</nobr></a></li><li><a class="page-link" href="/multisig/"><nobr>Multisig</nobr></a></li><li><a class="page-link" href="/python/"><nobr>Python</nobr></a></li><li><a class="page-link" href="/ruby/"><nobr>Ruby</nobr></a></li><li><a class="page-link" href="/testnet/"><nobr>Testnet</nobr></a></li><li><a class="page-link" href="/tools/"><nobr>Tools</nobr></a></li><li><a class="page-link" href="/witness/"><nobr>Witness</nobr></a></li></ul>
+          </div>
+        </div>
+      </nav>
+  </div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <div class="pull-right well">
+      <img src="https://images.hive.blog/u/primersion/avatar" width="128" height="128" class="lazyload" />
+    </div>
+    
+    <h1 class="post-title p-name" itemprop="name headline">Engine Light Node and Snapshot Update</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2022-09-18T14:43:12-07:00" itemprop="datePublished">Sep 18, 2022
+      </time>• <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">
+          <a href="/authors/#author-primersion">primersion</a>
+        </span></span></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <div id="content-primersion-engine-light-node-and-snapshot">
+In my [last post over here](https://peakd.com/hiveengine/@primersion/hive-engine-light-nodes) I have proposed Hive-Engine light nodes. You are finding more information in the old post if you are wondering what that is.
+
+In this post I will be giving an update on how light nodes are coming along and a few other small changes.
+
+## Light nodes
+Since my last post, the light node PR has been approved by the engine team and was merged into the main repository. By the way the **engine github has switched to a new repository**, which you can find here https://github.com/hive-engine/hivesmartcontracts.
+
+There was a bit of a discussion at the start about light nodes, but they are coming along quite nicely now. We have fixed some minor issues and adapted a few things including the default `blocksToKeep`. It was rasied to `864000` blocks, equivalent to about 30 days of engine block history, that light nodes should keep.
+
+In the meantime there are already 18 running light node witnesses, 6 of them even in the top 20. In the long term the best would be to transition to 100% light nodes for engine witnesses, as the expenses of running a full node are too high compared to the rewards. The 30 day history should be sufficient for most use cases in my opinion.
+
+The capped block / transaction history is basically the only difference of light nodes, other than that they are equivalent to full nodes. The largest benefit is, that they drastically decrease storage size to ~12GB, compared to ~130GB for a full node. Also the snapshots are only 4.5GB compared to 57GB for full nodes.
+
+Talking of snapshots...
+
+## Light node snapshots
+In addition to the full node snapshots, I am now providing light node snapshots twice a day, which can be found over here https://snap.primersion.com/light.
+They are much smaller in size, which results in a much faster restoration time of about 30 minutes, compared to a few hours (~6?) for full nodes.
+
+## Restoration / setup script
+I have created another PR a few weeks ago, which adds a script for easily fixing broken (forked) engine node databases or setting them up from scratch.
+It can be found in the root directory of the repository (`restore_partial.js`) and the usage instructions can be found in the file:
+```
+/**
+ * Script for helping to restore / repair hive-engine node databases. The restore mode will simply drop the
+ * existing database and do a full restore.
+ * The repair mode will delete all invalid blocks / transactions and drop all other collections and restore the
+ * last valid state using a light node snapshot.
+ *
+ * These are the different modes:
+ * - FULL node:
+ *   - Restore by executing `node restore_partial.js`     (~30-60 minutes)
+ *   - Drop    by executing `node restore_partial.js -d -s https://snap.primersion.com/` (~6 hours)
+ * - LIGHT node:
+ *   - Drop    by executing `node restore_partial.js -d`  (~30-60 minutes)
+ *   - Restore is not supported as dropping is faster
+ * */
+```
+
+## HF26 beneficiary fix
+In HIVEs upcoming HF26 a breaking change for beneficiaries was introduced, which simply changed the structure of beneficiaries. This resulted in engine nodes forking all the time, as nodes syncing blocks from HF26 HIVE nodes were parsing beneficiaries wrongly. You can read more about the change in the PR over here if you are interested https://github.com/hive-engine/steemsmartcontracts/pull/153.
+The new beneficiary format now uses an object with `type` and `value` inside the `extensions` instead of an array e.g.:
+```
+"extensions": [
+    {
+      "type": "comment_payout_beneficiaries",
+      "value": {
+        "beneficiaries": [
+          {
+            "account": "alinares",
+            "weight": 300
+          },
+          {
+            "account": "hiveonboard",
+            "weight": 100
+          },
+          {
+            "account": "tipu",
+            "weight": 100
+          }]
+      }
+    }]
+}]
+],
+```
+
+## Other changes
+A few other changes were proposed and implemented by @rishi556 and @forykw, including:
+* Show `getStatus` result directly when accessing a node
+* Add support for NATed ports
+* Improve witness_action.js script
+* Add support for IPv6 nodes
+* Add additional configuration options for the RPC interface
+
+
+We are now at version 1.8.1 already, with more changes to come soon hopefully.
+
+![](https://images.ecency.com/DQmVDrrfKW3M5xtaLfwsXWDWyRXSt6AyTaEZfMfaqA6J5gQ/image.png)
+
+A lot has changed for the Hive / Engine monitoring site I am running as well, but more on that in my next post.
+</div>
+<script crossorigin="anonymous" integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=" src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+
+<script src="https://unpkg.com/steem-content-renderer"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/hive-content-renderer/dist/hive-content-renderer.min.js"></script> -->
+<script>
+  $(document).ready(function() {
+    try {
+      const renderer = new SteemContentRenderer.DefaultRenderer({
+      // const renderer = new HiveContentRenderer({
+        baseUrl: "https://hive.blog/",
+        breaks: true,
+        skipSanitization: false,
+        allowInsecureScriptTags: false,
+        addNofollowToLinks: true,
+        doNotShowImages: false,
+        ipfsPrefix: "",
+        assetsWidth: 640,
+        assetsHeight: 480,
+        imageProxyFn: (url) => url,
+        usertagUrlFn: (account) => "/@primersion",
+        hashtagUrlFn: (hashtag) => "/engine-light-node-and-snapshot",
+        isLinkSafeFn: (url) => true,
+      });
+      
+      const inputElem = $('#content-primersion-engine-light-node-and-snapshot').html();
+      const outputElem = $('#content-primersion-engine-light-node-and-snapshot');
+      const output = renderer.render(inputElem);
+      
+      outputElem.html(output);
+    } catch(e) {
+      console.log(e);
+    }
+  });
+</script>
+
+<style>
+  #content-primersion-engine-light-node-and-snapshot {
+    padding: 0 3rem;
+    color: #444444;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.8;
+    text-shadow: 0 1px 0 #ffffff;
+    padding: 0.5rem;
+  }
+  #content-primersion-engine-light-node-and-snapshot code {
+    background: white;
+  }
+  #content-primersion-engine-light-node-and-snapshot a {
+    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
+  }
+  #content-primersion-engine-light-node-and-snapshot a:hover {
+    border-bottom: 0;
+  }
+  #content-primersion-engine-light-node-and-snapshot h1 {
+    font-size: 2.2em;
+  }
+  #content-primersion-engine-light-node-and-snapshot h2, h3, h4, h5 {
+    margin-bottom: 0;
+  }
+  #content-primersion-engine-light-node-and-snapshot header small {
+    color: #999;
+    font-size: 50%;
+  }
+  #content-primersion-engine-light-node-and-snapshot img {
+    max-width: 100%;
+  }
+</style>
+
+<hr />
+
+<p>
+  See: <a href="https://ecency.com/hive-169321/@primersion/engine-light-node-and-snapshot">Engine Light Node and Snapshot Update</a>
+  by
+  <a href="https://hive.blog/@primersion">@primersion</a>
+</p>
+
+
+  </div><a class="u-url" href="/howto/hiveengine/nodes/2022/09/18/engine-light-node-and-snapshot.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading"><a rel="author" href="/">Hive Chain Documentation</a></h2>
+    
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">site curated by: @inertia</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>Your resource for various levels of Hive Documentation.</p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+</body>
+
+</html>
