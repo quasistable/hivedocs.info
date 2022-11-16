@@ -2,7 +2,7 @@
 layout: post
 author: blocktrades
 title: "10th update of 2022 on BlockTrades work on Hive software"
-description: ""
+description: "Below are a few highlights of the Hive-related programming issues worked on by the BlockTrades team since my last post."
 date: 2022-06-23 23:08:57 UTC
 categories: news core development
 canonical_url: https://hive.blog/hive-139531/@blocktrades/10th-update-of-2022-on-blocktrades-work-on-hive-software

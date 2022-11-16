@@ -2,7 +2,7 @@
 layout: post
 author: primersion
 title: "Hive-Engine Light Nodes"
-description: ""
+description: "The Hive Engine sidechain has been running for quite some time now and since its start a lot of new smart contracts were added."
 date: 2022-05-01 20:28:48 UTC
 categories: hiveengine engine hive witness community tools dev
 canonical_url: https://ecency.com/hiveengine/@primersion/hive-engine-light-nodes
