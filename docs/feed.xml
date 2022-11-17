@@ -1,4 +1,103 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.2">Jekyll</generator><link href="https://hivedocs.info/feed.xml" rel="self" type="application/atom+xml" /><link href="https://hivedocs.info/" rel="alternate" type="text/html" /><updated>2022-11-16T20:05:30-08:00</updated><id>https://hivedocs.info/feed.xml</id><title type="html">Hive Chain Documentation</title><subtitle>Your resource for various levels of Hive Documentation.</subtitle><author><name>site curated by: @inertia</name></author><entry><title type="html">Core dev meeting #42</title><link href="https://hivedocs.info/news/core/development/2022/11/07/core-dev-meeting-42.html" rel="alternate" type="text/html" title="Core dev meeting #42" /><published>2022-11-07T14:42:42-08:00</published><updated>2022-11-07T14:42:42-08:00</updated><id>https://hivedocs.info/news/core/development/2022/11/07/core-dev-meeting-42</id><content type="html" xml:base="https://hivedocs.info/news/core/development/2022/11/07/core-dev-meeting-42.html"><![CDATA[<div id="content-howo-core-dev-meeting-42">
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.2">Jekyll</generator><link href="https://hivedocs.info/feed.xml" rel="self" type="application/atom+xml" /><link href="https://hivedocs.info/" rel="alternate" type="text/html" /><updated>2022-11-16T20:57:45-08:00</updated><id>https://hivedocs.info/feed.xml</id><title type="html">Hive Chain Documentation</title><subtitle>Your resource for various levels of Hive Documentation.</subtitle><author><name>site curated by: @inertia</name></author><entry><title type="html">Hive Stream Updates: Version 2.0.5</title><link href="https://hivedocs.info/tools/nodejs/2022/11/16/hive-stream-updates-version-205.html" rel="alternate" type="text/html" title="Hive Stream Updates: Version 2.0.5" /><published>2022-11-16T06:22:03-08:00</published><updated>2022-11-16T06:22:03-08:00</updated><id>https://hivedocs.info/tools/nodejs/2022/11/16/hive-stream-updates-version-205</id><content type="html" xml:base="https://hivedocs.info/tools/nodejs/2022/11/16/hive-stream-updates-version-205.html"><![CDATA[<div id="content-beggars-hive-stream-updates-version-205">Version 2.0.5 of [Hive Stream](https://github.com/Vheissu/hive-stream) has been published, and with it comes quite a few improvements and refactoring work.
+
+![Beggars_A_bee_hive_on_a_stream_f81e2212-6e2f-4725-92cc-175102d19bd0.png](https://files.peakd.com/file/peakd-hive/beggars/AKGZiNjxyxfCrbkgFMA2BXvmjdhbV4WPAaFCYfh1ej8qwwiH6UqEu3KNuTLZ7R1.jpg)
+
+In version 2.0.5 (now published on Npm), the following changes have been made:
+
+- **REFACTOR:** There was an issue with the logic for catching up on blocks if you're behind. It was quite slow and clunky. More work needs to be done here to fetch published blocks faster, but it's a start.
+- **REFACTOR:** Refactored the database adapter abstraction logic. The previous implementation was clunky and wasn't a true abstraction. The contracts were referencing the database instance directly. These are now proper abstractions with a common interface to inherit from numerous database methods.
+- **FIX:** The test server has been fixed. This allows you to do a test run with Hive Stream (start at specific blocks and parse specific custom JSON)
+- **REFACTOR:** Updated dependencies in `package.json` to their latest versions. Most notably, Jest.
+- **FIX:** Fixed a bunch of broken tests and test case logic.
+- **REFACTOR:** Removed MongoDB in-memory store in favour of stubbing out and mocking the abstraction interfaces themselves.
+- **FIX:** Fixed a bug where strings were not being escaped in SQLite queries and causing the server to crash if you tried to visit 
+
+As you can see, this release was largely just fixing bugs and getting tests to work. The next release will feature increased code coverage and speed improvements, probably some more bug fixes, and the tests will grow and discover them.
+
+To install the latest version, run the following:
+
+`npm install hive-stream` to install the package.
+
+----
+
+Feedback, help or user contributions are always welcomed over on the [Hive Stream GitHub repository](https://github.com/Vheissu/hive-stream). Don't be shy if you see room for improvement or encounter an issue. Until next time.</div>
+<script crossorigin="anonymous" integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=" src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+
+<script src="https://unpkg.com/steem-content-renderer"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/hive-content-renderer/dist/hive-content-renderer.min.js"></script> -->
+<script>
+  $(document).ready(function() {
+    try {
+      const renderer = new SteemContentRenderer.DefaultRenderer({
+      // const renderer = new HiveContentRenderer({
+        baseUrl: "https://hive.blog/",
+        breaks: true,
+        skipSanitization: false,
+        allowInsecureScriptTags: false,
+        addNofollowToLinks: true,
+        doNotShowImages: false,
+        ipfsPrefix: "",
+        assetsWidth: 640,
+        assetsHeight: 480,
+        imageProxyFn: (url) => url,
+        usertagUrlFn: (account) => "/@beggars",
+        hashtagUrlFn: (hashtag) => "/hive-stream-updates-version-205",
+        isLinkSafeFn: (url) => true,
+      });
+      
+      const inputElem = $('#content-beggars-hive-stream-updates-version-205').html();
+      const outputElem = $('#content-beggars-hive-stream-updates-version-205');
+      const output = renderer.render(inputElem);
+      
+      outputElem.html(output);
+    } catch(e) {
+      console.log(e);
+    }
+  });
+</script>
+
+<style>
+  #content-beggars-hive-stream-updates-version-205 {
+    padding: 0 3rem;
+    color: #444444;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.8;
+    text-shadow: 0 1px 0 #ffffff;
+    padding: 0.5rem;
+  }
+  #content-beggars-hive-stream-updates-version-205 code {
+    background: white;
+  }
+  #content-beggars-hive-stream-updates-version-205 a {
+    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
+  }
+  #content-beggars-hive-stream-updates-version-205 a:hover {
+    border-bottom: 0;
+  }
+  #content-beggars-hive-stream-updates-version-205 h1 {
+    font-size: 2.2em;
+  }
+  #content-beggars-hive-stream-updates-version-205 h2, h3, h4, h5 {
+    margin-bottom: 0;
+  }
+  #content-beggars-hive-stream-updates-version-205 header small {
+    color: #999;
+    font-size: 50%;
+  }
+  #content-beggars-hive-stream-updates-version-205 img {
+    max-width: 100%;
+  }
+</style>
+
+<hr />
+
+<p>
+  See: <a href="https://peakd.com/hive-139531/@beggars/hive-stream-updates-version-205">Hive Stream Updates: Version 2.0.5</a>
+  by
+  <a href="https://hive.blog/@beggars">@beggars</a>
+</p>]]></content><author><name>beggars</name></author><category term="tools" /><category term="nodejs" /><summary type="html"><![CDATA[Version 2.0.5 of Hive Stream has been published, and with it comes quite a few improvements and refactoring work.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://files.peakd.com/file/peakd-hive/beggars/AKGZiNjxyxfCrbkgFMA2BXvmjdhbV4WPAaFCYfh1ej8qwwiH6UqEu3KNuTLZ7R1.jpg" /><media:content medium="image" url="https://files.peakd.com/file/peakd-hive/beggars/AKGZiNjxyxfCrbkgFMA2BXvmjdhbV4WPAaFCYfh1ej8qwwiH6UqEu3KNuTLZ7R1.jpg" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Core dev meeting #42</title><link href="https://hivedocs.info/news/core/development/2022/11/07/core-dev-meeting-42.html" rel="alternate" type="text/html" title="Core dev meeting #42" /><published>2022-11-07T14:42:42-08:00</published><updated>2022-11-07T14:42:42-08:00</updated><id>https://hivedocs.info/news/core/development/2022/11/07/core-dev-meeting-42</id><content type="html" xml:base="https://hivedocs.info/news/core/development/2022/11/07/core-dev-meeting-42.html"><![CDATA[<div id="content-howo-core-dev-meeting-42">
 ![social_hive_light.jpg](https://files.peakd.com/file/peakd-hive/howo/23wN2RDCNPLiYdw6WJdTT7vXKrdkPN9WGeQg69m15z27Bqj1yDiYS5bo2Dwn4DGHByM2C.jpg)
 
 Hello,
@@ -1431,207 +1530,4 @@ Let me know what you think about the changes above and if you have any other sug
   See: <a href="https://ecency.com/hive-169321/@primersion/rc-delegation-tool-update-rc">RC Delegation Tool Update + RC -&gt; HP calculation</a>
   by
   <a href="https://hive.blog/@primersion">@primersion</a>
-</p>]]></content><author><name>primersion</name></author><category term="tools" /><category term="rc" /><category term="delegation" /><summary type="html"><![CDATA[This post will explain the improvements and how to calculate the equivalent HP amount for your RC delegations.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://images.ecency.com/DQmcXEvn33Sph3AMpajUr46mCxbM4GZFKYupgof5aaHQnZQ/hivewp20.png" /><media:content medium="image" url="https://images.ecency.com/DQmcXEvn33Sph3AMpajUr46mCxbM4GZFKYupgof5aaHQnZQ/hivewp20.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Hive SQL - Hardfork 26 support</title><link href="https://hivedocs.info/news/sql/database/2022/10/15/hivesql-update-hf26.html" rel="alternate" type="text/html" title="Hive SQL - Hardfork 26 support" /><published>2022-10-15T09:57:57-07:00</published><updated>2022-10-15T09:57:57-07:00</updated><id>https://hivedocs.info/news/sql/database/2022/10/15/hivesql-update-hf26</id><content type="html" xml:base="https://hivedocs.info/news/sql/database/2022/10/15/hivesql-update-hf26.html"><![CDATA[<div id="content-arcange-hivesql-update-hf26">![](https://i.imgur.com/bzVnVHr.png)
-
-The hardfork 26 (codename Evolution) has been activated a few days ago as all top 20 witnesses are now running the v1.26 code on their nodes ([see here](https://hive.arcange.eu/witnesses)).
-
-My API servers have also been upgraded to the new code and are now providing HiveSQL with new data. 
-
-Thanks to the mirrornet, I have been able to prepare HiveSQL to fully support the new (virtual) operations now available with this new version.
-
-### What's new?
-
-While no new operations were added during this hardfork, this is not the case for virtual operations.
-
-As a reminder, Virtual Operations are operations resulting from the activity on the blockchain but, unlike classic operations, they are not initiated by users.
-
-And since hardfork 26, no less than 7 additional Virtual Operations are now available to better monitor what is happening in the blockchain.
-
-### New tables
-
-* **VOCollateralizedConvertImmediateConversion**
-
-|Column|Description|
-|-|-|
-|owner|The account requesting the conversion|
-|requestid|The request identifier|
-|hbd_out|Amount of HBD sent to the account|
-
-This virtual operation is triggered after a collateralized_convert operation is issued to convert HIVE to HBD. 
-
-Half of the HIVE amount is converted immediately into HBD (using the minimum witnesses price feed for the last 3.5 days) and sent to the owner.
-
-* **VODHFConversions**
-
-|Column|Description|
-|-|-|
-|treasury|The account of the DHF|
-|hive_amount_in|The amount of HIVE to convert|
-|hbd_amount_out|The amount of HBD generated|
-
-When a user transfer HIVE to the DHF account (hive.fund), the amount is immediately converted to HBD and this virtual operation is generated.
-
-This virtual operation is also generated during block processing every day during daily proposal maintenance.
-
-**Note:** a portion of the HIVE on the treasury balance is converted to HBD and thus increases the funds available for proposals.
-
-* **VODHFFundings**
-
-|Column|Description|
-|-|-|
-|treasury|The account of the DHF|
-|additional_funds|The amount of HIVE to convert|
-|additional_funds_symbol|HBD|
-
-This virtual operation is generated during block processing every proposal maintenance period.
-
-**Note:** while the DHF receives part of inflation every block, this virtual operation is generated only when there are proposal payouts.
-
-* **VOHardforks**
-
-|Column|Description|
-|-|-|
-|hardfork_id|Hardfork number|
-
-This virtual operation is generated during block processing every time new hardfork is activated.
-
-* **VOLimitOrderCancelleds**
-
-|Column|Description|
-|-|-|
-|seller||The account who created the order|
-|amount_back|The amount of the cancelled order|
-|additional_funds_symbol|HIVE or HBD|
-
-This virtual operation is generated every time an existing limit order is canceled. It happens on explicit call (first operation), or in the rare case of filling a limit order (second or third operation) when, after filling most of it, the remaining funds are too small (they would round to zero when sold).
-
-This virtual operation is also generated during block processing for orders that reached their expiration time without being filled.
-
-* **VOPowRewards**
-
-|Column|Description|
-|-|-|
-|worker|account mining a block|
-|reward|amount received |
-|reward_symbol|HIVE|
-
-This virtual operation occurs each time a block is produced. It contains the rewards that are given to witnesses (and previously miners) for their work.
-
-* **VOProducerMisseds**
-
-|Column|Description|
-|-|-|
-|producer|Name of the witness who missed a block|
-
-This virtual operation is generated during block processing when a witness failed to produce his block on time.
-
-* **VOProposalFees**
-
-|Column|Description|
-|-|-|
-|creator|Account creating a proposal|
-|treasury|The account of the DHF|
-|proposal_id|The proposal identifier|
-|fee|The amount paid for creating the proposal|
-|fee_symbol|HBD|
-
-This virtual operation is generated every time an account creates a new proposal.
-
----
-**Note:** Many of the above mentioned table may currently only contains no records or  only records from hardfork 26 and later. It is planned to perform a replay of the blockchain to re-inject data relating to previous events.
-
-## Documentation
-
-HiveSQL documentation has been updated and can be viewed at https://docs.hivesql.io
-
-## Support
-
-If you have any questions or remarks, support is provided on the [HiveSQL Discord Channel](https://discord.gg/kyEFDfT).
-
-Thank you.
-
----
-<center>
-
-### Check out my apps and services
-<a href="/hive/@hive.engage/stay-connected-with-your-hive-audience-and-catch-attention"><img src="https://i.imgur.com/GiNJqlm.png" /></a><a href="/@hivebuzz"><img src="https://i.imgur.com/B4UTun2.png" /></a><a href="/@hivesql"><img src="https://i.imgur.com/EPN8RW6.png" /></a><a href="/hive/@arcange/introducing-hive-account-recovery"><img src="https://i.imgur.com/6TWeW7V.png" /></a><a href="/@hive.autoclaim"><img src="https://i.imgur.com/ih2pEOw.png" /></a></center>
-<center>
-
-### [Vote for me as a witness ![](https://i.imgur.com/2bi4SnT.png)](https://vote.hive.uno/@arcange)</center></div>
-<script crossorigin="anonymous" integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=" src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-
-<script src="https://unpkg.com/steem-content-renderer"></script>
-
-<!-- <script src="https://cdn.jsdelivr.net/npm/hive-content-renderer/dist/hive-content-renderer.min.js"></script> -->
-<script>
-  $(document).ready(function() {
-    try {
-      const renderer = new SteemContentRenderer.DefaultRenderer({
-      // const renderer = new HiveContentRenderer({
-        baseUrl: "https://hive.blog/",
-        breaks: true,
-        skipSanitization: false,
-        allowInsecureScriptTags: false,
-        addNofollowToLinks: true,
-        doNotShowImages: false,
-        ipfsPrefix: "",
-        assetsWidth: 640,
-        assetsHeight: 480,
-        imageProxyFn: (url) => url,
-        usertagUrlFn: (account) => "/@arcange",
-        hashtagUrlFn: (hashtag) => "/hivesql-update-hf26",
-        isLinkSafeFn: (url) => true,
-      });
-      
-      const inputElem = $('#content-arcange-hivesql-update-hf26').html();
-      const outputElem = $('#content-arcange-hivesql-update-hf26');
-      const output = renderer.render(inputElem);
-      
-      outputElem.html(output);
-    } catch(e) {
-      console.log(e);
-    }
-  });
-</script>
-
-<style>
-  #content-arcange-hivesql-update-hf26 {
-    padding: 0 3rem;
-    color: #444444;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    font-size: 16px;
-    line-height: 1.8;
-    text-shadow: 0 1px 0 #ffffff;
-    padding: 0.5rem;
-  }
-  #content-arcange-hivesql-update-hf26 code {
-    background: white;
-  }
-  #content-arcange-hivesql-update-hf26 a {
-    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
-  }
-  #content-arcange-hivesql-update-hf26 a:hover {
-    border-bottom: 0;
-  }
-  #content-arcange-hivesql-update-hf26 h1 {
-    font-size: 2.2em;
-  }
-  #content-arcange-hivesql-update-hf26 h2, h3, h4, h5 {
-    margin-bottom: 0;
-  }
-  #content-arcange-hivesql-update-hf26 header small {
-    color: #999;
-    font-size: 50%;
-  }
-  #content-arcange-hivesql-update-hf26 img {
-    max-width: 100%;
-  }
-</style>
-
-<hr />
-
-<p>
-  See: <a href="https://peakd.com/hive-139531/@arcange/hivesql-update-hf26">Hive SQL  - Hardfork 26 support</a>
-  by
-  <a href="https://hive.blog/@arcange">@arcange</a>
-</p>]]></content><author><name>arcange</name></author><category term="news" /><category term="sql" /><category term="database" /><summary type="html"><![CDATA[HiveSQL has been updated to fully support the new operation implemented for the hardfork 26 of the blockchain]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://i.imgur.com/bzVnVHr.png" /><media:content medium="image" url="https://i.imgur.com/bzVnVHr.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>
+</p>]]></content><author><name>primersion</name></author><category term="tools" /><category term="rc" /><category term="delegation" /><summary type="html"><![CDATA[This post will explain the improvements and how to calculate the equivalent HP amount for your RC delegations.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://images.ecency.com/DQmcXEvn33Sph3AMpajUr46mCxbM4GZFKYupgof5aaHQnZQ/hivewp20.png" /><media:content medium="image" url="https://images.ecency.com/DQmcXEvn33Sph3AMpajUr46mCxbM4GZFKYupgof5aaHQnZQ/hivewp20.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>
