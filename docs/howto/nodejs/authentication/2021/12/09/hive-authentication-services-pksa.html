@@ -136,16 +136,6 @@ Playing with HiveWallet will take a bit longer because @roelandp recently learne
 
 In the meantime, you might be interested in running your own PKSA so that you can perform your tests in a safe and peaceful environment.
 
-For the more paranoid, this is an option that allows you to benefit from the advantages offered by HAS while maintaining full control over your private keys.
-
-###### If you haven't already done so, **support the project and vote for its proposal** on [Peakd](https://peakd.com/me/proposals/194), [Ecency](https://ecency.com/proposals/194), [hive.blog](https://wallet.hive.blog/proposals) or using [HiveSigner](https://hivesigner.com/sign/update_proposal_votes?proposal_ids=%5B%22194%22%5D&amp;approve=true)
-
-I also invite you to read:
-- [the HAS introductory post](https://peakd.com/hive-139531/@arcange/hive-authentication-services-proposal) to discover the project and its related proposal.
-- [the HAS protocol description](/@arcange/hive-authentication-services-protocol-description) to get a better understanding on how HAS parties interact together.
-- [the HAS developer guide - App integration](/@arcange/hive-authentication-services-developer-guide-part-1)
-- [the HAS developer guide - PKSA integration](/@arcange/hive-authentication-services-developer-guide-part-2)
-
 ## 1. PKSA with a User Interface
 
 Developing a PKSA with a user interface can be seen as reinventing the wheel since applications like Keychain Mobile or HiveWallet already exist and will soon be available with full HAS support.
@@ -168,59 +158,13 @@ From then, the applications you use will have to connect to the same HAS server 
 
 Your PKSA can then store and provide your App(s) with a valid authentication token. It can also (automatically) approve transactions requests coming from your App if you enable it to do so.
 
-### About security
-
-If you want your PKSA to run as a service, you will have to take care of additional security measures.
-
-The first problem to deal with is the fact that, as a PKSA service does not have a user interface, it cannot scan a QR code to obtain a communication encryption key.
-
-The second issue is that it should **NOT** accept authentication requests from known or unknown applications unless being explicitly told to do so! This can be the case when its operator wishes to initialize an application authentication token, for example.
-
-**1. Securing communication**
-
-Remember that the authentication key (`auth_key`) that is used to encrypt the communication between an App and a PKSA is usually provided offline and changes with each authentication request.
-
-The first way to solve this problem is to manually create an authentication token, an encryption key and add them manually in the configurations of your App and PKSA. This is my most secure method, but not the easiest to perform.
-
-Another way to do it would be to provide the `auth_key` to the PKSA with the authentication payload, but this would allow the HAS server to decrypt all your communication. Unless you run your own HAS server, that's not a good idea. Even with your own HAS server, it could be that another PKSA where you registered your account could receive the authentication request (and the `auth_key` that would come with it).
-
-To solve this issue, the App can use a secret pre-shared with the PKSA (`auth_req_secret`) to encrypt the `auth_key`. This means that only that specific PKSA service will be able to decrypt the `auth_key` provided by the App. Up to the App to have the `auth_req_secret` hard-coded or retrieve it from a config file or user input.
-
-**2. Securing authentication request**
-
-The next security measure to implement is to deny any authentication request that doesn't come with a valid token and only allow them for a short moment when we want to provide an app with a new valid token.
-
-When you want to authorize a new session (an application on a specific device for a specific user), you temporarily tell your PKSA to accept authentication requests without a valid token. Your PKSA will create a new token and send it to the app. Once authenticated in the app, your instruct your PKSA to block any new request coming without a token.
-
-In order to avoid too often having to renew a token for an App, a PKSA service can also consider providing new tokens to the App with a longer expiration time.
-
-### An Open-Source PKSA example
-
-I have been running a PKSA in service mode for more than a few months now. The code has been battle-tested and, as promised in the [HAS funding proposal](https://peakd.com/me/proposals/194), it is now open-source [**on GitHub**](https://github.com/VIM-Arcange/hive-auth-pksa).
-
-The provided PKSA code has the following features implemented:
-- reconnect the PKSA to the HAS server when the connection is unintentionally interrupted.
-- generate a detailed log of interactions with HAS
-- validate all commands against the HAS protocol definition.
-- manage the many different possible exceptions
-
-I won't make this post too long and stodgy for non-tech-savvy people by describing the code in-depth here. I have done my best to document the code with as many comments as possible, and I'm pretty sure it makes it easy to understand the proper functioning of a PKSA in service mode.
-
-The detailed explanation will be available in the HAS documentation that I am busy writing and that should be released in the coming days.
-
-Meantime, feel free to play with and create an issue if you find any bug.
-
-My **HAS Server** is available at **wss://hive-auth.arcange.eu**
-
-## What's next?
-
-Now that you can run your own PKSA and process your authentication et transactions requests, I will show you in another post how to easily integrate the HAS protocol into our app. Stay tuned!
-
-Thanks for reading.
-
 ---
 
-|<center><div class="phishy"><h5>**Support the **HAS** project!**</h5></div></center>|
+<center>**To avoid redundancies and inaccuracies, the remaining content of this post has been moved to the official [HAS Documentation website](https://docs.hiveauth.com)!**</center>
+
+# <center>https://docs.hiveauth.com</center>
+
+|<center><div class="phishy"><h5>**Support the **HAS** project**</h5></div></center>|
 |-|
 |<center>[Vote for the proposal on PeakD](https://peakd.com/me/proposals/194)<br />[Vote for the proposal on Ecency](https://ecency.com/proposals/194)<br />[vote for the proposal on Hive.blog](https://wallet.hive.blog/proposals)<br />[Vote for the proposal using HiveSigner](https://hivesigner.com/sign/update_proposal_votes?proposal_ids=%5B%22194%22%5D&amp;approve=true)</center>|
 
@@ -229,11 +173,14 @@ Thanks for reading.
 
 ### Check out my apps and services
 <a href="/hive/@hive.engage/stay-connected-with-your-hive-audience-and-catch-attention"><img src="https://i.imgur.com/GiNJqlm.png" /></a><a href="/@hivebuzz"><img src="https://i.imgur.com/B4UTun2.png" /></a><a href="/@hivesql"><img src="https://i.imgur.com/EPN8RW6.png" /></a><a href="/hive/@arcange/introducing-hive-account-recovery"><img src="https://i.imgur.com/6TWeW7V.png" /></a><a href="/@hive.autoclaim"><img src="https://i.imgur.com/ih2pEOw.png" /></a></center>
+
 <center>
 
-### [Vote for me as a witness ![](https://i.imgur.com/2bi4SnT.png)](https://hivesigner.com/sign/account-witness-vote?witness=arcange&amp;approve=1)&lt;/div&gt;
+### [Vote for me as a witness ![](https://i.imgur.com/2bi4SnT.png)](https://hivesigner.com/sign/account-witness-vote?witness=arcange&amp;approve=1)</center></div>
 <script crossorigin="anonymous" integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=" src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+
 <script src="https://unpkg.com/steem-content-renderer"></script>
+
 <!-- <script src="https://cdn.jsdelivr.net/npm/hive-content-renderer/dist/hive-content-renderer.min.js"></script> -->
 <script>
   $(document).ready(function() {
@@ -265,6 +212,7 @@ Thanks for reading.
     }
   });
 </script>
+
 <style>
   #content-arcange-hive-authentication-services-pksa {
     padding: 0 3rem;
@@ -300,13 +248,13 @@ Thanks for reading.
 </style>
 
 <hr />
+
 <p>
   See: <a href="https://peakd.com/hive-139531/@arcange/hive-authentication-services-pksa">Hive Authentication Services - How to run your own PKSA - Code is now open-source</a>
   by
   <a href="https://hive.blog/@arcange">@arcange</a>
 </p>
 
-</center></div>
 
   </div><a class="u-url" href="/howto/nodejs/authentication/2021/12/09/hive-authentication-services-pksa.html" hidden></a>
 </article>

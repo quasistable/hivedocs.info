@@ -183,7 +183,7 @@ We’re still researching potential ways to decrease the amount of memory consum
 
 During our search for a possible solution to the above problem (before we realized increasing statistics was the best solution), we also tried updating our SQL database from postgres 10 with postgres 13, to see if it would select a better query plan. 
 
-The database upgrade had no impact on the above problem, but we found another slowdown during hive sync (the indexer that adds data from the blockchain to the database) tied to postgres 13. This problem occurs because the postgres13 planner incorrectly estimates the costs of updating rshare totals during ‘live sync’ and decides to do a just-in-time (jit) optimization which adds 100ms to the query time. 
+The database upgrade had no impact on the above problem, but we found another slowdown during hive sync (the indexer that adds data from the blockchain to the database) tied to postgres 13. This problem occurs because the postgres13 planner incorrectly estimates the costs of updating rshare totals during ‘live sync’ and decides to do a just-in-time (jit) optimization which adds 100ms to the query time (`update_posts_rshares` normally averages around 3ms). 
 
 We confirmed this was the issue by increasing the threshold cost required before the planner was allowed to employ jit optimization (effectively disabling jit usage in the query). In this scenario, performance was just slightly better for postgres 13 than for 10. Once we move to 13, we’ll need to select a long term solution for this issue (either improve the cost estimation or just disable jit for this query), but that’s an issue for a later day.
 

@@ -149,7 +149,7 @@ one you have that create a docker-compose.yml file with this content
 version: '3'
 services:
     dbpostgres:
-        image: postgres:11
+        image: postgres:10
         container_name: hivemind-postgres-dev-container
         ports:
             - "5532:5432"
@@ -159,7 +159,7 @@ services:
 ```
 
 Then in the directory run 
-`docker compose up -d `
+`docker-compose up -d `
 
 
 then connect to it using your favorite tool (I use datagrip) and install the intarray extension: (you could improve this with a post install script with the dockerfile but I didnt' have the motivation to do it for now)
@@ -260,13 +260,13 @@ and then install the dependencies
 
 Then if your hived node is done replaying, you can do your first sync:
 
-`./cli.py --database-url postgresql://postgres:root@localhost:5532/hive --test-max-block=4999998 --steemd-url={"default":"http://localhost:8091"}`
+`./hive/cli.py --database-url postgresql://postgres:root@localhost:5532/hive --test-max-block=4999998 --steemd-url='{"default":"http://localhost:8091"}'`
 
 this process will take quite a bit ( ~20 minutes or more depending on your hardware)
 
 Then what I like to do is dump the database so I can get back to this state easily without having to resync everything:
 
-`PGPASSWORD=root  pg_dump -h localhost -p 5532 -U postgres -d hive -f dump.dump -format=custom`
+`PGPASSWORD=root pg_dump -h localhost -p 5532 -U postgres -d hive -Fc -f dump.dump `
 
 and if I want to restore:
 
@@ -276,7 +276,7 @@ Finally if you want to test some specific applications, mocks are your friends !
 
 In order to do a sync and add the mock data you can do this:
 
-`./cli.py --database-url postgresql://postgres:root@localhost:5532/hive --test-max-block=4999998 --steemd-url={"default":"http://localhost:8091"}  --mock-block-data-path /home/howo/projects/hivemind/mock_data/block_data/community_op/mock_block_data_community_test.json` (replace the path with whatever mock file you have obviously)
+`./cli.py --database-url postgresql://postgres:root@localhost:5532/hive --test-max-block=4999998 --steemd-url='{"default":"http://localhost:8091"}'  --mock-block-data-path /home/howo/projects/hivemind/mock_data/block_data/community_op/mock_block_data_community_test.json` (replace the path with whatever mock file you have obviously)
 
 Slight note on  --test-max-block, it needs to be the height of the highest block of your mocks + 2, because hivemind trails the real blockchain by two blocks, so if you set  --test-max-block as 2 and your mocks end at block 2, they won't be picked up. </div>
 <script crossorigin="anonymous" integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=" src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
