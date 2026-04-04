@@ -76,12 +76,13 @@ export LC_ALL=en_US.UTF-8
 
 ### Sass / theme status
 
-This repo now carries local Minima Sass overrides and vendored Minima partials under `_sass/`.
+This repo now carries a fully local vendored stylesheet path for the site theme.
 
 Current state:
-- visible `lighten(...)` / `darken(...)` deprecation warnings were reduced by replacing them with `color.adjust(...)`
-- the remaining Sass warning noise comes from the older `@import`-based Minima structure
-- that warning is non-blocking for now, but the theme has not been fully migrated to modern Sass module syntax
+- `assets/main.scss` is now repo-owned rather than inherited from the Minima gem entrypoint
+- Minima Sass source used by the site is vendored locally under `_sass/`
+- visible `lighten(...)` / `darken(...)` deprecation warnings were replaced with `color.adjust(...)`
+- local builds now complete without the earlier Sass deprecation warning pile
 
 ## Curation notes
 
