@@ -8,6 +8,11 @@ require 'hive'
 require 'open-uri'
 #require 'html-proofer'
 
+begin
+  require 'tiny_tds'
+rescue LoadError
+end
+
 namespace :assets do
   desc 'Update static assets'
   task :pull do
@@ -95,6 +100,94 @@ task commit: [:build] do
   cmd = 'git add docs && git commit docs -m "jekyll base sources"'
     
   sh cmd
+end
+
+namespace :hivesql do
+  def load_env_file(path = '.env')
+    return {} unless File.exist?(path)
+
+    File.readlines(path).each_with_object({}) do |line, memo|
+      line = line.strip
+      next if line.empty? || line.start_with?('#') || !line.include?('=')
+
+      key, value = line.split('=', 2)
+      memo[key] = value
+    end
+  end
+
+  def hivesql_config
+    env_file = load_env_file
+
+    {
+      host: ENV['HIVE_SQL_HOST'] || env_file['HIVE_SQL_HOST'],
+      port: ENV['HIVE_SQL_PORT'] || env_file['HIVE_SQL_PORT'],
+      username: ENV['HIVE_SQL_ACCOUNT'] || env_file['HIVE_SQL_ACCOUNT'],
+      password: ENV['HIVE_SQL_PASSWORD'] || env_file['HIVE_SQL_PASSWORD'],
+      database: ENV['HIVE_SQL_DATABASE'] || env_file['HIVE_SQL_DATABASE']
+    }
+  end
+
+  def hivesql_redacted_summary(config)
+    {
+      host: config[:host],
+      port: config[:port],
+      username: config[:username],
+      database: config[:database]
+    }.compact
+  end
+
+  def hivesql_client
+    abort('Missing gem dependency: tiny_tds. Run bundle install.') unless defined?(TinyTds::Client)
+
+    config = hivesql_config
+    missing = [:host, :username, :password].select { |k| config[k].nil? || config[k].empty? }
+    abort("Missing HiveSQL config: #{missing.join(', ')}") unless missing.empty?
+
+    client_options = {
+      username: config[:username],
+      password: config[:password],
+      host: config[:host],
+      timeout: 15
+    }
+    client_options[:port] = Integer(config[:port]) unless config[:port].to_s.empty?
+    client_options[:database] = config[:database] unless config[:database].to_s.empty?
+
+    TinyTds::Client.new(**client_options)
+  rescue TinyTds::Error => e
+    warn "HiveSQL connection failed with config: #{JSON.generate(hivesql_redacted_summary(config))}"
+    raise e
+  end
+
+  desc 'Look up a comment row in HiveSQL Comments by author/permlink.'
+  task :comment, [:author, :permlink] do |_t, args|
+    author = args[:author] || ENV['author'] || ENV['AUTHOR']
+    permlink = args[:permlink] || ENV['permlink'] || ENV['PERMLINK']
+
+    abort('Usage: rake hivesql:comment[author,permlink]') if author.to_s.empty? || permlink.to_s.empty?
+
+    client = hivesql_client
+    safe_author = author.sub(/^@/, '').gsub("'", "''")
+    safe_permlink = permlink.gsub("'", "''")
+
+    sql = <<~SQL
+      SET NOCOUNT ON;
+      SELECT TOP 1 *
+      FROM Comments
+      WHERE author = '#{safe_author}'
+        AND permlink = '#{safe_permlink}';
+    SQL
+
+    result = client.execute(sql)
+    row = result.each(as: :hash).first
+
+    if row.nil?
+      puts "No matching row found in Comments for @#{safe_author}/#{safe_permlink}"
+    else
+      puts JSON.pretty_generate(row)
+    end
+  ensure
+    client&.close
+  end
 end
 
 namespace :dump do
