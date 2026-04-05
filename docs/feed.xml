@@ -1,4 +1,71 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="https://hivedocs.info/feed.xml" rel="self" type="application/atom+xml" /><link href="https://hivedocs.info/" rel="alternate" type="text/html" /><updated>2026-04-04T11:05:00-07:00</updated><id>https://hivedocs.info/feed.xml</id><title type="html">Hive Chain Documentation</title><subtitle>Your resource for various levels of Hive Documentation.</subtitle><author><name>site curated by: @inertia</name></author><entry><title type="html">Hive Stream Updates: Version 2.0.5</title><link href="https://hivedocs.info/tools/nodejs/2022/11/16/hive-stream-updates-version-205.html" rel="alternate" type="text/html" title="Hive Stream Updates: Version 2.0.5" /><published>2022-11-16T06:22:03-08:00</published><updated>2022-11-16T06:22:03-08:00</updated><id>https://hivedocs.info/tools/nodejs/2022/11/16/hive-stream-updates-version-205</id><content type="html" xml:base="https://hivedocs.info/tools/nodejs/2022/11/16/hive-stream-updates-version-205.html"><![CDATA[<div id="content-beggars-hive-stream-updates-version-205">Version 2.0.5 of [Hive Stream](https://github.com/Vheissu/hive-stream) has been published, and with it comes quite a few improvements and refactoring work.
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="https://hivedocs.info/feed.xml" rel="self" type="application/atom+xml" /><link href="https://hivedocs.info/" rel="alternate" type="text/html" /><updated>2026-04-04T17:14:38-07:00</updated><id>https://hivedocs.info/feed.xml</id><title type="html">Hive Chain Documentation</title><subtitle>Your resource for various levels of Hive Documentation.</subtitle><author><name>site curated by: @inertia</name></author><entry><title type="html">Hive-related software updates in past couple of months by BlockTrades team</title><link href="https://hivedocs.info/news/core/development/2023/01/02/hive-related-software-updates-in-past-couple-of-months-by-blocktrades-team.html" rel="alternate" type="text/html" title="Hive-related software updates in past couple of months by BlockTrades team" /><published>2023-01-02T08:53:15-08:00</published><updated>2023-01-02T08:53:15-08:00</updated><id>https://hivedocs.info/news/core/development/2023/01/02/hive-related-software-updates-in-past-couple-of-months-by-blocktrades-team</id><content type="html" xml:base="https://hivedocs.info/news/core/development/2023/01/02/hive-related-software-updates-in-past-couple-of-months-by-blocktrades-team.html"><![CDATA[<div class="hive-post-embed" data-hive-author="blocktrades" data-hive-permlink="hive-related-software-updates-in-past-couple-of-months-by-blocktrades-team">
+  <div id="content-blocktrades-hive-related-software-updates-in-past-couple-of-months-by-blocktrades-team" class="hive-post-embed__content" data-hive-render-target="true">![blocktrades update.png](https://images.hive.blog/DQmSihw8Kz4U7TuCQa98DDdCzqbqPFRumuVWAbareiYZW1Z/blocktrades%20update.png)
+
+It has been a while since my last post, but that’s just because I’ve been lazy about reporting, not because there’s not a lot going on. As it happens, we’ve added several new programmers to our Hive  development team since my last post, so if you look at the [hive repo](https://gitlab.syncad.com/hive/hive) and [haf repo]( https://gitlab.syncad.com/hive/haf), you’ll see several new people there making commits.
+
+Below are a few highlights of the Hive-related programming issues worked on by the BlockTrades team in the past few months.
+
+# [Hived (blockchain node software)](https://gitlab.syncad.com/hive/hive)
+
+Since my last post, witnesses have upgraded the Hive network to hardfork 27 (1.27.x) and we’ve made several “point” releases ([1.27.1](https://gitlab.syncad.com/hive/hive/-/tags/v1.27.1), [1.27.2](https://gitlab.syncad.com/hive/hive/-/tags/v1.27.2), [1.27.3](https://gitlab.syncad.com/hive/hive/-/tags/v1.27.3) to fix problems, improve usage and maintenance of hived, and improve it’s performance in various ways based on our production testing. You can click on the links for each release to see detailed changes made in each release, but I’ll briefly summarize some of the more important changes at a high-level:
+* Upgraded the secp256k1 encryption library (speeds up blockchain validation time by about 42% as it reduces the time to verify transaction signatures).
+* Various improvements to the command-line hive wallet (this wallet is mostly used by exchanges and “power users”).
+* Added a minimum allowable RC (resource credit) delegation amount to avoid transaction spamming and also improved processing of RC delegations.
+* Improved realism of RC cost calculations for recurrent transfers.
+* New API calls and improvements to other ones to get more statistics and info related to RC usage.
+* Fixed longstanding bugs in market history API calls so that they return correct ticker-related data.
+* Fixed filtering of list_proposal_votes API call.
+* New tool for managing the block log (file containing the history of blockchain transactions). This tool includes features for comparing two block_log files for consistency (to detect corrupted files), truncating blocks from the end of a block log (to remove corrupted blocks from the end of a block_log file if, for example, a copy of a block_log file gets interrupted while it is in the middle of writing a block), and generating a checksum of the uncompressed block_log contents without having to actually decompress the block_log (this allows comparing checksums of two block_log files that were compressed differently without having to decompress the files, avoiding consuming more disk space).
+* Prevent nodes from crashing when they received a get_ops_in_block API call with just one parameter (longstanding bug).
+* Fixed bug in fc::uint128 decimal conversion.
+* New regression tests.
+* Improvements to testing code to make existing tests more stable.
+
+# [Hive Application Framework (HAF) and related apps](https://gitlab.syncad.com/hive/haf)
+
+* Added an applied_hardforks table to the HAF database to simplify tracking of the block when each hardfork became active.
+* Improved performance of hive.get_block_from_views API call and fixed a problem with the returned order of transactions in the block.
+* Many improvements to ease upgrading an existing HAF database to a new version.
+* Various improvements to dockerized HAF configuration.
+* Improved stability of HAF tests.
+
+## [Hivemind and HAF hivemind](https://gitlab.syncad.com/hive/hivemind)
+
+We’ve released new versions of [legacy hivemind (v.1.26.3)](https://gitlab.syncad.com/hive/hivemind/-/tags/1.26.3) and [HAF-based hivemind(v.1.27.3.0.0)](https://gitlab.syncad.com/hive/hivemind/-/tags/1.27.3.0.0) and both are currently deployed on various production API nodes.
+
+Here’s some of the major changes:
+
+* Many performance optimizations specific to moving from PostgreSQL v10 to v12 or v14.
+* Used data stored in the HAF database itself instead of making some account history calls to hived. This led to a significant performance improvement for the initial “massive sync” process required to initially setup a hivemind server for production usage.
+* Fixed the dockerized setup of HAF hivemind (this got broken in the previous version).
+* Updated deployment documentation for HAF and HAF apps such as HAF-hivemind.
+
+### New versioning convention of HAF and HAF apps
+This is the first official release of the HAF-based hivemind application (prior ones were "experimental" and mainly only deployed on our node): 1.27.3.0.0
+
+Along with the official release of HAF-based hivemind, the astute reader may notice a change in our versioning for haf-based hivemind: the first three numbers (1.27.3) indicate the minimum version of hived required, the fourth number (0) indicates the associated sub-version of HAF required (i.e. 1.27.3.0), and the fifth number indicates the sub-version of hivemind itself (this is the first release of HAF hivemind for HAF version 1.27.3.0).
+
+
+## [HAF block explorer](https://gitlab.syncad.com/hive/haf_block_explorer)
+
+Work continued on the HAF block explorer and it is near completion now (mainly testing and bug fixes). This work has also led to some of the changes to the data collected by HAF via the sql_serializer so that HAF data is more complete for potential HAF applications.
+
+# Some upcoming tasks
+
+* Continue supporting Hive API node operators and witnesses as they continue upgrading their node infrastructure.
+* Re-use docker images in CI tests when possible to speedup testing time.
+* Continue work on HAF-based block explorer
+* Collect benchmarks for a hafah app operating in “irreversible block mode” and compare to a hafah app operating in “normal” mode (low priority)
+* Finalize plans for changes to hived and HAF in the coming year that the BlockTrades team will be working on.
+* Work out schedule for creation of various HAF-based applications (most important one here will be a HAF-based smart contract processing engine).</div>
+  <footer class="hive-post-embed__source">
+    <span class="hive-post-embed__source-label">Source:</span>
+    <a href="https://hive.blog/hive-139531/@blocktrades/hive-related-software-updates-in-past-couple-of-months-by-blocktrades-team">Hive-related software updates in past couple of months by BlockTrades team</a>
+    <span>by</span>
+    <a href="https://hive.blog/@blocktrades">@blocktrades</a>
+  </footer>
+</div>]]></content><author><name>blocktrades</name></author><category term="news" /><category term="core" /><category term="development" /><summary type="html"><![CDATA[It has been a while since my last post, but that’s just because I’ve been lazy about reporting, not because there’s not a lot going on]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://images.hive.blog/DQmSihw8Kz4U7TuCQa98DDdCzqbqPFRumuVWAbareiYZW1Z/blocktrades%20update.png" /><media:content medium="image" url="https://images.hive.blog/DQmSihw8Kz4U7TuCQa98DDdCzqbqPFRumuVWAbareiYZW1Z/blocktrades%20update.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Hive Stream Updates: Version 2.0.5</title><link href="https://hivedocs.info/tools/nodejs/2022/11/16/hive-stream-updates-version-205.html" rel="alternate" type="text/html" title="Hive Stream Updates: Version 2.0.5" /><published>2022-11-16T06:22:03-08:00</published><updated>2022-11-16T06:22:03-08:00</updated><id>https://hivedocs.info/tools/nodejs/2022/11/16/hive-stream-updates-version-205</id><content type="html" xml:base="https://hivedocs.info/tools/nodejs/2022/11/16/hive-stream-updates-version-205.html"><![CDATA[<div class="hive-post-embed" data-hive-author="beggars" data-hive-permlink="hive-stream-updates-version-205">
+  <div id="content-beggars-hive-stream-updates-version-205" class="hive-post-embed__content" data-hive-render-target="true">Version 2.0.5 of [Hive Stream](https://github.com/Vheissu/hive-stream) has been published, and with it comes quite a few improvements and refactoring work.
 
 ![Beggars_A_bee_hive_on_a_stream_f81e2212-6e2f-4725-92cc-175102d19bd0.png](https://files.peakd.com/file/peakd-hive/beggars/AKGZiNjxyxfCrbkgFMA2BXvmjdhbV4WPAaFCYfh1ej8qwwiH6UqEu3KNuTLZ7R1.jpg)
 
@@ -21,83 +88,14 @@ To install the latest version, run the following:
 ----
 
 Feedback, help or user contributions are always welcomed over on the [Hive Stream GitHub repository](https://github.com/Vheissu/hive-stream). Don't be shy if you see room for improvement or encounter an issue. Until next time.</div>
-<script crossorigin="anonymous" integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=" src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-
-<script src="https://unpkg.com/steem-content-renderer"></script>
-
-<!-- <script src="https://cdn.jsdelivr.net/npm/hive-content-renderer/dist/hive-content-renderer.min.js"></script> -->
-<script>
-  $(document).ready(function() {
-    try {
-      const renderer = new SteemContentRenderer.DefaultRenderer({
-      // const renderer = new HiveContentRenderer({
-        baseUrl: "https://hive.blog/",
-        breaks: true,
-        skipSanitization: false,
-        allowInsecureScriptTags: false,
-        addNofollowToLinks: true,
-        doNotShowImages: false,
-        ipfsPrefix: "",
-        assetsWidth: 640,
-        assetsHeight: 480,
-        imageProxyFn: (url) => url,
-        usertagUrlFn: (account) => "/@beggars",
-        hashtagUrlFn: (hashtag) => "/hive-stream-updates-version-205",
-        isLinkSafeFn: (url) => true,
-      });
-      
-      const inputElem = $('#content-beggars-hive-stream-updates-version-205').html();
-      const outputElem = $('#content-beggars-hive-stream-updates-version-205');
-      const output = renderer.render(inputElem);
-      
-      outputElem.html(output);
-    } catch(e) {
-      console.log(e);
-    }
-  });
-</script>
-
-<style>
-  #content-beggars-hive-stream-updates-version-205 {
-    padding: 0 3rem;
-    color: #444444;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    font-size: 16px;
-    line-height: 1.8;
-    text-shadow: 0 1px 0 #ffffff;
-    padding: 0.5rem;
-  }
-  #content-beggars-hive-stream-updates-version-205 code {
-    background: white;
-  }
-  #content-beggars-hive-stream-updates-version-205 a {
-    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
-  }
-  #content-beggars-hive-stream-updates-version-205 a:hover {
-    border-bottom: 0;
-  }
-  #content-beggars-hive-stream-updates-version-205 h1 {
-    font-size: 2.2em;
-  }
-  #content-beggars-hive-stream-updates-version-205 h2, h3, h4, h5 {
-    margin-bottom: 0;
-  }
-  #content-beggars-hive-stream-updates-version-205 header small {
-    color: #999;
-    font-size: 50%;
-  }
-  #content-beggars-hive-stream-updates-version-205 img {
-    max-width: 100%;
-  }
-</style>
-
-<hr />
-
-<p>
-  See: <a href="https://peakd.com/hive-139531/@beggars/hive-stream-updates-version-205">Hive Stream Updates: Version 2.0.5</a>
-  by
-  <a href="https://hive.blog/@beggars">@beggars</a>
-</p>]]></content><author><name>beggars</name></author><category term="tools" /><category term="nodejs" /><summary type="html"><![CDATA[Version 2.0.5 of Hive Stream has been published, and with it comes quite a few improvements and refactoring work.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://files.peakd.com/file/peakd-hive/beggars/AKGZiNjxyxfCrbkgFMA2BXvmjdhbV4WPAaFCYfh1ej8qwwiH6UqEu3KNuTLZ7R1.jpg" /><media:content medium="image" url="https://files.peakd.com/file/peakd-hive/beggars/AKGZiNjxyxfCrbkgFMA2BXvmjdhbV4WPAaFCYfh1ej8qwwiH6UqEu3KNuTLZ7R1.jpg" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Core dev meeting #42</title><link href="https://hivedocs.info/news/core/development/2022/11/07/core-dev-meeting-42.html" rel="alternate" type="text/html" title="Core dev meeting #42" /><published>2022-11-07T14:42:42-08:00</published><updated>2022-11-07T14:42:42-08:00</updated><id>https://hivedocs.info/news/core/development/2022/11/07/core-dev-meeting-42</id><content type="html" xml:base="https://hivedocs.info/news/core/development/2022/11/07/core-dev-meeting-42.html"><![CDATA[<div id="content-howo-core-dev-meeting-42">
+  <footer class="hive-post-embed__source">
+    <span class="hive-post-embed__source-label">Source:</span>
+    <a href="https://peakd.com/hive-139531/@beggars/hive-stream-updates-version-205">Hive Stream Updates: Version 2.0.5</a>
+    <span>by</span>
+    <a href="https://hive.blog/@beggars">@beggars</a>
+  </footer>
+</div>]]></content><author><name>beggars</name></author><category term="tools" /><category term="nodejs" /><summary type="html"><![CDATA[Version 2.0.5 of Hive Stream has been published, and with it comes quite a few improvements and refactoring work.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://files.peakd.com/file/peakd-hive/beggars/AKGZiNjxyxfCrbkgFMA2BXvmjdhbV4WPAaFCYfh1ej8qwwiH6UqEu3KNuTLZ7R1.jpg" /><media:content medium="image" url="https://files.peakd.com/file/peakd-hive/beggars/AKGZiNjxyxfCrbkgFMA2BXvmjdhbV4WPAaFCYfh1ej8qwwiH6UqEu3KNuTLZ7R1.jpg" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Core dev meeting #42</title><link href="https://hivedocs.info/news/core/development/2022/11/07/core-dev-meeting-42.html" rel="alternate" type="text/html" title="Core dev meeting #42" /><published>2022-11-07T14:42:42-08:00</published><updated>2022-11-07T14:42:42-08:00</updated><id>https://hivedocs.info/news/core/development/2022/11/07/core-dev-meeting-42</id><content type="html" xml:base="https://hivedocs.info/news/core/development/2022/11/07/core-dev-meeting-42.html"><![CDATA[<div class="hive-post-embed" data-hive-author="howo" data-hive-permlink="core-dev-meeting-42">
+  <div id="content-howo-core-dev-meeting-42" class="hive-post-embed__content" data-hive-render-target="true">
 ![social_hive_light.jpg](https://files.peakd.com/file/peakd-hive/howo/23wN2RDCNPLiYdw6WJdTT7vXKrdkPN9WGeQg69m15z27Bqj1yDiYS5bo2Dwn4DGHByM2C.jpg)
 
 Hello,
@@ -151,83 +149,14 @@ We want to ship version 1.27.1 very soon:tm: (aka in a few weeks) to provide imp
 We’ll try to include at the bug that @engrave brought up: https://gitlab.syncad.com/hive/hive/-/issues/338  
 
 There's then a lot of discussions between @arcange and @blocktrades on his specific HAF setup that I don't think are really worth talking about.</div>
-<script crossorigin="anonymous" integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=" src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-
-<script src="https://unpkg.com/steem-content-renderer"></script>
-
-<!-- <script src="https://cdn.jsdelivr.net/npm/hive-content-renderer/dist/hive-content-renderer.min.js"></script> -->
-<script>
-  $(document).ready(function() {
-    try {
-      const renderer = new SteemContentRenderer.DefaultRenderer({
-      // const renderer = new HiveContentRenderer({
-        baseUrl: "https://hive.blog/",
-        breaks: true,
-        skipSanitization: false,
-        allowInsecureScriptTags: false,
-        addNofollowToLinks: true,
-        doNotShowImages: false,
-        ipfsPrefix: "",
-        assetsWidth: 640,
-        assetsHeight: 480,
-        imageProxyFn: (url) => url,
-        usertagUrlFn: (account) => "/@howo",
-        hashtagUrlFn: (hashtag) => "/core-dev-meeting-42",
-        isLinkSafeFn: (url) => true,
-      });
-      
-      const inputElem = $('#content-howo-core-dev-meeting-42').html();
-      const outputElem = $('#content-howo-core-dev-meeting-42');
-      const output = renderer.render(inputElem);
-      
-      outputElem.html(output);
-    } catch(e) {
-      console.log(e);
-    }
-  });
-</script>
-
-<style>
-  #content-howo-core-dev-meeting-42 {
-    padding: 0 3rem;
-    color: #444444;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    font-size: 16px;
-    line-height: 1.8;
-    text-shadow: 0 1px 0 #ffffff;
-    padding: 0.5rem;
-  }
-  #content-howo-core-dev-meeting-42 code {
-    background: white;
-  }
-  #content-howo-core-dev-meeting-42 a {
-    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
-  }
-  #content-howo-core-dev-meeting-42 a:hover {
-    border-bottom: 0;
-  }
-  #content-howo-core-dev-meeting-42 h1 {
-    font-size: 2.2em;
-  }
-  #content-howo-core-dev-meeting-42 h2, h3, h4, h5 {
-    margin-bottom: 0;
-  }
-  #content-howo-core-dev-meeting-42 header small {
-    color: #999;
-    font-size: 50%;
-  }
-  #content-howo-core-dev-meeting-42 img {
-    max-width: 100%;
-  }
-</style>
-
-<hr />
-
-<p>
-  See: <a href="https://peakd.com/core/@howo/core-dev-meeting-42">Core dev meeting #42</a>
-  by
-  <a href="https://hive.blog/@howo">@howo</a>
-</p>]]></content><author><name>howo</name></author><category term="news" /><category term="core" /><category term="development" /><summary type="html"><![CDATA[many heart attacks of people telling me it doesn’t work when in fact it’s something they did wrong]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://files.peakd.com/file/peakd-hive/howo/23wN2RDCNPLiYdw6WJdTT7vXKrdkPN9WGeQg69m15z27Bqj1yDiYS5bo2Dwn4DGHByM2C.jpg" /><media:content medium="image" url="https://files.peakd.com/file/peakd-hive/howo/23wN2RDCNPLiYdw6WJdTT7vXKrdkPN9WGeQg69m15z27Bqj1yDiYS5bo2Dwn4DGHByM2C.jpg" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Help with Hive getting added to Wikipedia</title><link href="https://hivedocs.info/news/media/wikipedia/2022/11/04/help-with-hive-getting-added-to-wikipedia.html" rel="alternate" type="text/html" title="Help with Hive getting added to Wikipedia" /><published>2022-11-04T11:52:54-07:00</published><updated>2022-11-04T11:52:54-07:00</updated><id>https://hivedocs.info/news/media/wikipedia/2022/11/04/help-with-hive-getting-added-to-wikipedia</id><content type="html" xml:base="https://hivedocs.info/news/media/wikipedia/2022/11/04/help-with-hive-getting-added-to-wikipedia.html"><![CDATA[<div id="content-rubencress-help-with-hive-getting-added-to-wikipedia">![](https://i.imgur.com/n2nbSXD.jpg)
+  <footer class="hive-post-embed__source">
+    <span class="hive-post-embed__source-label">Source:</span>
+    <a href="https://peakd.com/core/@howo/core-dev-meeting-42">Core dev meeting #42</a>
+    <span>by</span>
+    <a href="https://hive.blog/@howo">@howo</a>
+  </footer>
+</div>]]></content><author><name>howo</name></author><category term="news" /><category term="core" /><category term="development" /><summary type="html"><![CDATA[many heart attacks of people telling me it doesn’t work when in fact it’s something they did wrong]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://files.peakd.com/file/peakd-hive/howo/23wN2RDCNPLiYdw6WJdTT7vXKrdkPN9WGeQg69m15z27Bqj1yDiYS5bo2Dwn4DGHByM2C.jpg" /><media:content medium="image" url="https://files.peakd.com/file/peakd-hive/howo/23wN2RDCNPLiYdw6WJdTT7vXKrdkPN9WGeQg69m15z27Bqj1yDiYS5bo2Dwn4DGHByM2C.jpg" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Help with Hive getting added to Wikipedia</title><link href="https://hivedocs.info/news/media/wikipedia/2022/11/04/help-with-hive-getting-added-to-wikipedia.html" rel="alternate" type="text/html" title="Help with Hive getting added to Wikipedia" /><published>2022-11-04T11:52:54-07:00</published><updated>2022-11-04T11:52:54-07:00</updated><id>https://hivedocs.info/news/media/wikipedia/2022/11/04/help-with-hive-getting-added-to-wikipedia</id><content type="html" xml:base="https://hivedocs.info/news/media/wikipedia/2022/11/04/help-with-hive-getting-added-to-wikipedia.html"><![CDATA[<div class="hive-post-embed" data-hive-author="rubencress" data-hive-permlink="help-with-hive-getting-added-to-wikipedia">
+  <div id="content-rubencress-help-with-hive-getting-added-to-wikipedia" class="hive-post-embed__content" data-hive-render-target="true">![](https://i.imgur.com/n2nbSXD.jpg)
 
 Hey Hivers!
 
@@ -488,83 +417,14 @@ Ruben
 
 ps; I'll be updating this page as I update the Wikipedia page.
 pps; I'll be removing tags for updates, dont want to spam.</div>
-<script crossorigin="anonymous" integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=" src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-
-<script src="https://unpkg.com/steem-content-renderer"></script>
-
-<!-- <script src="https://cdn.jsdelivr.net/npm/hive-content-renderer/dist/hive-content-renderer.min.js"></script> -->
-<script>
-  $(document).ready(function() {
-    try {
-      const renderer = new SteemContentRenderer.DefaultRenderer({
-      // const renderer = new HiveContentRenderer({
-        baseUrl: "https://hive.blog/",
-        breaks: true,
-        skipSanitization: false,
-        allowInsecureScriptTags: false,
-        addNofollowToLinks: true,
-        doNotShowImages: false,
-        ipfsPrefix: "",
-        assetsWidth: 640,
-        assetsHeight: 480,
-        imageProxyFn: (url) => url,
-        usertagUrlFn: (account) => "/@rubencress",
-        hashtagUrlFn: (hashtag) => "/help-with-hive-getting-added-to-wikipedia",
-        isLinkSafeFn: (url) => true,
-      });
-      
-      const inputElem = $('#content-rubencress-help-with-hive-getting-added-to-wikipedia').html();
-      const outputElem = $('#content-rubencress-help-with-hive-getting-added-to-wikipedia');
-      const output = renderer.render(inputElem);
-      
-      outputElem.html(output);
-    } catch(e) {
-      console.log(e);
-    }
-  });
-</script>
-
-<style>
-  #content-rubencress-help-with-hive-getting-added-to-wikipedia {
-    padding: 0 3rem;
-    color: #444444;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    font-size: 16px;
-    line-height: 1.8;
-    text-shadow: 0 1px 0 #ffffff;
-    padding: 0.5rem;
-  }
-  #content-rubencress-help-with-hive-getting-added-to-wikipedia code {
-    background: white;
-  }
-  #content-rubencress-help-with-hive-getting-added-to-wikipedia a {
-    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
-  }
-  #content-rubencress-help-with-hive-getting-added-to-wikipedia a:hover {
-    border-bottom: 0;
-  }
-  #content-rubencress-help-with-hive-getting-added-to-wikipedia h1 {
-    font-size: 2.2em;
-  }
-  #content-rubencress-help-with-hive-getting-added-to-wikipedia h2, h3, h4, h5 {
-    margin-bottom: 0;
-  }
-  #content-rubencress-help-with-hive-getting-added-to-wikipedia header small {
-    color: #999;
-    font-size: 50%;
-  }
-  #content-rubencress-help-with-hive-getting-added-to-wikipedia img {
-    max-width: 100%;
-  }
-</style>
-
-<hr />
-
-<p>
-  See: <a href="https://peakd.com/hive/@rubencress/help-with-hive-getting-added-to-wikipedia">Help with Hive getting added to Wikipedia</a>
-  by
-  <a href="https://hive.blog/@rubencress">@rubencress</a>
-</p>]]></content><author><name>rubencress</name></author><category term="news" /><category term="media" /><category term="wikipedia" /><summary type="html"><![CDATA[After seeing a Tweet from acidyo that showed that some brand using our logo I just went off and thought it was absolutely bonkers.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://i.imgur.com/n2nbSXD.jpg" /><media:content medium="image" url="https://i.imgur.com/n2nbSXD.jpg" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Hive x Ledger: Support for Ledger Hardware Wallets</title><link href="https://hivedocs.info/news/core/wallet/ledger/2022/11/01/hive-x-ledger-support-for-ledger-hardware-wallets.html" rel="alternate" type="text/html" title="Hive x Ledger: Support for Ledger Hardware Wallets" /><published>2022-11-01T10:54:51-07:00</published><updated>2022-11-01T10:54:51-07:00</updated><id>https://hivedocs.info/news/core/wallet/ledger/2022/11/01/hive-x-ledger-support-for-ledger-hardware-wallets</id><content type="html" xml:base="https://hivedocs.info/news/core/wallet/ledger/2022/11/01/hive-x-ledger-support-for-ledger-hardware-wallets.html"><![CDATA[<div id="content-hiveio-hive-x-ledger-support-for-ledger-hardware-wallets">![image.png](https://images.hive.blog/DQmY6V5CTeBWrQ6D72dG7K4pgP8bvHpHXz3V6xVsANDi5pc/image.png)
+  <footer class="hive-post-embed__source">
+    <span class="hive-post-embed__source-label">Source:</span>
+    <a href="https://peakd.com/hive/@rubencress/help-with-hive-getting-added-to-wikipedia">Help with Hive getting added to Wikipedia</a>
+    <span>by</span>
+    <a href="https://hive.blog/@rubencress">@rubencress</a>
+  </footer>
+</div>]]></content><author><name>rubencress</name></author><category term="news" /><category term="media" /><category term="wikipedia" /><summary type="html"><![CDATA[After seeing a Tweet from acidyo that showed that some brand using our logo I just went off and thought it was absolutely bonkers.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://i.imgur.com/n2nbSXD.jpg" /><media:content medium="image" url="https://i.imgur.com/n2nbSXD.jpg" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Hive x Ledger: Support for Ledger Hardware Wallets</title><link href="https://hivedocs.info/news/core/wallet/ledger/2022/11/01/hive-x-ledger-support-for-ledger-hardware-wallets.html" rel="alternate" type="text/html" title="Hive x Ledger: Support for Ledger Hardware Wallets" /><published>2022-11-01T10:54:51-07:00</published><updated>2022-11-01T10:54:51-07:00</updated><id>https://hivedocs.info/news/core/wallet/ledger/2022/11/01/hive-x-ledger-support-for-ledger-hardware-wallets</id><content type="html" xml:base="https://hivedocs.info/news/core/wallet/ledger/2022/11/01/hive-x-ledger-support-for-ledger-hardware-wallets.html"><![CDATA[<div class="hive-post-embed" data-hive-author="hiveio" data-hive-permlink="hive-x-ledger-support-for-ledger-hardware-wallets">
+  <div id="content-hiveio-hive-x-ledger-support-for-ledger-hardware-wallets" class="hive-post-embed__content" data-hive-render-target="true">![image.png](https://images.hive.blog/DQmY6V5CTeBWrQ6D72dG7K4pgP8bvHpHXz3V6xVsANDi5pc/image.png)
 
 We are thrilled to announce that Hive has been integrated with and is now available on Ledger Nano S, Nano S Plus, and Nano X hardware wallets effective today, November 1, 2022.
 
@@ -586,83 +446,14 @@ Founded in 2014, [Ledger](https://www.ledger.com) is a global digital asset and 
 Ledger combines a hardware wallet—Nano S Plus or Nano X—and the Ledger Live app to offer consumers an easy start in their crypto journey while maintaining full control over their digital assets. 
 
 With its ease of use, Ledger allows a user to begin investing in digital assets while achieving financial freedom in a safe and stress-free environment The Ledger Academy is a content portal that provides customers with education on the emerging Web3 ecosystem. Ledger has also developed Ledger Enterprise, a digital asset custody and security solution for institutional investors and financial players.</div>
-<script crossorigin="anonymous" integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=" src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-
-<script src="https://unpkg.com/steem-content-renderer"></script>
-
-<!-- <script src="https://cdn.jsdelivr.net/npm/hive-content-renderer/dist/hive-content-renderer.min.js"></script> -->
-<script>
-  $(document).ready(function() {
-    try {
-      const renderer = new SteemContentRenderer.DefaultRenderer({
-      // const renderer = new HiveContentRenderer({
-        baseUrl: "https://hive.blog/",
-        breaks: true,
-        skipSanitization: false,
-        allowInsecureScriptTags: false,
-        addNofollowToLinks: true,
-        doNotShowImages: false,
-        ipfsPrefix: "",
-        assetsWidth: 640,
-        assetsHeight: 480,
-        imageProxyFn: (url) => url,
-        usertagUrlFn: (account) => "/@hiveio",
-        hashtagUrlFn: (hashtag) => "/hive-x-ledger-support-for-ledger-hardware-wallets",
-        isLinkSafeFn: (url) => true,
-      });
-      
-      const inputElem = $('#content-hiveio-hive-x-ledger-support-for-ledger-hardware-wallets').html();
-      const outputElem = $('#content-hiveio-hive-x-ledger-support-for-ledger-hardware-wallets');
-      const output = renderer.render(inputElem);
-      
-      outputElem.html(output);
-    } catch(e) {
-      console.log(e);
-    }
-  });
-</script>
-
-<style>
-  #content-hiveio-hive-x-ledger-support-for-ledger-hardware-wallets {
-    padding: 0 3rem;
-    color: #444444;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    font-size: 16px;
-    line-height: 1.8;
-    text-shadow: 0 1px 0 #ffffff;
-    padding: 0.5rem;
-  }
-  #content-hiveio-hive-x-ledger-support-for-ledger-hardware-wallets code {
-    background: white;
-  }
-  #content-hiveio-hive-x-ledger-support-for-ledger-hardware-wallets a {
-    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
-  }
-  #content-hiveio-hive-x-ledger-support-for-ledger-hardware-wallets a:hover {
-    border-bottom: 0;
-  }
-  #content-hiveio-hive-x-ledger-support-for-ledger-hardware-wallets h1 {
-    font-size: 2.2em;
-  }
-  #content-hiveio-hive-x-ledger-support-for-ledger-hardware-wallets h2, h3, h4, h5 {
-    margin-bottom: 0;
-  }
-  #content-hiveio-hive-x-ledger-support-for-ledger-hardware-wallets header small {
-    color: #999;
-    font-size: 50%;
-  }
-  #content-hiveio-hive-x-ledger-support-for-ledger-hardware-wallets img {
-    max-width: 100%;
-  }
-</style>
-
-<hr />
-
-<p>
-  See: <a href="https://hive.blog/hive/@hiveio/hive-x-ledger-support-for-ledger-hardware-wallets">Hive x Ledger: Support for Ledger Hardware Wallets</a>
-  by
-  <a href="https://hive.blog/@hiveio">@hiveio</a>
-</p>]]></content><author><name>hiveio</name></author><category term="news" /><category term="core" /><category term="wallet" /><category term="ledger" /><summary type="html"><![CDATA[We are thrilled to announce that Hive has been integrated with and is now available on Ledger Nano S, Nano S Plus, and Nano X hardware wallets effective today, November 1, 2022.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://images.hive.blog/DQmY6V5CTeBWrQ6D72dG7K4pgP8bvHpHXz3V6xVsANDi5pc/image.png" /><media:content medium="image" url="https://images.hive.blog/DQmY6V5CTeBWrQ6D72dG7K4pgP8bvHpHXz3V6xVsANDi5pc/image.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Hive is now officially supported by Ledger</title><link href="https://hivedocs.info/news/core/wallet/ledger/2022/11/01/hive-is-now-officially-supported-by-ledger.html" rel="alternate" type="text/html" title="Hive is now officially supported by Ledger" /><published>2022-11-01T10:23:57-07:00</published><updated>2022-11-01T10:23:57-07:00</updated><id>https://hivedocs.info/news/core/wallet/ledger/2022/11/01/hive-is-now-officially-supported-by-ledger</id><content type="html" xml:base="https://hivedocs.info/news/core/wallet/ledger/2022/11/01/hive-is-now-officially-supported-by-ledger.html"><![CDATA[<div id="content-engrave-hive-is-now-officially-supported-by-ledger">![](https://files.peakd.com/file/peakd-hive/engrave/48YdnNGyye4zodge7bXCLy6bsded3n6732hGtyK3eBF4SK75e2Qet7pDJJDnuF8VyA.png)
+  <footer class="hive-post-embed__source">
+    <span class="hive-post-embed__source-label">Source:</span>
+    <a href="https://hive.blog/hive/@hiveio/hive-x-ledger-support-for-ledger-hardware-wallets">Hive x Ledger: Support for Ledger Hardware Wallets</a>
+    <span>by</span>
+    <a href="https://hive.blog/@hiveio">@hiveio</a>
+  </footer>
+</div>]]></content><author><name>hiveio</name></author><category term="news" /><category term="core" /><category term="wallet" /><category term="ledger" /><summary type="html"><![CDATA[We are thrilled to announce that Hive has been integrated with and is now available on Ledger Nano S, Nano S Plus, and Nano X hardware wallets effective today, November 1, 2022.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://images.hive.blog/DQmY6V5CTeBWrQ6D72dG7K4pgP8bvHpHXz3V6xVsANDi5pc/image.png" /><media:content medium="image" url="https://images.hive.blog/DQmY6V5CTeBWrQ6D72dG7K4pgP8bvHpHXz3V6xVsANDi5pc/image.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Hive is now officially supported by Ledger</title><link href="https://hivedocs.info/news/core/wallet/ledger/2022/11/01/hive-is-now-officially-supported-by-ledger.html" rel="alternate" type="text/html" title="Hive is now officially supported by Ledger" /><published>2022-11-01T10:23:57-07:00</published><updated>2022-11-01T10:23:57-07:00</updated><id>https://hivedocs.info/news/core/wallet/ledger/2022/11/01/hive-is-now-officially-supported-by-ledger</id><content type="html" xml:base="https://hivedocs.info/news/core/wallet/ledger/2022/11/01/hive-is-now-officially-supported-by-ledger.html"><![CDATA[<div class="hive-post-embed" data-hive-author="engrave" data-hive-permlink="hive-is-now-officially-supported-by-ledger">
+  <div id="content-engrave-hive-is-now-officially-supported-by-ledger" class="hive-post-embed__content" data-hive-render-target="true">![](https://files.peakd.com/file/peakd-hive/engrave/48YdnNGyye4zodge7bXCLy6bsded3n6732hGtyK3eBF4SK75e2Qet7pDJJDnuF8VyA.png)
 
 I'm proud to announce that Ledger has finished their official review and published Hive application in their directory. **This means that Hive is now officially supported and available on all Ledger devices!** It has been already listed on [supported crypto assets](https://www.ledger.com/supported-crypto-assets) list on their official website. This is a huge milestone for Hive ecosystem as it drastically increases security and opens the ecosystem to more investors.
 
@@ -768,83 +559,14 @@ This is a great opportunity for the entire ecosystem and let's take advantage of
 </center>
 
 </div>
-<script crossorigin="anonymous" integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=" src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-
-<script src="https://unpkg.com/steem-content-renderer"></script>
-
-<!-- <script src="https://cdn.jsdelivr.net/npm/hive-content-renderer/dist/hive-content-renderer.min.js"></script> -->
-<script>
-  $(document).ready(function() {
-    try {
-      const renderer = new SteemContentRenderer.DefaultRenderer({
-      // const renderer = new HiveContentRenderer({
-        baseUrl: "https://hive.blog/",
-        breaks: true,
-        skipSanitization: false,
-        allowInsecureScriptTags: false,
-        addNofollowToLinks: true,
-        doNotShowImages: false,
-        ipfsPrefix: "",
-        assetsWidth: 640,
-        assetsHeight: 480,
-        imageProxyFn: (url) => url,
-        usertagUrlFn: (account) => "/@engrave",
-        hashtagUrlFn: (hashtag) => "/hive-is-now-officially-supported-by-ledger",
-        isLinkSafeFn: (url) => true,
-      });
-      
-      const inputElem = $('#content-engrave-hive-is-now-officially-supported-by-ledger').html();
-      const outputElem = $('#content-engrave-hive-is-now-officially-supported-by-ledger');
-      const output = renderer.render(inputElem);
-      
-      outputElem.html(output);
-    } catch(e) {
-      console.log(e);
-    }
-  });
-</script>
-
-<style>
-  #content-engrave-hive-is-now-officially-supported-by-ledger {
-    padding: 0 3rem;
-    color: #444444;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    font-size: 16px;
-    line-height: 1.8;
-    text-shadow: 0 1px 0 #ffffff;
-    padding: 0.5rem;
-  }
-  #content-engrave-hive-is-now-officially-supported-by-ledger code {
-    background: white;
-  }
-  #content-engrave-hive-is-now-officially-supported-by-ledger a {
-    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
-  }
-  #content-engrave-hive-is-now-officially-supported-by-ledger a:hover {
-    border-bottom: 0;
-  }
-  #content-engrave-hive-is-now-officially-supported-by-ledger h1 {
-    font-size: 2.2em;
-  }
-  #content-engrave-hive-is-now-officially-supported-by-ledger h2, h3, h4, h5 {
-    margin-bottom: 0;
-  }
-  #content-engrave-hive-is-now-officially-supported-by-ledger header small {
-    color: #999;
-    font-size: 50%;
-  }
-  #content-engrave-hive-is-now-officially-supported-by-ledger img {
-    max-width: 100%;
-  }
-</style>
-
-<hr />
-
-<p>
-  See: <a href="https://peakd.com/hive/@engrave/hive-is-now-officially-supported-by-ledger">Hive is now officially supported by Ledger</a>
-  by
-  <a href="https://hive.blog/@engrave">@engrave</a>
-</p>]]></content><author><name>engrave</name></author><category term="news" /><category term="core" /><category term="wallet" /><category term="ledger" /><summary type="html"><![CDATA[I'm proud to announce that Ledger has finished their official review and published Hive application in their directory.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://files.peakd.com/file/peakd-hive/engrave/48YdnNGyye4zodge7bXCLy6bsded3n6732hGtyK3eBF4SK75e2Qet7pDJJDnuF8VyA.png" /><media:content medium="image" url="https://files.peakd.com/file/peakd-hive/engrave/48YdnNGyye4zodge7bXCLy6bsded3n6732hGtyK3eBF4SK75e2Qet7pDJJDnuF8VyA.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Hive Authentication Services Development and Maintenance</title><link href="https://hivedocs.info/tools/authentication/2022/10/23/hiveauth-proposal-2.html" rel="alternate" type="text/html" title="Hive Authentication Services Development and Maintenance" /><published>2022-10-23T08:16:24-07:00</published><updated>2022-10-23T08:16:24-07:00</updated><id>https://hivedocs.info/tools/authentication/2022/10/23/hiveauth-proposal-2</id><content type="html" xml:base="https://hivedocs.info/tools/authentication/2022/10/23/hiveauth-proposal-2.html"><![CDATA[<div id="content-arcange-hiveauth-proposal-2">![](https://i.imgur.com/QnlB5h6.png)
+  <footer class="hive-post-embed__source">
+    <span class="hive-post-embed__source-label">Source:</span>
+    <a href="https://peakd.com/hive/@engrave/hive-is-now-officially-supported-by-ledger">Hive is now officially supported by Ledger</a>
+    <span>by</span>
+    <a href="https://hive.blog/@engrave">@engrave</a>
+  </footer>
+</div>]]></content><author><name>engrave</name></author><category term="news" /><category term="core" /><category term="wallet" /><category term="ledger" /><summary type="html"><![CDATA[I'm proud to announce that Ledger has finished their official review and published Hive application in their directory.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://files.peakd.com/file/peakd-hive/engrave/48YdnNGyye4zodge7bXCLy6bsded3n6732hGtyK3eBF4SK75e2Qet7pDJJDnuF8VyA.png" /><media:content medium="image" url="https://files.peakd.com/file/peakd-hive/engrave/48YdnNGyye4zodge7bXCLy6bsded3n6732hGtyK3eBF4SK75e2Qet7pDJJDnuF8VyA.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Hive Authentication Services Development and Maintenance</title><link href="https://hivedocs.info/tools/authentication/2022/10/23/hiveauth-proposal-2.html" rel="alternate" type="text/html" title="Hive Authentication Services Development and Maintenance" /><published>2022-10-23T08:16:24-07:00</published><updated>2022-10-23T08:16:24-07:00</updated><id>https://hivedocs.info/tools/authentication/2022/10/23/hiveauth-proposal-2</id><content type="html" xml:base="https://hivedocs.info/tools/authentication/2022/10/23/hiveauth-proposal-2.html"><![CDATA[<div class="hive-post-embed" data-hive-author="arcange" data-hive-permlink="hiveauth-proposal-2">
+  <div id="content-arcange-hiveauth-proposal-2" class="hive-post-embed__content" data-hive-render-target="true">![](https://i.imgur.com/QnlB5h6.png)
 
 The Hive Authentication Services have been officially launched several months ago and I would like to thank everyone who has given their support and enabled its development.
 
@@ -977,83 +699,14 @@ If you have any questions, support is provided on [Discord](https://discord.gg/T
 * [Vote for this Proposal using HiveSigner](https://hivesigner.com/sign/update_proposal_votes?proposal_ids=%5B%22240%22%5D&amp;approve=true)
 
 Thank you for your support!</div>
-<script crossorigin="anonymous" integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=" src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-
-<script src="https://unpkg.com/steem-content-renderer"></script>
-
-<!-- <script src="https://cdn.jsdelivr.net/npm/hive-content-renderer/dist/hive-content-renderer.min.js"></script> -->
-<script>
-  $(document).ready(function() {
-    try {
-      const renderer = new SteemContentRenderer.DefaultRenderer({
-      // const renderer = new HiveContentRenderer({
-        baseUrl: "https://hive.blog/",
-        breaks: true,
-        skipSanitization: false,
-        allowInsecureScriptTags: false,
-        addNofollowToLinks: true,
-        doNotShowImages: false,
-        ipfsPrefix: "",
-        assetsWidth: 640,
-        assetsHeight: 480,
-        imageProxyFn: (url) => url,
-        usertagUrlFn: (account) => "/@arcange",
-        hashtagUrlFn: (hashtag) => "/hiveauth-proposal-2",
-        isLinkSafeFn: (url) => true,
-      });
-      
-      const inputElem = $('#content-arcange-hiveauth-proposal-2').html();
-      const outputElem = $('#content-arcange-hiveauth-proposal-2');
-      const output = renderer.render(inputElem);
-      
-      outputElem.html(output);
-    } catch(e) {
-      console.log(e);
-    }
-  });
-</script>
-
-<style>
-  #content-arcange-hiveauth-proposal-2 {
-    padding: 0 3rem;
-    color: #444444;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    font-size: 16px;
-    line-height: 1.8;
-    text-shadow: 0 1px 0 #ffffff;
-    padding: 0.5rem;
-  }
-  #content-arcange-hiveauth-proposal-2 code {
-    background: white;
-  }
-  #content-arcange-hiveauth-proposal-2 a {
-    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
-  }
-  #content-arcange-hiveauth-proposal-2 a:hover {
-    border-bottom: 0;
-  }
-  #content-arcange-hiveauth-proposal-2 h1 {
-    font-size: 2.2em;
-  }
-  #content-arcange-hiveauth-proposal-2 h2, h3, h4, h5 {
-    margin-bottom: 0;
-  }
-  #content-arcange-hiveauth-proposal-2 header small {
-    color: #999;
-    font-size: 50%;
-  }
-  #content-arcange-hiveauth-proposal-2 img {
-    max-width: 100%;
-  }
-</style>
-
-<hr />
-
-<p>
-  See: <a href="https://peakd.com/hive-139531/@arcange/hiveauth-proposal-2">Hive Authentication Services Development and Maintenance</a>
-  by
-  <a href="https://hive.blog/@arcange">@arcange</a>
-</p>]]></content><author><name>arcange</name></author><category term="tools" /><category term="authentication" /><summary type="html"><![CDATA[The Hive Authentication Services have been officially launched several months ago and I would like to thank everyone who has given their support and enabled its development.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://i.imgur.com/QnlB5h6.png" /><media:content medium="image" url="https://i.imgur.com/QnlB5h6.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">HF27 is Coming on October 24th - Some Slight Additional Evolution Needed</title><link href="https://hivedocs.info/news/core/development/2022/10/22/hf27-is-coming-on-october-24th-some-slight-additional-evolution-needed.html" rel="alternate" type="text/html" title="HF27 is Coming on October 24th - Some Slight Additional Evolution Needed" /><published>2022-10-22T10:59:21-07:00</published><updated>2022-10-22T10:59:21-07:00</updated><id>https://hivedocs.info/news/core/development/2022/10/22/hf27-is-coming-on-october-24th-some-slight-additional-evolution-needed</id><content type="html" xml:base="https://hivedocs.info/news/core/development/2022/10/22/hf27-is-coming-on-october-24th-some-slight-additional-evolution-needed.html"><![CDATA[<div id="content-hiveio-hf27-is-coming-on-october-24th-some-slight-additional-evolution-needed">
+  <footer class="hive-post-embed__source">
+    <span class="hive-post-embed__source-label">Source:</span>
+    <a href="https://peakd.com/hive-139531/@arcange/hiveauth-proposal-2">Hive Authentication Services Development and Maintenance</a>
+    <span>by</span>
+    <a href="https://hive.blog/@arcange">@arcange</a>
+  </footer>
+</div>]]></content><author><name>arcange</name></author><category term="tools" /><category term="authentication" /><summary type="html"><![CDATA[The Hive Authentication Services have been officially launched several months ago and I would like to thank everyone who has given their support and enabled its development.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://i.imgur.com/QnlB5h6.png" /><media:content medium="image" url="https://i.imgur.com/QnlB5h6.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">HF27 is Coming on October 24th - Some Slight Additional Evolution Needed</title><link href="https://hivedocs.info/news/core/development/2022/10/22/hf27-is-coming-on-october-24th-some-slight-additional-evolution-needed.html" rel="alternate" type="text/html" title="HF27 is Coming on October 24th - Some Slight Additional Evolution Needed" /><published>2022-10-22T10:59:21-07:00</published><updated>2022-10-22T10:59:21-07:00</updated><id>https://hivedocs.info/news/core/development/2022/10/22/hf27-is-coming-on-october-24th-some-slight-additional-evolution-needed</id><content type="html" xml:base="https://hivedocs.info/news/core/development/2022/10/22/hf27-is-coming-on-october-24th-some-slight-additional-evolution-needed.html"><![CDATA[<div class="hive-post-embed" data-hive-author="hiveio" data-hive-permlink="hf27-is-coming-on-october-24th-some-slight-additional-evolution-needed">
+  <div id="content-hiveio-hf27-is-coming-on-october-24th-some-slight-additional-evolution-needed" class="hive-post-embed__content" data-hive-render-target="true">
 ![](https://files.peakd.com/file/peakd-hive/hiveio/23t6zNLwhGYp6GuwE7AK8JC2gHRXBUbo18bBr3MxG4sfmTPUKLZPDtD8eBF1CcbucjsTD.gif)
 
 
@@ -1092,83 +745,14 @@ Every hardfork is an opportunity to improve our testing regimen and to get more 
 Working as a team and a community in co-operation, competition, and collaboration simultaneously can be really difficult. How we handle getting better with each hardfork, bug, success and hurdle is part of what has made this blockchain and its users so resilient.
 ## Hive's Evolution thus far has been a pretty incredible feat to bee a part of, so thank you for your contribution! 🐝
 </div>
-<script crossorigin="anonymous" integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=" src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-
-<script src="https://unpkg.com/steem-content-renderer"></script>
-
-<!-- <script src="https://cdn.jsdelivr.net/npm/hive-content-renderer/dist/hive-content-renderer.min.js"></script> -->
-<script>
-  $(document).ready(function() {
-    try {
-      const renderer = new SteemContentRenderer.DefaultRenderer({
-      // const renderer = new HiveContentRenderer({
-        baseUrl: "https://hive.blog/",
-        breaks: true,
-        skipSanitization: false,
-        allowInsecureScriptTags: false,
-        addNofollowToLinks: true,
-        doNotShowImages: false,
-        ipfsPrefix: "",
-        assetsWidth: 640,
-        assetsHeight: 480,
-        imageProxyFn: (url) => url,
-        usertagUrlFn: (account) => "/@hiveio",
-        hashtagUrlFn: (hashtag) => "/hf27-is-coming-on-october-24th-some-slight-additional-evolution-needed",
-        isLinkSafeFn: (url) => true,
-      });
-      
-      const inputElem = $('#content-hiveio-hf27-is-coming-on-october-24th-some-slight-additional-evolution-needed').html();
-      const outputElem = $('#content-hiveio-hf27-is-coming-on-october-24th-some-slight-additional-evolution-needed');
-      const output = renderer.render(inputElem);
-      
-      outputElem.html(output);
-    } catch(e) {
-      console.log(e);
-    }
-  });
-</script>
-
-<style>
-  #content-hiveio-hf27-is-coming-on-october-24th-some-slight-additional-evolution-needed {
-    padding: 0 3rem;
-    color: #444444;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    font-size: 16px;
-    line-height: 1.8;
-    text-shadow: 0 1px 0 #ffffff;
-    padding: 0.5rem;
-  }
-  #content-hiveio-hf27-is-coming-on-october-24th-some-slight-additional-evolution-needed code {
-    background: white;
-  }
-  #content-hiveio-hf27-is-coming-on-october-24th-some-slight-additional-evolution-needed a {
-    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
-  }
-  #content-hiveio-hf27-is-coming-on-october-24th-some-slight-additional-evolution-needed a:hover {
-    border-bottom: 0;
-  }
-  #content-hiveio-hf27-is-coming-on-october-24th-some-slight-additional-evolution-needed h1 {
-    font-size: 2.2em;
-  }
-  #content-hiveio-hf27-is-coming-on-october-24th-some-slight-additional-evolution-needed h2, h3, h4, h5 {
-    margin-bottom: 0;
-  }
-  #content-hiveio-hf27-is-coming-on-october-24th-some-slight-additional-evolution-needed header small {
-    color: #999;
-    font-size: 50%;
-  }
-  #content-hiveio-hf27-is-coming-on-october-24th-some-slight-additional-evolution-needed img {
-    max-width: 100%;
-  }
-</style>
-
-<hr />
-
-<p>
-  See: <a href="https://peakd.com/hive/@hiveio/hf27-is-coming-on-october-24th-some-slight-additional-evolution-needed">HF27 is Coming on October 24th - Some Slight Additional Evolution Needed</a>
-  by
-  <a href="https://hive.blog/@hiveio">@hiveio</a>
-</p>]]></content><author><name>hiveio</name></author><category term="news" /><category term="core" /><category term="development" /><summary type="html"><![CDATA[Quick Schedule Fix HF27 will come into effect on or after Monday, October 24th at 12:00 UTC, when consensus is reached.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://files.peakd.com/file/peakd-hive/hiveio/23t6zNLwhGYp6GuwE7AK8JC2gHRXBUbo18bBr3MxG4sfmTPUKLZPDtD8eBF1CcbucjsTD.gif" /><media:content medium="image" url="https://files.peakd.com/file/peakd-hive/hiveio/23t6zNLwhGYp6GuwE7AK8JC2gHRXBUbo18bBr3MxG4sfmTPUKLZPDtD8eBF1CcbucjsTD.gif" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Hive HF27 has been released for HIAB - please update (Hive-in-a-box update info)</title><link href="https://hivedocs.info/tools/docker/2022/10/20/hive-hf27-has-been-released-for-hiab-please-update-hive-in-a-box-update-info.html" rel="alternate" type="text/html" title="Hive HF27 has been released for HIAB - please update (Hive-in-a-box update info)" /><published>2022-10-20T10:34:30-07:00</published><updated>2022-10-20T10:34:30-07:00</updated><id>https://hivedocs.info/tools/docker/2022/10/20/hive-hf27-has-been-released-for-hiab-please-update-hive-in-a-box-update-info</id><content type="html" xml:base="https://hivedocs.info/tools/docker/2022/10/20/hive-hf27-has-been-released-for-hiab-please-update-hive-in-a-box-update-info.html"><![CDATA[<div id="content-someguy123-hive-hf27-has-been-released-for-hiab-please-update-hive-in-a-box-update-info">As I’m currently travelling, I’ll keep this short. Apologies for any weird grammar, I’m writing this post on a tablet.
+  <footer class="hive-post-embed__source">
+    <span class="hive-post-embed__source-label">Source:</span>
+    <a href="https://peakd.com/hive/@hiveio/hf27-is-coming-on-october-24th-some-slight-additional-evolution-needed">HF27 is Coming on October 24th - Some Slight Additional Evolution Needed</a>
+    <span>by</span>
+    <a href="https://hive.blog/@hiveio">@hiveio</a>
+  </footer>
+</div>]]></content><author><name>hiveio</name></author><category term="news" /><category term="core" /><category term="development" /><summary type="html"><![CDATA[Quick Schedule Fix HF27 will come into effect on or after Monday, October 24th at 12:00 UTC, when consensus is reached.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://files.peakd.com/file/peakd-hive/hiveio/23t6zNLwhGYp6GuwE7AK8JC2gHRXBUbo18bBr3MxG4sfmTPUKLZPDtD8eBF1CcbucjsTD.gif" /><media:content medium="image" url="https://files.peakd.com/file/peakd-hive/hiveio/23t6zNLwhGYp6GuwE7AK8JC2gHRXBUbo18bBr3MxG4sfmTPUKLZPDtD8eBF1CcbucjsTD.gif" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Hive HF27 has been released for HIAB - please update (Hive-in-a-box update info)</title><link href="https://hivedocs.info/tools/docker/2022/10/20/hive-hf27-has-been-released-for-hiab-please-update-hive-in-a-box-update-info.html" rel="alternate" type="text/html" title="Hive HF27 has been released for HIAB - please update (Hive-in-a-box update info)" /><published>2022-10-20T10:34:30-07:00</published><updated>2022-10-20T10:34:30-07:00</updated><id>https://hivedocs.info/tools/docker/2022/10/20/hive-hf27-has-been-released-for-hiab-please-update-hive-in-a-box-update-info</id><content type="html" xml:base="https://hivedocs.info/tools/docker/2022/10/20/hive-hf27-has-been-released-for-hiab-please-update-hive-in-a-box-update-info.html"><![CDATA[<div class="hive-post-embed" data-hive-author="someguy123" data-hive-permlink="hive-hf27-has-been-released-for-hiab-please-update-hive-in-a-box-update-info">
+  <div id="content-someguy123-hive-hf27-has-been-released-for-hiab-please-update-hive-in-a-box-update-info" class="hive-post-embed__content" data-hive-render-target="true">As I’m currently travelling, I’ll keep this short. Apologies for any weird grammar, I’m writing this post on a tablet.
 
 Hard fork 27 has been released for Hive witness, seed, and rpc nodes - which fixes a bug in the witness scheduler, so that backup witnesses are scheduled normally as they were in HF25.
 
@@ -1188,83 +772,14 @@ If you have a @privex Hive Node-in-a-box server - as no replay is required, you 
 Thanks for reading!
 
 If you like what I do, please [vote for me as a witness](https://peskd.com/witnesses)! :)</div>
-<script crossorigin="anonymous" integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=" src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-
-<script src="https://unpkg.com/steem-content-renderer"></script>
-
-<!-- <script src="https://cdn.jsdelivr.net/npm/hive-content-renderer/dist/hive-content-renderer.min.js"></script> -->
-<script>
-  $(document).ready(function() {
-    try {
-      const renderer = new SteemContentRenderer.DefaultRenderer({
-      // const renderer = new HiveContentRenderer({
-        baseUrl: "https://hive.blog/",
-        breaks: true,
-        skipSanitization: false,
-        allowInsecureScriptTags: false,
-        addNofollowToLinks: true,
-        doNotShowImages: false,
-        ipfsPrefix: "",
-        assetsWidth: 640,
-        assetsHeight: 480,
-        imageProxyFn: (url) => url,
-        usertagUrlFn: (account) => "/@someguy123",
-        hashtagUrlFn: (hashtag) => "/hive-hf27-has-been-released-for-hiab-please-update-hive-in-a-box-update-info",
-        isLinkSafeFn: (url) => true,
-      });
-      
-      const inputElem = $('#content-someguy123-hive-hf27-has-been-released-for-hiab-please-update-hive-in-a-box-update-info').html();
-      const outputElem = $('#content-someguy123-hive-hf27-has-been-released-for-hiab-please-update-hive-in-a-box-update-info');
-      const output = renderer.render(inputElem);
-      
-      outputElem.html(output);
-    } catch(e) {
-      console.log(e);
-    }
-  });
-</script>
-
-<style>
-  #content-someguy123-hive-hf27-has-been-released-for-hiab-please-update-hive-in-a-box-update-info {
-    padding: 0 3rem;
-    color: #444444;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    font-size: 16px;
-    line-height: 1.8;
-    text-shadow: 0 1px 0 #ffffff;
-    padding: 0.5rem;
-  }
-  #content-someguy123-hive-hf27-has-been-released-for-hiab-please-update-hive-in-a-box-update-info code {
-    background: white;
-  }
-  #content-someguy123-hive-hf27-has-been-released-for-hiab-please-update-hive-in-a-box-update-info a {
-    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
-  }
-  #content-someguy123-hive-hf27-has-been-released-for-hiab-please-update-hive-in-a-box-update-info a:hover {
-    border-bottom: 0;
-  }
-  #content-someguy123-hive-hf27-has-been-released-for-hiab-please-update-hive-in-a-box-update-info h1 {
-    font-size: 2.2em;
-  }
-  #content-someguy123-hive-hf27-has-been-released-for-hiab-please-update-hive-in-a-box-update-info h2, h3, h4, h5 {
-    margin-bottom: 0;
-  }
-  #content-someguy123-hive-hf27-has-been-released-for-hiab-please-update-hive-in-a-box-update-info header small {
-    color: #999;
-    font-size: 50%;
-  }
-  #content-someguy123-hive-hf27-has-been-released-for-hiab-please-update-hive-in-a-box-update-info img {
-    max-width: 100%;
-  }
-</style>
-
-<hr />
-
-<p>
-  See: <a href="https://peakd.com/witness-update/@someguy123/hive-hf27-has-been-released-for-hiab-please-update-hive-in-a-box-update-info">Hive HF27 has been released for HIAB - please update (Hive-in-a-box update info)</a>
-  by
-  <a href="https://hive.blog/@someguy123">@someguy123</a>
-</p>]]></content><author><name>someguy123</name></author><category term="tools" /><category term="docker" /><summary type="html"><![CDATA[New HF fixes witness scheduling - instructions on updating Hive-in-a-box + Privex NIAB]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://hivedocs.info/assets/images/favicon.png" /><media:content medium="image" url="https://hivedocs.info/assets/images/favicon.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">HiveSQL Update - RC Delegations data available</title><link href="https://hivedocs.info/news/sql/database/2022/10/18/hivesql-update-20221018.html" rel="alternate" type="text/html" title="HiveSQL Update - RC Delegations data available" /><published>2022-10-18T05:23:06-07:00</published><updated>2022-10-18T05:23:06-07:00</updated><id>https://hivedocs.info/news/sql/database/2022/10/18/hivesql-update-20221018</id><content type="html" xml:base="https://hivedocs.info/news/sql/database/2022/10/18/hivesql-update-20221018.html"><![CDATA[<div id="content-arcange-hivesql-update-20221018">![](https://i.imgur.com/tYFgjui.png)
+  <footer class="hive-post-embed__source">
+    <span class="hive-post-embed__source-label">Source:</span>
+    <a href="https://peakd.com/witness-update/@someguy123/hive-hf27-has-been-released-for-hiab-please-update-hive-in-a-box-update-info">Hive HF27 has been released for HIAB - please update (Hive-in-a-box update info)</a>
+    <span>by</span>
+    <a href="https://hive.blog/@someguy123">@someguy123</a>
+  </footer>
+</div>]]></content><author><name>someguy123</name></author><category term="tools" /><category term="docker" /><summary type="html"><![CDATA[New HF fixes witness scheduling - instructions on updating Hive-in-a-box + Privex NIAB]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://hivedocs.info/assets/images/favicon.png" /><media:content medium="image" url="https://hivedocs.info/assets/images/favicon.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">HiveSQL Update - RC Delegations data available</title><link href="https://hivedocs.info/news/sql/database/2022/10/18/hivesql-update-20221018.html" rel="alternate" type="text/html" title="HiveSQL Update - RC Delegations data available" /><published>2022-10-18T05:23:06-07:00</published><updated>2022-10-18T05:23:06-07:00</updated><id>https://hivedocs.info/news/sql/database/2022/10/18/hivesql-update-20221018</id><content type="html" xml:base="https://hivedocs.info/news/sql/database/2022/10/18/hivesql-update-20221018.html"><![CDATA[<div class="hive-post-embed" data-hive-author="arcange" data-hive-permlink="hivesql-update-20221018">
+  <div id="content-arcange-hivesql-update-20221018" class="hive-post-embed__content" data-hive-render-target="true">![](https://i.imgur.com/tYFgjui.png)
 
 Retrieving information about RC delegations can be a bit tricky. Although the Hive API generally allows you to retrieve information from the blockchain, there is no API call to easily find who has delegated RCs to whom.
 
@@ -1306,225 +821,10 @@ If you have any questions or remarks, support for HiveSQL is provided on [Discor
 <center>
 
 ### [Vote for me as a witness ![](https://i.imgur.com/2bi4SnT.png)](https://vote.hive.uno/@arcange)</center></div>
-<script crossorigin="anonymous" integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=" src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-
-<script src="https://unpkg.com/steem-content-renderer"></script>
-
-<!-- <script src="https://cdn.jsdelivr.net/npm/hive-content-renderer/dist/hive-content-renderer.min.js"></script> -->
-<script>
-  $(document).ready(function() {
-    try {
-      const renderer = new SteemContentRenderer.DefaultRenderer({
-      // const renderer = new HiveContentRenderer({
-        baseUrl: "https://hive.blog/",
-        breaks: true,
-        skipSanitization: false,
-        allowInsecureScriptTags: false,
-        addNofollowToLinks: true,
-        doNotShowImages: false,
-        ipfsPrefix: "",
-        assetsWidth: 640,
-        assetsHeight: 480,
-        imageProxyFn: (url) => url,
-        usertagUrlFn: (account) => "/@arcange",
-        hashtagUrlFn: (hashtag) => "/hivesql-update-20221018",
-        isLinkSafeFn: (url) => true,
-      });
-      
-      const inputElem = $('#content-arcange-hivesql-update-20221018').html();
-      const outputElem = $('#content-arcange-hivesql-update-20221018');
-      const output = renderer.render(inputElem);
-      
-      outputElem.html(output);
-    } catch(e) {
-      console.log(e);
-    }
-  });
-</script>
-
-<style>
-  #content-arcange-hivesql-update-20221018 {
-    padding: 0 3rem;
-    color: #444444;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    font-size: 16px;
-    line-height: 1.8;
-    text-shadow: 0 1px 0 #ffffff;
-    padding: 0.5rem;
-  }
-  #content-arcange-hivesql-update-20221018 code {
-    background: white;
-  }
-  #content-arcange-hivesql-update-20221018 a {
-    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
-  }
-  #content-arcange-hivesql-update-20221018 a:hover {
-    border-bottom: 0;
-  }
-  #content-arcange-hivesql-update-20221018 h1 {
-    font-size: 2.2em;
-  }
-  #content-arcange-hivesql-update-20221018 h2, h3, h4, h5 {
-    margin-bottom: 0;
-  }
-  #content-arcange-hivesql-update-20221018 header small {
-    color: #999;
-    font-size: 50%;
-  }
-  #content-arcange-hivesql-update-20221018 img {
-    max-width: 100%;
-  }
-</style>
-
-<hr />
-
-<p>
-  See: <a href="https://peakd.com/hive-139531/@arcange/hivesql-update-20221018">HiveSQL Update - RC Delegations data available</a>
-  by
-  <a href="https://hive.blog/@arcange">@arcange</a>
-</p>]]></content><author><name>arcange</name></author><category term="news" /><category term="sql" /><category term="database" /><summary type="html"><![CDATA[HiveSQL has been updated with a new table that helps find information about RC delegations faster and easier.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://i.imgur.com/tYFgjui.png" /><media:content medium="image" url="https://i.imgur.com/tYFgjui.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">RC Delegation Tool Update + RC -&amp;gt; HP calculation</title><link href="https://hivedocs.info/tools/rc/delegation/2022/10/16/rc-delegation-tool-update-rc.html" rel="alternate" type="text/html" title="RC Delegation Tool Update + RC -&amp;gt; HP calculation" /><published>2022-10-16T01:32:48-07:00</published><updated>2022-10-16T01:32:48-07:00</updated><id>https://hivedocs.info/tools/rc/delegation/2022/10/16/rc-delegation-tool-update-rc</id><content type="html" xml:base="https://hivedocs.info/tools/rc/delegation/2022/10/16/rc-delegation-tool-update-rc.html"><![CDATA[<div id="content-primersion-rc-delegation-tool-update-rc">![](https://images.ecency.com/DQmcXEvn33Sph3AMpajUr46mCxbM4GZFKYupgof5aaHQnZQ/hivewp20.png)
-
-In my [yesterdays post over here](https://peakd.com/hive-139531/@primersion/rc-delegation-tool) I have introduced a new RC delegation tool, which you can access at https://primersion.com/rc.
-
-I implemented a few small improvements, to make the tool even more useful. I would love to see some of those implemented over at PeakD and other frontends in the future as well.
-
-Thanks again for @louis88 for a few more useful inputs.
-
-This post will explain the improvements and how to calculate the equivalent HP amount for your RC delegations.
-
-## Improvements
-The biggest change I made to the tool is adding an HP mode, which allows you to specifiy the RC you want to delegate in an HP equivalent amount. **This does not mean that you will be delegating HP, it's just a conversion as it is more understandable as the large RC values.**
-
-![](https://images.ecency.com/DQmWUWfskVyE5LWqPyrYTzwfTpRHCuCr4JbcpLG5f36vmvs/image.png)
-
-You can switch between RC and HP mode using the toggle button on the top. Depending on the selected mode, the input field and the quick action buttons will then specify the amount of RC to delegate in the equivalent amount of HP or in RC directly.
-The delegate button on the right will always show you both values:
-
-![](https://images.ecency.com/DQmRWSakaPaFmGTmoTrWCzcUQMoPLCjEGWiBNg5wSdffdtr/image.png)
-
-Additionally I have updated the table with a progress bar for every account you are delegating to. You can easily see, which of them are running out of RC and delegate more to them:
-
-![](https://images.ecency.com/DQmRV8vGPYxxuax9mcN4TLRSqUJ9oToNovymWNVsZCE1gsm/image.png)
-
-Furthermore the table has an additional column showing the equivalent amount of HP, converted from the amount of RC you delegated.
-Above the table your total delegations are shown.
-
-The introduction of HP makes the tool much more user friendly and easier to use, so **I would suggest that all frontends will display it that way in the future or add a dual mode to switch between the different units.**
-
-## RC -&gt; HP Calculation
-
-RC is a very "abstract" unit and you easily get confused with those large numbers that single transactions will take e.g. my current total number of resource credits is `63,083,017,640,811`
-
-Humans just aren't great with large numbers, which is why we usually introduce abbreviatons for them. The following list shows an example of such (you probably are familiar with them from hard drive storage):
-```
-1 K = 1,000
-1 M = 1,000,000
-1 G = 1,000,000,000
-1 T = 1,000,000,000,000
-1 P = 1,000,000,000,000,000
-...
-```
-Like this the total RC of my account could be written as `63.083T`.
-
-One other useful thing is transforming values into some other value, which we are more familiar with.
-In case of Hive the first thing that comes into mind is HP of course. HP itself is actually also a converted value, based on VESTS. To calculate the HP of your account you first have to calculate the "Hive per Vests", which is done by fetching the dynamic global properties of the Hive chain and diving the total vesting fund by the total vesting shares:
-```
-hive_per_vests =  total_vesting_fund_hive / total_vesting_shares_hive;
-```
-Now you can calculate the HP of your account by multiplying the resulting value with the total vests of your account e.g. `69,702,435 *  0.000553 ~ 38,545 HP` for my account.
-
-### So how to convert RC into HP?
-
-RC itself is directly related to VESTS, so for converting RC to HP you multiply it by `hive_per_vests` and divide by `10^6`:
-```
-amount_hp = amount_rc * hive_per_vests / 10^6
-```
-e.g. `1,000,000,000 RC = 1G RC ~ 0.553 HP` as of now.
-
-As I already mentioned above I have added a mode to the delegation tool, which allows specifying the amount of RC you want to delegate in an HP equivalent, as this is a unit we are more familiar with and tend to understand better.
-
----
-
-Let me know what you think about the changes above and if you have any other suggestions for improving usabilty - more new things are to come, so stay tuned.
-
-<center>
-<a href="https://vote.hive.uno/@primersion" target="_blank">![primersion_banner3.png](https://files.peakd.com/file/peakd-hive/primersion/23tRzwwDYbKhwPwxsaKQGEJTsbgFwVC9rLuEMDduDQHyxS8giPw3opfWUMEGxYresWWjJ.png)</a>
-[Vote for my HIVE witness using Keychain.](https://vote.hive.uno/@primersion)
-</center></div>
-<script crossorigin="anonymous" integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=" src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-
-<script src="https://unpkg.com/steem-content-renderer"></script>
-
-<!-- <script src="https://cdn.jsdelivr.net/npm/hive-content-renderer/dist/hive-content-renderer.min.js"></script> -->
-<script>
-  $(document).ready(function() {
-    try {
-      const renderer = new SteemContentRenderer.DefaultRenderer({
-      // const renderer = new HiveContentRenderer({
-        baseUrl: "https://hive.blog/",
-        breaks: true,
-        skipSanitization: false,
-        allowInsecureScriptTags: false,
-        addNofollowToLinks: true,
-        doNotShowImages: false,
-        ipfsPrefix: "",
-        assetsWidth: 640,
-        assetsHeight: 480,
-        imageProxyFn: (url) => url,
-        usertagUrlFn: (account) => "/@primersion",
-        hashtagUrlFn: (hashtag) => "/rc-delegation-tool-update-rc",
-        isLinkSafeFn: (url) => true,
-      });
-      
-      const inputElem = $('#content-primersion-rc-delegation-tool-update-rc').html();
-      const outputElem = $('#content-primersion-rc-delegation-tool-update-rc');
-      const output = renderer.render(inputElem);
-      
-      outputElem.html(output);
-    } catch(e) {
-      console.log(e);
-    }
-  });
-</script>
-
-<style>
-  #content-primersion-rc-delegation-tool-update-rc {
-    padding: 0 3rem;
-    color: #444444;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    font-size: 16px;
-    line-height: 1.8;
-    text-shadow: 0 1px 0 #ffffff;
-    padding: 0.5rem;
-  }
-  #content-primersion-rc-delegation-tool-update-rc code {
-    background: white;
-  }
-  #content-primersion-rc-delegation-tool-update-rc a {
-    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
-  }
-  #content-primersion-rc-delegation-tool-update-rc a:hover {
-    border-bottom: 0;
-  }
-  #content-primersion-rc-delegation-tool-update-rc h1 {
-    font-size: 2.2em;
-  }
-  #content-primersion-rc-delegation-tool-update-rc h2, h3, h4, h5 {
-    margin-bottom: 0;
-  }
-  #content-primersion-rc-delegation-tool-update-rc header small {
-    color: #999;
-    font-size: 50%;
-  }
-  #content-primersion-rc-delegation-tool-update-rc img {
-    max-width: 100%;
-  }
-</style>
-
-<hr />
-
-<p>
-  See: <a href="https://ecency.com/hive-169321/@primersion/rc-delegation-tool-update-rc">RC Delegation Tool Update + RC -&gt; HP calculation</a>
-  by
-  <a href="https://hive.blog/@primersion">@primersion</a>
-</p>]]></content><author><name>primersion</name></author><category term="tools" /><category term="rc" /><category term="delegation" /><summary type="html"><![CDATA[This post will explain the improvements and how to calculate the equivalent HP amount for your RC delegations.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://images.ecency.com/DQmcXEvn33Sph3AMpajUr46mCxbM4GZFKYupgof5aaHQnZQ/hivewp20.png" /><media:content medium="image" url="https://images.ecency.com/DQmcXEvn33Sph3AMpajUr46mCxbM4GZFKYupgof5aaHQnZQ/hivewp20.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>
+  <footer class="hive-post-embed__source">
+    <span class="hive-post-embed__source-label">Source:</span>
+    <a href="https://peakd.com/hive-139531/@arcange/hivesql-update-20221018">HiveSQL Update - RC Delegations data available</a>
+    <span>by</span>
+    <a href="https://hive.blog/@arcange">@arcange</a>
+  </footer>
+</div>]]></content><author><name>arcange</name></author><category term="news" /><category term="sql" /><category term="database" /><summary type="html"><![CDATA[HiveSQL has been updated with a new table that helps find information about RC delegations faster and easier.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://i.imgur.com/tYFgjui.png" /><media:content medium="image" url="https://i.imgur.com/tYFgjui.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>

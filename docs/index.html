@@ -35,17 +35,10 @@ if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNo
 }
 </script>
   
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
-  
-  <!-- jQuery Modal -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.js"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.css" />
-  
-  <script src='https://unpkg.com/steem-content-renderer'></script>
+<script src='https://unpkg.com/steem-content-renderer'></script>
   <script src="/assets/javascript/universal-bridge-against-phishing.js"></script>
   <script src="/assets/javascript/lazysizes.min.js" async=""></script>
   <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet" />
-  <link href="https://fonts.googleapis.com/css?family=Cousine|Inconsolata" rel="stylesheet" />
   <link rel="shortcut icon" type="image/png" href="/assets/images/favicon-80x80.png" />
   <link rel="apple-touch-icon" type="image/png" href="/assets/images/favicon-80x80.png" />
   <link rel="apple-touch-icon" sizes="152x152" href="/assets/images/favicon-80x80.png" />
@@ -53,451 +46,473 @@ if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNo
   <link rel="apple-touch-icon" sizes="167x167" href="/assets/images/favicon-80x80.png" />
 </head>
 <body><header class="site-header" role="banner">
+  <div class="wrapper site-header-inner">
+    <a class="site-title" rel="author" href="/">Hive Chain Documentation</a>
 
-  <div class="wrapper"><a class="site-title" rel="author" href="/">Hive Chain Documentation</a>
+    <nav class="site-nav" aria-label="Primary">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+          </svg>
+        </span>
+      </label>
 
-      <nav class="site-nav">
-        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
-        <label for="nav-trigger">
-          <span class="menu-icon">
-            <svg viewBox="0 0 18 15" width="18px" height="15px">
-              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
-            </svg>
-          </span>
-        </label>
-
-        <div class="trigger"><a class="page-link" href="/news/">News</a><a class="page-link" href="/howto/">How To</a><a class="page-link" href="/links/">Useful Links</a><a class="page-link" href="/authors/">Authors</a><!-- HTML elements for search -->
-          <input type="text" id="search-input" placeholder="Search" />
-          
-          <ul id="results-container"></ul>
-
-          <script src="/assets/javascript/search.js"></script>
-          <script>
-            var sjs = SimpleJekyllSearch({
-              searchInput: document.getElementById('search-input'),
-              resultsContainer: document.getElementById('results-container'),
-              json: '/search.json'
-            })
-          </script>
-          <!-- <form style="float: right;" class="form-inline" method="get" action="http://www.google.com/search">
-            <input type="hidden" name="sitesearch" value="hivedocs.info" />
-            <input type="text" name="q" maxlength="255" placeholder="Search" />
-          </form> -->
-          
-          <!-- <a href="#" onclick="try { $('#authors-container').slideToggle(); } catch { document.getElementById('authors-container').style.display = 'block'; }; return false;">Authors &#187;</a>
-          <a href="#" onclick="try { $('#topics-container').slideToggle(); } catch { document.getElementById('topics-container').style.display = 'block'; }; return false;">Topics &#187;</a> -->
-          
-          <a href="#topics-container" rel="modal:open">Topics &#187;</a>
-          
-          <div id="topics-container" class="modal">
-            <h3>Topics</h3>
-            <ul><li><a class="page-link" href="/account-recovery/"><nobr>Account Recovery</nobr></a></li><li><a class="page-link" href="/core-development/"><nobr>Core Development</nobr></a></li><li><a class="page-link" href="/dapps/"><nobr>Dapps</nobr></a></li><li><a class="page-link" href="/docker/"><nobr>Docker</nobr></a></li><li><a class="page-link" href="/hardfork/"><nobr>Hardfork</nobr></a></li><li><a class="page-link" href="/hivemind/"><nobr>Hivemind</nobr></a></li><li><a class="page-link" href="/javascript/"><nobr>Javascript</nobr></a></li><li><a class="page-link" href="/multisig/"><nobr>Multisig</nobr></a></li><li><a class="page-link" href="/python/"><nobr>Python</nobr></a></li><li><a class="page-link" href="/ruby/"><nobr>Ruby</nobr></a></li><li><a class="page-link" href="/testnet/"><nobr>Testnet</nobr></a></li><li><a class="page-link" href="/tools/"><nobr>Tools</nobr></a></li><li><a class="page-link" href="/witness/"><nobr>Witness</nobr></a></li></ul>
-          </div>
-        </div>
-      </nav>
+      <div class="trigger"><a class="page-link" href="/news/">News</a><a class="page-link" href="/howto/">How To</a><a class="page-link" href="/links/">Useful Links</a><a class="page-link" href="/authors/">Authors</a><a class="page-link" href="/topics/">Topics</a><a class="page-link" href="/search/">Search</a></div>
+    </nav>
   </div>
 </header>
 <main class="page-content" aria-label="Content">
-      <div class="wrapper">
-        <div class="home"><div class="well">
-  The official Hive Developer Portal can be found here:
-  <a href="https://developers.hive.io/">developers.hive.io</a>
+      <div class="wrapper page-layout has-search-panel">
+        <div class="page-main">
+          <div class="home"><div class="home-intro">
+  <p><strong>hivedocs.info</strong> is a curated archive of Hive development posts, references, and implementation notes.</p>
+  <p>The official Hive Developer Portal lives at <a href="https://developers.hive.io/">developers.hive.io</a>. This site follows the ecosystem around it.</p>
 </div>
 <h2 class="post-list-heading">Posts</h2>
-    <ul class="post-list"><li class="well">
-  <div class="post-thumbnail" style="float: right; padding-right: 4px; padding-bottom: 4px;">
-    <a class="post-link" href="/tools/nodejs/2022/11/16/hive-stream-updates-version-205.html">
-      <img data-src="https://files.peakd.com/file/peakd-hive/beggars/AKGZiNjxyxfCrbkgFMA2BXvmjdhbV4WPAaFCYfh1ej8qwwiH6UqEu3KNuTLZ7R1.jpg" class="lazyload" />
-    </a>
-  </div><span class="post-meta">
-    Nov 16, 2022&nbsp;• <a href="/authors/#author-beggars">beggars</a></span>
-  <h3>
-    <a class="post-link" href="/tools/nodejs/2022/11/16/hive-stream-updates-version-205.html">
-      Hive Stream Updates: Version 2.0.5
-    </a>
-  </h3>Version 2.0.5 of Hive Stream has been published, and with it comes quite a few improvements and refactoring work.<br clear="both" />
+    <ul class="post-list"><li class="post-card">
+  <article class="post-card-inner"><div class="post-card-thumbnail">
+      <a class="post-link" href="/news/core/development/2023/01/02/hive-related-software-updates-in-past-couple-of-months-by-blocktrades-team.html">
+        <img data-src="https://images.hive.blog/DQmSihw8Kz4U7TuCQa98DDdCzqbqPFRumuVWAbareiYZW1Z/blocktrades%20update.png" class="lazyload" alt="Thumbnail for Hive-related software updates in past couple of months by BlockTrades team" />
+      </a>
+    </div><div class="post-card-body"><span class="post-meta">
+        Jan 2, 2023• <a href="/authors/#author-blocktrades">blocktrades</a></span>
+      <h3 class="post-card-title">
+        <a class="post-link" href="/news/core/development/2023/01/02/hive-related-software-updates-in-past-couple-of-months-by-blocktrades-team.html">
+          Hive-related software updates in past couple of months by BlockTrades team
+        </a>
+      </h3><p class="post-card-summary">It has been a while since my last post, but that’s just because I’ve been lazy about reporting, not because there’s not a lot going on</p></div>
+  </article>
 </li>
-<li class="well">
-  <div class="post-thumbnail" style="float: right; padding-right: 4px; padding-bottom: 4px;">
-    <a class="post-link" href="/news/core/development/2022/11/07/core-dev-meeting-42.html">
-      <img data-src="https://files.peakd.com/file/peakd-hive/howo/23wN2RDCNPLiYdw6WJdTT7vXKrdkPN9WGeQg69m15z27Bqj1yDiYS5bo2Dwn4DGHByM2C.jpg" class="lazyload" />
-    </a>
-  </div><span class="post-meta">
-    Nov 7, 2022&nbsp;• <a href="/authors/#author-howo">howo</a></span>
-  <h3>
-    <a class="post-link" href="/news/core/development/2022/11/07/core-dev-meeting-42.html">
-      Core dev meeting #42
-    </a>
-  </h3>many heart attacks of people telling me it doesn’t work when in fact it’s something they did wrong<br clear="both" />
+<li class="post-card">
+  <article class="post-card-inner"><div class="post-card-thumbnail">
+      <a class="post-link" href="/tools/nodejs/2022/11/16/hive-stream-updates-version-205.html">
+        <img data-src="https://files.peakd.com/file/peakd-hive/beggars/AKGZiNjxyxfCrbkgFMA2BXvmjdhbV4WPAaFCYfh1ej8qwwiH6UqEu3KNuTLZ7R1.jpg" class="lazyload" alt="Thumbnail for Hive Stream Updates: Version 2.0.5" />
+      </a>
+    </div><div class="post-card-body"><span class="post-meta">
+        Nov 16, 2022• <a href="/authors/#author-beggars">beggars</a></span>
+      <h3 class="post-card-title">
+        <a class="post-link" href="/tools/nodejs/2022/11/16/hive-stream-updates-version-205.html">
+          Hive Stream Updates: Version 2.0.5
+        </a>
+      </h3><p class="post-card-summary">Version 2.0.5 of Hive Stream has been published, and with it comes quite a few improvements and refactoring work.</p></div>
+  </article>
 </li>
-<li class="well">
-  <div class="post-thumbnail" style="float: right; padding-right: 4px; padding-bottom: 4px;">
-    <a class="post-link" href="/news/media/wikipedia/2022/11/04/help-with-hive-getting-added-to-wikipedia.html">
-      <img data-src="https://i.imgur.com/n2nbSXD.jpg" class="lazyload" />
-    </a>
-  </div><span class="post-meta">
-    Nov 4, 2022&nbsp;• <a href="/authors/#author-rubencress">rubencress</a></span>
-  <h3>
-    <a class="post-link" href="/news/media/wikipedia/2022/11/04/help-with-hive-getting-added-to-wikipedia.html">
-      Help with Hive getting added to Wikipedia
-    </a>
-  </h3>After seeing a Tweet from acidyo that showed that some brand using our logo I just went off and thought it was absolutely bonkers.<br clear="both" />
+<li class="post-card">
+  <article class="post-card-inner"><div class="post-card-thumbnail">
+      <a class="post-link" href="/news/core/development/2022/11/07/core-dev-meeting-42.html">
+        <img data-src="https://files.peakd.com/file/peakd-hive/howo/23wN2RDCNPLiYdw6WJdTT7vXKrdkPN9WGeQg69m15z27Bqj1yDiYS5bo2Dwn4DGHByM2C.jpg" class="lazyload" alt="Thumbnail for Core dev meeting #42" />
+      </a>
+    </div><div class="post-card-body"><span class="post-meta">
+        Nov 7, 2022• <a href="/authors/#author-howo">howo</a></span>
+      <h3 class="post-card-title">
+        <a class="post-link" href="/news/core/development/2022/11/07/core-dev-meeting-42.html">
+          Core dev meeting #42
+        </a>
+      </h3><p class="post-card-summary">many heart attacks of people telling me it doesn’t work when in fact it’s something they did wrong</p></div>
+  </article>
 </li>
-<li class="well">
-  <div class="post-thumbnail" style="float: right; padding-right: 4px; padding-bottom: 4px;">
-    <a class="post-link" href="/news/core/wallet/ledger/2022/11/01/hive-x-ledger-support-for-ledger-hardware-wallets.html">
-      <img data-src="https://images.hive.blog/DQmY6V5CTeBWrQ6D72dG7K4pgP8bvHpHXz3V6xVsANDi5pc/image.png" class="lazyload" />
-    </a>
-  </div><span class="post-meta">
-    Nov 1, 2022&nbsp;• <a href="/authors/#author-hiveio">hiveio</a></span>
-  <h3>
-    <a class="post-link" href="/news/core/wallet/ledger/2022/11/01/hive-x-ledger-support-for-ledger-hardware-wallets.html">
-      Hive x Ledger: Support for Ledger Hardware Wallets
-    </a>
-  </h3>We are thrilled to announce that Hive has been integrated with and is now available on Ledger Nano S, Nano S Plus, and Nano X hardware wallets effective today, November 1, 2022.<br clear="both" />
+<li class="post-card">
+  <article class="post-card-inner"><div class="post-card-thumbnail">
+      <a class="post-link" href="/news/media/wikipedia/2022/11/04/help-with-hive-getting-added-to-wikipedia.html">
+        <img data-src="https://i.imgur.com/n2nbSXD.jpg" class="lazyload" alt="Thumbnail for Help with Hive getting added to Wikipedia" />
+      </a>
+    </div><div class="post-card-body"><span class="post-meta">
+        Nov 4, 2022• <a href="/authors/#author-rubencress">rubencress</a></span>
+      <h3 class="post-card-title">
+        <a class="post-link" href="/news/media/wikipedia/2022/11/04/help-with-hive-getting-added-to-wikipedia.html">
+          Help with Hive getting added to Wikipedia
+        </a>
+      </h3><p class="post-card-summary">After seeing a Tweet from acidyo that showed that some brand using our logo I just went off and thought it was absolutely bonkers.</p></div>
+  </article>
 </li>
-<li class="well">
-  <div class="post-thumbnail" style="float: right; padding-right: 4px; padding-bottom: 4px;">
-    <a class="post-link" href="/news/core/wallet/ledger/2022/11/01/hive-is-now-officially-supported-by-ledger.html">
-      <img data-src="https://files.peakd.com/file/peakd-hive/engrave/48YdnNGyye4zodge7bXCLy6bsded3n6732hGtyK3eBF4SK75e2Qet7pDJJDnuF8VyA.png" class="lazyload" />
-    </a>
-  </div><span class="post-meta">
-    Nov 1, 2022&nbsp;• <a href="/authors/#author-engrave">engrave</a></span>
-  <h3>
-    <a class="post-link" href="/news/core/wallet/ledger/2022/11/01/hive-is-now-officially-supported-by-ledger.html">
-      Hive is now officially supported by Ledger
-    </a>
-  </h3>I'm proud to announce that Ledger has finished their official review and published Hive application in their directory.<br clear="both" />
+<li class="post-card">
+  <article class="post-card-inner"><div class="post-card-thumbnail">
+      <a class="post-link" href="/news/core/wallet/ledger/2022/11/01/hive-x-ledger-support-for-ledger-hardware-wallets.html">
+        <img data-src="https://images.hive.blog/DQmY6V5CTeBWrQ6D72dG7K4pgP8bvHpHXz3V6xVsANDi5pc/image.png" class="lazyload" alt="Thumbnail for Hive x Ledger: Support for Ledger Hardware Wallets" />
+      </a>
+    </div><div class="post-card-body"><span class="post-meta">
+        Nov 1, 2022• <a href="/authors/#author-hiveio">hiveio</a></span>
+      <h3 class="post-card-title">
+        <a class="post-link" href="/news/core/wallet/ledger/2022/11/01/hive-x-ledger-support-for-ledger-hardware-wallets.html">
+          Hive x Ledger: Support for Ledger Hardware Wallets
+        </a>
+      </h3><p class="post-card-summary">We are thrilled to announce that Hive has been integrated with and is now available on Ledger Nano S, Nano S Plus, and Nano X hardware wallets effective today, November 1, 2022.</p></div>
+  </article>
 </li>
-<li class="well">
-  <div class="post-thumbnail" style="float: right; padding-right: 4px; padding-bottom: 4px;">
-    <a class="post-link" href="/tools/authentication/2022/10/23/hiveauth-proposal-2.html">
-      <img data-src="https://i.imgur.com/QnlB5h6.png" class="lazyload" />
-    </a>
-  </div><span class="post-meta">
-    Oct 23, 2022&nbsp;• <a href="/authors/#author-arcange">arcange</a></span>
-  <h3>
-    <a class="post-link" href="/tools/authentication/2022/10/23/hiveauth-proposal-2.html">
-      Hive Authentication Services Development and Maintenance
-    </a>
-  </h3>The Hive Authentication Services have been officially launched several months ago and I would like to thank everyone who has given their support and enabled its development.<br clear="both" />
+<li class="post-card">
+  <article class="post-card-inner"><div class="post-card-thumbnail">
+      <a class="post-link" href="/news/core/wallet/ledger/2022/11/01/hive-is-now-officially-supported-by-ledger.html">
+        <img data-src="https://files.peakd.com/file/peakd-hive/engrave/48YdnNGyye4zodge7bXCLy6bsded3n6732hGtyK3eBF4SK75e2Qet7pDJJDnuF8VyA.png" class="lazyload" alt="Thumbnail for Hive is now officially supported by Ledger" />
+      </a>
+    </div><div class="post-card-body"><span class="post-meta">
+        Nov 1, 2022• <a href="/authors/#author-engrave">engrave</a></span>
+      <h3 class="post-card-title">
+        <a class="post-link" href="/news/core/wallet/ledger/2022/11/01/hive-is-now-officially-supported-by-ledger.html">
+          Hive is now officially supported by Ledger
+        </a>
+      </h3><p class="post-card-summary">I'm proud to announce that Ledger has finished their official review and published Hive application in their directory.</p></div>
+  </article>
 </li>
-<li class="well">
-  <div class="post-thumbnail" style="float: right; padding-right: 4px; padding-bottom: 4px;">
-    <a class="post-link" href="/news/core/development/2022/10/22/hf27-is-coming-on-october-24th-some-slight-additional-evolution-needed.html">
-      <img data-src="https://files.peakd.com/file/peakd-hive/hiveio/23t6zNLwhGYp6GuwE7AK8JC2gHRXBUbo18bBr3MxG4sfmTPUKLZPDtD8eBF1CcbucjsTD.gif" class="lazyload" />
-    </a>
-  </div><span class="post-meta">
-    Oct 22, 2022&nbsp;• <a href="/authors/#author-hiveio">hiveio</a></span>
-  <h3>
-    <a class="post-link" href="/news/core/development/2022/10/22/hf27-is-coming-on-october-24th-some-slight-additional-evolution-needed.html">
-      HF27 is Coming on October 24th - Some Slight Additional Evolution Needed
-    </a>
-  </h3>Quick Schedule Fix HF27 will come into effect on or after Monday, October 24th at 12:00 UTC, when consensus is reached.<br clear="both" />
+<li class="post-card">
+  <article class="post-card-inner"><div class="post-card-thumbnail">
+      <a class="post-link" href="/tools/authentication/2022/10/23/hiveauth-proposal-2.html">
+        <img data-src="https://i.imgur.com/QnlB5h6.png" class="lazyload" alt="Thumbnail for Hive Authentication Services Development and Maintenance" />
+      </a>
+    </div><div class="post-card-body"><span class="post-meta">
+        Oct 23, 2022• <a href="/authors/#author-arcange">arcange</a></span>
+      <h3 class="post-card-title">
+        <a class="post-link" href="/tools/authentication/2022/10/23/hiveauth-proposal-2.html">
+          Hive Authentication Services Development and Maintenance
+        </a>
+      </h3><p class="post-card-summary">The Hive Authentication Services have been officially launched several months ago and I would like to thank everyone who has given their support and enabled its development.</p></div>
+  </article>
 </li>
-<li class="well">
-  <div class="post-thumbnail" style="float: right; padding-right: 4px; padding-bottom: 4px;">
-    <a class="post-link" href="/tools/docker/2022/10/20/hive-hf27-has-been-released-for-hiab-please-update-hive-in-a-box-update-info.html">
-      <img data-src="https://hivedocs.info/assets/images/favicon.png" class="lazyload" />
-    </a>
-  </div><span class="post-meta">
-    Oct 20, 2022&nbsp;• <a href="/authors/#author-someguy123">someguy123</a></span>
-  <h3>
-    <a class="post-link" href="/tools/docker/2022/10/20/hive-hf27-has-been-released-for-hiab-please-update-hive-in-a-box-update-info.html">
-      Hive HF27 has been released for HIAB - please update (Hive-in-a-box update info)
-    </a>
-  </h3>New HF fixes witness scheduling - instructions on updating Hive-in-a-box + Privex NIAB<br clear="both" />
+<li class="post-card">
+  <article class="post-card-inner"><div class="post-card-thumbnail">
+      <a class="post-link" href="/news/core/development/2022/10/22/hf27-is-coming-on-october-24th-some-slight-additional-evolution-needed.html">
+        <img data-src="https://files.peakd.com/file/peakd-hive/hiveio/23t6zNLwhGYp6GuwE7AK8JC2gHRXBUbo18bBr3MxG4sfmTPUKLZPDtD8eBF1CcbucjsTD.gif" class="lazyload" alt="Thumbnail for HF27 is Coming on October 24th - Some Slight Additional Evolution Needed" />
+      </a>
+    </div><div class="post-card-body"><span class="post-meta">
+        Oct 22, 2022• <a href="/authors/#author-hiveio">hiveio</a></span>
+      <h3 class="post-card-title">
+        <a class="post-link" href="/news/core/development/2022/10/22/hf27-is-coming-on-october-24th-some-slight-additional-evolution-needed.html">
+          HF27 is Coming on October 24th - Some Slight Additional Evolution Needed
+        </a>
+      </h3><p class="post-card-summary">Quick Schedule Fix HF27 will come into effect on or after Monday, October 24th at 12:00 UTC, when consensus is reached.</p></div>
+  </article>
 </li>
-<li class="well">
-  <div class="post-thumbnail" style="float: right; padding-right: 4px; padding-bottom: 4px;">
-    <a class="post-link" href="/news/sql/database/2022/10/18/hivesql-update-20221018.html">
-      <img data-src="https://i.imgur.com/tYFgjui.png" class="lazyload" />
-    </a>
-  </div><span class="post-meta">
-    Oct 18, 2022&nbsp;• <a href="/authors/#author-arcange">arcange</a></span>
-  <h3>
-    <a class="post-link" href="/news/sql/database/2022/10/18/hivesql-update-20221018.html">
-      HiveSQL Update - RC Delegations data available
-    </a>
-  </h3>HiveSQL has been updated with a new table that helps find information about RC delegations faster and easier.<br clear="both" />
+<li class="post-card">
+  <article class="post-card-inner"><div class="post-card-thumbnail">
+      <a class="post-link" href="/tools/docker/2022/10/20/hive-hf27-has-been-released-for-hiab-please-update-hive-in-a-box-update-info.html">
+        <img data-src="https://hivedocs.info/assets/images/favicon.png" class="lazyload" alt="Thumbnail for Hive HF27 has been released for HIAB - please update (Hive-in-a-box update info)" />
+      </a>
+    </div><div class="post-card-body"><span class="post-meta">
+        Oct 20, 2022• <a href="/authors/#author-someguy123">someguy123</a></span>
+      <h3 class="post-card-title">
+        <a class="post-link" href="/tools/docker/2022/10/20/hive-hf27-has-been-released-for-hiab-please-update-hive-in-a-box-update-info.html">
+          Hive HF27 has been released for HIAB - please update (Hive-in-a-box update info)
+        </a>
+      </h3><p class="post-card-summary">New HF fixes witness scheduling - instructions on updating Hive-in-a-box + Privex NIAB</p></div>
+  </article>
 </li>
-<li class="well">
-  <div class="post-thumbnail" style="float: right; padding-right: 4px; padding-bottom: 4px;">
-    <a class="post-link" href="/tools/rc/delegation/2022/10/16/rc-delegation-tool-update-rc.html">
-      <img data-src="https://images.ecency.com/DQmcXEvn33Sph3AMpajUr46mCxbM4GZFKYupgof5aaHQnZQ/hivewp20.png" class="lazyload" />
-    </a>
-  </div><span class="post-meta">
-    Oct 16, 2022&nbsp;• <a href="/authors/#author-primersion">primersion</a></span>
-  <h3>
-    <a class="post-link" href="/tools/rc/delegation/2022/10/16/rc-delegation-tool-update-rc.html">
-      RC Delegation Tool Update + RC -&gt; HP calculation
-    </a>
-  </h3>This post will explain the improvements and how to calculate the equivalent HP amount for your RC delegations.<br clear="both" />
+<li class="post-card">
+  <article class="post-card-inner"><div class="post-card-thumbnail">
+      <a class="post-link" href="/news/sql/database/2022/10/18/hivesql-update-20221018.html">
+        <img data-src="https://i.imgur.com/tYFgjui.png" class="lazyload" alt="Thumbnail for HiveSQL Update - RC Delegations data available" />
+      </a>
+    </div><div class="post-card-body"><span class="post-meta">
+        Oct 18, 2022• <a href="/authors/#author-arcange">arcange</a></span>
+      <h3 class="post-card-title">
+        <a class="post-link" href="/news/sql/database/2022/10/18/hivesql-update-20221018.html">
+          HiveSQL Update - RC Delegations data available
+        </a>
+      </h3><p class="post-card-summary">HiveSQL has been updated with a new table that helps find information about RC delegations faster and easier.</p></div>
+  </article>
 </li>
-<li class="well">
-  <div class="post-thumbnail" style="float: right; padding-right: 4px; padding-bottom: 4px;">
-    <a class="post-link" href="/news/sql/database/2022/10/15/hivesql-update-hf26.html">
-      <img data-src="https://i.imgur.com/bzVnVHr.png" class="lazyload" />
-    </a>
-  </div><span class="post-meta">
-    Oct 15, 2022&nbsp;• <a href="/authors/#author-arcange">arcange</a></span>
-  <h3>
-    <a class="post-link" href="/news/sql/database/2022/10/15/hivesql-update-hf26.html">
-      Hive SQL  - Hardfork 26 support
-    </a>
-  </h3>HiveSQL has been updated to fully support the new operation implemented for the hardfork 26 of the blockchain<br clear="both" />
+<li class="post-card">
+  <article class="post-card-inner"><div class="post-card-thumbnail">
+      <a class="post-link" href="/tools/rc/delegation/2022/10/16/rc-delegation-tool-update-rc.html">
+        <img data-src="https://images.ecency.com/DQmcXEvn33Sph3AMpajUr46mCxbM4GZFKYupgof5aaHQnZQ/hivewp20.png" class="lazyload" alt="Thumbnail for RC Delegation Tool Update + RC -&gt; HP calculation" />
+      </a>
+    </div><div class="post-card-body"><span class="post-meta">
+        Oct 16, 2022• <a href="/authors/#author-primersion">primersion</a></span>
+      <h3 class="post-card-title">
+        <a class="post-link" href="/tools/rc/delegation/2022/10/16/rc-delegation-tool-update-rc.html">
+          RC Delegation Tool Update + RC -&gt; HP calculation
+        </a>
+      </h3><p class="post-card-summary">This post will explain the improvements and how to calculate the equivalent HP amount for your RC delegations.</p></div>
+  </article>
 </li>
-<li class="well">
-  <div class="post-thumbnail" style="float: right; padding-right: 4px; padding-bottom: 4px;">
-    <a class="post-link" href="/tools/rc/delegation/2022/10/14/rc-delegation-tool.html">
-      <img data-src="https://images.ecency.com/DQmdDqv3k1P5ja6NhnC91MPDb38enEkuhPk2m6eVDoqAdMP/image.png" class="lazyload" />
-    </a>
-  </div><span class="post-meta">
-    Oct 14, 2022&nbsp;• <a href="/authors/#author-primersion">primersion</a></span>
-  <h3>
-    <a class="post-link" href="/tools/rc/delegation/2022/10/14/rc-delegation-tool.html">
-      RC Delegation Tool
-    </a>
-  </h3>RC delegation was added in HF26 and there are not many frontends yet, which support RC delegations. That's why I decided to write a simple tool myself. You can check it out right here: This post will explain<br clear="both" />
+<li class="post-card">
+  <article class="post-card-inner"><div class="post-card-thumbnail">
+      <a class="post-link" href="/news/sql/database/2022/10/15/hivesql-update-hf26.html">
+        <img data-src="https://i.imgur.com/bzVnVHr.png" class="lazyload" alt="Thumbnail for Hive SQL  - Hardfork 26 support" />
+      </a>
+    </div><div class="post-card-body"><span class="post-meta">
+        Oct 15, 2022• <a href="/authors/#author-arcange">arcange</a></span>
+      <h3 class="post-card-title">
+        <a class="post-link" href="/news/sql/database/2022/10/15/hivesql-update-hf26.html">
+          Hive SQL  - Hardfork 26 support
+        </a>
+      </h3><p class="post-card-summary">HiveSQL has been updated to fully support the new operation implemented for the hardfork 26 of the blockchain</p></div>
+  </article>
 </li>
-<li class="well">
-  <div class="post-thumbnail" style="float: right; padding-right: 4px; padding-bottom: 4px;">
-    <a class="post-link" href="/tools/python/nodes/2022/10/13/hived-rpc-scanner-update-v0-1-0.html">
-      <img data-src="https://images.hive.blog/DQmaL2iLfjwfBB2vXDDVRoopYimJ78WWKXUNrhHGMr5nAfH/Screenshot%202022-10-14%20at%2001.19.27.png" class="lazyload" />
-    </a>
-  </div><span class="post-meta">
-    Oct 13, 2022&nbsp;• <a href="/authors/#author-emrebeyler">emrebeyler</a></span>
-  <h3>
-    <a class="post-link" href="/tools/python/nodes/2022/10/13/hived-rpc-scanner-update-v0-1-0.html">
-      hived-rpc-scanner update: v0.1.1
-    </a>
-  </h3>CLI tool to check the status of Hive RPC nodes by testing certain endpoints<br clear="both" />
+<li class="post-card">
+  <article class="post-card-inner"><div class="post-card-thumbnail">
+      <a class="post-link" href="/tools/rc/delegation/2022/10/14/rc-delegation-tool.html">
+        <img data-src="https://images.ecency.com/DQmdDqv3k1P5ja6NhnC91MPDb38enEkuhPk2m6eVDoqAdMP/image.png" class="lazyload" alt="Thumbnail for RC Delegation Tool" />
+      </a>
+    </div><div class="post-card-body"><span class="post-meta">
+        Oct 14, 2022• <a href="/authors/#author-primersion">primersion</a></span>
+      <h3 class="post-card-title">
+        <a class="post-link" href="/tools/rc/delegation/2022/10/14/rc-delegation-tool.html">
+          RC Delegation Tool
+        </a>
+      </h3><p class="post-card-summary">RC delegation was added in HF26 and there are not many frontends yet, which support RC delegations. That's why I decided to write a simple tool myself. You can check it out right here: This post will explain</p></div>
+  </article>
 </li>
-<li class="well">
-  <div class="post-thumbnail" style="float: right; padding-right: 4px; padding-bottom: 4px;">
-    <a class="post-link" href="/news/core/wallet/ledger/2022/10/11/hive-ledger-wallet-updated-to-follow-successful-hard-fork-26.html">
-      <img data-src="https://files.peakd.com/file/peakd-hive/engrave/23sxk3aAxq6Ve6472R4JtADX3mG2owVtFYnz4sqNNWDKsPZHvx43djHdGV5geRF6rFgmF.png" class="lazyload" />
-    </a>
-  </div><span class="post-meta">
-    Oct 11, 2022&nbsp;• <a href="/authors/#author-engrave">engrave</a></span>
-  <h3>
-    <a class="post-link" href="/news/core/wallet/ledger/2022/10/11/hive-ledger-wallet-updated-to-follow-successful-hard-fork-26.html">
-      Hive Ledger Wallet updated to follow successful Hard Fork 26
-    </a>
-  </h3>From now on you can delegate Resource Credits.<br clear="both" />
+<li class="post-card">
+  <article class="post-card-inner"><div class="post-card-thumbnail">
+      <a class="post-link" href="/tools/python/nodes/2022/10/13/hived-rpc-scanner-update-v0-1-0.html">
+        <img data-src="https://images.hive.blog/DQmaL2iLfjwfBB2vXDDVRoopYimJ78WWKXUNrhHGMr5nAfH/Screenshot%202022-10-14%20at%2001.19.27.png" class="lazyload" alt="Thumbnail for hived-rpc-scanner update: v0.1.1" />
+      </a>
+    </div><div class="post-card-body"><span class="post-meta">
+        Oct 13, 2022• <a href="/authors/#author-emrebeyler">emrebeyler</a></span>
+      <h3 class="post-card-title">
+        <a class="post-link" href="/tools/python/nodes/2022/10/13/hived-rpc-scanner-update-v0-1-0.html">
+          hived-rpc-scanner update: v0.1.1
+        </a>
+      </h3><p class="post-card-summary">CLI tool to check the status of Hive RPC nodes by testing certain endpoints</p></div>
+  </article>
 </li>
-<li class="well">
-  <div class="post-thumbnail" style="float: right; padding-right: 4px; padding-bottom: 4px;">
-    <a class="post-link" href="/news/core/development/2022/10/09/the-evolution-of-hive-hardfork-26.html">
-      <img data-src="https://images.hive.blog/DQmXTmp3vpCiQmGxPdkDDqCtcVGy8PCsLNxJPqCZ7NNj2kx/image.png" class="lazyload" />
-    </a>
-  </div><span class="post-meta">
-    Oct 9, 2022&nbsp;• <a href="/authors/#author-hiveio">hiveio</a></span>
-  <h3>
-    <a class="post-link" href="/news/core/development/2022/10/09/the-evolution-of-hive-hardfork-26.html">
-      The Evolution of Hive: Hardfork 26
-    </a>
-  </h3>Hive is set to run a major protocol update, titled <i>Evolution</i>, on October 11th at 12:00 GMT.<br clear="both" />
+<li class="post-card">
+  <article class="post-card-inner"><div class="post-card-thumbnail">
+      <a class="post-link" href="/news/core/wallet/ledger/2022/10/11/hive-ledger-wallet-updated-to-follow-successful-hard-fork-26.html">
+        <img data-src="https://files.peakd.com/file/peakd-hive/engrave/23sxk3aAxq6Ve6472R4JtADX3mG2owVtFYnz4sqNNWDKsPZHvx43djHdGV5geRF6rFgmF.png" class="lazyload" alt="Thumbnail for Hive Ledger Wallet updated to follow successful Hard Fork 26" />
+      </a>
+    </div><div class="post-card-body"><span class="post-meta">
+        Oct 11, 2022• <a href="/authors/#author-engrave">engrave</a></span>
+      <h3 class="post-card-title">
+        <a class="post-link" href="/news/core/wallet/ledger/2022/10/11/hive-ledger-wallet-updated-to-follow-successful-hard-fork-26.html">
+          Hive Ledger Wallet updated to follow successful Hard Fork 26
+        </a>
+      </h3><p class="post-card-summary">From now on you can delegate Resource Credits.</p></div>
+  </article>
 </li>
-<li class="well">
-  <div class="post-thumbnail" style="float: right; padding-right: 4px; padding-bottom: 4px;">
-    <a class="post-link" href="/howto/witness/node/2022/10/09/hive-hardfork-26-jump-starter-kit.html">
-      <img data-src="https://img.youtube.com/vi/xNbpwk58gjQ/0.jpg" class="lazyload" />
-    </a>
-  </div><span class="post-meta">
-    Oct 9, 2022&nbsp;• <a href="/authors/#author-gtg">gtg</a></span>
-  <h3>
-    <a class="post-link" href="/howto/witness/node/2022/10/09/hive-hardfork-26-jump-starter-kit.html">
-      Hive HardFork 26 Jump Starter Kit
-    </a>
-  </h3>All you need to do to bring your new Hive instance up within a couple of hours, or upgrade within minutes.<br clear="both" />
+<li class="post-card">
+  <article class="post-card-inner"><div class="post-card-thumbnail">
+      <a class="post-link" href="/news/core/development/2022/10/09/the-evolution-of-hive-hardfork-26.html">
+        <img data-src="https://images.hive.blog/DQmXTmp3vpCiQmGxPdkDDqCtcVGy8PCsLNxJPqCZ7NNj2kx/image.png" class="lazyload" alt="Thumbnail for The Evolution of Hive: Hardfork 26" />
+      </a>
+    </div><div class="post-card-body"><span class="post-meta">
+        Oct 9, 2022• <a href="/authors/#author-hiveio">hiveio</a></span>
+      <h3 class="post-card-title">
+        <a class="post-link" href="/news/core/development/2022/10/09/the-evolution-of-hive-hardfork-26.html">
+          The Evolution of Hive: Hardfork 26
+        </a>
+      </h3><p class="post-card-summary">Hive is set to run a major protocol update, titled <i>Evolution</i>, on October 11th at 12:00 GMT.</p></div>
+  </article>
 </li>
-<li class="well">
-  <div class="post-thumbnail" style="float: right; padding-right: 4px; padding-bottom: 4px;">
-    <a class="post-link" href="/howto/witness/node/2022/10/09/downtime-upgrading-to-hf26.html">
-      <img data-src="https://images.ecency.com/DQmVMeiiEgs5bLUqhHCVzAobyqqtZ2QSZ1hafocEA9gPJi7/hive_fire.png" class="lazyload" />
-    </a>
-  </div><span class="post-meta">
-    Oct 9, 2022&nbsp;• <a href="/authors/#author-primersion">primersion</a></span>
-  <h3>
-    <a class="post-link" href="/howto/witness/node/2022/10/09/downtime-upgrading-to-hf26.html">
-      Downtime: Upgrading to HF26
-    </a>
-  </h3>It's time for the next Hive Hardfork 26, which will probably happen on Tuesday October 11th. I will be taking my server offline for the next few hours to perform scheduled maintenance and to upgrade my<br clear="both" />
+<li class="post-card">
+  <article class="post-card-inner"><div class="post-card-thumbnail">
+      <a class="post-link" href="/howto/witness/node/2022/10/09/hive-hardfork-26-jump-starter-kit.html">
+        <img data-src="https://img.youtube.com/vi/xNbpwk58gjQ/0.jpg" class="lazyload" alt="Thumbnail for Hive HardFork 26 Jump Starter Kit" />
+      </a>
+    </div><div class="post-card-body"><span class="post-meta">
+        Oct 9, 2022• <a href="/authors/#author-gtg">gtg</a></span>
+      <h3 class="post-card-title">
+        <a class="post-link" href="/howto/witness/node/2022/10/09/hive-hardfork-26-jump-starter-kit.html">
+          Hive HardFork 26 Jump Starter Kit
+        </a>
+      </h3><p class="post-card-summary">All you need to do to bring your new Hive instance up within a couple of hours, or upgrade within minutes.</p></div>
+  </article>
 </li>
-<li class="well">
-  <div class="post-thumbnail" style="float: right; padding-right: 4px; padding-bottom: 4px;">
-    <a class="post-link" href="/howto/witness/node/2022/10/06/the-easy-way-to-upgrade-to-hardfork-26-hive-in-a-box.html">
-      <img data-src="https://images.hive.blog/p/HuuaCwcKuiEjNgLb5Q7HbtUvB1HEHgck8hUkQMB4bFSJaxwFsYXGx7N9qtgEvLdGaoY?format=match&amp;mode=fit" class="lazyload" />
-    </a>
-  </div><span class="post-meta">
-    Oct 6, 2022&nbsp;• <a href="/authors/#author-someguy123">someguy123</a></span>
-  <h3>
-    <a class="post-link" href="/howto/witness/node/2022/10/06/the-easy-way-to-upgrade-to-hardfork-26-hive-in-a-box.html">
-      The easy way to upgrade to Hardfork 26 (Hive-in-a-box)
-    </a>
-  </h3>Read this if you've got an existing Hive-in-a-box (hive-docker) installation running the current version of Hive (HF25).<br clear="both" />
+<li class="post-card">
+  <article class="post-card-inner"><div class="post-card-thumbnail">
+      <a class="post-link" href="/howto/witness/node/2022/10/09/downtime-upgrading-to-hf26.html">
+        <img data-src="https://images.ecency.com/DQmVMeiiEgs5bLUqhHCVzAobyqqtZ2QSZ1hafocEA9gPJi7/hive_fire.png" class="lazyload" alt="Thumbnail for Downtime: Upgrading to HF26" />
+      </a>
+    </div><div class="post-card-body"><span class="post-meta">
+        Oct 9, 2022• <a href="/authors/#author-primersion">primersion</a></span>
+      <h3 class="post-card-title">
+        <a class="post-link" href="/howto/witness/node/2022/10/09/downtime-upgrading-to-hf26.html">
+          Downtime: Upgrading to HF26
+        </a>
+      </h3><p class="post-card-summary">It's time for the next Hive Hardfork 26, which will probably happen on Tuesday October 11th. I will be taking my server offline for the next few hours to perform scheduled maintenance and to upgrade my</p></div>
+  </article>
 </li>
-<li class="well">
-  <div class="post-thumbnail" style="float: right; padding-right: 4px; padding-bottom: 4px;">
-    <a class="post-link" href="/howto/witness/node/2022/10/06/upgrading-your-witness-node-for-hf26.html">
-      <img data-src="https://hivedocs.info/assets/images/favicon.png" class="lazyload" />
-    </a>
-  </div><span class="post-meta">
-    Oct 6, 2022&nbsp;• <a href="/authors/#author-therealwolf">therealwolf</a></span>
-  <h3>
-    <a class="post-link" href="/howto/witness/node/2022/10/06/upgrading-your-witness-node-for-hf26.html">
-      Upgrading your Witness Node for HF26
-    </a>
-  </h3>HF26 is right around the corner, on the 11th of October 2022. If you're a witness, now is the time to update your node(s).<br clear="both" />
+<li class="post-card">
+  <article class="post-card-inner"><div class="post-card-thumbnail">
+      <a class="post-link" href="/howto/witness/node/2022/10/06/the-easy-way-to-upgrade-to-hardfork-26-hive-in-a-box.html">
+        <img data-src="https://images.hive.blog/p/HuuaCwcKuiEjNgLb5Q7HbtUvB1HEHgck8hUkQMB4bFSJaxwFsYXGx7N9qtgEvLdGaoY?format=match&amp;mode=fit" class="lazyload" alt="Thumbnail for The easy way to upgrade to Hardfork 26 (Hive-in-a-box)" />
+      </a>
+    </div><div class="post-card-body"><span class="post-meta">
+        Oct 6, 2022• <a href="/authors/#author-someguy123">someguy123</a></span>
+      <h3 class="post-card-title">
+        <a class="post-link" href="/howto/witness/node/2022/10/06/the-easy-way-to-upgrade-to-hardfork-26-hive-in-a-box.html">
+          The easy way to upgrade to Hardfork 26 (Hive-in-a-box)
+        </a>
+      </h3><p class="post-card-summary">Read this if you've got an existing Hive-in-a-box (hive-docker) installation running the current version of Hive (HF25).</p></div>
+  </article>
 </li>
-<li class="well">
-  <div class="post-thumbnail" style="float: right; padding-right: 4px; padding-bottom: 4px;">
-    <a class="post-link" href="/howto/witness/node/2022/10/04/how-to-update-your-witness-to-hardfork-26-release-canidate-3.html">
-      <img data-src="https://files.peakd.com/file/peakd-hive/themarkymark/23uQp8Fg9jkJ2ASGE4ka7X5h1gh3RGZMxEVPa7TimKw4R7UmYbZ1JB38WEZzg9dnuLDF1.png" class="lazyload" />
-    </a>
-  </div><span class="post-meta">
-    Oct 4, 2022&nbsp;• <a href="/authors/#author-themarkymark">themarkymark</a></span>
-  <h3>
-    <a class="post-link" href="/howto/witness/node/2022/10/04/how-to-update-your-witness-to-hardfork-26-release-canidate-3.html">
-      How to update your witness to hardfork 26 release canidate 4 (Updated)
-    </a>
-  </h3>Update: Release canidate 4 has been released to fix an issue with rc delegations. Post has been updated to reflect this.<br clear="both" />
+<li class="post-card">
+  <article class="post-card-inner"><div class="post-card-thumbnail">
+      <a class="post-link" href="/howto/witness/node/2022/10/06/upgrading-your-witness-node-for-hf26.html">
+        <img data-src="https://hivedocs.info/assets/images/favicon.png" class="lazyload" alt="Thumbnail for Upgrading your Witness Node for HF26" />
+      </a>
+    </div><div class="post-card-body"><span class="post-meta">
+        Oct 6, 2022• <a href="/authors/#author-therealwolf">therealwolf</a></span>
+      <h3 class="post-card-title">
+        <a class="post-link" href="/howto/witness/node/2022/10/06/upgrading-your-witness-node-for-hf26.html">
+          Upgrading your Witness Node for HF26
+        </a>
+      </h3><p class="post-card-summary">HF26 is right around the corner, on the 11th of October 2022. If you're a witness, now is the time to update your node(s).</p></div>
+  </article>
 </li>
-<li class="well">
-  <div class="post-thumbnail" style="float: right; padding-right: 4px; padding-bottom: 4px;">
-    <a class="post-link" href="/news/core/development/2022/09/28/15th-update-of-2022-new-hive-hf26-release-candidate-3-released.html">
-      <img data-src="https://images.hive.blog/DQmSihw8Kz4U7TuCQa98DDdCzqbqPFRumuVWAbareiYZW1Z/blocktrades%20update.png" class="lazyload" />
-    </a>
-  </div><span class="post-meta">
-    Sep 28, 2022&nbsp;• <a href="/authors/#author-blocktrades">blocktrades</a></span>
-  <h3>
-    <a class="post-link" href="/news/core/development/2022/09/28/15th-update-of-2022-new-hive-hf26-release-candidate-3-released.html">
-      15th update of 2022: New Hive HF26 release candidate 3 released
-    </a>
-  </h3>Below are a few highlights of the Hive-related programming issues worked on by the BlockTrades team since my last post.<br clear="both" />
+<li class="post-card">
+  <article class="post-card-inner"><div class="post-card-thumbnail">
+      <a class="post-link" href="/howto/witness/node/2022/10/04/how-to-update-your-witness-to-hardfork-26-release-canidate-3.html">
+        <img data-src="https://files.peakd.com/file/peakd-hive/themarkymark/23uQp8Fg9jkJ2ASGE4ka7X5h1gh3RGZMxEVPa7TimKw4R7UmYbZ1JB38WEZzg9dnuLDF1.png" class="lazyload" alt="Thumbnail for How to update your witness to hardfork 26 release canidate 4 (Updated)" />
+      </a>
+    </div><div class="post-card-body"><span class="post-meta">
+        Oct 4, 2022• <a href="/authors/#author-themarkymark">themarkymark</a></span>
+      <h3 class="post-card-title">
+        <a class="post-link" href="/howto/witness/node/2022/10/04/how-to-update-your-witness-to-hardfork-26-release-canidate-3.html">
+          How to update your witness to hardfork 26 release canidate 4 (Updated)
+        </a>
+      </h3><p class="post-card-summary">Update: Release canidate 4 has been released to fix an issue with rc delegations. Post has been updated to reflect this.</p></div>
+  </article>
 </li>
-<li class="well">
-  <div class="post-thumbnail" style="float: right; padding-right: 4px; padding-bottom: 4px;">
-    <a class="post-link" href="/news/media/hiveauth/2022/09/28/presenting-hiveauth-at-oklahoma-state-university.html">
-      <img data-src="https://i.imgur.com/LUgYUfD.png" class="lazyload" />
-    </a>
-  </div><span class="post-meta">
-    Sep 28, 2022&nbsp;• <a href="/authors/#author-arcange">arcange</a></span>
-  <h3>
-    <a class="post-link" href="/news/media/hiveauth/2022/09/28/presenting-hiveauth-at-oklahoma-state-university.html">
-      Presenting HiveAuth at Oklahoma State University
-    </a>
-  </h3>The Blockchain Ideas Summit at Oklahoma State University took place today.<br clear="both" />
+<li class="post-card">
+  <article class="post-card-inner"><div class="post-card-thumbnail">
+      <a class="post-link" href="/news/core/development/2022/09/28/15th-update-of-2022-new-hive-hf26-release-candidate-3-released.html">
+        <img data-src="https://images.hive.blog/DQmSihw8Kz4U7TuCQa98DDdCzqbqPFRumuVWAbareiYZW1Z/blocktrades%20update.png" class="lazyload" alt="Thumbnail for 15th update of 2022: New Hive HF26 release candidate 3 released" />
+      </a>
+    </div><div class="post-card-body"><span class="post-meta">
+        Sep 28, 2022• <a href="/authors/#author-blocktrades">blocktrades</a></span>
+      <h3 class="post-card-title">
+        <a class="post-link" href="/news/core/development/2022/09/28/15th-update-of-2022-new-hive-hf26-release-candidate-3-released.html">
+          15th update of 2022: New Hive HF26 release candidate 3 released
+        </a>
+      </h3><p class="post-card-summary">Below are a few highlights of the Hive-related programming issues worked on by the BlockTrades team since my last post.</p></div>
+  </article>
 </li>
-<li class="well">
-  <div class="post-thumbnail" style="float: right; padding-right: 4px; padding-bottom: 4px;">
-    <a class="post-link" href="/tools/hiveengine/stats/2022/09/25/engine-snapshot-stats.html">
-      <img data-src="https://images.ecency.com/DQmWKA3VZko5JovpcSaWtKUJsZBcotTH1rbLiyV21MAg7Fh/image.png" class="lazyload" />
-    </a>
-  </div><span class="post-meta">
-    Sep 25, 2022&nbsp;• <a href="/authors/#author-primersion">primersion</a></span>
-  <h3>
-    <a class="post-link" href="/tools/hiveengine/stats/2022/09/25/engine-snapshot-stats.html">
-      Engine Snapshot Stats
-    </a>
-  </h3>In this post I will be talking about engine node snapshots, which play a substantial role in the operation of the Hive-Engine sidechain.<br clear="both" />
+<li class="post-card">
+  <article class="post-card-inner"><div class="post-card-thumbnail">
+      <a class="post-link" href="/news/media/hiveauth/2022/09/28/presenting-hiveauth-at-oklahoma-state-university.html">
+        <img data-src="https://i.imgur.com/LUgYUfD.png" class="lazyload" alt="Thumbnail for Presenting HiveAuth at Oklahoma State University" />
+      </a>
+    </div><div class="post-card-body"><span class="post-meta">
+        Sep 28, 2022• <a href="/authors/#author-arcange">arcange</a></span>
+      <h3 class="post-card-title">
+        <a class="post-link" href="/news/media/hiveauth/2022/09/28/presenting-hiveauth-at-oklahoma-state-university.html">
+          Presenting HiveAuth at Oklahoma State University
+        </a>
+      </h3><p class="post-card-summary">The Blockchain Ideas Summit at Oklahoma State University took place today.</p></div>
+  </article>
 </li>
-<li class="well">
-  <div class="post-thumbnail" style="float: right; padding-right: 4px; padding-bottom: 4px;">
-    <a class="post-link" href="/howto/nodejs/authentication/2022/09/21/integrating-has-hive-authentication-services.html">
-      <img data-src="https://images.ecency.com/DQmUCByKT3kcaeBvC5ekxHLHQPmsgSZPU5pieQDfC7shXGN/2022_09_21_22_43.png" class="lazyload" />
-    </a>
-  </div><span class="post-meta">
-    Sep 21, 2022&nbsp;• <a href="/authors/#author-primersion">primersion</a></span>
-  <h3>
-    <a class="post-link" href="/howto/nodejs/authentication/2022/09/21/integrating-has-hive-authentication-services.html">
-      Integrating HAS (Hive Authentication Services) on your website
-    </a>
-  </h3>The Hive Authentication Services provide a way for any applications, (either web, desktop or mobile) to easily authenticate users without asking them to provide any password or private key. Source: In<br clear="both" />
+<li class="post-card">
+  <article class="post-card-inner"><div class="post-card-thumbnail">
+      <a class="post-link" href="/tools/hiveengine/stats/2022/09/25/engine-snapshot-stats.html">
+        <img data-src="https://images.ecency.com/DQmWKA3VZko5JovpcSaWtKUJsZBcotTH1rbLiyV21MAg7Fh/image.png" class="lazyload" alt="Thumbnail for Engine Snapshot Stats" />
+      </a>
+    </div><div class="post-card-body"><span class="post-meta">
+        Sep 25, 2022• <a href="/authors/#author-primersion">primersion</a></span>
+      <h3 class="post-card-title">
+        <a class="post-link" href="/tools/hiveengine/stats/2022/09/25/engine-snapshot-stats.html">
+          Engine Snapshot Stats
+        </a>
+      </h3><p class="post-card-summary">In this post I will be talking about engine node snapshots, which play a substantial role in the operation of the Hive-Engine sidechain.</p></div>
+  </article>
 </li>
-<li class="well">
-  <div class="post-thumbnail" style="float: right; padding-right: 4px; padding-bottom: 4px;">
-    <a class="post-link" href="/howto/hiveengine/nodes/2022/09/18/engine-light-node-and-snapshot.html">
-      <img data-src="https://images.ecency.com/DQmVDrrfKW3M5xtaLfwsXWDWyRXSt6AyTaEZfMfaqA6J5gQ/image.png" class="lazyload" />
-    </a>
-  </div><span class="post-meta">
-    Sep 18, 2022&nbsp;• <a href="/authors/#author-primersion">primersion</a></span>
-  <h3>
-    <a class="post-link" href="/howto/hiveengine/nodes/2022/09/18/engine-light-node-and-snapshot.html">
-      Engine Light Node and Snapshot Update
-    </a>
-  </h3>In this post I will be giving an update on how Hive-Engine light nodes are coming along and an update on a few other small changes.<br clear="both" />
+<li class="post-card">
+  <article class="post-card-inner"><div class="post-card-thumbnail">
+      <a class="post-link" href="/howto/nodejs/authentication/2022/09/21/integrating-has-hive-authentication-services.html">
+        <img data-src="https://images.ecency.com/DQmUCByKT3kcaeBvC5ekxHLHQPmsgSZPU5pieQDfC7shXGN/2022_09_21_22_43.png" class="lazyload" alt="Thumbnail for Integrating HAS (Hive Authentication Services) on your website" />
+      </a>
+    </div><div class="post-card-body"><span class="post-meta">
+        Sep 21, 2022• <a href="/authors/#author-primersion">primersion</a></span>
+      <h3 class="post-card-title">
+        <a class="post-link" href="/howto/nodejs/authentication/2022/09/21/integrating-has-hive-authentication-services.html">
+          Integrating HAS (Hive Authentication Services) on your website
+        </a>
+      </h3><p class="post-card-summary">The Hive Authentication Services provide a way for any applications, (either web, desktop or mobile) to easily authenticate users without asking them to provide any password or private key. Source: In</p></div>
+  </article>
 </li>
-<li class="well">
-  <div class="post-thumbnail" style="float: right; padding-right: 4px; padding-bottom: 4px;">
-    <a class="post-link" href="/news/core/development/2022/09/07/14th-update-of-2022-hive-hf26-release-candidate-and-mirrornet-api-node-ready-for-app-testing.html">
-      <img data-src="https://images.hive.blog/DQmSihw8Kz4U7TuCQa98DDdCzqbqPFRumuVWAbareiYZW1Z/blocktrades%20update.png" class="lazyload" />
-    </a>
-  </div><span class="post-meta">
-    Sep 7, 2022&nbsp;• <a href="/authors/#author-blocktrades">blocktrades</a></span>
-  <h3>
-    <a class="post-link" href="/news/core/development/2022/09/07/14th-update-of-2022-hive-hf26-release-candidate-and-mirrornet-api-node-ready-for-app-testing.html">
-      14th update of 2022: Hive HF26 release candidate and mirrornet api node ready for app testing
-    </a>
-  </h3>hive hardfork 26 release candidate<br clear="both" />
+<li class="post-card">
+  <article class="post-card-inner"><div class="post-card-thumbnail">
+      <a class="post-link" href="/howto/hiveengine/nodes/2022/09/18/engine-light-node-and-snapshot.html">
+        <img data-src="https://images.ecency.com/DQmVDrrfKW3M5xtaLfwsXWDWyRXSt6AyTaEZfMfaqA6J5gQ/image.png" class="lazyload" alt="Thumbnail for Engine Light Node and Snapshot Update" />
+      </a>
+    </div><div class="post-card-body"><span class="post-meta">
+        Sep 18, 2022• <a href="/authors/#author-primersion">primersion</a></span>
+      <h3 class="post-card-title">
+        <a class="post-link" href="/howto/hiveengine/nodes/2022/09/18/engine-light-node-and-snapshot.html">
+          Engine Light Node and Snapshot Update
+        </a>
+      </h3><p class="post-card-summary">In this post I will be giving an update on how Hive-Engine light nodes are coming along and an update on a few other small changes.</p></div>
+  </article>
 </li>
-<li class="well">
-  <div class="post-thumbnail" style="float: right; padding-right: 4px; padding-bottom: 4px;">
-    <a class="post-link" href="/news/nodejs/condenser/2022/09/01/23flnj-my-latest-contributions-to-the-hive-condenser-and-wallet-apps.html">
-      <img data-src="https://images.hive.blog/DQmbfTbjkEgRP39769hqkNjhxPcxYgcDXNL5pkJW42cMtWB/Screen%20Shot%202022-09-01%20at%202.00.46%20pm.jpg" class="lazyload" />
-    </a>
-  </div><span class="post-meta">
-    Sep 1, 2022&nbsp;• <a href="/authors/#author-quochuy">quochuy</a></span>
-  <h3>
-    <a class="post-link" href="/news/nodejs/condenser/2022/09/01/23flnj-my-latest-contributions-to-the-hive-condenser-and-wallet-apps.html">
-      My latest contributions to the Hive Condenser and Wallet apps.
-    </a>
-  </h3>Here is a summary of my recent contributions to the code that runs this blog.<br clear="both" />
+<li class="post-card">
+  <article class="post-card-inner"><div class="post-card-thumbnail">
+      <a class="post-link" href="/news/core/development/2022/09/07/14th-update-of-2022-hive-hf26-release-candidate-and-mirrornet-api-node-ready-for-app-testing.html">
+        <img data-src="https://images.hive.blog/DQmSihw8Kz4U7TuCQa98DDdCzqbqPFRumuVWAbareiYZW1Z/blocktrades%20update.png" class="lazyload" alt="Thumbnail for 14th update of 2022: Hive HF26 release candidate and mirrornet api node ready for app testing" />
+      </a>
+    </div><div class="post-card-body"><span class="post-meta">
+        Sep 7, 2022• <a href="/authors/#author-blocktrades">blocktrades</a></span>
+      <h3 class="post-card-title">
+        <a class="post-link" href="/news/core/development/2022/09/07/14th-update-of-2022-hive-hf26-release-candidate-and-mirrornet-api-node-ready-for-app-testing.html">
+          14th update of 2022: Hive HF26 release candidate and mirrornet api node ready for app testing
+        </a>
+      </h3><p class="post-card-summary">hive hardfork 26 release candidate</p></div>
+  </article>
 </li>
-<li class="well">
-  <div class="post-thumbnail" style="float: right; padding-right: 4px; padding-bottom: 4px;">
-    <a class="post-link" href="/howto/witness/testnet/2022/08/20/full-public-fake-mirror-api.html">
-      <img data-src="https://img.youtube.com/vi/KhuTi1VLldo/0.jpg" class="lazyload" />
-    </a>
-  </div><span class="post-meta">
-    Aug 20, 2022&nbsp;• <a href="/authors/#author-gtg">gtg</a></span>
-  <h3>
-    <a class="post-link" href="/howto/witness/testnet/2022/08/20/full-public-fake-mirror-api.html">
-      Full Public Fake/Mirror API [WIP]
-    </a>
-  </h3><i>”Should anyone present know of any reason that this mirror should not be joined in holy consensus, speak now or forever hold your peace”</i><br clear="both" />
+<li class="post-card">
+  <article class="post-card-inner"><div class="post-card-thumbnail">
+      <a class="post-link" href="/news/nodejs/condenser/2022/09/01/23flnj-my-latest-contributions-to-the-hive-condenser-and-wallet-apps.html">
+        <img data-src="https://images.hive.blog/DQmbfTbjkEgRP39769hqkNjhxPcxYgcDXNL5pkJW42cMtWB/Screen%20Shot%202022-09-01%20at%202.00.46%20pm.jpg" class="lazyload" alt="Thumbnail for My latest contributions to the Hive Condenser and Wallet apps." />
+      </a>
+    </div><div class="post-card-body"><span class="post-meta">
+        Sep 1, 2022• <a href="/authors/#author-quochuy">quochuy</a></span>
+      <h3 class="post-card-title">
+        <a class="post-link" href="/news/nodejs/condenser/2022/09/01/23flnj-my-latest-contributions-to-the-hive-condenser-and-wallet-apps.html">
+          My latest contributions to the Hive Condenser and Wallet apps.
+        </a>
+      </h3><p class="post-card-summary">Here is a summary of my recent contributions to the code that runs this blog.</p></div>
+  </article>
 </li>
-<li class="well">
-  <div class="post-thumbnail" style="float: right; padding-right: 4px; padding-bottom: 4px;">
-    <a class="post-link" href="/tools/rc/delegation/2022/08/14/direct-rc-delegation-documentation.html">
-      <img data-src="https://i.imgur.com/IWiqQAj.png" class="lazyload" />
-    </a>
-  </div><span class="post-meta">
-    Aug 14, 2022&nbsp;• <a href="/authors/#author-howo">howo</a></span>
-  <h3>
-    <a class="post-link" href="/tools/rc/delegation/2022/08/14/direct-rc-delegation-documentation.html">
-      Direct RC delegation documentation
-    </a>
-  </h3>Now while this is a basic example, I'll dive into some more specifics.<br clear="both" />
+<li class="post-card">
+  <article class="post-card-inner"><div class="post-card-thumbnail">
+      <a class="post-link" href="/howto/witness/testnet/2022/08/20/full-public-fake-mirror-api.html">
+        <img data-src="https://img.youtube.com/vi/KhuTi1VLldo/0.jpg" class="lazyload" alt="Thumbnail for Full Public Fake/Mirror API [WIP]" />
+      </a>
+    </div><div class="post-card-body"><span class="post-meta">
+        Aug 20, 2022• <a href="/authors/#author-gtg">gtg</a></span>
+      <h3 class="post-card-title">
+        <a class="post-link" href="/howto/witness/testnet/2022/08/20/full-public-fake-mirror-api.html">
+          Full Public Fake/Mirror API [WIP]
+        </a>
+      </h3><p class="post-card-summary"><i>”Should anyone present know of any reason that this mirror should not be joined in holy consensus, speak now or forever hold your peace”</i></p></div>
+  </article>
 </li>
-<li class="well">
-  <div class="post-thumbnail" style="float: right; padding-right: 4px; padding-bottom: 4px;">
-    <a class="post-link" href="/howto/witness/testnet/2022/08/05/preparing-hive-mirrornet-a-k-a-fakenet-for-the-release-candidate-testing-wip.html">
-      <img data-src="https://images.hive.blog/DQmeqQQWELKtRktXbyJxxXA1Moye54bXDcY59YrUeQsUxsx/hive-mirror.gif" class="lazyload" />
-    </a>
-  </div><span class="post-meta">
-    Aug 5, 2022&nbsp;• <a href="/authors/#author-gtg">gtg</a></span>
-  <h3>
-    <a class="post-link" href="/howto/witness/testnet/2022/08/05/preparing-hive-mirrornet-a-k-a-fakenet-for-the-release-candidate-testing-wip.html">
-      Preparing Hive Mirrornet (a.k.a. fakenet) for the release candidate testing
-    </a>
-  </h3>I’ll use this post for on-chain coordination on the progress of its deployment.<br clear="both" />
+<li class="post-card">
+  <article class="post-card-inner"><div class="post-card-thumbnail">
+      <a class="post-link" href="/tools/rc/delegation/2022/08/14/direct-rc-delegation-documentation.html">
+        <img data-src="https://i.imgur.com/IWiqQAj.png" class="lazyload" alt="Thumbnail for Direct RC delegation documentation" />
+      </a>
+    </div><div class="post-card-body"><span class="post-meta">
+        Aug 14, 2022• <a href="/authors/#author-howo">howo</a></span>
+      <h3 class="post-card-title">
+        <a class="post-link" href="/tools/rc/delegation/2022/08/14/direct-rc-delegation-documentation.html">
+          Direct RC delegation documentation
+        </a>
+      </h3><p class="post-card-summary">Now while this is a basic example, I'll dive into some more specifics.</p></div>
+  </article>
 </li>
 </ul>
 
     <p class="rss-subscribe">subscribe <a href="/feed.xml">via RSS</a></p></div>
 
+        </div>
+
+        
+        <aside class="page-sidebar" aria-label="Search and browse">
+          <section class="sidebar-section sidebar-search">
+            <h2 class="sidebar-heading">Search posts</h2>
+            <p class="sidebar-copy">Search the locally indexed post archive.</p>
+            <input type="text" id="search-input" placeholder="Search posts" autocomplete="off" />
+            <ul id="results-container"></ul>
+          </section>
+
+          <section class="sidebar-section sidebar-topics">
+            <h2 class="sidebar-heading">Browse topics</h2>
+            <p class="sidebar-copy">Jump into curated topic landing pages.</p>
+            <ul class="topic-list topic-list-sidebar"><li><a class="page-link" href="/account-recovery/">Account Recovery</a></li><li><a class="page-link" href="/core-development/">Core Development</a></li><li><a class="page-link" href="/dapps/">Dapps</a></li><li><a class="page-link" href="/docker/">Docker</a></li><li><a class="page-link" href="/hardfork/">Hardfork</a></li><li><a class="page-link" href="/hivemind/">Hivemind</a></li><li><a class="page-link" href="/javascript/">Javascript</a></li><li><a class="page-link" href="/multisig/">Multisig</a></li><li><a class="page-link" href="/python/">Python</a></li><li><a class="page-link" href="/ruby/">Ruby</a></li><li><a class="page-link" href="/testnet/">Testnet</a></li><li><a class="page-link" href="/tools/">Tools</a></li><li><a class="page-link" href="/witness/">Witness</a></li></ul>
+          </section>
+        </aside>
+        
       </div>
     </main><footer class="site-footer h-card">
   <data class="u-url" href="/"></data>
@@ -522,6 +537,51 @@ if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNo
   </div>
 
 </footer>
-</body>
+<script src="/assets/javascript/search.js"></script>
+    <script>
+      (function () {
+        var input = document.getElementById('search-input');
+        var results = document.getElementById('results-container');
+        if (input && results && typeof SimpleJekyllSearch !== 'undefined') {
+          SimpleJekyllSearch({
+            searchInput: input,
+            resultsContainer: results,
+            json: '/search.json'
+          });
+        }
+
+        if (typeof SteemContentRenderer === 'undefined') return;
+
+        var targets = document.querySelectorAll('[data-hive-render-target="true"]');
+        if (!targets.length) return;
+
+        var renderer = new SteemContentRenderer.DefaultRenderer({
+          baseUrl: 'https://hive.blog/',
+          breaks: true,
+          skipSanitization: false,
+          allowInsecureScriptTags: false,
+          addNofollowToLinks: true,
+          doNotShowImages: false,
+          ipfsPrefix: '',
+          assetsWidth: 640,
+          assetsHeight: 480,
+          imageProxyFn: function (url) { return url; },
+          usertagUrlFn: function (account) { return '/@' + account; },
+          hashtagUrlFn: function (hashtag) { return '/tags/#' + hashtag; },
+          isLinkSafeFn: function () { return true; }
+        });
+
+        targets.forEach(function (target) {
+          try {
+            var inputHtml = target.innerHTML;
+            target.innerHTML = renderer.render(inputHtml);
+          } catch (e) {
+            console.log(e);
+          }
+        });
+      })();
+    </script>
+
+  </body>
 
 </html>

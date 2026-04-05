@@ -35,17 +35,10 @@ if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNo
 }
 </script>
   
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
-  
-  <!-- jQuery Modal -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.js"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.css" />
-  
-  <script src='https://unpkg.com/steem-content-renderer'></script>
+<script src='https://unpkg.com/steem-content-renderer'></script>
   <script src="/assets/javascript/universal-bridge-against-phishing.js"></script>
   <script src="/assets/javascript/lazysizes.min.js" async=""></script>
   <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet" />
-  <link href="https://fonts.googleapis.com/css?family=Cousine|Inconsolata" rel="stylesheet" />
   <link rel="shortcut icon" type="image/png" href="/assets/images/favicon-80x80.png" />
   <link rel="apple-touch-icon" type="image/png" href="/assets/images/favicon-80x80.png" />
   <link rel="apple-touch-icon" sizes="152x152" href="/assets/images/favicon-80x80.png" />
@@ -53,744 +46,789 @@ if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNo
   <link rel="apple-touch-icon" sizes="167x167" href="/assets/images/favicon-80x80.png" />
 </head>
 <body><header class="site-header" role="banner">
+  <div class="wrapper site-header-inner">
+    <a class="site-title" rel="author" href="/">Hive Chain Documentation</a>
 
-  <div class="wrapper"><a class="site-title" rel="author" href="/">Hive Chain Documentation</a>
+    <nav class="site-nav" aria-label="Primary">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+          </svg>
+        </span>
+      </label>
 
-      <nav class="site-nav">
-        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
-        <label for="nav-trigger">
-          <span class="menu-icon">
-            <svg viewBox="0 0 18 15" width="18px" height="15px">
-              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
-            </svg>
-          </span>
-        </label>
-
-        <div class="trigger"><a class="page-link" href="/news/">News</a><a class="page-link" href="/howto/">How To</a><a class="page-link" href="/links/">Useful Links</a><a class="page-link" href="/authors/">Authors</a><!-- HTML elements for search -->
-          <input type="text" id="search-input" placeholder="Search" />
-          
-          <ul id="results-container"></ul>
-
-          <script src="/assets/javascript/search.js"></script>
-          <script>
-            var sjs = SimpleJekyllSearch({
-              searchInput: document.getElementById('search-input'),
-              resultsContainer: document.getElementById('results-container'),
-              json: '/search.json'
-            })
-          </script>
-          <!-- <form style="float: right;" class="form-inline" method="get" action="http://www.google.com/search">
-            <input type="hidden" name="sitesearch" value="hivedocs.info" />
-            <input type="text" name="q" maxlength="255" placeholder="Search" />
-          </form> -->
-          
-          <!-- <a href="#" onclick="try { $('#authors-container').slideToggle(); } catch { document.getElementById('authors-container').style.display = 'block'; }; return false;">Authors &#187;</a>
-          <a href="#" onclick="try { $('#topics-container').slideToggle(); } catch { document.getElementById('topics-container').style.display = 'block'; }; return false;">Topics &#187;</a> -->
-          
-          <a href="#topics-container" rel="modal:open">Topics &#187;</a>
-          
-          <div id="topics-container" class="modal">
-            <h3>Topics</h3>
-            <ul><li><a class="page-link" href="/account-recovery/"><nobr>Account Recovery</nobr></a></li><li><a class="page-link" href="/core-development/"><nobr>Core Development</nobr></a></li><li><a class="page-link" href="/dapps/"><nobr>Dapps</nobr></a></li><li><a class="page-link" href="/docker/"><nobr>Docker</nobr></a></li><li><a class="page-link" href="/hardfork/"><nobr>Hardfork</nobr></a></li><li><a class="page-link" href="/hivemind/"><nobr>Hivemind</nobr></a></li><li><a class="page-link" href="/javascript/"><nobr>Javascript</nobr></a></li><li><a class="page-link" href="/multisig/"><nobr>Multisig</nobr></a></li><li><a class="page-link" href="/python/"><nobr>Python</nobr></a></li><li><a class="page-link" href="/ruby/"><nobr>Ruby</nobr></a></li><li><a class="page-link" href="/testnet/"><nobr>Testnet</nobr></a></li><li><a class="page-link" href="/tools/"><nobr>Tools</nobr></a></li><li><a class="page-link" href="/witness/"><nobr>Witness</nobr></a></li></ul>
-          </div>
-        </div>
-      </nav>
+      <div class="trigger"><a class="page-link" href="/news/">News</a><a class="page-link" href="/howto/">How To</a><a class="page-link" href="/links/">Useful Links</a><a class="page-link" href="/authors/">Authors</a><a class="page-link" href="/topics/">Topics</a><a class="page-link" href="/search/">Search</a></div>
+    </nav>
   </div>
 </header>
 <main class="page-content" aria-label="Content">
-      <div class="wrapper">
-        <h2 class="post-list-heading">Node.js</h2>
-<ul class="post-list"><li class="well">
-  <div class="post-thumbnail" style="float: right; padding-right: 4px; padding-bottom: 4px;">
-    <a class="post-link" href="/tools/nodejs/2022/11/16/hive-stream-updates-version-205.html">
-      <img data-src="https://files.peakd.com/file/peakd-hive/beggars/AKGZiNjxyxfCrbkgFMA2BXvmjdhbV4WPAaFCYfh1ej8qwwiH6UqEu3KNuTLZ7R1.jpg" class="lazyload" />
-    </a>
-  </div><span class="post-meta">
-    Nov 16, 2022&nbsp;• <a href="/authors/#author-beggars">beggars</a></span>
-  <h3>
-    <a class="post-link" href="/tools/nodejs/2022/11/16/hive-stream-updates-version-205.html">
-      Hive Stream Updates: Version 2.0.5
-    </a>
-  </h3>Version 2.0.5 of Hive Stream has been published, and with it comes quite a few improvements and refactoring work.<br clear="both" />
+      <div class="wrapper page-layout has-search-panel">
+        <div class="page-main">
+          <h2 class="post-list-heading">Node.js</h2>
+<ul class="post-list"><li class="post-card">
+  <article class="post-card-inner"><div class="post-card-thumbnail">
+      <a class="post-link" href="/tools/nodejs/2022/11/16/hive-stream-updates-version-205.html">
+        <img data-src="https://files.peakd.com/file/peakd-hive/beggars/AKGZiNjxyxfCrbkgFMA2BXvmjdhbV4WPAaFCYfh1ej8qwwiH6UqEu3KNuTLZ7R1.jpg" class="lazyload" alt="Thumbnail for Hive Stream Updates: Version 2.0.5" />
+      </a>
+    </div><div class="post-card-body"><span class="post-meta">
+        Nov 16, 2022• <a href="/authors/#author-beggars">beggars</a></span>
+      <h3 class="post-card-title">
+        <a class="post-link" href="/tools/nodejs/2022/11/16/hive-stream-updates-version-205.html">
+          Hive Stream Updates: Version 2.0.5
+        </a>
+      </h3><p class="post-card-summary">Version 2.0.5 of Hive Stream has been published, and with it comes quite a few improvements and refactoring work.</p></div>
+  </article>
 </li>
-<li class="well">
-  <div class="post-thumbnail" style="float: right; padding-right: 4px; padding-bottom: 4px;">
-    <a class="post-link" href="/howto/nodejs/authentication/2022/09/21/integrating-has-hive-authentication-services.html">
-      <img data-src="https://images.ecency.com/DQmUCByKT3kcaeBvC5ekxHLHQPmsgSZPU5pieQDfC7shXGN/2022_09_21_22_43.png" class="lazyload" />
-    </a>
-  </div><span class="post-meta">
-    Sep 21, 2022&nbsp;• <a href="/authors/#author-primersion">primersion</a></span>
-  <h3>
-    <a class="post-link" href="/howto/nodejs/authentication/2022/09/21/integrating-has-hive-authentication-services.html">
-      Integrating HAS (Hive Authentication Services) on your website
-    </a>
-  </h3>The Hive Authentication Services provide a way for any applications, (either web, desktop or mobile) to easily authenticate users without asking them to provide any password or private key. Source: In<br clear="both" />
+<li class="post-card">
+  <article class="post-card-inner"><div class="post-card-thumbnail">
+      <a class="post-link" href="/howto/nodejs/authentication/2022/09/21/integrating-has-hive-authentication-services.html">
+        <img data-src="https://images.ecency.com/DQmUCByKT3kcaeBvC5ekxHLHQPmsgSZPU5pieQDfC7shXGN/2022_09_21_22_43.png" class="lazyload" alt="Thumbnail for Integrating HAS (Hive Authentication Services) on your website" />
+      </a>
+    </div><div class="post-card-body"><span class="post-meta">
+        Sep 21, 2022• <a href="/authors/#author-primersion">primersion</a></span>
+      <h3 class="post-card-title">
+        <a class="post-link" href="/howto/nodejs/authentication/2022/09/21/integrating-has-hive-authentication-services.html">
+          Integrating HAS (Hive Authentication Services) on your website
+        </a>
+      </h3><p class="post-card-summary">The Hive Authentication Services provide a way for any applications, (either web, desktop or mobile) to easily authenticate users without asking them to provide any password or private key. Source: In</p></div>
+  </article>
 </li>
-<li class="well">
-  <div class="post-thumbnail" style="float: right; padding-right: 4px; padding-bottom: 4px;">
-    <a class="post-link" href="/news/nodejs/condenser/2022/09/01/23flnj-my-latest-contributions-to-the-hive-condenser-and-wallet-apps.html">
-      <img data-src="https://images.hive.blog/DQmbfTbjkEgRP39769hqkNjhxPcxYgcDXNL5pkJW42cMtWB/Screen%20Shot%202022-09-01%20at%202.00.46%20pm.jpg" class="lazyload" />
-    </a>
-  </div><span class="post-meta">
-    Sep 1, 2022&nbsp;• <a href="/authors/#author-quochuy">quochuy</a></span>
-  <h3>
-    <a class="post-link" href="/news/nodejs/condenser/2022/09/01/23flnj-my-latest-contributions-to-the-hive-condenser-and-wallet-apps.html">
-      My latest contributions to the Hive Condenser and Wallet apps.
-    </a>
-  </h3>Here is a summary of my recent contributions to the code that runs this blog.<br clear="both" />
+<li class="post-card">
+  <article class="post-card-inner"><div class="post-card-thumbnail">
+      <a class="post-link" href="/news/nodejs/condenser/2022/09/01/23flnj-my-latest-contributions-to-the-hive-condenser-and-wallet-apps.html">
+        <img data-src="https://images.hive.blog/DQmbfTbjkEgRP39769hqkNjhxPcxYgcDXNL5pkJW42cMtWB/Screen%20Shot%202022-09-01%20at%202.00.46%20pm.jpg" class="lazyload" alt="Thumbnail for My latest contributions to the Hive Condenser and Wallet apps." />
+      </a>
+    </div><div class="post-card-body"><span class="post-meta">
+        Sep 1, 2022• <a href="/authors/#author-quochuy">quochuy</a></span>
+      <h3 class="post-card-title">
+        <a class="post-link" href="/news/nodejs/condenser/2022/09/01/23flnj-my-latest-contributions-to-the-hive-condenser-and-wallet-apps.html">
+          My latest contributions to the Hive Condenser and Wallet apps.
+        </a>
+      </h3><p class="post-card-summary">Here is a summary of my recent contributions to the code that runs this blog.</p></div>
+  </article>
 </li>
-<li class="well">
-  <div class="post-thumbnail" style="float: right; padding-right: 4px; padding-bottom: 4px;">
-    <a class="post-link" href="/news/nodejs/condenser/2022/07/07/3fbqcm-my-latest-contributions-to-the-hive-condenser-and-wallet-apps.html">
-      <img data-src="https://images.hive.blog/DQmRzk6tkau5Aq8nT272SaW2BwjdwhvUEs9j2SpunPMoAZL/Screen%20Shot%202022-07-08%20at%202.24.55%20pm.jpg" class="lazyload" />
-    </a>
-  </div><span class="post-meta">
-    Jul 7, 2022&nbsp;• <a href="/authors/#author-quochuy">quochuy</a></span>
-  <h3>
-    <a class="post-link" href="/news/nodejs/condenser/2022/07/07/3fbqcm-my-latest-contributions-to-the-hive-condenser-and-wallet-apps.html">
-      My latest contributions to the Hive Condenser and Wallet apps.
-    </a>
-  </h3>Here is a summary of my recent contributions to the code that runs this blog.<br clear="both" />
+<li class="post-card">
+  <article class="post-card-inner"><div class="post-card-thumbnail">
+      <a class="post-link" href="/news/nodejs/condenser/2022/07/07/3fbqcm-my-latest-contributions-to-the-hive-condenser-and-wallet-apps.html">
+        <img data-src="https://images.hive.blog/DQmRzk6tkau5Aq8nT272SaW2BwjdwhvUEs9j2SpunPMoAZL/Screen%20Shot%202022-07-08%20at%202.24.55%20pm.jpg" class="lazyload" alt="Thumbnail for My latest contributions to the Hive Condenser and Wallet apps." />
+      </a>
+    </div><div class="post-card-body"><span class="post-meta">
+        Jul 7, 2022• <a href="/authors/#author-quochuy">quochuy</a></span>
+      <h3 class="post-card-title">
+        <a class="post-link" href="/news/nodejs/condenser/2022/07/07/3fbqcm-my-latest-contributions-to-the-hive-condenser-and-wallet-apps.html">
+          My latest contributions to the Hive Condenser and Wallet apps.
+        </a>
+      </h3><p class="post-card-summary">Here is a summary of my recent contributions to the code that runs this blog.</p></div>
+  </article>
 </li>
-<li class="well">
-  <div class="post-thumbnail" style="float: right; padding-right: 4px; padding-bottom: 4px;">
-    <a class="post-link" href="/howto/nodejs/authentication/2021/12/09/hive-authentication-services-pksa.html">
-      <img data-src="https://i.imgur.com/ePqTuLS.png" class="lazyload" />
-    </a>
-  </div><span class="post-meta">
-    Dec 9, 2021&nbsp;• <a href="/authors/#author-arcange">arcange</a></span>
-  <h3>
-    <a class="post-link" href="/howto/nodejs/authentication/2021/12/09/hive-authentication-services-pksa.html">
-      Hive Authentication Services - How to run your own PKSA - Code is now open-source
-    </a>
-  </h3>Check out how to run your own Private Key Storage Application to play with HAS. The code is now open-source.<br clear="both" />
+<li class="post-card">
+  <article class="post-card-inner"><div class="post-card-thumbnail">
+      <a class="post-link" href="/howto/nodejs/authentication/2021/12/09/hive-authentication-services-pksa.html">
+        <img data-src="https://i.imgur.com/ePqTuLS.png" class="lazyload" alt="Thumbnail for Hive Authentication Services - How to run your own PKSA - Code is now open-source" />
+      </a>
+    </div><div class="post-card-body"><span class="post-meta">
+        Dec 9, 2021• <a href="/authors/#author-arcange">arcange</a></span>
+      <h3 class="post-card-title">
+        <a class="post-link" href="/howto/nodejs/authentication/2021/12/09/hive-authentication-services-pksa.html">
+          Hive Authentication Services - How to run your own PKSA - Code is now open-source
+        </a>
+      </h3><p class="post-card-summary">Check out how to run your own Private Key Storage Application to play with HAS. The code is now open-source.</p></div>
+  </article>
 </li>
-<li class="well">
-  <div class="post-thumbnail" style="float: right; padding-right: 4px; padding-bottom: 4px;">
-    <a class="post-link" href="/news/nodejs/witness/2021/11/12/p-19g65lkvw9fu0l191d09e3d22cd302.html">
-      <img data-src="https://hivedocs.info/assets/images/favicon.png" class="lazyload" />
-    </a>
-  </div><span class="post-meta">
-    Nov 12, 2021&nbsp;• <a href="/authors/#author-therealwolf">therealwolf</a></span>
-  <h3>
-    <a class="post-link" href="/news/nodejs/witness/2021/11/12/p-19g65lkvw9fu0l191d09e3d22cd302.html">
-      Hive Witness Essentials Update
-    </a>
-  </h3>I've updated #Hive Witness Essentials, most notably dhive/hive-js and also fixed a few small bugs.<br clear="both" />
+<li class="post-card">
+  <article class="post-card-inner"><div class="post-card-thumbnail">
+      <a class="post-link" href="/news/nodejs/witness/2021/11/12/p-19g65lkvw9fu0l191d09e3d22cd302.html">
+        <img data-src="https://hivedocs.info/assets/images/favicon.png" class="lazyload" alt="Thumbnail for Hive Witness Essentials Update" />
+      </a>
+    </div><div class="post-card-body"><span class="post-meta">
+        Nov 12, 2021• <a href="/authors/#author-therealwolf">therealwolf</a></span>
+      <h3 class="post-card-title">
+        <a class="post-link" href="/news/nodejs/witness/2021/11/12/p-19g65lkvw9fu0l191d09e3d22cd302.html">
+          Hive Witness Essentials Update
+        </a>
+      </h3><p class="post-card-summary">I've updated #Hive Witness Essentials, most notably dhive/hive-js and also fixed a few small bugs.</p></div>
+  </article>
 </li>
-<li class="well">
-  <div class="post-thumbnail" style="float: right; padding-right: 4px; padding-bottom: 4px;">
-    <a class="post-link" href="/howto/nodejs/wallet/2021/11/08/how-to-use-your-ledger-device-with-hive-ledger-cli.html">
-      <img data-src="https://i.imgur.com/PRL7SLu.jpg" class="lazyload" />
-    </a>
-  </div><span class="post-meta">
-    Nov 8, 2021&nbsp;• <a href="/authors/#author-engrave">engrave</a></span>
-  <h3>
-    <a class="post-link" href="/howto/nodejs/wallet/2021/11/08/how-to-use-your-ledger-device-with-hive-ledger-cli.html">
-      How to use your ledger device with hive-ledger-cli
-    </a>
-  </h3>A guide for advanced users that would like to use Hive application with a CLI.<br clear="both" />
+<li class="post-card">
+  <article class="post-card-inner"><div class="post-card-thumbnail">
+      <a class="post-link" href="/howto/nodejs/wallet/2021/11/08/how-to-use-your-ledger-device-with-hive-ledger-cli.html">
+        <img data-src="https://i.imgur.com/PRL7SLu.jpg" class="lazyload" alt="Thumbnail for How to use your ledger device with hive-ledger-cli" />
+      </a>
+    </div><div class="post-card-body"><span class="post-meta">
+        Nov 8, 2021• <a href="/authors/#author-engrave">engrave</a></span>
+      <h3 class="post-card-title">
+        <a class="post-link" href="/howto/nodejs/wallet/2021/11/08/how-to-use-your-ledger-device-with-hive-ledger-cli.html">
+          How to use your ledger device with hive-ledger-cli
+        </a>
+      </h3><p class="post-card-summary">A guide for advanced users that would like to use Hive application with a CLI.</p></div>
+  </article>
 </li>
-<li class="well">
-  <div class="post-thumbnail" style="float: right; padding-right: 4px; padding-bottom: 4px;">
-    <a class="post-link" href="/news/nodejs/wallet/2021/08/16/update-on-my-work-on-ledger-app-hive.html">
-      <img data-src="https://files.peakd.com/file/peakd-hive/engrave/Eo23B9HfFGSxgkzJckVtC8WSMeoEwfMcitDDJBZYJzaiVGqirgAwMZmEHpr2WcufBP6.png" class="lazyload" />
-    </a>
-  </div><span class="post-meta">
-    Aug 16, 2021&nbsp;• <a href="/authors/#author-engrave">engrave</a></span>
-  <h3>
-    <a class="post-link" href="/news/nodejs/wallet/2021/08/16/update-on-my-work-on-ledger-app-hive.html">
-      Update on my work on Ledger App Hive
-    </a>
-  </h3>I'm continuing my work on Ledger App Hive and I am pretty confident it will be finished and submitted for official review soon.<br clear="both" />
+<li class="post-card">
+  <article class="post-card-inner"><div class="post-card-thumbnail">
+      <a class="post-link" href="/news/nodejs/wallet/2021/08/16/update-on-my-work-on-ledger-app-hive.html">
+        <img data-src="https://files.peakd.com/file/peakd-hive/engrave/Eo23B9HfFGSxgkzJckVtC8WSMeoEwfMcitDDJBZYJzaiVGqirgAwMZmEHpr2WcufBP6.png" class="lazyload" alt="Thumbnail for Update on my work on Ledger App Hive" />
+      </a>
+    </div><div class="post-card-body"><span class="post-meta">
+        Aug 16, 2021• <a href="/authors/#author-engrave">engrave</a></span>
+      <h3 class="post-card-title">
+        <a class="post-link" href="/news/nodejs/wallet/2021/08/16/update-on-my-work-on-ledger-app-hive.html">
+          Update on my work on Ledger App Hive
+        </a>
+      </h3><p class="post-card-summary">I'm continuing my work on Ledger App Hive and I am pretty confident it will be finished and submitted for official review soon.</p></div>
+  </article>
 </li>
-<li class="well">
-  <div class="post-thumbnail" style="float: right; padding-right: 4px; padding-bottom: 4px;">
-    <a class="post-link" href="/howto/nodejs/2021/08/02/everything-can-be-faster-on-hive-hive-js-and-dhive-new-changes.html">
-      <img data-src="https://files.peakd.com/file/peakd-hive/mahdiyari/23zS3SZnJwHE4qThdmvWRdRpLARpcFMm1Vq8LfDLqscHen53JFeNqq7EEGVfvhd2xcpTo.jpg" class="lazyload" />
-    </a>
-  </div><span class="post-meta">
-    Aug 2, 2021&nbsp;• <a href="/authors/#author-mahdiyari">mahdiyari</a></span>
-  <h3>
-    <a class="post-link" href="/howto/nodejs/2021/08/02/everything-can-be-faster-on-hive-hive-js-and-dhive-new-changes.html">
-      Everything can be faster on Hive - hive-js &amp; dhive new changes
-    </a>
-  </h3>Explaining why there were problems with RPC nodes and what was the problem and why you must update your application.<br clear="both" />
+<li class="post-card">
+  <article class="post-card-inner"><div class="post-card-thumbnail">
+      <a class="post-link" href="/howto/nodejs/2021/08/02/everything-can-be-faster-on-hive-hive-js-and-dhive-new-changes.html">
+        <img data-src="https://files.peakd.com/file/peakd-hive/mahdiyari/23zS3SZnJwHE4qThdmvWRdRpLARpcFMm1Vq8LfDLqscHen53JFeNqq7EEGVfvhd2xcpTo.jpg" class="lazyload" alt="Thumbnail for Everything can be faster on Hive - hive-js &amp; dhive new changes" />
+      </a>
+    </div><div class="post-card-body"><span class="post-meta">
+        Aug 2, 2021• <a href="/authors/#author-mahdiyari">mahdiyari</a></span>
+      <h3 class="post-card-title">
+        <a class="post-link" href="/howto/nodejs/2021/08/02/everything-can-be-faster-on-hive-hive-js-and-dhive-new-changes.html">
+          Everything can be faster on Hive - hive-js &amp; dhive new changes
+        </a>
+      </h3><p class="post-card-summary">Explaining why there were problems with RPC nodes and what was the problem and why you must update your application.</p></div>
+  </article>
 </li>
-<li class="well">
-  <div class="post-thumbnail" style="float: right; padding-right: 4px; padding-bottom: 4px;">
-    <a class="post-link" href="/news/nano/nodejs/wallet/2021/07/06/ledger-app-updated-with-hf25-operations.html">
-      <img data-src="https://files.peakd.com/file/peakd-hive/engrave/Eo23B9HfFGSxgkzJckVtC8WSMeoEwfMcitDDJBZYJzaiVGqirgAwMZmEHpr2WcufBP6.png" class="lazyload" />
-    </a>
-  </div><span class="post-meta">
-    Jul 6, 2021&nbsp;• <a href="/authors/#author-engrave">engrave</a></span>
-  <h3>
-    <a class="post-link" href="/news/nano/nodejs/wallet/2021/07/06/ledger-app-updated-with-hf25-operations.html">
-      Ledger App updated with HF25 operations
-    </a>
-  </h3><br clear="both" />
+<li class="post-card">
+  <article class="post-card-inner"><div class="post-card-thumbnail">
+      <a class="post-link" href="/news/nano/nodejs/wallet/2021/07/06/ledger-app-updated-with-hf25-operations.html">
+        <img data-src="https://files.peakd.com/file/peakd-hive/engrave/Eo23B9HfFGSxgkzJckVtC8WSMeoEwfMcitDDJBZYJzaiVGqirgAwMZmEHpr2WcufBP6.png" class="lazyload" alt="Thumbnail for Ledger App updated with HF25 operations" />
+      </a>
+    </div><div class="post-card-body"><span class="post-meta">
+        Jul 6, 2021• <a href="/authors/#author-engrave">engrave</a></span>
+      <h3 class="post-card-title">
+        <a class="post-link" href="/news/nano/nodejs/wallet/2021/07/06/ledger-app-updated-with-hf25-operations.html">
+          Ledger App updated with HF25 operations
+        </a>
+      </h3><p class="post-card-summary"></p></div>
+  </article>
 </li>
-<li class="well">
-  <div class="post-thumbnail" style="float: right; padding-right: 4px; padding-bottom: 4px;">
-    <a class="post-link" href="/howto/transition/hardfork/nodejs/2021/06/30/how-to-update-your-js-apps-after-hf25-or-hive-js-hive-tx.html">
-      <img data-src="https://files.peakd.com/file/peakd-hive/mahdiyari/EoAUUb3Tk8egsKerJ9hPnNxAHPLjT5f1WHTsxMcGej7B6EeYYcYcVaJz2Z5HwqC1W5y.png" class="lazyload" />
-    </a>
-  </div><span class="post-meta">
-    Jun 30, 2021&nbsp;• <a href="/authors/#author-mahdiyari">mahdiyari</a></span>
-  <h3>
-    <a class="post-link" href="/howto/transition/hardfork/nodejs/2021/06/30/how-to-update-your-js-apps-after-hf25-or-hive-js-hive-tx.html">
-      How to update your JS apps after HF25 | hive-js, hive-tx, dhive
-    </a>
-  </h3>There were some new operations introduced with HF25. Hive-js and hive-tx both are updated to support the new operations.<br clear="both" />
+<li class="post-card">
+  <article class="post-card-inner"><div class="post-card-thumbnail">
+      <a class="post-link" href="/howto/transition/hardfork/nodejs/2021/06/30/how-to-update-your-js-apps-after-hf25-or-hive-js-hive-tx.html">
+        <img data-src="https://files.peakd.com/file/peakd-hive/mahdiyari/EoAUUb3Tk8egsKerJ9hPnNxAHPLjT5f1WHTsxMcGej7B6EeYYcYcVaJz2Z5HwqC1W5y.png" class="lazyload" alt="Thumbnail for How to update your JS apps after HF25 | hive-js, hive-tx, dhive" />
+      </a>
+    </div><div class="post-card-body"><span class="post-meta">
+        Jun 30, 2021• <a href="/authors/#author-mahdiyari">mahdiyari</a></span>
+      <h3 class="post-card-title">
+        <a class="post-link" href="/howto/transition/hardfork/nodejs/2021/06/30/how-to-update-your-js-apps-after-hf25-or-hive-js-hive-tx.html">
+          How to update your JS apps after HF25 | hive-js, hive-tx, dhive
+        </a>
+      </h3><p class="post-card-summary">There were some new operations introduced with HF25. Hive-js and hive-tx both are updated to support the new operations.</p></div>
+  </article>
 </li>
-<li class="well">
-  <div class="post-thumbnail" style="float: right; padding-right: 4px; padding-bottom: 4px;">
-    <a class="post-link" href="/howto/nodejs/exchange/2021/06/11/cryptocurrency-exchange-trading-library-or-hive-and-hbd-prices.html">
-      <img data-src="https://images.hive.blog/DQmP7AXNQQHk7FXFZruTqK3nagHuWBefrNA489MHsxVbH5a/ccxt.png" class="lazyload" />
-    </a>
-  </div><span class="post-meta">
-    Jun 11, 2021&nbsp;• <a href="/authors/#author-geekgirl">geekgirl</a></span>
-  <h3>
-    <a class="post-link" href="/howto/nodejs/exchange/2021/06/11/cryptocurrency-exchange-trading-library-or-hive-and-hbd-prices.html">
-      CryptoCurrency eXchange Trading Library | Hive &amp; HBD Prices
-    </a>
-  </h3>CCXT is a cryptocurrency exchange trading library for Javascript, Python, and PHP. It is a trading API that supports more than 120 crypto exchanges and continues to add more.<br clear="both" />
+<li class="post-card">
+  <article class="post-card-inner"><div class="post-card-thumbnail">
+      <a class="post-link" href="/howto/nodejs/exchange/2021/06/11/cryptocurrency-exchange-trading-library-or-hive-and-hbd-prices.html">
+        <img data-src="https://images.hive.blog/DQmP7AXNQQHk7FXFZruTqK3nagHuWBefrNA489MHsxVbH5a/ccxt.png" class="lazyload" alt="Thumbnail for CryptoCurrency eXchange Trading Library | Hive &amp; HBD Prices" />
+      </a>
+    </div><div class="post-card-body"><span class="post-meta">
+        Jun 11, 2021• <a href="/authors/#author-geekgirl">geekgirl</a></span>
+      <h3 class="post-card-title">
+        <a class="post-link" href="/howto/nodejs/exchange/2021/06/11/cryptocurrency-exchange-trading-library-or-hive-and-hbd-prices.html">
+          CryptoCurrency eXchange Trading Library | Hive &amp; HBD Prices
+        </a>
+      </h3><p class="post-card-summary">CCXT is a cryptocurrency exchange trading library for Javascript, Python, and PHP. It is a trading API that supports more than 120 crypto exchanges and continues to add more.</p></div>
+  </article>
 </li>
-<li class="well">
-  <div class="post-thumbnail" style="float: right; padding-right: 4px; padding-bottom: 4px;">
-    <a class="post-link" href="/howto/nodejs/2021/05/14/making-a-decentralized-game-on-hive-last-part.html">
-      <img data-src="https://images.hive.blog/DQmah3PBKL6JDe3omk8wi2RFp3Lk2X8BZgb3FUpnkRTsfap/desktop-1245714_1280.jpg" class="lazyload" />
-    </a>
-  </div><span class="post-meta">
-    May 14, 2021&nbsp;• <a href="/authors/#author-mahdiyari">mahdiyari</a></span>
-  <h3>
-    <a class="post-link" href="/howto/nodejs/2021/05/14/making-a-decentralized-game-on-hive-last-part.html">
-      Making a Decentralized Game on Hive - Last part
-    </a>
-  </h3>First of all, thank you for following me and making these posts available for a bigger audience by sharing them.<br clear="both" />
+<li class="post-card">
+  <article class="post-card-inner"><div class="post-card-thumbnail">
+      <a class="post-link" href="/howto/nodejs/2021/05/14/making-a-decentralized-game-on-hive-last-part.html">
+        <img data-src="https://images.hive.blog/DQmah3PBKL6JDe3omk8wi2RFp3Lk2X8BZgb3FUpnkRTsfap/desktop-1245714_1280.jpg" class="lazyload" alt="Thumbnail for Making a Decentralized Game on Hive - Last part" />
+      </a>
+    </div><div class="post-card-body"><span class="post-meta">
+        May 14, 2021• <a href="/authors/#author-mahdiyari">mahdiyari</a></span>
+      <h3 class="post-card-title">
+        <a class="post-link" href="/howto/nodejs/2021/05/14/making-a-decentralized-game-on-hive-last-part.html">
+          Making a Decentralized Game on Hive - Last part
+        </a>
+      </h3><p class="post-card-summary">First of all, thank you for following me and making these posts available for a bigger audience by sharing them.</p></div>
+  </article>
 </li>
-<li class="well">
-  <div class="post-thumbnail" style="float: right; padding-right: 4px; padding-bottom: 4px;">
-    <a class="post-link" href="/news/nodejs/condenser/2021/04/22/6cv6sw-my-new-contributions-to-the-hive-condenser-and-wallet-apps.html">
-      <img data-src="https://gitlab.syncad.com/hive/condenser/uploads/f5417cdefb5d92bdca036ab9c1d83992/Screen_Shot_2021-04-15_at_2.47.54_pm.jpg" class="lazyload" />
-    </a>
-  </div><span class="post-meta">
-    Apr 22, 2021&nbsp;• <a href="/authors/#author-quochuy">quochuy</a></span>
-  <h3>
-    <a class="post-link" href="/news/nodejs/condenser/2021/04/22/6cv6sw-my-new-contributions-to-the-hive-condenser-and-wallet-apps.html">
-      My new contributions to the Hive Condenser and Wallet apps.
-    </a>
-  </h3>Report on my new development contributions to the software that powers Hive.Blog<br clear="both" />
+<li class="post-card">
+  <article class="post-card-inner"><div class="post-card-thumbnail">
+      <a class="post-link" href="/news/nodejs/condenser/2021/04/22/6cv6sw-my-new-contributions-to-the-hive-condenser-and-wallet-apps.html">
+        <img data-src="https://gitlab.syncad.com/hive/condenser/uploads/f5417cdefb5d92bdca036ab9c1d83992/Screen_Shot_2021-04-15_at_2.47.54_pm.jpg" class="lazyload" alt="Thumbnail for My new contributions to the Hive Condenser and Wallet apps." />
+      </a>
+    </div><div class="post-card-body"><span class="post-meta">
+        Apr 22, 2021• <a href="/authors/#author-quochuy">quochuy</a></span>
+      <h3 class="post-card-title">
+        <a class="post-link" href="/news/nodejs/condenser/2021/04/22/6cv6sw-my-new-contributions-to-the-hive-condenser-and-wallet-apps.html">
+          My new contributions to the Hive Condenser and Wallet apps.
+        </a>
+      </h3><p class="post-card-summary">Report on my new development contributions to the software that powers Hive.Blog</p></div>
+  </article>
 </li>
-<li class="well">
-  <div class="post-thumbnail" style="float: right; padding-right: 4px; padding-bottom: 4px;">
-    <a class="post-link" href="/news/nodejs/condenser/2021/04/13/5ps1ah-my-new-contributions-to-the-hive-condenser-and-wallet-apps.html">
-      <img data-src="https://gitlab.syncad.com/hive/condenser/uploads/2c64f4229ba3743c83cf0afcb37f9d91/Screen_Shot_2021-04-09_at_4.51.17_pm.jpg" class="lazyload" />
-    </a>
-  </div><span class="post-meta">
-    Apr 13, 2021&nbsp;• <a href="/authors/#author-quochuy">quochuy</a></span>
-  <h3>
-    <a class="post-link" href="/news/nodejs/condenser/2021/04/13/5ps1ah-my-new-contributions-to-the-hive-condenser-and-wallet-apps.html">
-      My new contributions to the Hive Condenser and Wallet apps.
-    </a>
-  </h3>Report on my new development contributions to the software that powers Hive.Blog<br clear="both" />
+<li class="post-card">
+  <article class="post-card-inner"><div class="post-card-thumbnail">
+      <a class="post-link" href="/news/nodejs/condenser/2021/04/13/5ps1ah-my-new-contributions-to-the-hive-condenser-and-wallet-apps.html">
+        <img data-src="https://gitlab.syncad.com/hive/condenser/uploads/2c64f4229ba3743c83cf0afcb37f9d91/Screen_Shot_2021-04-09_at_4.51.17_pm.jpg" class="lazyload" alt="Thumbnail for My new contributions to the Hive Condenser and Wallet apps." />
+      </a>
+    </div><div class="post-card-body"><span class="post-meta">
+        Apr 13, 2021• <a href="/authors/#author-quochuy">quochuy</a></span>
+      <h3 class="post-card-title">
+        <a class="post-link" href="/news/nodejs/condenser/2021/04/13/5ps1ah-my-new-contributions-to-the-hive-condenser-and-wallet-apps.html">
+          My new contributions to the Hive Condenser and Wallet apps.
+        </a>
+      </h3><p class="post-card-summary">Report on my new development contributions to the software that powers Hive.Blog</p></div>
+  </article>
 </li>
-<li class="well">
-  <div class="post-thumbnail" style="float: right; padding-right: 4px; padding-bottom: 4px;">
-    <a class="post-link" href="/howto/nodejs/2021/04/11/making-a-decentralized-game-on-hive-part-5.html">
-      <img data-src="https://images.hive.blog/DQmSeL2wLvGPWHqcLVX4ZtfhqidWhj4GVNiVDC2LsHX6jNX/game-4648923_1280.jpg" class="lazyload" />
-    </a>
-  </div><span class="post-meta">
-    Apr 11, 2021&nbsp;• <a href="/authors/#author-mahdiyari">mahdiyari</a></span>
-  <h3>
-    <a class="post-link" href="/howto/nodejs/2021/04/11/making-a-decentralized-game-on-hive-part-5.html">
-      Making a Decentralized Game on Hive - Part 5
-    </a>
-  </h3>Games are fun and most people like to play different kinds of games. I'm not sure about the game we are building.<br clear="both" />
+<li class="post-card">
+  <article class="post-card-inner"><div class="post-card-thumbnail">
+      <a class="post-link" href="/howto/nodejs/2021/04/11/making-a-decentralized-game-on-hive-part-5.html">
+        <img data-src="https://images.hive.blog/DQmSeL2wLvGPWHqcLVX4ZtfhqidWhj4GVNiVDC2LsHX6jNX/game-4648923_1280.jpg" class="lazyload" alt="Thumbnail for Making a Decentralized Game on Hive - Part 5" />
+      </a>
+    </div><div class="post-card-body"><span class="post-meta">
+        Apr 11, 2021• <a href="/authors/#author-mahdiyari">mahdiyari</a></span>
+      <h3 class="post-card-title">
+        <a class="post-link" href="/howto/nodejs/2021/04/11/making-a-decentralized-game-on-hive-part-5.html">
+          Making a Decentralized Game on Hive - Part 5
+        </a>
+      </h3><p class="post-card-summary">Games are fun and most people like to play different kinds of games. I'm not sure about the game we are building.</p></div>
+  </article>
 </li>
-<li class="well">
-  <div class="post-thumbnail" style="float: right; padding-right: 4px; padding-bottom: 4px;">
-    <a class="post-link" href="/howto/nodejs/2021/04/01/making-a-decentralized-game-on-hive-part-4.html">
-      <img data-src="https://images.hive.blog/DQmbqyPpfU2dpwYkn9GVJdMmJbfukkvZZ8Bwqk7epyswP9w/macbook-2617705_1280.jpg" class="lazyload" />
-    </a>
-  </div><span class="post-meta">
-    Apr 1, 2021&nbsp;• <a href="/authors/#author-mahdiyari">mahdiyari</a></span>
-  <h3>
-    <a class="post-link" href="/howto/nodejs/2021/04/01/making-a-decentralized-game-on-hive-part-4.html">
-      Making a Decentralized Game on Hive - Part 4
-    </a>
-  </h3>Let's start by implementing the API for retrieving the games list. Our API is public so it doesn't require user authentication. The API will just return the data synced from the blockchain.<br clear="both" />
+<li class="post-card">
+  <article class="post-card-inner"><div class="post-card-thumbnail">
+      <a class="post-link" href="/howto/nodejs/2021/04/01/making-a-decentralized-game-on-hive-part-4.html">
+        <img data-src="https://images.hive.blog/DQmbqyPpfU2dpwYkn9GVJdMmJbfukkvZZ8Bwqk7epyswP9w/macbook-2617705_1280.jpg" class="lazyload" alt="Thumbnail for Making a Decentralized Game on Hive - Part 4" />
+      </a>
+    </div><div class="post-card-body"><span class="post-meta">
+        Apr 1, 2021• <a href="/authors/#author-mahdiyari">mahdiyari</a></span>
+      <h3 class="post-card-title">
+        <a class="post-link" href="/howto/nodejs/2021/04/01/making-a-decentralized-game-on-hive-part-4.html">
+          Making a Decentralized Game on Hive - Part 4
+        </a>
+      </h3><p class="post-card-summary">Let's start by implementing the API for retrieving the games list. Our API is public so it doesn't require user authentication. The API will just return the data synced from the blockchain.</p></div>
+  </article>
 </li>
-<li class="well">
-  <div class="post-thumbnail" style="float: right; padding-right: 4px; padding-bottom: 4px;">
-    <a class="post-link" href="/news/nodejs/condenser/2021/03/30/5ejnqa-my-new-contributions-to-the-hive-condenser-and-wallet-apps.html">
-      <img data-src="https://gitlab.syncad.com/hive/condenser/uploads/d62922fd5986b9b2741360b62480e92f/Screen_Shot_2021-03-30_at_10.06.23_pm.jpg" class="lazyload" />
-    </a>
-  </div><span class="post-meta">
-    Mar 30, 2021&nbsp;• <a href="/authors/#author-quochuy">quochuy</a></span>
-  <h3>
-    <a class="post-link" href="/news/nodejs/condenser/2021/03/30/5ejnqa-my-new-contributions-to-the-hive-condenser-and-wallet-apps.html">
-      My new contributions to the Hive Condenser and Wallet apps.
-    </a>
-  </h3>Report on my new development contributions to the software that powers Hive.Blog<br clear="both" />
+<li class="post-card">
+  <article class="post-card-inner"><div class="post-card-thumbnail">
+      <a class="post-link" href="/news/nodejs/condenser/2021/03/30/5ejnqa-my-new-contributions-to-the-hive-condenser-and-wallet-apps.html">
+        <img data-src="https://gitlab.syncad.com/hive/condenser/uploads/d62922fd5986b9b2741360b62480e92f/Screen_Shot_2021-03-30_at_10.06.23_pm.jpg" class="lazyload" alt="Thumbnail for My new contributions to the Hive Condenser and Wallet apps." />
+      </a>
+    </div><div class="post-card-body"><span class="post-meta">
+        Mar 30, 2021• <a href="/authors/#author-quochuy">quochuy</a></span>
+      <h3 class="post-card-title">
+        <a class="post-link" href="/news/nodejs/condenser/2021/03/30/5ejnqa-my-new-contributions-to-the-hive-condenser-and-wallet-apps.html">
+          My new contributions to the Hive Condenser and Wallet apps.
+        </a>
+      </h3><p class="post-card-summary">Report on my new development contributions to the software that powers Hive.Blog</p></div>
+  </article>
 </li>
-<li class="well">
-  <div class="post-thumbnail" style="float: right; padding-right: 4px; padding-bottom: 4px;">
-    <a class="post-link" href="/howto/nodejs/2021/03/28/making-a-decentralized-game-on-hive-part-3.html">
-      <img data-src="https://images.hive.blog/DQmeBMvQ9RAne3j2qH1RrtDaWEyQ2bZo81ik3wsNXYGbp3E/coding-1853305_1280.jpg" class="lazyload" />
-    </a>
-  </div><span class="post-meta">
-    Mar 28, 2021&nbsp;• <a href="/authors/#author-mahdiyari">mahdiyari</a></span>
-  <h3>
-    <a class="post-link" href="/howto/nodejs/2021/03/28/making-a-decentralized-game-on-hive-part-3.html">
-      Making a Decentralized Game on Hive - Part 3
-    </a>
-  </h3>In the previous parts, we made a simple front-end with login functionality and initialized our API and back-end application with streaming.<br clear="both" />
+<li class="post-card">
+  <article class="post-card-inner"><div class="post-card-thumbnail">
+      <a class="post-link" href="/howto/nodejs/2021/03/28/making-a-decentralized-game-on-hive-part-3.html">
+        <img data-src="https://images.hive.blog/DQmeBMvQ9RAne3j2qH1RrtDaWEyQ2bZo81ik3wsNXYGbp3E/coding-1853305_1280.jpg" class="lazyload" alt="Thumbnail for Making a Decentralized Game on Hive - Part 3" />
+      </a>
+    </div><div class="post-card-body"><span class="post-meta">
+        Mar 28, 2021• <a href="/authors/#author-mahdiyari">mahdiyari</a></span>
+      <h3 class="post-card-title">
+        <a class="post-link" href="/howto/nodejs/2021/03/28/making-a-decentralized-game-on-hive-part-3.html">
+          Making a Decentralized Game on Hive - Part 3
+        </a>
+      </h3><p class="post-card-summary">In the previous parts, we made a simple front-end with login functionality and initialized our API and back-end application with streaming.</p></div>
+  </article>
 </li>
-<li class="well">
-  <div class="post-thumbnail" style="float: right; padding-right: 4px; padding-bottom: 4px;">
-    <a class="post-link" href="/howto/nodejs/2021/03/16/making-a-decentralized-game-on-hive-part-2.html">
-      <img data-src="https://images.hive.blog/DQmZn8iD8SQbqnN8RNGJku4SCKQH6pKAPBh6QqtBrby1mAN/code-944499_1280.jpg" class="lazyload" />
-    </a>
-  </div><span class="post-meta">
-    Mar 16, 2021&nbsp;• <a href="/authors/#author-mahdiyari">mahdiyari</a></span>
-  <h3>
-    <a class="post-link" href="/howto/nodejs/2021/03/16/making-a-decentralized-game-on-hive-part-2.html">
-      Making a Decentralized Game on Hive - Part 2
-    </a>
-  </h3>In this part, we work on the back-end of the game.<br clear="both" />
+<li class="post-card">
+  <article class="post-card-inner"><div class="post-card-thumbnail">
+      <a class="post-link" href="/howto/nodejs/2021/03/16/making-a-decentralized-game-on-hive-part-2.html">
+        <img data-src="https://images.hive.blog/DQmZn8iD8SQbqnN8RNGJku4SCKQH6pKAPBh6QqtBrby1mAN/code-944499_1280.jpg" class="lazyload" alt="Thumbnail for Making a Decentralized Game on Hive - Part 2" />
+      </a>
+    </div><div class="post-card-body"><span class="post-meta">
+        Mar 16, 2021• <a href="/authors/#author-mahdiyari">mahdiyari</a></span>
+      <h3 class="post-card-title">
+        <a class="post-link" href="/howto/nodejs/2021/03/16/making-a-decentralized-game-on-hive-part-2.html">
+          Making a Decentralized Game on Hive - Part 2
+        </a>
+      </h3><p class="post-card-summary">In this part, we work on the back-end of the game.</p></div>
+  </article>
 </li>
-<li class="well">
-  <div class="post-thumbnail" style="float: right; padding-right: 4px; padding-bottom: 4px;">
-    <a class="post-link" href="/howto/nodejs/2021/03/13/making-a-decentralized-game-on-hive-tic-tac-toe-part-1.html">
-      <img data-src="https://images.hive.blog/DQmYne66xZ9RBsrUwF9N76S5XnjJGyzEgBPbbsZRnNAHUzx/tic-tac-toe.png" class="lazyload" />
-    </a>
-  </div><span class="post-meta">
-    Mar 13, 2021&nbsp;• <a href="/authors/#author-mahdiyari">mahdiyari</a></span>
-  <h3>
-    <a class="post-link" href="/howto/nodejs/2021/03/13/making-a-decentralized-game-on-hive-tic-tac-toe-part-1.html">
-      Making a Decentralized Game on Hive - Tic Tac Toe - Part 1
-    </a>
-  </h3>We will develop a decentralized game by the end of this series. The goal is to make learning development on Hive blockchain easier by using a simple game as the training project.<br clear="both" />
+<li class="post-card">
+  <article class="post-card-inner"><div class="post-card-thumbnail">
+      <a class="post-link" href="/howto/nodejs/2021/03/13/making-a-decentralized-game-on-hive-tic-tac-toe-part-1.html">
+        <img data-src="https://images.hive.blog/DQmYne66xZ9RBsrUwF9N76S5XnjJGyzEgBPbbsZRnNAHUzx/tic-tac-toe.png" class="lazyload" alt="Thumbnail for Making a Decentralized Game on Hive - Tic Tac Toe - Part 1" />
+      </a>
+    </div><div class="post-card-body"><span class="post-meta">
+        Mar 13, 2021• <a href="/authors/#author-mahdiyari">mahdiyari</a></span>
+      <h3 class="post-card-title">
+        <a class="post-link" href="/howto/nodejs/2021/03/13/making-a-decentralized-game-on-hive-tic-tac-toe-part-1.html">
+          Making a Decentralized Game on Hive - Tic Tac Toe - Part 1
+        </a>
+      </h3><p class="post-card-summary">We will develop a decentralized game by the end of this series. The goal is to make learning development on Hive blockchain easier by using a simple game as the training project.</p></div>
+  </article>
 </li>
-<li class="well">
-  <div class="post-thumbnail" style="float: right; padding-right: 4px; padding-bottom: 4px;">
-    <a class="post-link" href="/news/nodejs/markdown/2021/03/12/render-helper-rewritten-to-typescript.html">
-      <img data-src="https://images.ecency.com/DQme94ZxteguGxyu8GBV6BNayKErMYv8QMjBiPFGn1NASkv/render_helper_copy.png" class="lazyload" />
-    </a>
-  </div><span class="post-meta">
-    Mar 12, 2021&nbsp;• <a href="/authors/#author-ecency">ecency</a></span>
-  <h3>
-    <a class="post-link" href="/news/nodejs/markdown/2021/03/12/render-helper-rewritten-to-typescript.html">
-      Render helper rewritten in Typescript
-    </a>
-  </h3>Another crucial package has been rewritten to Typescript.<br clear="both" />
+<li class="post-card">
+  <article class="post-card-inner"><div class="post-card-thumbnail">
+      <a class="post-link" href="/news/nodejs/markdown/2021/03/12/render-helper-rewritten-to-typescript.html">
+        <img data-src="https://images.ecency.com/DQme94ZxteguGxyu8GBV6BNayKErMYv8QMjBiPFGn1NASkv/render_helper_copy.png" class="lazyload" alt="Thumbnail for Render helper rewritten in Typescript" />
+      </a>
+    </div><div class="post-card-body"><span class="post-meta">
+        Mar 12, 2021• <a href="/authors/#author-ecency">ecency</a></span>
+      <h3 class="post-card-title">
+        <a class="post-link" href="/news/nodejs/markdown/2021/03/12/render-helper-rewritten-to-typescript.html">
+          Render helper rewritten in Typescript
+        </a>
+      </h3><p class="post-card-summary">Another crucial package has been rewritten to Typescript.</p></div>
+  </article>
 </li>
-<li class="well">
-  <div class="post-thumbnail" style="float: right; padding-right: 4px; padding-bottom: 4px;">
-    <a class="post-link" href="/howto/nano/nodejs/wallet/2021/03/02/javascript-library-for-ledger-nano-s-hive-application.html">
-      <img data-src="https://files.peakd.com/file/peakd-hive/engrave/EowF9ezqJkPjHhLKMx9NjA82sqpuhKVddGJHDgbd5zyo9TsVhKtGc1714xmomVXPeLL" class="lazyload" />
-    </a>
-  </div><span class="post-meta">
-    Mar 2, 2021&nbsp;• <a href="/authors/#author-engrave">engrave</a></span>
-  <h3>
-    <a class="post-link" href="/howto/nano/nodejs/wallet/2021/03/02/javascript-library-for-ledger-nano-s-hive-application.html">
-      JavaScript library for Ledger Nano S HIVE application
-    </a>
-  </h3>In order to get official support from Ledger (i.e. the possibility to install it from Ledger Live), we need to meet several requirements. And I'm trying to fulfill them all so we could benefit from the hardware wallet support.<br clear="both" />
+<li class="post-card">
+  <article class="post-card-inner"><div class="post-card-thumbnail">
+      <a class="post-link" href="/howto/nano/nodejs/wallet/2021/03/02/javascript-library-for-ledger-nano-s-hive-application.html">
+        <img data-src="https://files.peakd.com/file/peakd-hive/engrave/EowF9ezqJkPjHhLKMx9NjA82sqpuhKVddGJHDgbd5zyo9TsVhKtGc1714xmomVXPeLL" class="lazyload" alt="Thumbnail for JavaScript library for Ledger Nano S HIVE application" />
+      </a>
+    </div><div class="post-card-body"><span class="post-meta">
+        Mar 2, 2021• <a href="/authors/#author-engrave">engrave</a></span>
+      <h3 class="post-card-title">
+        <a class="post-link" href="/howto/nano/nodejs/wallet/2021/03/02/javascript-library-for-ledger-nano-s-hive-application.html">
+          JavaScript library for Ledger Nano S HIVE application
+        </a>
+      </h3><p class="post-card-summary">In order to get official support from Ledger (i.e. the possibility to install it from Ledger Live), we need to meet several requirements. And I'm trying to fulfill them all so we could benefit from the hardware wallet support.</p></div>
+  </article>
 </li>
-<li class="well">
-  <div class="post-thumbnail" style="float: right; padding-right: 4px; padding-bottom: 4px;">
-    <a class="post-link" href="/news/nodejs/hivesigner/2021/02/27/hivesigner-sdk-rewritten-in-typescript.html">
-      <img data-src="https://images.ecency.com/DQmVHtnik5iTniaH5k2ivQKcFkKZNMQAWVLHrKY5QtNcrhw/image.png" class="lazyload" />
-    </a>
-  </div><span class="post-meta">
-    Feb 27, 2021&nbsp;• <a href="/authors/#author-good-karma">good-karma</a></span>
-  <h3>
-    <a class="post-link" href="/news/nodejs/hivesigner/2021/02/27/hivesigner-sdk-rewritten-in-typescript.html">
-      Hivesigner SDK rewritten in typescript
-    </a>
-  </h3>As a part of this update to hivesigner, we made minor changes into hive-uri package as well, which removes dependencies to old dsteem library.<br clear="both" />
+<li class="post-card">
+  <article class="post-card-inner"><div class="post-card-thumbnail">
+      <a class="post-link" href="/news/nodejs/hivesigner/2021/02/27/hivesigner-sdk-rewritten-in-typescript.html">
+        <img data-src="https://images.ecency.com/DQmVHtnik5iTniaH5k2ivQKcFkKZNMQAWVLHrKY5QtNcrhw/image.png" class="lazyload" alt="Thumbnail for Hivesigner SDK rewritten in typescript" />
+      </a>
+    </div><div class="post-card-body"><span class="post-meta">
+        Feb 27, 2021• <a href="/authors/#author-good-karma">good-karma</a></span>
+      <h3 class="post-card-title">
+        <a class="post-link" href="/news/nodejs/hivesigner/2021/02/27/hivesigner-sdk-rewritten-in-typescript.html">
+          Hivesigner SDK rewritten in typescript
+        </a>
+      </h3><p class="post-card-summary">As a part of this update to hivesigner, we made minor changes into hive-uri package as well, which removes dependencies to old dsteem library.</p></div>
+  </article>
 </li>
-<li class="well">
-  <div class="post-thumbnail" style="float: right; padding-right: 4px; padding-bottom: 4px;">
-    <a class="post-link" href="/news/nodejs/condenser/2021/02/16/my-new-contributions-to-the-hive-condenser-and-wallet-apps.html">
-      <img data-src="https://images.hive.blog/DQmf2gw6tVD8jL4h5n5NhMj4VeEUBfm5Md3MpUTEDioE7nj/Screen%20Shot%202021-02-17%20at%202.38.47%20pm.jpg" class="lazyload" />
-    </a>
-  </div><span class="post-meta">
-    Feb 16, 2021&nbsp;• <a href="/authors/#author-quochuy">quochuy</a></span>
-  <h3>
-    <a class="post-link" href="/news/nodejs/condenser/2021/02/16/my-new-contributions-to-the-hive-condenser-and-wallet-apps.html">
-      My new contributions to the Hive Condenser and Wallet apps.
-    </a>
-  </h3>A little report on development work I've done to contribute to two of the major Hive frontends.<br clear="both" />
+<li class="post-card">
+  <article class="post-card-inner"><div class="post-card-thumbnail">
+      <a class="post-link" href="/news/nodejs/condenser/2021/02/16/my-new-contributions-to-the-hive-condenser-and-wallet-apps.html">
+        <img data-src="https://images.hive.blog/DQmf2gw6tVD8jL4h5n5NhMj4VeEUBfm5Md3MpUTEDioE7nj/Screen%20Shot%202021-02-17%20at%202.38.47%20pm.jpg" class="lazyload" alt="Thumbnail for My new contributions to the Hive Condenser and Wallet apps." />
+      </a>
+    </div><div class="post-card-body"><span class="post-meta">
+        Feb 16, 2021• <a href="/authors/#author-quochuy">quochuy</a></span>
+      <h3 class="post-card-title">
+        <a class="post-link" href="/news/nodejs/condenser/2021/02/16/my-new-contributions-to-the-hive-condenser-and-wallet-apps.html">
+          My new contributions to the Hive Condenser and Wallet apps.
+        </a>
+      </h3><p class="post-card-summary">A little report on development work I've done to contribute to two of the major Hive frontends.</p></div>
+  </article>
 </li>
-<li class="well">
-  <div class="post-thumbnail" style="float: right; padding-right: 4px; padding-bottom: 4px;">
-    <a class="post-link" href="/news/nodejs/condenser/2021/01/28/22ehbp-my-new-contributions-to-the-hive-condenser.html">
-      <img data-src="https://images.hive.blog/DQmNT6sMxNT3mDSHDtrntgc3Vr42AnVepo3frQoHtkm6Arb/Screen%20Shot%202021-01-28%20at%209.59.41%20pm.png" class="lazyload" />
-    </a>
-  </div><span class="post-meta">
-    Jan 28, 2021&nbsp;• <a href="/authors/#author-quochuy">quochuy</a></span>
-  <h3>
-    <a class="post-link" href="/news/nodejs/condenser/2021/01/28/22ehbp-my-new-contributions-to-the-hive-condenser.html">
-      My new contributions to the Hive Condenser
-    </a>
-  </h3>This is a regular report on my new contributions. Some of the new work below might still be in test and not yet deployed.<br clear="both" />
+<li class="post-card">
+  <article class="post-card-inner"><div class="post-card-thumbnail">
+      <a class="post-link" href="/news/nodejs/condenser/2021/01/28/22ehbp-my-new-contributions-to-the-hive-condenser.html">
+        <img data-src="https://images.hive.blog/DQmNT6sMxNT3mDSHDtrntgc3Vr42AnVepo3frQoHtkm6Arb/Screen%20Shot%202021-01-28%20at%209.59.41%20pm.png" class="lazyload" alt="Thumbnail for My new contributions to the Hive Condenser" />
+      </a>
+    </div><div class="post-card-body"><span class="post-meta">
+        Jan 28, 2021• <a href="/authors/#author-quochuy">quochuy</a></span>
+      <h3 class="post-card-title">
+        <a class="post-link" href="/news/nodejs/condenser/2021/01/28/22ehbp-my-new-contributions-to-the-hive-condenser.html">
+          My new contributions to the Hive Condenser
+        </a>
+      </h3><p class="post-card-summary">This is a regular report on my new contributions. Some of the new work below might still be in test and not yet deployed.</p></div>
+  </article>
 </li>
-<li class="well">
-  <div class="post-thumbnail" style="float: right; padding-right: 4px; padding-bottom: 4px;">
-    <a class="post-link" href="/news/nodejs/condenser/2021/01/21/4e8t3w-my-new-contributions-to-the-hive-condenser.html">
-      <img data-src="https://gitlab.syncad.com/hive/condenser/uploads/f1e38b9b961b4ec584aa3f8a804daf79/Screen_Shot_2021-01-21_at_10.54.08_pm.png" class="lazyload" />
-    </a>
-  </div><span class="post-meta">
-    Jan 21, 2021&nbsp;• <a href="/authors/#author-quochuy">quochuy</a></span>
-  <h3>
-    <a class="post-link" href="/news/nodejs/condenser/2021/01/21/4e8t3w-my-new-contributions-to-the-hive-condenser.html">
-      My new contributions to the Hive Condenser
-    </a>
-  </h3>This is a regular report on my new contributions. Some of the new work below might still be in test and not yet deployed.<br clear="both" />
+<li class="post-card">
+  <article class="post-card-inner"><div class="post-card-thumbnail">
+      <a class="post-link" href="/news/nodejs/condenser/2021/01/21/4e8t3w-my-new-contributions-to-the-hive-condenser.html">
+        <img data-src="https://gitlab.syncad.com/hive/condenser/uploads/f1e38b9b961b4ec584aa3f8a804daf79/Screen_Shot_2021-01-21_at_10.54.08_pm.png" class="lazyload" alt="Thumbnail for My new contributions to the Hive Condenser" />
+      </a>
+    </div><div class="post-card-body"><span class="post-meta">
+        Jan 21, 2021• <a href="/authors/#author-quochuy">quochuy</a></span>
+      <h3 class="post-card-title">
+        <a class="post-link" href="/news/nodejs/condenser/2021/01/21/4e8t3w-my-new-contributions-to-the-hive-condenser.html">
+          My new contributions to the Hive Condenser
+        </a>
+      </h3><p class="post-card-summary">This is a regular report on my new contributions. Some of the new work below might still be in test and not yet deployed.</p></div>
+  </article>
 </li>
-<li class="well">
-  <div class="post-thumbnail" style="float: right; padding-right: 4px; padding-bottom: 4px;">
-    <a class="post-link" href="/news/nodejs/condenser/2021/01/08/my-new-contributions-to-the-hive-condenser-and-hive-keychain.html">
-      <img data-src="https://images.hive.blog/DQmecYTZemY8SwU6rrg7awhpNRBsehUp7ivk9RGyZsUUpVw/quochuy-hive-witness.jpg" class="lazyload" />
-    </a>
-  </div><span class="post-meta">
-    Jan 8, 2021&nbsp;• <a href="/authors/#author-quochuy">quochuy</a></span>
-  <h3>
-    <a class="post-link" href="/news/nodejs/condenser/2021/01/08/my-new-contributions-to-the-hive-condenser-and-hive-keychain.html">
-      My new contributions to the Hive Condenser, Wallet &amp; Hive Keychain
-    </a>
-  </h3>Here are my recent development contributions to some of apps of the Hive community.<br clear="both" />
+<li class="post-card">
+  <article class="post-card-inner"><div class="post-card-thumbnail">
+      <a class="post-link" href="/news/nodejs/condenser/2021/01/08/my-new-contributions-to-the-hive-condenser-and-hive-keychain.html">
+        <img data-src="https://images.hive.blog/DQmecYTZemY8SwU6rrg7awhpNRBsehUp7ivk9RGyZsUUpVw/quochuy-hive-witness.jpg" class="lazyload" alt="Thumbnail for My new contributions to the Hive Condenser, Wallet &amp; Hive Keychain" />
+      </a>
+    </div><div class="post-card-body"><span class="post-meta">
+        Jan 8, 2021• <a href="/authors/#author-quochuy">quochuy</a></span>
+      <h3 class="post-card-title">
+        <a class="post-link" href="/news/nodejs/condenser/2021/01/08/my-new-contributions-to-the-hive-condenser-and-hive-keychain.html">
+          My new contributions to the Hive Condenser, Wallet &amp; Hive Keychain
+        </a>
+      </h3><p class="post-card-summary">Here are my recent development contributions to some of apps of the Hive community.</p></div>
+  </article>
 </li>
-<li class="well">
-  <div class="post-thumbnail" style="float: right; padding-right: 4px; padding-bottom: 4px;">
-    <a class="post-link" href="/news/nodejs/hive-keychain/2020/12/02/npm-module-for-hive-keychain.html">
-      <img data-src="https://hivedocs.info/assets/images/favicon.png" class="lazyload" />
-    </a>
-  </div><span class="post-meta">
-    Dec 2, 2020&nbsp;• <a href="/authors/#author-therealwolf">therealwolf</a></span>
-  <h3>
-    <a class="post-link" href="/news/nodejs/hive-keychain/2020/12/02/npm-module-for-hive-keychain.html">
-      NPM module for Hive Keychain
-    </a>
-  </h3>I've created a small Keychain helper for myself a while ago and recently converted it to an npm module to make it easier for other devs to integrate Keychain into their websites.<br clear="both" />
+<li class="post-card">
+  <article class="post-card-inner"><div class="post-card-thumbnail">
+      <a class="post-link" href="/news/nodejs/hive-keychain/2020/12/02/npm-module-for-hive-keychain.html">
+        <img data-src="https://hivedocs.info/assets/images/favicon.png" class="lazyload" alt="Thumbnail for NPM module for Hive Keychain" />
+      </a>
+    </div><div class="post-card-body"><span class="post-meta">
+        Dec 2, 2020• <a href="/authors/#author-therealwolf">therealwolf</a></span>
+      <h3 class="post-card-title">
+        <a class="post-link" href="/news/nodejs/hive-keychain/2020/12/02/npm-module-for-hive-keychain.html">
+          NPM module for Hive Keychain
+        </a>
+      </h3><p class="post-card-summary">I've created a small Keychain helper for myself a while ago and recently converted it to an npm module to make it easier for other devs to integrate Keychain into their websites.</p></div>
+  </article>
 </li>
-<li class="well">
-  <div class="post-thumbnail" style="float: right; padding-right: 4px; padding-bottom: 4px;">
-    <a class="post-link" href="/news/nodejs/condenser/2020/11/25/6gshbx-my-new-contributions-to-the-hive-condenser.html">
-      <img data-src="https://images.hive.blog/DQmPLe1Qg7msSpA9gCRbPMFrbD62Tdrf8MW7Sd6ucLcMktD/Screen%20Shot%202020-11-26%20at%204.10.30%20pm.png" class="lazyload" />
-    </a>
-  </div><span class="post-meta">
-    Nov 25, 2020&nbsp;• <a href="/authors/#author-quochuy">quochuy</a></span>
-  <h3>
-    <a class="post-link" href="/news/nodejs/condenser/2020/11/25/6gshbx-my-new-contributions-to-the-hive-condenser.html">
-      My new contributions to the Hive Condenser
-    </a>
-  </h3>As I was working on some bug on the witnesses page, I noticed that the API allowed me to fetch more than 100 witnesses so I went on and increased the number of witnesses from 100 to 200 which is enough to cover all of our current active witnesses.<br clear="both" />
+<li class="post-card">
+  <article class="post-card-inner"><div class="post-card-thumbnail">
+      <a class="post-link" href="/news/nodejs/condenser/2020/11/25/6gshbx-my-new-contributions-to-the-hive-condenser.html">
+        <img data-src="https://images.hive.blog/DQmPLe1Qg7msSpA9gCRbPMFrbD62Tdrf8MW7Sd6ucLcMktD/Screen%20Shot%202020-11-26%20at%204.10.30%20pm.png" class="lazyload" alt="Thumbnail for My new contributions to the Hive Condenser" />
+      </a>
+    </div><div class="post-card-body"><span class="post-meta">
+        Nov 25, 2020• <a href="/authors/#author-quochuy">quochuy</a></span>
+      <h3 class="post-card-title">
+        <a class="post-link" href="/news/nodejs/condenser/2020/11/25/6gshbx-my-new-contributions-to-the-hive-condenser.html">
+          My new contributions to the Hive Condenser
+        </a>
+      </h3><p class="post-card-summary">As I was working on some bug on the witnesses page, I noticed that the API allowed me to fetch more than 100 witnesses so I went on and increased the number of witnesses from 100 to 200 which is enough to cover all of our current active witnesses.</p></div>
+  </article>
 </li>
-<li class="well">
-  <div class="post-thumbnail" style="float: right; padding-right: 4px; padding-bottom: 4px;">
-    <a class="post-link" href="/news/nodejs/encryption/2020/11/22/hivecrypt-javascript-module-for-hive-memo-encrypt-decrypt-on-wide-range-of-environments.html">
-      <img data-src="https://ipfs.io/ipfs/QmZ44f49mDr746uqisE11de6WXa3ojka4oecYTsvTo6BNb" class="lazyload" />
-    </a>
-  </div><span class="post-meta">
-    Nov 22, 2020&nbsp;• <a href="/authors/#author-techcoderx">techcoderx</a></span>
-  <h3>
-    <a class="post-link" href="/news/nodejs/encryption/2020/11/22/hivecrypt-javascript-module-for-hive-memo-encrypt-decrypt-on-wide-range-of-environments.html">
-      Hivecrypt: JavaScript module for Hive memo encrypt/decrypt on wide range of environments
-    </a>
-  </h3>A module that you can import into a wide range of JavaScript environments to encrypt or decrypt a Hive memo.<br clear="both" />
+<li class="post-card">
+  <article class="post-card-inner"><div class="post-card-thumbnail">
+      <a class="post-link" href="/news/nodejs/encryption/2020/11/22/hivecrypt-javascript-module-for-hive-memo-encrypt-decrypt-on-wide-range-of-environments.html">
+        <img data-src="https://ipfs.io/ipfs/QmZ44f49mDr746uqisE11de6WXa3ojka4oecYTsvTo6BNb" class="lazyload" alt="Thumbnail for Hivecrypt: JavaScript module for Hive memo encrypt/decrypt on wide range of environments" />
+      </a>
+    </div><div class="post-card-body"><span class="post-meta">
+        Nov 22, 2020• <a href="/authors/#author-techcoderx">techcoderx</a></span>
+      <h3 class="post-card-title">
+        <a class="post-link" href="/news/nodejs/encryption/2020/11/22/hivecrypt-javascript-module-for-hive-memo-encrypt-decrypt-on-wide-range-of-environments.html">
+          Hivecrypt: JavaScript module for Hive memo encrypt/decrypt on wide range of environments
+        </a>
+      </h3><p class="post-card-summary">A module that you can import into a wide range of JavaScript environments to encrypt or decrypt a Hive memo.</p></div>
+  </article>
 </li>
-<li class="well">
-  <div class="post-thumbnail" style="float: right; padding-right: 4px; padding-bottom: 4px;">
-    <a class="post-link" href="/news/nodejs/condenser/2020/11/09/29vxd3-my-new-contributions-to-the-hive-condenser.html">
-      <img data-src="https://gitlab.syncad.com/hive/condenser/uploads/ced62e0623456f39a1247e76d79ed0e1/Screen_Shot_2020-11-06_at_11.10.51_pm.png" class="lazyload" />
-    </a>
-  </div><span class="post-meta">
-    Nov 9, 2020&nbsp;• <a href="/authors/#author-quochuy">quochuy</a></span>
-  <h3>
-    <a class="post-link" href="/news/nodejs/condenser/2020/11/09/29vxd3-my-new-contributions-to-the-hive-condenser.html">
-      My new contributions to the Hive Condenser
-    </a>
-  </h3><br clear="both" />
+<li class="post-card">
+  <article class="post-card-inner"><div class="post-card-thumbnail">
+      <a class="post-link" href="/news/nodejs/condenser/2020/11/09/29vxd3-my-new-contributions-to-the-hive-condenser.html">
+        <img data-src="https://gitlab.syncad.com/hive/condenser/uploads/ced62e0623456f39a1247e76d79ed0e1/Screen_Shot_2020-11-06_at_11.10.51_pm.png" class="lazyload" alt="Thumbnail for My new contributions to the Hive Condenser" />
+      </a>
+    </div><div class="post-card-body"><span class="post-meta">
+        Nov 9, 2020• <a href="/authors/#author-quochuy">quochuy</a></span>
+      <h3 class="post-card-title">
+        <a class="post-link" href="/news/nodejs/condenser/2020/11/09/29vxd3-my-new-contributions-to-the-hive-condenser.html">
+          My new contributions to the Hive Condenser
+        </a>
+      </h3></div>
+  </article>
 </li>
-<li class="well">
-  <div class="post-thumbnail" style="float: right; padding-right: 4px; padding-bottom: 4px;">
-    <a class="post-link" href="/news/nodejs/hive-keychain/2020/11/08/hive-keychain-development-proposal-2.html">
-      <img data-src="https://files.peakd.com/file/peakd-hive/keychain/xnmVXGi6-social_keychain-for-hive.jpg" class="lazyload" />
-    </a>
-  </div><span class="post-meta">
-    Nov 8, 2020&nbsp;• <a href="/authors/#author-keychain">keychain</a></span>
-  <h3>
-    <a class="post-link" href="/news/nodejs/hive-keychain/2020/11/08/hive-keychain-development-proposal-2.html">
-      Hive Keychain Development Proposal #2
-    </a>
-  </h3>Renewal of Keychain Proposal - Including summary of what has been done so far and our future plans<br clear="both" />
+<li class="post-card">
+  <article class="post-card-inner"><div class="post-card-thumbnail">
+      <a class="post-link" href="/news/nodejs/hive-keychain/2020/11/08/hive-keychain-development-proposal-2.html">
+        <img data-src="https://files.peakd.com/file/peakd-hive/keychain/xnmVXGi6-social_keychain-for-hive.jpg" class="lazyload" alt="Thumbnail for Hive Keychain Development Proposal #2" />
+      </a>
+    </div><div class="post-card-body"><span class="post-meta">
+        Nov 8, 2020• <a href="/authors/#author-keychain">keychain</a></span>
+      <h3 class="post-card-title">
+        <a class="post-link" href="/news/nodejs/hive-keychain/2020/11/08/hive-keychain-development-proposal-2.html">
+          Hive Keychain Development Proposal #2
+        </a>
+      </h3><p class="post-card-summary">Renewal of Keychain Proposal - Including summary of what has been done so far and our future plans</p></div>
+  </article>
 </li>
-<li class="well">
-  <div class="post-thumbnail" style="float: right; padding-right: 4px; padding-bottom: 4px;">
-    <a class="post-link" href="/news/nodejs/condenser/2020/10/27/6h8fgn-my-new-contributions-to-the-hive-condenser.html">
-      <img data-src="https://images.hive.blog/DQmecYTZemY8SwU6rrg7awhpNRBsehUp7ivk9RGyZsUUpVw/quochuy-hive-witness.jpg" class="lazyload" />
-    </a>
-  </div><span class="post-meta">
-    Oct 27, 2020&nbsp;• <a href="/authors/#author-quochuy">quochuy</a></span>
-  <h3>
-    <a class="post-link" href="/news/nodejs/condenser/2020/10/27/6h8fgn-my-new-contributions-to-the-hive-condenser.html">
-      My new contributions to the Hive Condenser
-    </a>
-  </h3><br clear="both" />
+<li class="post-card">
+  <article class="post-card-inner"><div class="post-card-thumbnail">
+      <a class="post-link" href="/news/nodejs/condenser/2020/10/27/6h8fgn-my-new-contributions-to-the-hive-condenser.html">
+        <img data-src="https://images.hive.blog/DQmecYTZemY8SwU6rrg7awhpNRBsehUp7ivk9RGyZsUUpVw/quochuy-hive-witness.jpg" class="lazyload" alt="Thumbnail for My new contributions to the Hive Condenser" />
+      </a>
+    </div><div class="post-card-body"><span class="post-meta">
+        Oct 27, 2020• <a href="/authors/#author-quochuy">quochuy</a></span>
+      <h3 class="post-card-title">
+        <a class="post-link" href="/news/nodejs/condenser/2020/10/27/6h8fgn-my-new-contributions-to-the-hive-condenser.html">
+          My new contributions to the Hive Condenser
+        </a>
+      </h3></div>
+  </article>
 </li>
-<li class="well">
-  <div class="post-thumbnail" style="float: right; padding-right: 4px; padding-bottom: 4px;">
-    <a class="post-link" href="/news/nodejs/hive-keychain/2020/09/24/hive-keychain-dhf-week-18.html">
-      <img data-src="https://files.peakd.com/file/peakd-hive/keychain/xnmVXGi6-social_keychain-for-hive.jpg" class="lazyload" />
-    </a>
-  </div><span class="post-meta">
-    Sep 24, 2020&nbsp;• <a href="/authors/#author-keychain">keychain</a></span>
-  <h3>
-    <a class="post-link" href="/news/nodejs/hive-keychain/2020/09/24/hive-keychain-dhf-week-18.html">
-      Hive Keychain DHF - Week 18
-    </a>
-  </h3><br clear="both" />
+<li class="post-card">
+  <article class="post-card-inner"><div class="post-card-thumbnail">
+      <a class="post-link" href="/news/nodejs/hive-keychain/2020/09/24/hive-keychain-dhf-week-18.html">
+        <img data-src="https://files.peakd.com/file/peakd-hive/keychain/xnmVXGi6-social_keychain-for-hive.jpg" class="lazyload" alt="Thumbnail for Hive Keychain DHF - Week 18" />
+      </a>
+    </div><div class="post-card-body"><span class="post-meta">
+        Sep 24, 2020• <a href="/authors/#author-keychain">keychain</a></span>
+      <h3 class="post-card-title">
+        <a class="post-link" href="/news/nodejs/hive-keychain/2020/09/24/hive-keychain-dhf-week-18.html">
+          Hive Keychain DHF - Week 18
+        </a>
+      </h3></div>
+  </article>
 </li>
-<li class="well">
-  <div class="post-thumbnail" style="float: right; padding-right: 4px; padding-bottom: 4px;">
-    <a class="post-link" href="/news/nodejs/hivesigner/2020/09/14/hivesigner-documentation-hardfork-and-other-improvements.html">
-      <img data-src="https://images.ecency.com/DQmUCYSEB9qpGPFXyLAfcydX4JPUoqwjctt7FtNQtXBxBH6/thumbnail.png" class="lazyload" />
-    </a>
-  </div><span class="post-meta">
-    Sep 14, 2020&nbsp;• <a href="/authors/#author-good-karma">good-karma</a></span>
-  <h3>
-    <a class="post-link" href="/news/nodejs/hivesigner/2020/09/14/hivesigner-documentation-hardfork-and-other-improvements.html">
-      Hivesigner - Documentation, Hardfork and other improvements
-    </a>
-  </h3><br clear="both" />
+<li class="post-card">
+  <article class="post-card-inner"><div class="post-card-thumbnail">
+      <a class="post-link" href="/news/nodejs/hivesigner/2020/09/14/hivesigner-documentation-hardfork-and-other-improvements.html">
+        <img data-src="https://images.ecency.com/DQmUCYSEB9qpGPFXyLAfcydX4JPUoqwjctt7FtNQtXBxBH6/thumbnail.png" class="lazyload" alt="Thumbnail for Hivesigner - Documentation, Hardfork and other improvements" />
+      </a>
+    </div><div class="post-card-body"><span class="post-meta">
+        Sep 14, 2020• <a href="/authors/#author-good-karma">good-karma</a></span>
+      <h3 class="post-card-title">
+        <a class="post-link" href="/news/nodejs/hivesigner/2020/09/14/hivesigner-documentation-hardfork-and-other-improvements.html">
+          Hivesigner - Documentation, Hardfork and other improvements
+        </a>
+      </h3></div>
+  </article>
 </li>
-<li class="well">
-  <div class="post-thumbnail" style="float: right; padding-right: 4px; padding-bottom: 4px;">
-    <a class="post-link" href="/howto/nodejs/bot/2020/08/18/hivebot-easy-real-time-automation-on-top-of-hive-blockchain.html">
-      <img data-src="https://hivedocs.info/assets/images/favicon.png" class="lazyload" />
-    </a>
-  </div><span class="post-meta">
-    Aug 18, 2020&nbsp;• <a href="/authors/#author-ali-h">ali-h</a></span>
-  <h3>
-    <a class="post-link" href="/howto/nodejs/bot/2020/08/18/hivebot-easy-real-time-automation-on-top-of-hive-blockchain.html">
-      HiveBot - Easy &amp; real-time automation on top of Hive Blockchain
-    </a>
-  </h3>An open-source free library that provides real-time automation on top of Hive Blockchain with a very simple API<br clear="both" />
+<li class="post-card">
+  <article class="post-card-inner"><div class="post-card-thumbnail">
+      <a class="post-link" href="/howto/nodejs/bot/2020/08/18/hivebot-easy-real-time-automation-on-top-of-hive-blockchain.html">
+        <img data-src="https://hivedocs.info/assets/images/favicon.png" class="lazyload" alt="Thumbnail for HiveBot - Easy &amp; real-time automation on top of Hive Blockchain" />
+      </a>
+    </div><div class="post-card-body"><span class="post-meta">
+        Aug 18, 2020• <a href="/authors/#author-ali-h">ali-h</a></span>
+      <h3 class="post-card-title">
+        <a class="post-link" href="/howto/nodejs/bot/2020/08/18/hivebot-easy-real-time-automation-on-top-of-hive-blockchain.html">
+          HiveBot - Easy &amp; real-time automation on top of Hive Blockchain
+        </a>
+      </h3><p class="post-card-summary">An open-source free library that provides real-time automation on top of Hive Blockchain with a very simple API</p></div>
+  </article>
 </li>
-<li class="well">
-  <div class="post-thumbnail" style="float: right; padding-right: 4px; padding-bottom: 4px;">
-    <a class="post-link" href="/howto/nodejs/reports/2020/07/17/my-scripts-4-your-curation-reward-in-the-past-24-hours.html">
-      <img data-src="https://hivedocs.info/assets/images/favicon.png" class="lazyload" />
-    </a>
-  </div><span class="post-meta">
-    Jul 17, 2020&nbsp;• <a href="/authors/#author-rishi556">rishi556</a></span>
-  <h3>
-    <a class="post-link" href="/howto/nodejs/reports/2020/07/17/my-scripts-4-your-curation-reward-in-the-past-24-hours.html">
-      My Scripts 4- Your Curation Reward In The Past 24 Hours
-    </a>
-  </h3><br clear="both" />
+<li class="post-card">
+  <article class="post-card-inner"><div class="post-card-thumbnail">
+      <a class="post-link" href="/howto/nodejs/reports/2020/07/17/my-scripts-4-your-curation-reward-in-the-past-24-hours.html">
+        <img data-src="https://hivedocs.info/assets/images/favicon.png" class="lazyload" alt="Thumbnail for My Scripts 4- Your Curation Reward In The Past 24 Hours" />
+      </a>
+    </div><div class="post-card-body"><span class="post-meta">
+        Jul 17, 2020• <a href="/authors/#author-rishi556">rishi556</a></span>
+      <h3 class="post-card-title">
+        <a class="post-link" href="/howto/nodejs/reports/2020/07/17/my-scripts-4-your-curation-reward-in-the-past-24-hours.html">
+          My Scripts 4- Your Curation Reward In The Past 24 Hours
+        </a>
+      </h3></div>
+  </article>
 </li>
-<li class="well">
-  <div class="post-thumbnail" style="float: right; padding-right: 4px; padding-bottom: 4px;">
-    <a class="post-link" href="/howto/nodejs/automation/2020/07/15/my-scripts-3-auto-sending-from-one-account-to-multiple-others.html">
-      <img data-src="https://cdn.discordapp.com/attachments/726933735349682176/733091352228921424/Screen_Shot_2020-07-15_at_5.43.14_PM.png" class="lazyload" />
-    </a>
-  </div><span class="post-meta">
-    Jul 15, 2020&nbsp;• <a href="/authors/#author-rishi556">rishi556</a></span>
-  <h3>
-    <a class="post-link" href="/howto/nodejs/automation/2020/07/15/my-scripts-3-auto-sending-from-one-account-to-multiple-others.html">
-      My Scripts 3- Auto Sending From One Account To Multiple Others
-    </a>
-  </h3><br clear="both" />
+<li class="post-card">
+  <article class="post-card-inner"><div class="post-card-thumbnail">
+      <a class="post-link" href="/howto/nodejs/automation/2020/07/15/my-scripts-3-auto-sending-from-one-account-to-multiple-others.html">
+        <img data-src="https://cdn.discordapp.com/attachments/726933735349682176/733091352228921424/Screen_Shot_2020-07-15_at_5.43.14_PM.png" class="lazyload" alt="Thumbnail for My Scripts 3- Auto Sending From One Account To Multiple Others" />
+      </a>
+    </div><div class="post-card-body"><span class="post-meta">
+        Jul 15, 2020• <a href="/authors/#author-rishi556">rishi556</a></span>
+      <h3 class="post-card-title">
+        <a class="post-link" href="/howto/nodejs/automation/2020/07/15/my-scripts-3-auto-sending-from-one-account-to-multiple-others.html">
+          My Scripts 3- Auto Sending From One Account To Multiple Others
+        </a>
+      </h3></div>
+  </article>
 </li>
-<li class="well">
-  <div class="post-thumbnail" style="float: right; padding-right: 4px; padding-bottom: 4px;">
-    <a class="post-link" href="/howto/nodejs/transfer/2020/07/13/my-scripts-2-auto-send-from-multi-to-one-destination.html">
-      <img data-src="https://hivedocs.info/assets/images/favicon.png" class="lazyload" />
-    </a>
-  </div><span class="post-meta">
-    Jul 13, 2020&nbsp;• <a href="/authors/#author-rishi556">rishi556</a></span>
-  <h3>
-    <a class="post-link" href="/howto/nodejs/transfer/2020/07/13/my-scripts-2-auto-send-from-multi-to-one-destination.html">
-      My Scripts 2- Auto Send From Multi To One Destination
-    </a>
-  </h3><br clear="both" />
+<li class="post-card">
+  <article class="post-card-inner"><div class="post-card-thumbnail">
+      <a class="post-link" href="/howto/nodejs/transfer/2020/07/13/my-scripts-2-auto-send-from-multi-to-one-destination.html">
+        <img data-src="https://hivedocs.info/assets/images/favicon.png" class="lazyload" alt="Thumbnail for My Scripts 2- Auto Send From Multi To One Destination" />
+      </a>
+    </div><div class="post-card-body"><span class="post-meta">
+        Jul 13, 2020• <a href="/authors/#author-rishi556">rishi556</a></span>
+      <h3 class="post-card-title">
+        <a class="post-link" href="/howto/nodejs/transfer/2020/07/13/my-scripts-2-auto-send-from-multi-to-one-destination.html">
+          My Scripts 2- Auto Send From Multi To One Destination
+        </a>
+      </h3></div>
+  </article>
 </li>
-<li class="well">
-  <div class="post-thumbnail" style="float: right; padding-right: 4px; padding-bottom: 4px;">
-    <a class="post-link" href="/howto/nodejs/witness/2020/07/12/my-scripts-1-witness-rank-and-amount-needed-to-rank-up.html">
-      <img data-src="https://files.peakd.com/file/peakd-hive/rishi556/2wHXohO5-Screen20Shot202020-07-1220at203.53.0320AM.png" class="lazyload" />
-    </a>
-  </div><span class="post-meta">
-    Jul 12, 2020&nbsp;• <a href="/authors/#author-rishi556">rishi556</a></span>
-  <h3>
-    <a class="post-link" href="/howto/nodejs/witness/2020/07/12/my-scripts-1-witness-rank-and-amount-needed-to-rank-up.html">
-      My Scripts 1- Witness Rank And Amount Needed To Rank Up
-    </a>
-  </h3><br clear="both" />
+<li class="post-card">
+  <article class="post-card-inner"><div class="post-card-thumbnail">
+      <a class="post-link" href="/howto/nodejs/witness/2020/07/12/my-scripts-1-witness-rank-and-amount-needed-to-rank-up.html">
+        <img data-src="https://files.peakd.com/file/peakd-hive/rishi556/2wHXohO5-Screen20Shot202020-07-1220at203.53.0320AM.png" class="lazyload" alt="Thumbnail for My Scripts 1- Witness Rank And Amount Needed To Rank Up" />
+      </a>
+    </div><div class="post-card-body"><span class="post-meta">
+        Jul 12, 2020• <a href="/authors/#author-rishi556">rishi556</a></span>
+      <h3 class="post-card-title">
+        <a class="post-link" href="/howto/nodejs/witness/2020/07/12/my-scripts-1-witness-rank-and-amount-needed-to-rank-up.html">
+          My Scripts 1- Witness Rank And Amount Needed To Rank Up
+        </a>
+      </h3></div>
+  </article>
 </li>
-<li class="well">
-  <div class="post-thumbnail" style="float: right; padding-right: 4px; padding-bottom: 4px;">
-    <a class="post-link" href="/howto/nodejs/react/2020/07/07/how-to-use-hivejs-or-other-modules-referencing-core-node-js-modules-on-react-native.html">
-      <img data-src="https://files.peakd.com/file/peakd-hive/stoodkev/C3S6phs5-image.png" class="lazyload" />
-    </a>
-  </div><span class="post-meta">
-    Jul 7, 2020&nbsp;• <a href="/authors/#author-stoodkev">stoodkev</a></span>
-  <h3>
-    <a class="post-link" href="/howto/nodejs/react/2020/07/07/how-to-use-hivejs-or-other-modules-referencing-core-node-js-modules-on-react-native.html">
-      How to use HiveJs (or other modules referencing core Node.js modules) on React Native
-    </a>
-  </h3><br clear="both" />
+<li class="post-card">
+  <article class="post-card-inner"><div class="post-card-thumbnail">
+      <a class="post-link" href="/howto/nodejs/react/2020/07/07/how-to-use-hivejs-or-other-modules-referencing-core-node-js-modules-on-react-native.html">
+        <img data-src="https://files.peakd.com/file/peakd-hive/stoodkev/C3S6phs5-image.png" class="lazyload" alt="Thumbnail for How to use HiveJs (or other modules referencing core Node.js modules) on React Native" />
+      </a>
+    </div><div class="post-card-body"><span class="post-meta">
+        Jul 7, 2020• <a href="/authors/#author-stoodkev">stoodkev</a></span>
+      <h3 class="post-card-title">
+        <a class="post-link" href="/howto/nodejs/react/2020/07/07/how-to-use-hivejs-or-other-modules-referencing-core-node-js-modules-on-react-native.html">
+          How to use HiveJs (or other modules referencing core Node.js modules) on React Native
+        </a>
+      </h3></div>
+  </article>
 </li>
-<li class="well">
-  <div class="post-thumbnail" style="float: right; padding-right: 4px; padding-bottom: 4px;">
-    <a class="post-link" href="/news/nodejs/hivesigner/imagehoster/2020/07/07/imagehoster-hivesigner-and-condenser-bounty.html">
-      <img data-src="https://images.ecency.com/p/Y2iXpRRkNSnseh3NuL6KUBitJTXrc5K2vbTzBseGEENcE" class="lazyload" />
-    </a>
-  </div><span class="post-meta">
-    Jul 7, 2020&nbsp;• <a href="/authors/#author-good-karma">good-karma</a></span>
-  <h3>
-    <a class="post-link" href="/news/nodejs/hivesigner/imagehoster/2020/07/07/imagehoster-hivesigner-and-condenser-bounty.html">
-      Imagehoster + Hivesigner and Condenser bounty
-    </a>
-  </h3><br clear="both" />
+<li class="post-card">
+  <article class="post-card-inner"><div class="post-card-thumbnail">
+      <a class="post-link" href="/news/nodejs/hivesigner/imagehoster/2020/07/07/imagehoster-hivesigner-and-condenser-bounty.html">
+        <img data-src="https://images.ecency.com/p/Y2iXpRRkNSnseh3NuL6KUBitJTXrc5K2vbTzBseGEENcE" class="lazyload" alt="Thumbnail for Imagehoster + Hivesigner and Condenser bounty" />
+      </a>
+    </div><div class="post-card-body"><span class="post-meta">
+        Jul 7, 2020• <a href="/authors/#author-good-karma">good-karma</a></span>
+      <h3 class="post-card-title">
+        <a class="post-link" href="/news/nodejs/hivesigner/imagehoster/2020/07/07/imagehoster-hivesigner-and-condenser-bounty.html">
+          Imagehoster + Hivesigner and Condenser bounty
+        </a>
+      </h3></div>
+  </article>
 </li>
-<li class="well">
-  <div class="post-thumbnail" style="float: right; padding-right: 4px; padding-bottom: 4px;">
-    <a class="post-link" href="/news/nodejs/2020/06/11/4twepi-hf24-or-hive-js-aka-steem-js.html">
-      <img data-src="https://files.peakd.com/file/peakd-hive/hiveio/XFg9AgYH-7ohP4GDMGPrU6KTuuW27Tq6en5JYHcVeXL6fAJ1RujUw3NULjf8Ndi8hyaTt3Nrng1MpPziTt4u4FZf5Jr5WdpPFzB1K3SX51ToL.jpg" class="lazyload" />
-    </a>
-  </div><span class="post-meta">
-    Jun 11, 2020&nbsp;• <a href="/authors/#author-mahdiyari">mahdiyari</a></span>
-  <h3>
-    <a class="post-link" href="/news/nodejs/2020/06/11/4twepi-hf24-or-hive-js-aka-steem-js.html">
-      HF24 | Hive-js (aka steem-js)
-    </a>
-  </h3>Hive-JS is updated and is ready for HF24. This update is necessary for a smooth transition from HF23 to HF24<br clear="both" />
+<li class="post-card">
+  <article class="post-card-inner"><div class="post-card-thumbnail">
+      <a class="post-link" href="/news/nodejs/2020/06/11/4twepi-hf24-or-hive-js-aka-steem-js.html">
+        <img data-src="https://files.peakd.com/file/peakd-hive/hiveio/XFg9AgYH-7ohP4GDMGPrU6KTuuW27Tq6en5JYHcVeXL6fAJ1RujUw3NULjf8Ndi8hyaTt3Nrng1MpPziTt4u4FZf5Jr5WdpPFzB1K3SX51ToL.jpg" class="lazyload" alt="Thumbnail for HF24 | Hive-js (aka steem-js)" />
+      </a>
+    </div><div class="post-card-body"><span class="post-meta">
+        Jun 11, 2020• <a href="/authors/#author-mahdiyari">mahdiyari</a></span>
+      <h3 class="post-card-title">
+        <a class="post-link" href="/news/nodejs/2020/06/11/4twepi-hf24-or-hive-js-aka-steem-js.html">
+          HF24 | Hive-js (aka steem-js)
+        </a>
+      </h3><p class="post-card-summary">Hive-JS is updated and is ready for HF24. This update is necessary for a smooth transition from HF23 to HF24</p></div>
+  </article>
 </li>
-<li class="well">
-  <div class="post-thumbnail" style="float: right; padding-right: 4px; padding-bottom: 4px;">
-    <a class="post-link" href="/howto/nodejs/wallet/2020/05/14/beta-hive-ledger-web-interface.html">
-      <img data-src="https://images.hive.blog/DQmcfYRWVU8sAwuHQvg1AxD2XcaxmrmoPqfsWornH66K2BH/ledger-hive.jpg" class="lazyload" />
-    </a>
-  </div><span class="post-meta">
-    May 14, 2020&nbsp;• <a href="/authors/#author-quochuy">quochuy</a></span>
-  <h3>
-    <a class="post-link" href="/howto/nodejs/wallet/2020/05/14/beta-hive-ledger-web-interface.html">
-      Beta Hive Ledger web interface
-    </a>
-  </h3><br clear="both" />
+<li class="post-card">
+  <article class="post-card-inner"><div class="post-card-thumbnail">
+      <a class="post-link" href="/howto/nodejs/wallet/2020/05/14/beta-hive-ledger-web-interface.html">
+        <img data-src="https://images.hive.blog/DQmcfYRWVU8sAwuHQvg1AxD2XcaxmrmoPqfsWornH66K2BH/ledger-hive.jpg" class="lazyload" alt="Thumbnail for Beta Hive Ledger web interface" />
+      </a>
+    </div><div class="post-card-body"><span class="post-meta">
+        May 14, 2020• <a href="/authors/#author-quochuy">quochuy</a></span>
+      <h3 class="post-card-title">
+        <a class="post-link" href="/howto/nodejs/wallet/2020/05/14/beta-hive-ledger-web-interface.html">
+          Beta Hive Ledger web interface
+        </a>
+      </h3></div>
+  </article>
 </li>
-<li class="well">
-  <div class="post-thumbnail" style="float: right; padding-right: 4px; padding-bottom: 4px;">
-    <a class="post-link" href="/news/nodejs/2020/04/27/hive-js-and-hive-tx-migration-to-hive-breaking-changes-for-browsers.html">
-      <img data-src="https://files.peakd.com/file/peakd-hive/mahdiyari/uMVfF55Y-hive-js-hive-tx.jpg" class="lazyload" />
-    </a>
-  </div><span class="post-meta">
-    Apr 27, 2020&nbsp;• <a href="/authors/#author-mahdiyari">mahdiyari</a></span>
-  <h3>
-    <a class="post-link" href="/news/nodejs/2020/04/27/hive-js-and-hive-tx-migration-to-hive-breaking-changes-for-browsers.html">
-      Hive-js &amp; Hive-tx migration to Hive - Breaking changes for browsers!
-    </a>
-  </h3>Hive-js is the official javascript library for Hive. All the apps previously using Steem-js should use Hive-js instead.<br clear="both" />
+<li class="post-card">
+  <article class="post-card-inner"><div class="post-card-thumbnail">
+      <a class="post-link" href="/news/nodejs/2020/04/27/hive-js-and-hive-tx-migration-to-hive-breaking-changes-for-browsers.html">
+        <img data-src="https://files.peakd.com/file/peakd-hive/mahdiyari/uMVfF55Y-hive-js-hive-tx.jpg" class="lazyload" alt="Thumbnail for Hive-js &amp; Hive-tx migration to Hive - Breaking changes for browsers!" />
+      </a>
+    </div><div class="post-card-body"><span class="post-meta">
+        Apr 27, 2020• <a href="/authors/#author-mahdiyari">mahdiyari</a></span>
+      <h3 class="post-card-title">
+        <a class="post-link" href="/news/nodejs/2020/04/27/hive-js-and-hive-tx-migration-to-hive-breaking-changes-for-browsers.html">
+          Hive-js &amp; Hive-tx migration to Hive - Breaking changes for browsers!
+        </a>
+      </h3><p class="post-card-summary">Hive-js is the official javascript library for Hive. All the apps previously using Steem-js should use Hive-js instead.</p></div>
+  </article>
 </li>
-<li class="well">
-  <div class="post-thumbnail" style="float: right; padding-right: 4px; padding-bottom: 4px;">
-    <a class="post-link" href="/news/nodejs/hive-keychain/2020/04/17/hive-keychain-now-available-on-chrome-and-brave.html">
-      <img data-src="https://files.peakd.com/file/peakd-hive/stoodkev/AmSWoznK-keychain_title.png" class="lazyload" />
-    </a>
-  </div><span class="post-meta">
-    Apr 17, 2020&nbsp;• <a href="/authors/#author-yabapmatt">yabapmatt</a></span>
-  <h3>
-    <a class="post-link" href="/news/nodejs/hive-keychain/2020/04/17/hive-keychain-now-available-on-chrome-and-brave.html">
-      Hive Keychain Now Available on Chrome &amp; Brave!
-    </a>
-  </h3><br clear="both" />
+<li class="post-card">
+  <article class="post-card-inner"><div class="post-card-thumbnail">
+      <a class="post-link" href="/news/nodejs/hive-keychain/2020/04/17/hive-keychain-now-available-on-chrome-and-brave.html">
+        <img data-src="https://files.peakd.com/file/peakd-hive/stoodkev/AmSWoznK-keychain_title.png" class="lazyload" alt="Thumbnail for Hive Keychain Now Available on Chrome &amp; Brave!" />
+      </a>
+    </div><div class="post-card-body"><span class="post-meta">
+        Apr 17, 2020• <a href="/authors/#author-yabapmatt">yabapmatt</a></span>
+      <h3 class="post-card-title">
+        <a class="post-link" href="/news/nodejs/hive-keychain/2020/04/17/hive-keychain-now-available-on-chrome-and-brave.html">
+          Hive Keychain Now Available on Chrome &amp; Brave!
+        </a>
+      </h3></div>
+  </article>
 </li>
-<li class="well">
-  <div class="post-thumbnail" style="float: right; padding-right: 4px; padding-bottom: 4px;">
-    <a class="post-link" href="/howto/nodejs/bot/2020/04/14/hive-patched-upvoting-by-payment-in-4-easy-steps-basic-bot.html">
-      <img data-src="https://files.peakd.com/file/peakd-hive/lonelywolf/MwKfr7ni-upvote.png" class="lazyload" />
-    </a>
-  </div><span class="post-meta">
-    Apr 14, 2020&nbsp;• <a href="/authors/#author-lonelywolf">lonelywolf</a></span>
-  <h3>
-    <a class="post-link" href="/howto/nodejs/bot/2020/04/14/hive-patched-upvoting-by-payment-in-4-easy-steps-basic-bot.html">
-      [Hive Patched] Upvoting By Payment In 4 Easy Steps - Basic Bot
-    </a>
-  </h3><br clear="both" />
+<li class="post-card">
+  <article class="post-card-inner"><div class="post-card-thumbnail">
+      <a class="post-link" href="/howto/nodejs/bot/2020/04/14/hive-patched-upvoting-by-payment-in-4-easy-steps-basic-bot.html">
+        <img data-src="https://files.peakd.com/file/peakd-hive/lonelywolf/MwKfr7ni-upvote.png" class="lazyload" alt="Thumbnail for [Hive Patched] Upvoting By Payment In 4 Easy Steps - Basic Bot" />
+      </a>
+    </div><div class="post-card-body"><span class="post-meta">
+        Apr 14, 2020• <a href="/authors/#author-lonelywolf">lonelywolf</a></span>
+      <h3 class="post-card-title">
+        <a class="post-link" href="/howto/nodejs/bot/2020/04/14/hive-patched-upvoting-by-payment-in-4-easy-steps-basic-bot.html">
+          [Hive Patched] Upvoting By Payment In 4 Easy Steps - Basic Bot
+        </a>
+      </h3></div>
+  </article>
 </li>
-<li class="well">
-  <div class="post-thumbnail" style="float: right; padding-right: 4px; padding-bottom: 4px;">
-    <a class="post-link" href="/news/nodejs/hivesigner/2020/04/14/devportal-hivesigner-updates.html">
-      <img data-src="https://img.esteem.app/kbgnol.png" class="lazyload" />
-    </a>
-  </div><span class="post-meta">
-    Apr 14, 2020&nbsp;• <a href="/authors/#author-good-karma">good-karma</a></span>
-  <h3>
-    <a class="post-link" href="/news/nodejs/hivesigner/2020/04/14/devportal-hivesigner-updates.html">
-      Devportal Hivesigner updates
-    </a>
-  </h3><br clear="both" />
+<li class="post-card">
+  <article class="post-card-inner"><div class="post-card-thumbnail">
+      <a class="post-link" href="/news/nodejs/hivesigner/2020/04/14/devportal-hivesigner-updates.html">
+        <img data-src="https://img.esteem.app/kbgnol.png" class="lazyload" alt="Thumbnail for Devportal Hivesigner updates" />
+      </a>
+    </div><div class="post-card-body"><span class="post-meta">
+        Apr 14, 2020• <a href="/authors/#author-good-karma">good-karma</a></span>
+      <h3 class="post-card-title">
+        <a class="post-link" href="/news/nodejs/hivesigner/2020/04/14/devportal-hivesigner-updates.html">
+          Devportal Hivesigner updates
+        </a>
+      </h3></div>
+  </article>
 </li>
-<li class="well">
-  <div class="post-thumbnail" style="float: right; padding-right: 4px; padding-bottom: 4px;">
-    <a class="post-link" href="/howto/nodejs/2020/04/10/quick-tip-hive-scripting-in-3-easy-steps.html">
-      <img data-src="https://images.hive.blog/DQmTr8ePbYQa6TKsoQAjmMMYzcj1Fz7Cd5stNW5CxL86LgF/Untitled-1.png" class="lazyload" />
-    </a>
-  </div><span class="post-meta">
-    Apr 10, 2020&nbsp;• <a href="/authors/#author-lonelywolf">lonelywolf</a></span>
-  <h3>
-    <a class="post-link" href="/howto/nodejs/2020/04/10/quick-tip-hive-scripting-in-3-easy-steps.html">
-      Quick Tip: Hive Scripting - In 3 easy steps
-    </a>
-  </h3><br clear="both" />
+<li class="post-card">
+  <article class="post-card-inner"><div class="post-card-thumbnail">
+      <a class="post-link" href="/howto/nodejs/2020/04/10/quick-tip-hive-scripting-in-3-easy-steps.html">
+        <img data-src="https://images.hive.blog/DQmTr8ePbYQa6TKsoQAjmMMYzcj1Fz7Cd5stNW5CxL86LgF/Untitled-1.png" class="lazyload" alt="Thumbnail for Quick Tip: Hive Scripting - In 3 easy steps" />
+      </a>
+    </div><div class="post-card-body"><span class="post-meta">
+        Apr 10, 2020• <a href="/authors/#author-lonelywolf">lonelywolf</a></span>
+      <h3 class="post-card-title">
+        <a class="post-link" href="/howto/nodejs/2020/04/10/quick-tip-hive-scripting-in-3-easy-steps.html">
+          Quick Tip: Hive Scripting - In 3 easy steps
+        </a>
+      </h3></div>
+  </article>
 </li>
-<li class="well">
-  <div class="post-thumbnail" style="float: right; padding-right: 4px; padding-bottom: 4px;">
-    <a class="post-link" href="/howto/dapps/nodejs/2020/04/06/tutorial-building-a-dice-game-contract-with-hive-stream-part-2.html">
-      <img data-src="https://files.peakd.com/file/peakd-hive/beggars/UpZgH9Fl-Screen20Shot202020-04-0620at208.14.4220pm.png" class="lazyload" />
-    </a>
-  </div><span class="post-meta">
-    Apr 6, 2020&nbsp;• <a href="/authors/#author-beggars">beggars</a></span>
-  <h3>
-    <a class="post-link" href="/howto/dapps/nodejs/2020/04/06/tutorial-building-a-dice-game-contract-with-hive-stream-part-2.html">
-      Tutorial: Building A Dice Game Contract With Hive Stream (Part 2)
-    </a>
-  </h3>Elaborating on part one of our dice contract tutorial and beefing it up<br clear="both" />
+<li class="post-card">
+  <article class="post-card-inner"><div class="post-card-thumbnail">
+      <a class="post-link" href="/howto/dapps/nodejs/2020/04/06/tutorial-building-a-dice-game-contract-with-hive-stream-part-2.html">
+        <img data-src="https://files.peakd.com/file/peakd-hive/beggars/UpZgH9Fl-Screen20Shot202020-04-0620at208.14.4220pm.png" class="lazyload" alt="Thumbnail for Tutorial: Building A Dice Game Contract With Hive Stream (Part 2)" />
+      </a>
+    </div><div class="post-card-body"><span class="post-meta">
+        Apr 6, 2020• <a href="/authors/#author-beggars">beggars</a></span>
+      <h3 class="post-card-title">
+        <a class="post-link" href="/howto/dapps/nodejs/2020/04/06/tutorial-building-a-dice-game-contract-with-hive-stream-part-2.html">
+          Tutorial: Building A Dice Game Contract With Hive Stream (Part 2)
+        </a>
+      </h3><p class="post-card-summary">Elaborating on part one of our dice contract tutorial and beefing it up</p></div>
+  </article>
 </li>
-<li class="well">
-  <div class="post-thumbnail" style="float: right; padding-right: 4px; padding-bottom: 4px;">
-    <a class="post-link" href="/howto/dapps/nodejs/2020/04/04/tutorial-building-a-dice-game-contract-with-hive-stream.html">
-      <img data-src="https://files.peakd.com/file/peakd-hive/beggars/am5ZNZEA-transfer.PNG" class="lazyload" />
-    </a>
-  </div><span class="post-meta">
-    Apr 4, 2020&nbsp;• <a href="/authors/#author-beggars">beggars</a></span>
-  <h3>
-    <a class="post-link" href="/howto/dapps/nodejs/2020/04/04/tutorial-building-a-dice-game-contract-with-hive-stream.html">
-      Tutorial: Building A Dice Game Contract With Hive Stream
-    </a>
-  </h3><br clear="both" />
+<li class="post-card">
+  <article class="post-card-inner"><div class="post-card-thumbnail">
+      <a class="post-link" href="/howto/dapps/nodejs/2020/04/04/tutorial-building-a-dice-game-contract-with-hive-stream.html">
+        <img data-src="https://files.peakd.com/file/peakd-hive/beggars/am5ZNZEA-transfer.PNG" class="lazyload" alt="Thumbnail for Tutorial: Building A Dice Game Contract With Hive Stream" />
+      </a>
+    </div><div class="post-card-body"><span class="post-meta">
+        Apr 4, 2020• <a href="/authors/#author-beggars">beggars</a></span>
+      <h3 class="post-card-title">
+        <a class="post-link" href="/howto/dapps/nodejs/2020/04/04/tutorial-building-a-dice-game-contract-with-hive-stream.html">
+          Tutorial: Building A Dice Game Contract With Hive Stream
+        </a>
+      </h3></div>
+  </article>
 </li>
-<li class="well">
-  <div class="post-thumbnail" style="float: right; padding-right: 4px; padding-bottom: 4px;">
-    <a class="post-link" href="/howto/dhive/nodejs/rpc/2020/04/03/dhive-rpc-failover-support.html">
-      <img data-src="https://files.peakd.com/file/peakd-hive/therealwolf/nKbEIVHB-dhive.png" class="lazyload" />
-    </a>
-  </div><span class="post-meta">
-    Apr 3, 2020&nbsp;• <a href="/authors/#author-therealwolf">therealwolf</a></span>
-  <h3>
-    <a class="post-link" href="/howto/dhive/nodejs/rpc/2020/04/03/dhive-rpc-failover-support.html">
-      dhive: RPC Failover Support
-    </a>
-  </h3><br clear="both" />
+<li class="post-card">
+  <article class="post-card-inner"><div class="post-card-thumbnail">
+      <a class="post-link" href="/howto/dhive/nodejs/rpc/2020/04/03/dhive-rpc-failover-support.html">
+        <img data-src="https://files.peakd.com/file/peakd-hive/therealwolf/nKbEIVHB-dhive.png" class="lazyload" alt="Thumbnail for dhive: RPC Failover Support" />
+      </a>
+    </div><div class="post-card-body"><span class="post-meta">
+        Apr 3, 2020• <a href="/authors/#author-therealwolf">therealwolf</a></span>
+      <h3 class="post-card-title">
+        <a class="post-link" href="/howto/dhive/nodejs/rpc/2020/04/03/dhive-rpc-failover-support.html">
+          dhive: RPC Failover Support
+        </a>
+      </h3></div>
+  </article>
 </li>
 </ul>
 
+        </div>
+
+        
+        <aside class="page-sidebar" aria-label="Search and browse">
+          <section class="sidebar-section sidebar-search">
+            <h2 class="sidebar-heading">Search posts</h2>
+            <p class="sidebar-copy">Search the locally indexed post archive.</p>
+            <input type="text" id="search-input" placeholder="Search posts" autocomplete="off" />
+            <ul id="results-container"></ul>
+          </section>
+
+          <section class="sidebar-section sidebar-topics">
+            <h2 class="sidebar-heading">Browse topics</h2>
+            <p class="sidebar-copy">Jump into curated topic landing pages.</p>
+            <ul class="topic-list topic-list-sidebar"><li><a class="page-link" href="/account-recovery/">Account Recovery</a></li><li><a class="page-link" href="/core-development/">Core Development</a></li><li><a class="page-link" href="/dapps/">Dapps</a></li><li><a class="page-link" href="/docker/">Docker</a></li><li><a class="page-link" href="/hardfork/">Hardfork</a></li><li><a class="page-link" href="/hivemind/">Hivemind</a></li><li><a class="page-link" href="/javascript/">Javascript</a></li><li><a class="page-link" href="/multisig/">Multisig</a></li><li><a class="page-link" href="/python/">Python</a></li><li><a class="page-link" href="/ruby/">Ruby</a></li><li><a class="page-link" href="/testnet/">Testnet</a></li><li><a class="page-link" href="/tools/">Tools</a></li><li><a class="page-link" href="/witness/">Witness</a></li></ul>
+          </section>
+        </aside>
+        
       </div>
     </main><footer class="site-footer h-card">
   <data class="u-url" href="/"></data>
@@ -815,6 +853,51 @@ if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNo
   </div>
 
 </footer>
-</body>
+<script src="/assets/javascript/search.js"></script>
+    <script>
+      (function () {
+        var input = document.getElementById('search-input');
+        var results = document.getElementById('results-container');
+        if (input && results && typeof SimpleJekyllSearch !== 'undefined') {
+          SimpleJekyllSearch({
+            searchInput: input,
+            resultsContainer: results,
+            json: '/search.json'
+          });
+        }
+
+        if (typeof SteemContentRenderer === 'undefined') return;
+
+        var targets = document.querySelectorAll('[data-hive-render-target="true"]');
+        if (!targets.length) return;
+
+        var renderer = new SteemContentRenderer.DefaultRenderer({
+          baseUrl: 'https://hive.blog/',
+          breaks: true,
+          skipSanitization: false,
+          allowInsecureScriptTags: false,
+          addNofollowToLinks: true,
+          doNotShowImages: false,
+          ipfsPrefix: '',
+          assetsWidth: 640,
+          assetsHeight: 480,
+          imageProxyFn: function (url) { return url; },
+          usertagUrlFn: function (account) { return '/@' + account; },
+          hashtagUrlFn: function (hashtag) { return '/tags/#' + hashtag; },
+          isLinkSafeFn: function () { return true; }
+        });
+
+        targets.forEach(function (target) {
+          try {
+            var inputHtml = target.innerHTML;
+            target.innerHTML = renderer.render(inputHtml);
+          } catch (e) {
+            console.log(e);
+          }
+        });
+      })();
+    </script>
+
+  </body>
 
 </html>

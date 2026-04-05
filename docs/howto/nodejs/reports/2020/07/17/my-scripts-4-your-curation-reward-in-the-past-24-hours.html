@@ -12,8 +12,8 @@
 <meta property="og:title" content="My Scripts 4- Your Curation Reward In The Past 24 Hours" />
 <meta name="author" content="rishi556" />
 <meta property="og:locale" content="en_US" />
-<meta name="description" content="This script here is being used by a few bots, for different reasons. But if you want to know how much you&#39;ve made in the last 24 hours in curation rewards, you can use the following code. ```js let hive = require(&#39;@hiveio/hive-js&#39;) var moment = require(&quot;moment&quot;) var curation_transactions = [] getDayCurationReward(&quot;rishi556&quot;, (cb) =&gt; { console.log(cb) }) function getDayCurationReward(account, callback) { loadCuration(account, (cb) =&gt; { hive.api.getDynamicGlobalProperties((err, properties) =&gt; { var total_vesting_shares = properties.total_vesting_shares var total_vesting_fund = properties.total_vesting_fund_steem var total = 0 for (i in cb) { total += cb[i] } var totalRewards = hive.formatter.vestToHive(total, total_vesting_shares, total_vesting_fund) //Since we have dealt with everything in VESTS so far, we need to convert to HIVE callback(totalRewards) }) }) } function loadCuration(account, callback) { curation_transactions = [] getTransactions(account, -1, callback) } function getTransactions(account, start, callback) { var last_trans = start var con = true hive.api.getAccountHistory(account, start, (start &lt; 0) ? 10000 : Math.min(start, 10000), (err, result) =&gt; { //account, start, limit. The limit cannot be greater than start if (err) { console.log(err) setTimeout(() =&gt; { getTransactions(account, last_trans, callback) }, 1000 * 30) //With account history and public nodes, most likely reason for error is too many requests, so we set a delay of 30 seconds to delay it return } result.reverse() //We get data back with oldest events being first, we want newest events being first so we can work backwards. To achieve that, we reverse the array we get for (i in result) { var trans = result[i] var transTime = moment.utc(trans[1].timestamp).unix() var now = moment.utc().unix() if ((now - transTime &gt; 86400)) { con = false break } var op = trans[1].op if (op[0] == &#39;curation_reward&#39;) { //All curation reward operations are labeled as curation_reward curation_transactions.push(parseFloat(op[1].reward.split(&quot; &quot;))) //We push all curation earned } last_trans = trans[0] //For going onto the next time around } if (con) { getTransactions(account, last_trans, callback) //Due to limit of 10k, we might need to call it multiple times } else { callback(curation_transactions) } }) } ``` The base of this was from @yabapmatt&#39;s Post Promoter&#39;s delegator&#39;s fetching script, with some modifications to get curation rewards rather than the current delegation onto accounts. This can also be used to get the history for longer period of times(including all time) with some slight modifications to the difference (86400 * DAYS) or by removing that part in its entirety and adding check to see if the end of the array has been reached and there&#39;s no more. #### History Of Scripts Send From One Account To Multiple Others Auto Send From Multiple To One Destination Witness Rank And Amount Needed To Rank Up See: My Scripts 4- Your Curation Reward In The Past 24 Hours by @rishi556" />
-<meta property="og:description" content="This script here is being used by a few bots, for different reasons. But if you want to know how much you&#39;ve made in the last 24 hours in curation rewards, you can use the following code. ```js let hive = require(&#39;@hiveio/hive-js&#39;) var moment = require(&quot;moment&quot;) var curation_transactions = [] getDayCurationReward(&quot;rishi556&quot;, (cb) =&gt; { console.log(cb) }) function getDayCurationReward(account, callback) { loadCuration(account, (cb) =&gt; { hive.api.getDynamicGlobalProperties((err, properties) =&gt; { var total_vesting_shares = properties.total_vesting_shares var total_vesting_fund = properties.total_vesting_fund_steem var total = 0 for (i in cb) { total += cb[i] } var totalRewards = hive.formatter.vestToHive(total, total_vesting_shares, total_vesting_fund) //Since we have dealt with everything in VESTS so far, we need to convert to HIVE callback(totalRewards) }) }) } function loadCuration(account, callback) { curation_transactions = [] getTransactions(account, -1, callback) } function getTransactions(account, start, callback) { var last_trans = start var con = true hive.api.getAccountHistory(account, start, (start &lt; 0) ? 10000 : Math.min(start, 10000), (err, result) =&gt; { //account, start, limit. The limit cannot be greater than start if (err) { console.log(err) setTimeout(() =&gt; { getTransactions(account, last_trans, callback) }, 1000 * 30) //With account history and public nodes, most likely reason for error is too many requests, so we set a delay of 30 seconds to delay it return } result.reverse() //We get data back with oldest events being first, we want newest events being first so we can work backwards. To achieve that, we reverse the array we get for (i in result) { var trans = result[i] var transTime = moment.utc(trans[1].timestamp).unix() var now = moment.utc().unix() if ((now - transTime &gt; 86400)) { con = false break } var op = trans[1].op if (op[0] == &#39;curation_reward&#39;) { //All curation reward operations are labeled as curation_reward curation_transactions.push(parseFloat(op[1].reward.split(&quot; &quot;))) //We push all curation earned } last_trans = trans[0] //For going onto the next time around } if (con) { getTransactions(account, last_trans, callback) //Due to limit of 10k, we might need to call it multiple times } else { callback(curation_transactions) } }) } ``` The base of this was from @yabapmatt&#39;s Post Promoter&#39;s delegator&#39;s fetching script, with some modifications to get curation rewards rather than the current delegation onto accounts. This can also be used to get the history for longer period of times(including all time) with some slight modifications to the difference (86400 * DAYS) or by removing that part in its entirety and adding check to see if the end of the array has been reached and there&#39;s no more. #### History Of Scripts Send From One Account To Multiple Others Auto Send From Multiple To One Destination Witness Rank And Amount Needed To Rank Up See: My Scripts 4- Your Curation Reward In The Past 24 Hours by @rishi556" />
+<meta name="description" content="This script here is being used by a few bots, for different reasons. But if you want to know how much you&#39;ve made in the last 24 hours in curation rewards, you can use the following code. ```js let hive = require(&#39;@hiveio/hive-js&#39;) var moment = require(&quot;moment&quot;) var curation_transactions = [] getDayCurationReward(&quot;rishi556&quot;, (cb) =&gt; { console.log(cb) }) function getDayCurationReward(account, callback) { loadCuration(account, (cb) =&gt; { hive.api.getDynamicGlobalProperties((err, properties) =&gt; { var total_vesting_shares = properties.total_vesting_shares var total_vesting_fund = properties.total_vesting_fund_steem var total = 0 for (i in cb) { total += cb[i] } var totalRewards = hive.formatter.vestToHive(total, total_vesting_shares, total_vesting_fund) //Since we have dealt with everything in VESTS so far, we need to convert to HIVE callback(totalRewards) }) }) } function loadCuration(account, callback) { curation_transactions = [] getTransactions(account, -1, callback) } function getTransactions(account, start, callback) { var last_trans = start var con = true hive.api.getAccountHistory(account, start, (start &lt; 0) ? 10000 : Math.min(start, 10000), (err, result) =&gt; { //account, start, limit. The limit cannot be greater than start if (err) { console.log(err) setTimeout(() =&gt; { getTransactions(account, last_trans, callback) }, 1000 * 30) //With account history and public nodes, most likely reason for error is too many requests, so we set a delay of 30 seconds to delay it return } result.reverse() //We get data back with oldest events being first, we want newest events being first so we can work backwards. To achieve that, we reverse the array we get for (i in result) { var trans = result[i] var transTime = moment.utc(trans[1].timestamp).unix() var now = moment.utc().unix() if ((now - transTime &gt; 86400)) { con = false break } var op = trans[1].op if (op[0] == &#39;curation_reward&#39;) { //All curation reward operations are labeled as curation_reward curation_transactions.push(parseFloat(op[1].reward.split(&quot; &quot;))) //We push all curation earned } last_trans = trans[0] //For going onto the next time around } if (con) { getTransactions(account, last_trans, callback) //Due to limit of 10k, we might need to call it multiple times } else { callback(curation_transactions) } }) } ``` The base of this was from @yabapmatt&#39;s Post Promoter&#39;s delegator&#39;s fetching script, with some modifications to get curation rewards rather than the current delegation onto accounts. This can also be used to get the history for longer period of times(including all time) with some slight modifications to the difference (86400 * DAYS) or by removing that part in its entirety and adding check to see if the end of the array has been reached and there&#39;s no more. #### History Of Scripts Send From One Account To Multiple Others Auto Send From Multiple To One Destination Witness Rank And Amount Needed To Rank Up Source: My Scripts 4- Your Curation Reward In The Past 24 Hours by @rishi556" />
+<meta property="og:description" content="This script here is being used by a few bots, for different reasons. But if you want to know how much you&#39;ve made in the last 24 hours in curation rewards, you can use the following code. ```js let hive = require(&#39;@hiveio/hive-js&#39;) var moment = require(&quot;moment&quot;) var curation_transactions = [] getDayCurationReward(&quot;rishi556&quot;, (cb) =&gt; { console.log(cb) }) function getDayCurationReward(account, callback) { loadCuration(account, (cb) =&gt; { hive.api.getDynamicGlobalProperties((err, properties) =&gt; { var total_vesting_shares = properties.total_vesting_shares var total_vesting_fund = properties.total_vesting_fund_steem var total = 0 for (i in cb) { total += cb[i] } var totalRewards = hive.formatter.vestToHive(total, total_vesting_shares, total_vesting_fund) //Since we have dealt with everything in VESTS so far, we need to convert to HIVE callback(totalRewards) }) }) } function loadCuration(account, callback) { curation_transactions = [] getTransactions(account, -1, callback) } function getTransactions(account, start, callback) { var last_trans = start var con = true hive.api.getAccountHistory(account, start, (start &lt; 0) ? 10000 : Math.min(start, 10000), (err, result) =&gt; { //account, start, limit. The limit cannot be greater than start if (err) { console.log(err) setTimeout(() =&gt; { getTransactions(account, last_trans, callback) }, 1000 * 30) //With account history and public nodes, most likely reason for error is too many requests, so we set a delay of 30 seconds to delay it return } result.reverse() //We get data back with oldest events being first, we want newest events being first so we can work backwards. To achieve that, we reverse the array we get for (i in result) { var trans = result[i] var transTime = moment.utc(trans[1].timestamp).unix() var now = moment.utc().unix() if ((now - transTime &gt; 86400)) { con = false break } var op = trans[1].op if (op[0] == &#39;curation_reward&#39;) { //All curation reward operations are labeled as curation_reward curation_transactions.push(parseFloat(op[1].reward.split(&quot; &quot;))) //We push all curation earned } last_trans = trans[0] //For going onto the next time around } if (con) { getTransactions(account, last_trans, callback) //Due to limit of 10k, we might need to call it multiple times } else { callback(curation_transactions) } }) } ``` The base of this was from @yabapmatt&#39;s Post Promoter&#39;s delegator&#39;s fetching script, with some modifications to get curation rewards rather than the current delegation onto accounts. This can also be used to get the history for longer period of times(including all time) with some slight modifications to the difference (86400 * DAYS) or by removing that part in its entirety and adding check to see if the end of the array has been reached and there&#39;s no more. #### History Of Scripts Send From One Account To Multiple Others Auto Send From Multiple To One Destination Witness Rank And Amount Needed To Rank Up Source: My Scripts 4- Your Curation Reward In The Past 24 Hours by @rishi556" />
 <link rel="canonical" href="https://peakd.com/hive-139531/@rishi556/my-scripts-4-your-curation-reward-in-the-past-24-hours" />
 <meta property="og:url" content="https://peakd.com/hive-139531/@rishi556/my-scripts-4-your-curation-reward-in-the-past-24-hours" />
 <meta property="og:site_name" content="Hive Chain Documentation" />
@@ -24,7 +24,7 @@
 <meta property="twitter:image" content="https://hivedocs.info/assets/images/favicon.png" />
 <meta property="twitter:title" content="My Scripts 4- Your Curation Reward In The Past 24 Hours" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"rishi556"},"dateModified":"2020-07-17T23:27:54-07:00","datePublished":"2020-07-17T23:27:54-07:00","description":"This script here is being used by a few bots, for different reasons. But if you want to know how much you&#39;ve made in the last 24 hours in curation rewards, you can use the following code. ```js let hive = require(&#39;@hiveio/hive-js&#39;) var moment = require(&quot;moment&quot;) var curation_transactions = [] getDayCurationReward(&quot;rishi556&quot;, (cb) =&gt; { console.log(cb) }) function getDayCurationReward(account, callback) { loadCuration(account, (cb) =&gt; { hive.api.getDynamicGlobalProperties((err, properties) =&gt; { var total_vesting_shares = properties.total_vesting_shares var total_vesting_fund = properties.total_vesting_fund_steem var total = 0 for (i in cb) { total += cb[i] } var totalRewards = hive.formatter.vestToHive(total, total_vesting_shares, total_vesting_fund) //Since we have dealt with everything in VESTS so far, we need to convert to HIVE callback(totalRewards) }) }) } function loadCuration(account, callback) { curation_transactions = [] getTransactions(account, -1, callback) } function getTransactions(account, start, callback) { var last_trans = start var con = true hive.api.getAccountHistory(account, start, (start &lt; 0) ? 10000 : Math.min(start, 10000), (err, result) =&gt; { //account, start, limit. The limit cannot be greater than start if (err) { console.log(err) setTimeout(() =&gt; { getTransactions(account, last_trans, callback) }, 1000 * 30) //With account history and public nodes, most likely reason for error is too many requests, so we set a delay of 30 seconds to delay it return } result.reverse() //We get data back with oldest events being first, we want newest events being first so we can work backwards. To achieve that, we reverse the array we get for (i in result) { var trans = result[i] var transTime = moment.utc(trans[1].timestamp).unix() var now = moment.utc().unix() if ((now - transTime &gt; 86400)) { con = false break } var op = trans[1].op if (op[0] == &#39;curation_reward&#39;) { //All curation reward operations are labeled as curation_reward curation_transactions.push(parseFloat(op[1].reward.split(&quot; &quot;))) //We push all curation earned } last_trans = trans[0] //For going onto the next time around } if (con) { getTransactions(account, last_trans, callback) //Due to limit of 10k, we might need to call it multiple times } else { callback(curation_transactions) } }) } ``` The base of this was from @yabapmatt&#39;s Post Promoter&#39;s delegator&#39;s fetching script, with some modifications to get curation rewards rather than the current delegation onto accounts. This can also be used to get the history for longer period of times(including all time) with some slight modifications to the difference (86400 * DAYS) or by removing that part in its entirety and adding check to see if the end of the array has been reached and there&#39;s no more. #### History Of Scripts Send From One Account To Multiple Others Auto Send From Multiple To One Destination Witness Rank And Amount Needed To Rank Up See: My Scripts 4- Your Curation Reward In The Past 24 Hours by @rishi556","headline":"My Scripts 4- Your Curation Reward In The Past 24 Hours","image":"https://hivedocs.info/assets/images/favicon.png","mainEntityOfPage":{"@type":"WebPage","@id":"https://peakd.com/hive-139531/@rishi556/my-scripts-4-your-curation-reward-in-the-past-24-hours"},"url":"https://peakd.com/hive-139531/@rishi556/my-scripts-4-your-curation-reward-in-the-past-24-hours"}</script>
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"rishi556"},"dateModified":"2020-07-17T23:27:54-07:00","datePublished":"2020-07-17T23:27:54-07:00","description":"This script here is being used by a few bots, for different reasons. But if you want to know how much you&#39;ve made in the last 24 hours in curation rewards, you can use the following code. ```js let hive = require(&#39;@hiveio/hive-js&#39;) var moment = require(&quot;moment&quot;) var curation_transactions = [] getDayCurationReward(&quot;rishi556&quot;, (cb) =&gt; { console.log(cb) }) function getDayCurationReward(account, callback) { loadCuration(account, (cb) =&gt; { hive.api.getDynamicGlobalProperties((err, properties) =&gt; { var total_vesting_shares = properties.total_vesting_shares var total_vesting_fund = properties.total_vesting_fund_steem var total = 0 for (i in cb) { total += cb[i] } var totalRewards = hive.formatter.vestToHive(total, total_vesting_shares, total_vesting_fund) //Since we have dealt with everything in VESTS so far, we need to convert to HIVE callback(totalRewards) }) }) } function loadCuration(account, callback) { curation_transactions = [] getTransactions(account, -1, callback) } function getTransactions(account, start, callback) { var last_trans = start var con = true hive.api.getAccountHistory(account, start, (start &lt; 0) ? 10000 : Math.min(start, 10000), (err, result) =&gt; { //account, start, limit. The limit cannot be greater than start if (err) { console.log(err) setTimeout(() =&gt; { getTransactions(account, last_trans, callback) }, 1000 * 30) //With account history and public nodes, most likely reason for error is too many requests, so we set a delay of 30 seconds to delay it return } result.reverse() //We get data back with oldest events being first, we want newest events being first so we can work backwards. To achieve that, we reverse the array we get for (i in result) { var trans = result[i] var transTime = moment.utc(trans[1].timestamp).unix() var now = moment.utc().unix() if ((now - transTime &gt; 86400)) { con = false break } var op = trans[1].op if (op[0] == &#39;curation_reward&#39;) { //All curation reward operations are labeled as curation_reward curation_transactions.push(parseFloat(op[1].reward.split(&quot; &quot;))) //We push all curation earned } last_trans = trans[0] //For going onto the next time around } if (con) { getTransactions(account, last_trans, callback) //Due to limit of 10k, we might need to call it multiple times } else { callback(curation_transactions) } }) } ``` The base of this was from @yabapmatt&#39;s Post Promoter&#39;s delegator&#39;s fetching script, with some modifications to get curation rewards rather than the current delegation onto accounts. This can also be used to get the history for longer period of times(including all time) with some slight modifications to the difference (86400 * DAYS) or by removing that part in its entirety and adding check to see if the end of the array has been reached and there&#39;s no more. #### History Of Scripts Send From One Account To Multiple Others Auto Send From Multiple To One Destination Witness Rank And Amount Needed To Rank Up Source: My Scripts 4- Your Curation Reward In The Past 24 Hours by @rishi556","headline":"My Scripts 4- Your Curation Reward In The Past 24 Hours","image":"https://hivedocs.info/assets/images/favicon.png","mainEntityOfPage":{"@type":"WebPage","@id":"https://peakd.com/hive-139531/@rishi556/my-scripts-4-your-curation-reward-in-the-past-24-hours"},"url":"https://peakd.com/hive-139531/@rishi556/my-scripts-4-your-curation-reward-in-the-past-24-hours"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://hivedocs.info/feed.xml" title="Hive Chain Documentation" /><script>
 if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNotTrack === "yes" || navigator.msDoNotTrack === "1")) {
@@ -38,17 +38,10 @@ if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNo
 }
 </script>
   
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
-  
-  <!-- jQuery Modal -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.js"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.css" />
-  
-  <script src='https://unpkg.com/steem-content-renderer'></script>
+<script src='https://unpkg.com/steem-content-renderer'></script>
   <script src="/assets/javascript/universal-bridge-against-phishing.js"></script>
   <script src="/assets/javascript/lazysizes.min.js" async=""></script>
   <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet" />
-  <link href="https://fonts.googleapis.com/css?family=Cousine|Inconsolata" rel="stylesheet" />
   <link rel="shortcut icon" type="image/png" href="/assets/images/favicon-80x80.png" />
   <link rel="apple-touch-icon" type="image/png" href="/assets/images/favicon-80x80.png" />
   <link rel="apple-touch-icon" sizes="152x152" href="/assets/images/favicon-80x80.png" />
@@ -56,69 +49,44 @@ if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNo
   <link rel="apple-touch-icon" sizes="167x167" href="/assets/images/favicon-80x80.png" />
 </head>
 <body><header class="site-header" role="banner">
+  <div class="wrapper site-header-inner">
+    <a class="site-title" rel="author" href="/">Hive Chain Documentation</a>
 
-  <div class="wrapper"><a class="site-title" rel="author" href="/">Hive Chain Documentation</a>
+    <nav class="site-nav" aria-label="Primary">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+          </svg>
+        </span>
+      </label>
 
-      <nav class="site-nav">
-        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
-        <label for="nav-trigger">
-          <span class="menu-icon">
-            <svg viewBox="0 0 18 15" width="18px" height="15px">
-              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
-            </svg>
-          </span>
-        </label>
-
-        <div class="trigger"><a class="page-link" href="/news/">News</a><a class="page-link" href="/howto/">How To</a><a class="page-link" href="/links/">Useful Links</a><a class="page-link" href="/authors/">Authors</a><!-- HTML elements for search -->
-          <input type="text" id="search-input" placeholder="Search" />
-          
-          <ul id="results-container"></ul>
-
-          <script src="/assets/javascript/search.js"></script>
-          <script>
-            var sjs = SimpleJekyllSearch({
-              searchInput: document.getElementById('search-input'),
-              resultsContainer: document.getElementById('results-container'),
-              json: '/search.json'
-            })
-          </script>
-          <!-- <form style="float: right;" class="form-inline" method="get" action="http://www.google.com/search">
-            <input type="hidden" name="sitesearch" value="hivedocs.info" />
-            <input type="text" name="q" maxlength="255" placeholder="Search" />
-          </form> -->
-          
-          <!-- <a href="#" onclick="try { $('#authors-container').slideToggle(); } catch { document.getElementById('authors-container').style.display = 'block'; }; return false;">Authors &#187;</a>
-          <a href="#" onclick="try { $('#topics-container').slideToggle(); } catch { document.getElementById('topics-container').style.display = 'block'; }; return false;">Topics &#187;</a> -->
-          
-          <a href="#topics-container" rel="modal:open">Topics &#187;</a>
-          
-          <div id="topics-container" class="modal">
-            <h3>Topics</h3>
-            <ul><li><a class="page-link" href="/account-recovery/"><nobr>Account Recovery</nobr></a></li><li><a class="page-link" href="/core-development/"><nobr>Core Development</nobr></a></li><li><a class="page-link" href="/dapps/"><nobr>Dapps</nobr></a></li><li><a class="page-link" href="/docker/"><nobr>Docker</nobr></a></li><li><a class="page-link" href="/hardfork/"><nobr>Hardfork</nobr></a></li><li><a class="page-link" href="/hivemind/"><nobr>Hivemind</nobr></a></li><li><a class="page-link" href="/javascript/"><nobr>Javascript</nobr></a></li><li><a class="page-link" href="/multisig/"><nobr>Multisig</nobr></a></li><li><a class="page-link" href="/python/"><nobr>Python</nobr></a></li><li><a class="page-link" href="/ruby/"><nobr>Ruby</nobr></a></li><li><a class="page-link" href="/testnet/"><nobr>Testnet</nobr></a></li><li><a class="page-link" href="/tools/"><nobr>Tools</nobr></a></li><li><a class="page-link" href="/witness/"><nobr>Witness</nobr></a></li></ul>
-          </div>
-        </div>
-      </nav>
+      <div class="trigger"><a class="page-link" href="/news/">News</a><a class="page-link" href="/howto/">How To</a><a class="page-link" href="/links/">Useful Links</a><a class="page-link" href="/authors/">Authors</a><a class="page-link" href="/topics/">Topics</a><a class="page-link" href="/search/">Search</a></div>
+    </nav>
   </div>
 </header>
 <main class="page-content" aria-label="Content">
-      <div class="wrapper">
-        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+      <div class="wrapper page-layout has-search-panel">
+        <div class="page-main">
+          <article class="post h-entry post-article" itemscope itemtype="http://schema.org/BlogPosting">
 
-  <header class="post-header">
-    <div class="pull-right well">
-      <img src="https://images.hive.blog/u/rishi556/avatar" width="128" height="128" class="lazyload" />
-    </div>
-    
-    <h1 class="post-title p-name" itemprop="name headline">My Scripts 4- Your Curation Reward In The Past 24 Hours</h1>
-    <p class="post-meta">
-      <time class="dt-published" datetime="2020-07-17T23:27:54-07:00" itemprop="datePublished">Jul 17, 2020
-      </time>• <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">
-          <a href="/authors/#author-rishi556">rishi556</a>
-        </span></span></p>
-  </header>
+  <header class="post-header post-hero">
+    <div class="post-hero-main">
+      <p class="post-kicker">Archive post</p>
+      <h1 class="post-title p-name" itemprop="name headline">My Scripts 4- Your Curation Reward In The Past 24 Hours</h1>
+      <p class="post-meta">
+        <time class="dt-published" datetime="2020-07-17T23:27:54-07:00" itemprop="datePublished">Jul 17, 2020
+        </time>• <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">
+            <a href="/authors/#author-rishi556">rishi556</a>
+          </span></span></p></div><aside class="post-author-card">
+      <img src="https://images.hive.blog/u/rishi556/avatar" width="128" height="128" class="lazyload post-author-avatar" alt="Avatar for @rishi556" />
+      <div class="post-author-name">@rishi556</div>
+    </aside></header>
 
-  <div class="post-content e-content" itemprop="articleBody">
-    <div id="content-rishi556-my-scripts-4-your-curation-reward-in-the-past-24-hours">This script here is being used by a few bots, for different reasons. But if you want to know how much you've made in the last 24 hours in curation rewards, you can use the following code. 
+  <div class="post-content e-content post-body" itemprop="articleBody">
+    <div class="hive-post-embed" data-hive-author="rishi556" data-hive-permlink="my-scripts-4-your-curation-reward-in-the-past-24-hours">
+  <div id="content-rishi556-my-scripts-4-your-curation-reward-in-the-past-24-hours" class="hive-post-embed__content" data-hive-render-target="true">This script here is being used by a few bots, for different reasons. But if you want to know how much you've made in the last 24 hours in curation rewards, you can use the following code. 
 
 ```js
 let hive = require('@hiveio/hive-js')
@@ -201,88 +169,36 @@ The base of this was from @yabapmatt's <a href="https://github.com/MattyIce/post
 
 <a href="https://peakd.com/hive-139531/@rishi556/my-scripts-1-witness-rank-and-amount-needed-to-rank-up">Witness Rank And Amount Needed To Rank Up</a>
 </div>
-<script crossorigin="anonymous" integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=" src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-
-<script src="https://unpkg.com/steem-content-renderer"></script>
-
-<!-- <script src="https://cdn.jsdelivr.net/npm/hive-content-renderer/dist/hive-content-renderer.min.js"></script> -->
-<script>
-  $(document).ready(function() {
-    try {
-      const renderer = new SteemContentRenderer.DefaultRenderer({
-      // const renderer = new HiveContentRenderer({
-        baseUrl: "https://hive.blog/",
-        breaks: true,
-        skipSanitization: false,
-        allowInsecureScriptTags: false,
-        addNofollowToLinks: true,
-        doNotShowImages: false,
-        ipfsPrefix: "",
-        assetsWidth: 640,
-        assetsHeight: 480,
-        imageProxyFn: (url) => url,
-        usertagUrlFn: (account) => "/@rishi556",
-        hashtagUrlFn: (hashtag) => "/my-scripts-4-your-curation-reward-in-the-past-24-hours",
-        isLinkSafeFn: (url) => true,
-      });
-      
-      const inputElem = $('#content-rishi556-my-scripts-4-your-curation-reward-in-the-past-24-hours').html();
-      const outputElem = $('#content-rishi556-my-scripts-4-your-curation-reward-in-the-past-24-hours');
-      const output = renderer.render(inputElem);
-      
-      outputElem.html(output);
-    } catch(e) {
-      console.log(e);
-    }
-  });
-</script>
-
-<style>
-  #content-rishi556-my-scripts-4-your-curation-reward-in-the-past-24-hours {
-    padding: 0 3rem;
-    color: #444444;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    font-size: 16px;
-    line-height: 1.8;
-    text-shadow: 0 1px 0 #ffffff;
-    padding: 0.5rem;
-  }
-  #content-rishi556-my-scripts-4-your-curation-reward-in-the-past-24-hours code {
-    background: white;
-  }
-  #content-rishi556-my-scripts-4-your-curation-reward-in-the-past-24-hours a {
-    border-bottom: 1px solid #444444; color: #444444; text-decoration: none;
-  }
-  #content-rishi556-my-scripts-4-your-curation-reward-in-the-past-24-hours a:hover {
-    border-bottom: 0;
-  }
-  #content-rishi556-my-scripts-4-your-curation-reward-in-the-past-24-hours h1 {
-    font-size: 2.2em;
-  }
-  #content-rishi556-my-scripts-4-your-curation-reward-in-the-past-24-hours h2, h3, h4, h5 {
-    margin-bottom: 0;
-  }
-  #content-rishi556-my-scripts-4-your-curation-reward-in-the-past-24-hours header small {
-    color: #999;
-    font-size: 50%;
-  }
-  #content-rishi556-my-scripts-4-your-curation-reward-in-the-past-24-hours img {
-    max-width: 100%;
-  }
-</style>
-
-<hr />
-
-<p>
-  See: <a href="https://peakd.com/hive-139531/@rishi556/my-scripts-4-your-curation-reward-in-the-past-24-hours">My Scripts 4- Your Curation Reward In The Past 24 Hours</a>
-  by
-  <a href="https://hive.blog/@rishi556">@rishi556</a>
-</p>
+  <footer class="hive-post-embed__source">
+    <span class="hive-post-embed__source-label">Source:</span>
+    <a href="https://peakd.com/hive-139531/@rishi556/my-scripts-4-your-curation-reward-in-the-past-24-hours">My Scripts 4- Your Curation Reward In The Past 24 Hours</a>
+    <span>by</span>
+    <a href="https://hive.blog/@rishi556">@rishi556</a>
+  </footer>
+</div>
 
 
   </div><a class="u-url" href="/howto/nodejs/reports/2020/07/17/my-scripts-4-your-curation-reward-in-the-past-24-hours.html" hidden></a>
 </article>
 
+        </div>
+
+        
+        <aside class="page-sidebar" aria-label="Search and browse">
+          <section class="sidebar-section sidebar-search">
+            <h2 class="sidebar-heading">Search posts</h2>
+            <p class="sidebar-copy">Search the locally indexed post archive.</p>
+            <input type="text" id="search-input" placeholder="Search posts" autocomplete="off" />
+            <ul id="results-container"></ul>
+          </section>
+
+          <section class="sidebar-section sidebar-topics">
+            <h2 class="sidebar-heading">Browse topics</h2>
+            <p class="sidebar-copy">Jump into curated topic landing pages.</p>
+            <ul class="topic-list topic-list-sidebar"><li><a class="page-link" href="/account-recovery/">Account Recovery</a></li><li><a class="page-link" href="/core-development/">Core Development</a></li><li><a class="page-link" href="/dapps/">Dapps</a></li><li><a class="page-link" href="/docker/">Docker</a></li><li><a class="page-link" href="/hardfork/">Hardfork</a></li><li><a class="page-link" href="/hivemind/">Hivemind</a></li><li><a class="page-link" href="/javascript/">Javascript</a></li><li><a class="page-link" href="/multisig/">Multisig</a></li><li><a class="page-link" href="/python/">Python</a></li><li><a class="page-link" href="/ruby/">Ruby</a></li><li><a class="page-link" href="/testnet/">Testnet</a></li><li><a class="page-link" href="/tools/">Tools</a></li><li><a class="page-link" href="/witness/">Witness</a></li></ul>
+          </section>
+        </aside>
+        
       </div>
     </main><footer class="site-footer h-card">
   <data class="u-url" href="/"></data>
@@ -307,6 +223,51 @@ The base of this was from @yabapmatt's <a href="https://github.com/MattyIce/post
   </div>
 
 </footer>
-</body>
+<script src="/assets/javascript/search.js"></script>
+    <script>
+      (function () {
+        var input = document.getElementById('search-input');
+        var results = document.getElementById('results-container');
+        if (input && results && typeof SimpleJekyllSearch !== 'undefined') {
+          SimpleJekyllSearch({
+            searchInput: input,
+            resultsContainer: results,
+            json: '/search.json'
+          });
+        }
+
+        if (typeof SteemContentRenderer === 'undefined') return;
+
+        var targets = document.querySelectorAll('[data-hive-render-target="true"]');
+        if (!targets.length) return;
+
+        var renderer = new SteemContentRenderer.DefaultRenderer({
+          baseUrl: 'https://hive.blog/',
+          breaks: true,
+          skipSanitization: false,
+          allowInsecureScriptTags: false,
+          addNofollowToLinks: true,
+          doNotShowImages: false,
+          ipfsPrefix: '',
+          assetsWidth: 640,
+          assetsHeight: 480,
+          imageProxyFn: function (url) { return url; },
+          usertagUrlFn: function (account) { return '/@' + account; },
+          hashtagUrlFn: function (hashtag) { return '/tags/#' + hashtag; },
+          isLinkSafeFn: function () { return true; }
+        });
+
+        targets.forEach(function (target) {
+          try {
+            var inputHtml = target.innerHTML;
+            target.innerHTML = renderer.render(inputHtml);
+          } catch (e) {
+            console.log(e);
+          }
+        });
+      })();
+    </script>
+
+  </body>
 
 </html>

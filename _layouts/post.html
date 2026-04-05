@@ -2,27 +2,37 @@
 layout: default
 image: https://hivedocs.info/assets/images/favicon.png
 ---
-<article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+<article class="post h-entry post-article" itemscope itemtype="http://schema.org/BlogPosting">
 
-  <header class="post-header">
-    <div class="pull-right well">
-      <img src="https://images.hive.blog/u/{{ page.author }}/avatar" width="128" height="128" class="lazyload" />
+  <header class="post-header post-hero">
+    <div class="post-hero-main">
+      <p class="post-kicker">Archive post</p>
+      <h1 class="post-title p-name" itemprop="name headline">{{ page.title | escape }}</h1>
+      <p class="post-meta">
+        <time class="dt-published" datetime="{{ page.date | date_to_xmlschema }}" itemprop="datePublished">
+          {%- assign date_format = site.minima.date_format | default: "%b %-d, %Y" -%}
+          {{ page.date | date: date_format }}
+        </time>
+        {%- if page.author -%}
+          • <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">
+            <a href="{{ '/authors/' | relative_url }}#author-{{ page.author }}">{{ page.author }}</a>
+          </span></span>
+        {%- endif -%}
+      </p>
+      {%- if page.description -%}
+        <p class="post-summary">{{ page.description }}</p>
+      {%- endif -%}
     </div>
-    
-    <h1 class="post-title p-name" itemprop="name headline">{{ page.title | escape }}</h1>
-    <p class="post-meta">
-      <time class="dt-published" datetime="{{ page.date | date_to_xmlschema }}" itemprop="datePublished">
-        {%- assign date_format = site.minima.date_format | default: "%b %-d, %Y" -%}
-        {{ page.date | date: date_format }}
-      </time>
-      {%- if page.author -%}
-        • <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">
-          <a href="{{ '/authors/' | relative_url }}#author-{{ page.author }}">{{ page.author }}</a>
-        </span></span>
-      {%- endif -%}</p>
+
+    {%- if page.author -%}
+    <aside class="post-author-card">
+      <img src="https://images.hive.blog/u/{{ page.author }}/avatar" width="128" height="128" class="lazyload post-author-avatar" alt="Avatar for @{{ page.author }}" />
+      <div class="post-author-name">@{{ page.author }}</div>
+    </aside>
+    {%- endif -%}
   </header>
 
-  <div class="post-content e-content" itemprop="articleBody">
+  <div class="post-content e-content post-body" itemprop="articleBody">
     {{ content }}
   </div>
     

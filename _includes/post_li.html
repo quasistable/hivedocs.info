@@ -1,26 +1,29 @@
-<li class="well">
-  <div class="post-thumbnail" style="float: right; padding-right: 4px; padding-bottom: 4px;">
-    <a class="post-link" href="{{ post.url | relative_url }}">
-      <img data-src="{{ post.image }}" class="lazyload" />
-    </a>
-  </div>
-  
-  {%- assign date_format = site.minima.date_format | default: "%b %-d, %Y" -%}
-  <span class="post-meta">
-    {{ post.date | date: date_format }}&nbsp;
-    
-    {%- if post.author -%}
-      • <a href="{{ '/authors/' | relative_url }}#author-{{ post.author }}">{{ post.author }}</a>
+<li class="post-card">
+  <article class="post-card-inner">
+    {%- if post.image -%}
+    <div class="post-card-thumbnail">
+      <a class="post-link" href="{{ post.url | relative_url }}">
+        <img data-src="{{ post.image }}" class="lazyload" alt="Thumbnail for {{ post.title | escape }}" />
+      </a>
+    </div>
     {%- endif -%}
-  </span>
-  <h3>
-    <a class="post-link" href="{{ post.url | relative_url }}">
-      {{ post.title | escape }}
-    </a>
-  </h3>
-  {%- if post.description -%}
-    {{ post.description }}
-  {%- endif -%}
-  
-  <br clear="both" />
+
+    <div class="post-card-body">
+      {%- assign date_format = site.minima.date_format | default: "%b %-d, %Y" -%}
+      <span class="post-meta">
+        {{ post.date | date: date_format }}
+        {%- if post.author -%}
+          • <a href="{{ '/authors/' | relative_url }}#author-{{ post.author }}">{{ post.author }}</a>
+        {%- endif -%}
+      </span>
+      <h3 class="post-card-title">
+        <a class="post-link" href="{{ post.url | relative_url }}">
+          {{ post.title | escape }}
+        </a>
+      </h3>
+      {%- if post.description -%}
+        <p class="post-card-summary">{{ post.description }}</p>
+      {%- endif -%}
+    </div>
+  </article>
 </li>
