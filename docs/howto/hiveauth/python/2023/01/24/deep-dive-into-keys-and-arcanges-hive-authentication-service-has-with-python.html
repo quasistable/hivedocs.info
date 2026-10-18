@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta property="og:image" content="/assets/images/sticker.png" />
+  <meta name="apple-mobile-web-app-title" content="Hive Docs" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" /><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Deep dive into Keys and @arcange’s Hive Authentication Service HAS with Python | Hive Chain Documentation</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Deep dive into Keys and @arcange’s Hive Authentication Service HAS with Python" />
+<meta name="author" content="brianoflondon" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Work so far on HAS authentication from Python including JSCrypto decoding in Python" />
+<meta property="og:description" content="Work so far on HAS authentication from Python including JSCrypto decoding in Python" />
+<link rel="canonical" href="https://hive.blog/hive-139531/@brianoflondon/deep-dive-into-keys-and-arcanges-hive-authentication-service-has-with-python" />
+<meta property="og:url" content="https://hive.blog/hive-139531/@brianoflondon/deep-dive-into-keys-and-arcanges-hive-authentication-service-has-with-python" />
+<meta property="og:site_name" content="Hive Chain Documentation" />
+<meta property="og:image" content="https://files.peakd.com/file/peakd-hive/brianoflondon/23wC7LyytY6rVdidQRs8pGe84GpjCPh3N89n59aai9FQMoUxZMxykmGDFY4Z85Shs2iJB.png" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2023-01-24T02:49:33-08:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="https://files.peakd.com/file/peakd-hive/brianoflondon/23wC7LyytY6rVdidQRs8pGe84GpjCPh3N89n59aai9FQMoUxZMxykmGDFY4Z85Shs2iJB.png" />
+<meta property="twitter:title" content="Deep dive into Keys and @arcange’s Hive Authentication Service HAS with Python" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"brianoflondon"},"dateModified":"2023-01-24T02:49:33-08:00","datePublished":"2023-01-24T02:49:33-08:00","description":"Work so far on HAS authentication from Python including JSCrypto decoding in Python","headline":"Deep dive into Keys and @arcange’s Hive Authentication Service HAS with Python","image":"https://files.peakd.com/file/peakd-hive/brianoflondon/23wC7LyytY6rVdidQRs8pGe84GpjCPh3N89n59aai9FQMoUxZMxykmGDFY4Z85Shs2iJB.png","mainEntityOfPage":{"@type":"WebPage","@id":"https://hive.blog/hive-139531/@brianoflondon/deep-dive-into-keys-and-arcanges-hive-authentication-service-has-with-python"},"url":"https://hive.blog/hive-139531/@brianoflondon/deep-dive-into-keys-and-arcanges-hive-authentication-service-has-with-python"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://hivedocs.info/feed.xml" title="Hive Chain Documentation" /><script>
+if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNotTrack === "yes" || navigator.msDoNotTrack === "1")) {
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-161692811-1', 'auto');
+  ga('send', 'pageview');
+}
+</script>
+  
+<script src='https://unpkg.com/steem-content-renderer'></script>
+  <script src="/assets/javascript/universal-bridge-against-phishing.js"></script>
+  <script src="/assets/javascript/lazysizes.min.js" async=""></script>
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet" />
+  <link rel="shortcut icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="152x152" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="167x167" href="/assets/images/favicon-80x80.png" />
+</head>
+<body><header class="site-header" role="banner">
+  <div class="wrapper site-header-inner">
+    <a class="site-title" rel="author" href="/">Hive Chain Documentation</a>
+
+    <nav class="site-nav" aria-label="Primary">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/news/">News</a><a class="page-link" href="/howto/">How To</a><a class="page-link" href="/links/">Useful Links</a><a class="page-link" href="/authors/">Authors</a><a class="page-link" href="/topics/">Topics</a><a class="page-link" href="/search/">Search</a></div>
+    </nav>
+  </div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper page-layout has-search-panel">
+        <div class="page-main">
+          <article class="post h-entry post-article" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header post-hero">
+    <div class="post-hero-main">
+      <p class="post-kicker">Archive post</p>
+      <h1 class="post-title p-name" itemprop="name headline">Deep dive into Keys and @arcange&#39;s Hive Authentication Service HAS with Python</h1>
+      <p class="post-meta">
+        <time class="dt-published" datetime="2023-01-24T02:49:33-08:00" itemprop="datePublished">Jan 24, 2023
+        </time>• <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">
+            <a href="/authors/#author-brianoflondon">brianoflondon</a>
+          </span></span></p><p class="post-summary">Work so far on HAS authentication from Python including JSCrypto decoding in Python</p></div><aside class="post-author-card">
+      <img src="https://images.hive.blog/u/brianoflondon/avatar" width="128" height="128" class="lazyload post-author-avatar" alt="Avatar for @brianoflondon" />
+      <div class="post-author-name">@brianoflondon</div>
+    </aside></header>
+
+  <div class="post-content e-content post-body" itemprop="articleBody">
+    <div class="hive-post-embed" data-hive-author="brianoflondon" data-hive-permlink="deep-dive-into-keys-and-arcanges-hive-authentication-service-has-with-python">
+  <div id="content-brianoflondon-deep-dive-into-keys-and-arcanges-hive-authentication-service-has-with-python" class="hive-post-embed__content" data-hive-render-target="true">---
+
+***This is a value for value post: see the explanation in the footer.***
+
+---
+
+
+If anyone else wants to look HAS authentication in Python, the code is all here:
+
+[HAS Python on Github](https://github.com/brianoflondon/has-python)
+
+
+![image.png](https://files.peakd.com/file/peakd-hive/brianoflondon/23wC7LyytY6rVdidQRs8pGe84GpjCPh3N89n59aai9FQMoUxZMxykmGDFY4Z85Shs2iJB.png)
+
+
+## HAS - Hive Authentication Service from Python
+
+First of all [HAS is cool](https://hiveauth.com/), I like the way it operates. If you don't know, HAS is @arcange's authentication service where you give authorisation to a Hive website or dapp using QR codes you snap with Hive Keychain on a phone. Once you are authenticated, if you do anything that requires a signature (liking a post, writing a comment etc.) Hive Keychain will ask again for authorisation. 
+
+I've used it quite a bit logging on to public computers where I don't have or can't have Hive Keychain installed. I can log on, do something and then log out and be 100% sure that there is no way anyone else can use my credentials or access my account.
+
+### On Mobile
+
+The system also works (mostly) on mobile. There are some technical issues when moving from app to app on phones (I'm using an iPhone) and behind the scenes, support for the underlying websocket protocol could improve, but it does work.
+
+## What's the problem we're solving here?
+
+Let's just back up and restate what the problem we're trying to solve is.
+
+When you log on to Facebook or Twitter, you do that with a username and password. Those centralised services will check your username and password against their internal database, record that you've logged in and then put an invisible "cookie" on your computer and every time you ask for a page from their site, their central servers will look at your cookie and if it is valid, they'll let you do anything you're allowed to:
+
+- look at the content you can see,
+- post under your name, 
+- generally make use of their service.
+
+On Hive the websites and dapps you use have a significant difference: there is no central database of usernames and passwords, instead we have public and private keys.
+
+And when we say public keys, we really do mean public: here are my keys for Hive!
+
+![Public Keys for Brian of London](https://files.peakd.com/file/peakd-hive/brianoflondon/23uFufPtgnswiQcifJsKTw2Fakoa2PipDKWMwkAmmnLZZUuG9y4TsrJanfddHLd4u4hGL.png)
+
+The public keys are those things which start `STM...`. The beauty of this system is that if you hold the Private Key, you can publicly "sign" a message which proves you have the Private Key to match any of those Public Keys.
+
+Nobody else can do that and you don't need to actually show anyone the Private Key.
+
+## Private Key Store APP (PKSA)
+
+Except that signing something with you Private Key is a semi complex cryptographic challenge which only a computer can really do for you. This is a snippet of code as an example:
+
+![image.png](https://files.peakd.com/file/peakd-hive/brianoflondon/23swbivHiEGNSuTDAXwx3ipFPmMb6gmvi3JNF85w5vyu9ohEVoBaQmkQDAXMfRDZ41wBi.png)
+
+For example, the ECC in "ecc.Signature" stands for Elliptic-curve cryptography which is the underlying system a lot of this is based on.
+
+If you ever wondered what Hive Keychain is actually doing in your broswer, that fragment of code is the kind of thing which happens when you click yes on a pop up to do something.
+
+The point here is that you aren't sending a key, you're just proving that you have the private key to match the same public key which anyone can see is recorded in your Hive profile.
+
+Hive Keychain and Hivesigner or PeakLock are all PKSAs - Private Key Store Apps. You have to trust your private keys to those services and they shouldn't let your keys out. Only sending signatures back to services that need to know you are you.
+
+### Side note: delegated authority
+
+You can see in my list above that my Posting section is big: each of the names in that section have been given `Posting Authority` by me. If one of those account signs a transaction from me but with their posting key, not mine, it will be accepted as coming from me.
+
+## Making HAS work in Python
+
+I started out with the idea that I would like to have a Python only based website, probably using the framework Flask. A long time ago when I was learning to code again, I managed to integrate Hive Keychain sign in with Flask and that work is here:
+
+[Python Flask Hive Keychain Demo](https://github.com/brianoflondon/python-flask-hive-keychain-demo)
+
+In reality, most of the hard work is done on the web page by Javascript code written by the Hive Keychain team. 
+
+Once I actually started to implement HAS (and you can see the [first failed attempt here](https://github.com/brianoflondon/python-flask-hive-keychain-demo/tree/feature/hive-auth-service)) I realised this was a slightly bigger thing to implement than I thought.
+
+The reality is, just like authenticating with Hive Keychain, using HAS on a website, is probably better done using the [Javascript which @arcange supplies on his site](https://docs.hiveauth.com/tutorials/app-code-example/has-wrapper-library).
+
+### Diving in
+
+I'm not sure why I did this after coming to realise how I should be using HAS, but I kept on going and set myself the challenge of doing the complete authentication in Python from the protocol documents which @arcange has posted.
+
+And it would appear that I'm the first to have done this. The Hive Keychain team has integrated the functionality for their mobile app to act as a PKSA but all the website and services which offer HAS right now have done so using @arcange's Javascript.
+
+Well I've done it. The code is not really finished because I haven't really figured out how this can be used but it's up there and open.
+
+There's a stub of a command line which can authenticate a Hive account and I have behind the scenes code to sign any challenge and send any transactions. 
+
+If anyone else wants to look the code is all here, it's a bit of a mess right now but I want to improve it especially if anyone tells me their interested in using it:
+
+[HAS Python on Github](https://github.com/brianoflondon/has-python)
+
+What's missing is probably a Python version of [this Javascript functionality](https://docs.hiveauth.com/tutorials/app-code-example/has-wrapper-library). I'm just wondering if that's what I should be building.
+
+I'm not sure where to go with this right now, I have to move back to working on things directly necessary for my @v4vapp though this all fits with my desire to have a much better front end. My conundrum is that whilst I'm happiest coding in Python, the reality is websites are far better written in any of the Javascript frameworks.
+
+In addition, I'm traveling to Australia soon with @apshamilton for our first in person court hearing on the Crypto Class Action.
+
+## Thanks to @arcange
+
+All of this work stems from @arcange and I had numerous calls with him to get to this point. We found a couple of tiny issues with the documentation but he has built a remarkably solid solution.
+
+I feel sure that there are probably some uses for this Python interface and one in particular I'm thinking about is a way to authenticate with Hive for using an API. If anyone reading this likes that idea, get in touch with me.
+
+-------
+
+## Value for Value
+
+For the last few months while building @v4vapp I was generously supported by the DHF. Going forward I have a much more modest support which covers direct server costs and a little of my time.
+
+If you appreciate the work I do on and around Hive, you can express this directly: upvoting posts on Hive is great. Also consider a direct donation (there's a Tip button on Hive or a Lightning Address) on all my posts.
+
+**[Support Proposal 244 on PeakD](https://peakd.com/me/proposals/244)
+[Support Proposal 244 with Hivesigner](https://hivesigner.com/sign/update-proposal-votes?proposal_ids=%5B244%5D&amp;approve=true)
+[Support Proposal 244 on Ecency](https://ecency.com/proposals/244)
+[Vote for Brianoflondon's Witness KeyChain or HiveSigner](https://vote.hive.uno/@brianoflondon)**
+-------
+
+<div class="pull-right">
+
+![Send Lightning to Me!](https://v4v.app/p/brianoflondon.png)
+
+</div>
+
+
+
+- [Get Fountain for Podcasts and 3speak shows](https://fountain.fm/brianoflondon?code=76b73a585e)
+- [Find me on Telegram](https://t.me/brianoflondon)
+- [V4VAPP Support on Telegram](https://t.me/v4vapp_support)
+- [Vote for Brianoflondon's Witness KeyChain or HiveSigner](https://vote.hive.uno/@brianoflondon)
+- [Vote for Brianoflondon's Witness direct with HiveSigner](https://hivesigner.com/sign/account-witness-vote?witness=brianoflondon&amp;approve=1)
+- [Find my videos on 3speak](https://3speak.online/user/brianoflondon)
+- [Verify my ID and Send me a direct message on Keybase](https://keybase.io/brianoflondon)</div>
+  <footer class="hive-post-embed__source">
+    <span class="hive-post-embed__source-label">Source:</span>
+    <a href="https://hive.blog/@brianoflondon/deep-dive-into-keys-and-arcanges-hive-authentication-service-has-with-python">Deep dive into Keys and @arcange&#39;s Hive Authentication Service HAS with Python</a>
+    by
+    <a href="https://hive.blog/@brianoflondon">@brianoflondon</a>
+  </footer>
+</div>
+
+
+  </div><a class="u-url" href="/howto/hiveauth/python/2023/01/24/deep-dive-into-keys-and-arcanges-hive-authentication-service-has-with-python.html" hidden></a>
+</article>
+
+        </div>
+
+        
+        <aside class="page-sidebar" aria-label="Search and browse">
+          <section class="sidebar-section sidebar-search">
+            <h2 class="sidebar-heading">Search posts</h2>
+            <p class="sidebar-copy">Search the locally indexed post archive.</p>
+            <input type="text" id="search-input" placeholder="Search posts" autocomplete="off" />
+            <ul id="results-container"></ul>
+          </section>
+
+          <section class="sidebar-section sidebar-topics">
+            <h2 class="sidebar-heading">Browse topics</h2>
+            <p class="sidebar-copy">Jump into curated topic landing pages.</p>
+            <ul class="topic-list topic-list-sidebar"><li><a class="page-link" href="/account-recovery/">Account Recovery</a></li><li><a class="page-link" href="/core-development/">Core Development</a></li><li><a class="page-link" href="/dapps/">Dapps</a></li><li><a class="page-link" href="/docker/">Docker</a></li><li><a class="page-link" href="/hardfork/">Hardfork</a></li><li><a class="page-link" href="/hivemind/">Hivemind</a></li><li><a class="page-link" href="/javascript/">Javascript</a></li><li><a class="page-link" href="/multisig/">Multisig</a></li><li><a class="page-link" href="/python/">Python</a></li><li><a class="page-link" href="/ruby/">Ruby</a></li><li><a class="page-link" href="/testnet/">Testnet</a></li><li><a class="page-link" href="/tools/">Tools</a></li><li><a class="page-link" href="/witness/">Witness</a></li></ul>
+          </section>
+        </aside>
+        
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading"><a rel="author" href="/">Hive Chain Documentation</a></h2>
+    
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">site curated by: @inertia</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>Your resource for various levels of Hive Documentation.</p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+<script src="/assets/javascript/search.js"></script>
+    <script>
+      (function () {
+        var input = document.getElementById('search-input');
+        var results = document.getElementById('results-container');
+        if (input && results && typeof SimpleJekyllSearch !== 'undefined') {
+          SimpleJekyllSearch({
+            searchInput: input,
+            resultsContainer: results,
+            json: '/search.json'
+          });
+        }
+
+        if (typeof SteemContentRenderer === 'undefined') return;
+
+        var targets = document.querySelectorAll('[data-hive-render-target="true"]');
+        if (!targets.length) return;
+
+        var renderer = new SteemContentRenderer.DefaultRenderer({
+          baseUrl: 'https://hive.blog/',
+          breaks: true,
+          skipSanitization: false,
+          allowInsecureScriptTags: false,
+          addNofollowToLinks: true,
+          doNotShowImages: false,
+          ipfsPrefix: '',
+          assetsWidth: 640,
+          assetsHeight: 480,
+          imageProxyFn: function (url) { return url; },
+          usertagUrlFn: function (account) { return '/@' + account; },
+          hashtagUrlFn: function (hashtag) { return '/tags/#' + hashtag; },
+          isLinkSafeFn: function () { return true; }
+        });
+
+        targets.forEach(function (target) {
+          try {
+            var inputHtml = target.innerHTML;
+            target.innerHTML = renderer.render(inputHtml);
+          } catch (e) {
+            console.log(e);
+          }
+        });
+      })();
+    </script>
+
+  </body>
+
+</html>

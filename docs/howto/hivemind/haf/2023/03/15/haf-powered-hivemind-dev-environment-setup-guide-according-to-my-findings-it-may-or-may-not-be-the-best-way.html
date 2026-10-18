@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta property="og:image" content="/assets/images/sticker.png" />
+  <meta name="apple-mobile-web-app-title" content="Hive Docs" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" /><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>HAF-powered Hivemind dev environment setup guide (according to my findings, it may or may not be the best way) | Hive Chain Documentation</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="HAF-powered Hivemind dev environment setup guide (according to my findings, it may or may not be the best way)" />
+<meta name="author" content="howo" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="If you’re an astute reader, you probably realized this title was similar to my previous post here" />
+<meta property="og:description" content="If you’re an astute reader, you probably realized this title was similar to my previous post here" />
+<link rel="canonical" href="https://hive.blog/hivemind/@howo/haf-powered-hivemind-dev-environment-setup-guide-according-to-my-findings-it-may-or-may-not-be-the-best-way" />
+<meta property="og:url" content="https://hive.blog/hivemind/@howo/haf-powered-hivemind-dev-environment-setup-guide-according-to-my-findings-it-may-or-may-not-be-the-best-way" />
+<meta property="og:site_name" content="Hive Chain Documentation" />
+<meta property="og:image" content="https://files.peakd.com/file/peakd-hive/howo/AJg9fh5SvCcUNi6EWiGrPyQRkQgfrQrMgdWe4Ct9xLs7r9VD8x1Wm3u6ieraSev.png" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2023-03-15T10:49:18-07:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="https://files.peakd.com/file/peakd-hive/howo/AJg9fh5SvCcUNi6EWiGrPyQRkQgfrQrMgdWe4Ct9xLs7r9VD8x1Wm3u6ieraSev.png" />
+<meta property="twitter:title" content="HAF-powered Hivemind dev environment setup guide (according to my findings, it may or may not be the best way)" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"howo"},"dateModified":"2023-03-15T10:49:18-07:00","datePublished":"2023-03-15T10:49:18-07:00","description":"If you’re an astute reader, you probably realized this title was similar to my previous post here","headline":"HAF-powered Hivemind dev environment setup guide (according to my findings, it may or may not be the best way)","image":"https://files.peakd.com/file/peakd-hive/howo/AJg9fh5SvCcUNi6EWiGrPyQRkQgfrQrMgdWe4Ct9xLs7r9VD8x1Wm3u6ieraSev.png","mainEntityOfPage":{"@type":"WebPage","@id":"https://hive.blog/hivemind/@howo/haf-powered-hivemind-dev-environment-setup-guide-according-to-my-findings-it-may-or-may-not-be-the-best-way"},"url":"https://hive.blog/hivemind/@howo/haf-powered-hivemind-dev-environment-setup-guide-according-to-my-findings-it-may-or-may-not-be-the-best-way"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://hivedocs.info/feed.xml" title="Hive Chain Documentation" /><script>
+if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNotTrack === "yes" || navigator.msDoNotTrack === "1")) {
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-161692811-1', 'auto');
+  ga('send', 'pageview');
+}
+</script>
+  
+<script src='https://unpkg.com/steem-content-renderer'></script>
+  <script src="/assets/javascript/universal-bridge-against-phishing.js"></script>
+  <script src="/assets/javascript/lazysizes.min.js" async=""></script>
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet" />
+  <link rel="shortcut icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="152x152" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="167x167" href="/assets/images/favicon-80x80.png" />
+</head>
+<body><header class="site-header" role="banner">
+  <div class="wrapper site-header-inner">
+    <a class="site-title" rel="author" href="/">Hive Chain Documentation</a>
+
+    <nav class="site-nav" aria-label="Primary">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/news/">News</a><a class="page-link" href="/howto/">How To</a><a class="page-link" href="/links/">Useful Links</a><a class="page-link" href="/authors/">Authors</a><a class="page-link" href="/topics/">Topics</a><a class="page-link" href="/search/">Search</a></div>
+    </nav>
+  </div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper page-layout has-search-panel">
+        <div class="page-main">
+          <article class="post h-entry post-article" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header post-hero">
+    <div class="post-hero-main">
+      <p class="post-kicker">Archive post</p>
+      <h1 class="post-title p-name" itemprop="name headline">HAF-powered Hivemind dev environment setup guide (according to my findings, it may or may not be the best way)</h1>
+      <p class="post-meta">
+        <time class="dt-published" datetime="2023-03-15T10:49:18-07:00" itemprop="datePublished">Mar 15, 2023
+        </time>• <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">
+            <a href="/authors/#author-howo">howo</a>
+          </span></span></p><p class="post-summary">If you're an astute reader, you probably realized this title was similar to my previous post here</p></div><aside class="post-author-card">
+      <img src="https://images.hive.blog/u/howo/avatar" width="128" height="128" class="lazyload post-author-avatar" alt="Avatar for @howo" />
+      <div class="post-author-name">@howo</div>
+    </aside></header>
+
+  <div class="post-content e-content post-body" itemprop="articleBody">
+    <div class="hive-post-embed" data-hive-author="howo" data-hive-permlink="haf-powered-hivemind-dev-environment-setup-guide-according-to-my-findings-it-may-or-may-not-be-the-best-way">
+  <div id="content-howo-haf-powered-hivemind-dev-environment-setup-guide-according-to-my-findings-it-may-or-may-not-be-the-best-way" class="hive-post-embed__content" data-hive-render-target="true">
+![image.png](https://files.peakd.com/file/peakd-hive/howo/AJg9fh5SvCcUNi6EWiGrPyQRkQgfrQrMgdWe4Ct9xLs7r9VD8x1Wm3u6ieraSev.png)
+
+
+Hello ! 
+
+If you're an astute reader, you probably realized this title was similar to my previous post here: https://peakd.com/hivemind/@howo/hivemind-dev-environment-setup-guide-according-to-my-findings-it-may-or-may-not-be-the-best-way
+
+It's for good reasons, this is pretty much an updated guide. Recently hivemind was updated to use HAF as a backend instead of querying hived directly. This drastically changes the way you need to setup your local env and after spending a weekend figuring it out, I thought I'd dump my findings here.
+
+Disclaimer, a bunch of things here are not optimal/secure and should only be used in a local testing environment. it's more of a "if it works, it works".
+
+I'm using ubuntu 22.04 LTs as the time of writing.
+
+# Pre-requisites
+
+let's start by updating our machine and installing some dependencies:
+
+`sudo apt update &amp;&amp; sudo apt upgrade`
+
+```
+sudo apt-get install -y \
+        autoconf \
+        automake \
+        autotools-dev \
+        build-essential \
+        cmake \
+        doxygen \
+        git \
+        libboost-all-dev \
+        libyajl-dev \
+        libreadline-dev \
+        libssl-dev \
+        libtool \
+        liblz4-tool \
+        ncurses-dev \
+        python3 \
+        python3-dev \
+        python3-jinja2 \
+        python3-pip \
+        libgflags-dev \
+        libsnappy-dev \
+        zlib1g-dev \
+        libbz2-dev \
+        liblz4-dev \
+        libzstd-dev \
+	ninja-build
+```
+
+# Postgresql
+
+In the last post I was using docker, it was very conveninent but because HAF scripts installs extensions and often assumes a local install I suggest relying on a local install instead.
+
+then we install postgres: 
+
+`sudo apt -y install postgresql-14`
+
+
+### Disabling passwords (bad idea)
+
+I disable password checks because a bunch of the scripts use the `--no-password` option. This is where I went nuclear and disabled all password checks which is **very bad**. There **is** a better way to do this but I couldn't be bothered to spend the time as it's only for my local dev needs. I cannot stress this enough, **DO NOT** do this on a production server.
+
+remove the password for postgres
+`sudo -i -u postgres psql -c 'alter role postgres password null;'`
+
+then edit this file which determines the authentication method and put all the lines to `trust`
+
+`sudo nano /etc/postgresql/14/main/pg_hba.conf`
+
+at the end the file should look like this:
+
+```
+local   all             postgres                                trust
+
+# TYPE  DATABASE        USER            ADDRESS                 METHOD
+
+# "local" is for Unix domain socket connections only
+local   all             all                                     trust
+# IPv4 local connections:
+host    all             all             127.0.0.1/32            trust
+# IPv6 local connections:
+host    all             all             ::1/128                 trust
+# Allow replication connections from localhost, by a user with the
+# replication privilege.
+local   replication     all                                     trust
+host    replication     all             127.0.0.1/32            trust
+host    replication     all             ::1/128                 trust
+```
+
+### If postgresql isn't running on 5432:
+
+I don't know if it's because in the past I tweaked with postgres ports but I had to change the port to 5432:
+
+`sudo emacs /etc/postgresql/14/main/pg_hba.conf`
+
+there is a line with `port=` if it's not set to 5432, set it to that number.
+
+### restart postgres with the new config 
+
+sudo systemctl restart postgresql.service
+
+if something is wrong, you can check the logs here:
+`cat /var/log/postgresql/postgresql-14-main.log`
+
+# HAF / Hived / Hivemind
+
+Now that we are done, it's time to setup the actual stack. first download hivemind and enter in the dir:
+
+`git clone https://gitlab.syncad.com/hive/hivemind.git`
+`cd hivemind`
+
+Something to understand is that HAF is registered on hivemind as a git submodule, it's important to download haf using the gitsubmodule because a haf version downloaded otherwise may not be compatible with hivemind.
+
+Similarly if we go one node deeper, hived is a git submodule of haf, so for the same reasons you should build it from the haf repository you got from the submodule.
+
+if that was confusing to you here's an pruned version of the  directory tree:
+
+```
+hivemind
+├── haf
+│   ├── hive
+```
+
+Now let's pull all the directories with a single command:
+
+`git submodule update --init --recursive`
+
+now let's go into the haf dir, create a `build` directory to put all the binaries we are going to build, and build :
+
+```
+cd haf
+mkdir build
+cd build
+```
+
+and now we prep the compilation files:
+`cmake  -DPOSTGRES_INSTALLATION_DIR=/usr/lib/postgresql/14/bin -DCMAKE_BUILD_TYPE=Release .. -GNinja`
+
+and compile !
+
+`ninja`
+
+note: if your computer doesn't have enough ram, it may be a good idea to reduce the amount of thread with the -j option eg for 4 threads: `ninja -j4`
+
+Once it's done, you can add the newly compiled extensions to postgres:
+
+`sudo ninja install`
+
+## Prepping postgres for HAF
+
+The script is going to execute scripts as postgres, but postgres does not have access to the directory. This is another one of those "don't do this" moment. But for the same reasons I didn't want to spend the time figuring it out. 
+
+Give access to postgres to the hivemind directory recursively
+`sudo setfacl -R -m u:postgres:rwx /home/howo/hivemind/` 
+
+Finally we are ready to execute scripts:
+
+Go out of the haf build directory into haf's script dir and execute those scripts to setup the database:
+```
+cd ../scripts
+sudo ./setup_postgres.sh
+sudo ./setup_db.sh --haf-db-admin=postgres
+```
+
+Finally it's time to setup hive and fill the db, go out of scripts into haf's directory and create a directory to store the block_log etc...
+
+First we'll download the 5 million block_log from @gtg  
+
+```
+cd ..
+mkdir hive_data
+cd hive_data
+mkdir blockchain
+cd blockchain
+wget -O block_log https://gtg.openhive.network/get/blockchain/block_log.5M
+```
+
+Now we add the configuration, note that I have added extra configs at the end to enable the sql_serializer plugin
+
+```
+cd ..
+nano config.ini
+```
+
+this is the config I use feel free to edit for your needs:
+
+```
+log-appender = {"appender":"stderr","stream":"std_error"}
+log-logger = {"name":"default","level":"info","appender":"stderr"}
+backtrace = yes
+plugin = webserver p2p json_rpc
+plugin = database_api
+# condenser_api enabled per abw request
+plugin = condenser_api
+plugin = block_api
+# gandalf enabled witness + rc
+plugin = witness
+plugin = rc
+
+# market_history enabled per abw request
+plugin = market_history
+plugin = market_history_api
+
+plugin = account_history_rocksdb
+plugin = account_history_api
+
+# gandalf enabled transaction status
+plugin = transaction_status
+plugin = transaction_status_api
+
+# gandalf enabled account by key
+plugin = account_by_key
+plugin = account_by_key_api
+
+# and few apis
+plugin = block_api network_broadcast_api rc_api
+
+history-disable-pruning = 1
+account-history-rocksdb-path = "blockchain/account-history-rocksdb-storage"
+
+# shared-file-dir = "/run/hive"
+shared-file-size = 20G
+shared-file-full-threshold = 9500
+shared-file-scale-rate = 1000
+
+flush-state-interval = 0
+
+market-history-bucket-size = [15,60,300,3600,86400]
+market-history-buckets-per-size = 5760
+
+p2p-endpoint = 0.0.0.0:2001
+p2p-seed-node =
+# gtg.openhive.network:2001
+
+transaction-status-block-depth = 64000
+transaction-status-track-after-block = 42000000
+
+webserver-http-endpoint = 0.0.0.0:8091
+webserver-ws-endpoint = 0.0.0.0:8090
+
+webserver-thread-pool-size = 8
+plugin = sql_serializer
+psql-url = dbname=haf_block_log user=postgres hostaddr=127.0.0.1 port=5432
+psql-index-threshold = 1000000
+psql-operations-threads-number = 5
+psql-transactions-threads-number = 2
+psql-account-operations-threads-number = 2
+psql-enable-account-operations-dump = true
+psql-force-open-inconsistent = false
+psql-livesync-threshold = 100000
+```
+
+Now it's time to fill the haf database ! 
+
+```
+cd ..
+./build/hive/programs/hived/hived -d hive_data --replay-blockchain --stop-replay-at-block 5000000 --exit-after-replay --force-replay --psql-index-threshold 65432
+```
+
+This should run for a little while (10 minutes to a few hours depending on how good of a computer you have) Once it's done, you have a full HAF database ready to be used by hivemind ! 
+
+## Hivemind
+
+let's go up one level to go back to the hivemind directory and into the scripts directory for hivemind 
+
+```
+cd ../scripts
+```
+
+from there we can setup the database with the scripts provided:
+
+```
+./setup_postgres.sh --host=localhost
+./setup_db.sh --postgres-url=postgresql://postgres@localhost:5432/haf_block_log
+```
+
+And now hivemind can index things !
+
+## Install hivemind dependencies:
+
+You can find all the dependencies in setup.cfg. You can use tox to run it but I prefer using local python so I just install them directly. As of the time of writing the dependencies are as follow:
+
+```
+    aiopg == 1.3.4
+    jsonrpcserver == 4.2.0
+    simplejson == 3.17.6
+    aiohttp == 3.8.1
+    certifi == 2022.6.15
+    sqlalchemy == 1.4.39
+    funcy == 1.17
+    ujson == 5.4.0
+    urllib3 == 1.26.10
+    psycopg2-binary==2.9.3
+    aiocache == 0.11.1
+    configargparse == 1.5.3
+    diff-match-patch == 20200713
+    prometheus-client == 0.14.1
+    psutil == 5.9.1
+    atomic == 0.7.3
+    cffi == 1.14.5
+    gitpython == 3.1.27
+    pytz == 2022.1
+```
+
+## optional step: mocks:
+
+if you want to add mocks, there is a script to do so that will populate the mocks in HAF:
+
+```
+MOCK_BLOCK_DATA_PATH=./hivemind/mock_data/block_data
+MOCK_VOPS_DATA_PATH=./hivemind/mock_data/vops_data
+python3 ./hive/indexer/mocking/populate_haf_with_mocked_data.py --database-url postgresql://postgres:root@localhost:5432/haf_block_log
+```
+
+## Ready to sync !
+
+Finally we are ready to sync ! update test-max-block depending on your mocks.
+
+``` 
+python3 ./hivemind/hive/cli.py --database-url postgresql://postgres:@localhost:5432/haf_block_log --test-max-block=5000024
+```
+
+Now this will take anywhere from 30 minutes to a few hours. It's the longest part of the process but once you're synced, you're ready to go :)
+
+ </div>
+  <footer class="hive-post-embed__source">
+    <span class="hive-post-embed__source-label">Source:</span>
+    <a href="https://hive.blog/@howo/haf-powered-hivemind-dev-environment-setup-guide-according-to-my-findings-it-may-or-may-not-be-the-best-way">HAF-powered Hivemind dev environment setup guide (according to my findings, it may or may not be the best way)</a>
+    by
+    <a href="https://hive.blog/@howo">@howo</a>
+  </footer>
+</div>
+
+
+  </div><a class="u-url" href="/howto/hivemind/haf/2023/03/15/haf-powered-hivemind-dev-environment-setup-guide-according-to-my-findings-it-may-or-may-not-be-the-best-way.html" hidden></a>
+</article>
+
+        </div>
+
+        
+        <aside class="page-sidebar" aria-label="Search and browse">
+          <section class="sidebar-section sidebar-search">
+            <h2 class="sidebar-heading">Search posts</h2>
+            <p class="sidebar-copy">Search the locally indexed post archive.</p>
+            <input type="text" id="search-input" placeholder="Search posts" autocomplete="off" />
+            <ul id="results-container"></ul>
+          </section>
+
+          <section class="sidebar-section sidebar-topics">
+            <h2 class="sidebar-heading">Browse topics</h2>
+            <p class="sidebar-copy">Jump into curated topic landing pages.</p>
+            <ul class="topic-list topic-list-sidebar"><li><a class="page-link" href="/account-recovery/">Account Recovery</a></li><li><a class="page-link" href="/core-development/">Core Development</a></li><li><a class="page-link" href="/dapps/">Dapps</a></li><li><a class="page-link" href="/docker/">Docker</a></li><li><a class="page-link" href="/hardfork/">Hardfork</a></li><li><a class="page-link" href="/hivemind/">Hivemind</a></li><li><a class="page-link" href="/javascript/">Javascript</a></li><li><a class="page-link" href="/multisig/">Multisig</a></li><li><a class="page-link" href="/python/">Python</a></li><li><a class="page-link" href="/ruby/">Ruby</a></li><li><a class="page-link" href="/testnet/">Testnet</a></li><li><a class="page-link" href="/tools/">Tools</a></li><li><a class="page-link" href="/witness/">Witness</a></li></ul>
+          </section>
+        </aside>
+        
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading"><a rel="author" href="/">Hive Chain Documentation</a></h2>
+    
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">site curated by: @inertia</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>Your resource for various levels of Hive Documentation.</p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+<script src="/assets/javascript/search.js"></script>
+    <script>
+      (function () {
+        var input = document.getElementById('search-input');
+        var results = document.getElementById('results-container');
+        if (input && results && typeof SimpleJekyllSearch !== 'undefined') {
+          SimpleJekyllSearch({
+            searchInput: input,
+            resultsContainer: results,
+            json: '/search.json'
+          });
+        }
+
+        if (typeof SteemContentRenderer === 'undefined') return;
+
+        var targets = document.querySelectorAll('[data-hive-render-target="true"]');
+        if (!targets.length) return;
+
+        var renderer = new SteemContentRenderer.DefaultRenderer({
+          baseUrl: 'https://hive.blog/',
+          breaks: true,
+          skipSanitization: false,
+          allowInsecureScriptTags: false,
+          addNofollowToLinks: true,
+          doNotShowImages: false,
+          ipfsPrefix: '',
+          assetsWidth: 640,
+          assetsHeight: 480,
+          imageProxyFn: function (url) { return url; },
+          usertagUrlFn: function (account) { return '/@' + account; },
+          hashtagUrlFn: function (hashtag) { return '/tags/#' + hashtag; },
+          isLinkSafeFn: function () { return true; }
+        });
+
+        targets.forEach(function (target) {
+          try {
+            var inputHtml = target.innerHTML;
+            target.innerHTML = renderer.render(inputHtml);
+          } catch (e) {
+            console.log(e);
+          }
+        });
+      })();
+    </script>
+
+  </body>
+
+</html>

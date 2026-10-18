@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta property="og:image" content="/assets/images/sticker.png" />
+  <meta name="apple-mobile-web-app-title" content="Hive Docs" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" /><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>AioHiveBot, minor milestone: Integrated support for hive-engine | Hive Chain Documentation</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="AioHiveBot, minor milestone: Integrated support for hive-engine" />
+<meta name="author" content="pibara" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="A little pyton/asyncio walkthrough of how to use hive-engine with the aiohivebot lib" />
+<meta property="og:description" content="A little pyton/asyncio walkthrough of how to use hive-engine with the aiohivebot lib" />
+<link rel="canonical" href="https://hive.blog/hive-139531/@pibara/aiohivebot-minor-milestone-integrated-support-for-hive-engine" />
+<meta property="og:url" content="https://hive.blog/hive-139531/@pibara/aiohivebot-minor-milestone-integrated-support-for-hive-engine" />
+<meta property="og:site_name" content="Hive Chain Documentation" />
+<meta property="og:image" content="https://files.peakd.com/file/peakd-hive/pibara/23wr5usndHucjRZiUmnjSDr9vAu8QfgcmtEiLUhuBPLQrxznsBVcsE22m4KMPzUv1Ch35.png" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2023-11-12T03:33:30-08:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="https://files.peakd.com/file/peakd-hive/pibara/23wr5usndHucjRZiUmnjSDr9vAu8QfgcmtEiLUhuBPLQrxznsBVcsE22m4KMPzUv1Ch35.png" />
+<meta property="twitter:title" content="AioHiveBot, minor milestone: Integrated support for hive-engine" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"pibara"},"dateModified":"2023-11-12T03:33:30-08:00","datePublished":"2023-11-12T03:33:30-08:00","description":"A little pyton/asyncio walkthrough of how to use hive-engine with the aiohivebot lib","headline":"AioHiveBot, minor milestone: Integrated support for hive-engine","image":"https://files.peakd.com/file/peakd-hive/pibara/23wr5usndHucjRZiUmnjSDr9vAu8QfgcmtEiLUhuBPLQrxznsBVcsE22m4KMPzUv1Ch35.png","mainEntityOfPage":{"@type":"WebPage","@id":"https://hive.blog/hive-139531/@pibara/aiohivebot-minor-milestone-integrated-support-for-hive-engine"},"url":"https://hive.blog/hive-139531/@pibara/aiohivebot-minor-milestone-integrated-support-for-hive-engine"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://hivedocs.info/feed.xml" title="Hive Chain Documentation" /><script>
+if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNotTrack === "yes" || navigator.msDoNotTrack === "1")) {
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-161692811-1', 'auto');
+  ga('send', 'pageview');
+}
+</script>
+  
+<script src='https://unpkg.com/steem-content-renderer'></script>
+  <script src="/assets/javascript/universal-bridge-against-phishing.js"></script>
+  <script src="/assets/javascript/lazysizes.min.js" async=""></script>
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet" />
+  <link rel="shortcut icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="152x152" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="167x167" href="/assets/images/favicon-80x80.png" />
+</head>
+<body><header class="site-header" role="banner">
+  <div class="wrapper site-header-inner">
+    <a class="site-title" rel="author" href="/">Hive Chain Documentation</a>
+
+    <nav class="site-nav" aria-label="Primary">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/news/">News</a><a class="page-link" href="/howto/">How To</a><a class="page-link" href="/links/">Useful Links</a><a class="page-link" href="/authors/">Authors</a><a class="page-link" href="/topics/">Topics</a><a class="page-link" href="/search/">Search</a></div>
+    </nav>
+  </div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper page-layout has-search-panel">
+        <div class="page-main">
+          <article class="post h-entry post-article" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header post-hero">
+    <div class="post-hero-main">
+      <p class="post-kicker">Archive post</p>
+      <h1 class="post-title p-name" itemprop="name headline">AioHiveBot, minor milestone:  Integrated support for hive-engine</h1>
+      <p class="post-meta">
+        <time class="dt-published" datetime="2023-11-12T03:33:30-08:00" itemprop="datePublished">Nov 12, 2023
+        </time>• <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">
+            <a href="/authors/#author-pibara">pibara</a>
+          </span></span></p><p class="post-summary">A little pyton/asyncio walkthrough of how to use hive-engine with the aiohivebot lib</p></div><aside class="post-author-card">
+      <img src="https://images.hive.blog/u/pibara/avatar" width="128" height="128" class="lazyload post-author-avatar" alt="Avatar for @pibara" />
+      <div class="post-author-name">@pibara</div>
+    </aside></header>
+
+  <div class="post-content e-content post-body" itemprop="articleBody">
+    <div class="hive-post-embed" data-hive-author="pibara" data-hive-permlink="aiohivebot-minor-milestone-integrated-support-for-hive-engine">
+  <div id="content-pibara-aiohivebot-minor-milestone-integrated-support-for-hive-engine" class="hive-post-embed__content" data-hive-render-target="true">![image.png](https://files.peakd.com/file/peakd-hive/pibara/23wr5usndHucjRZiUmnjSDr9vAu8QfgcmtEiLUhuBPLQrxznsBVcsE22m4KMPzUv1Ch35.png)
+
+Although it is just a minor milestone, it took quite a bit of time and refactoring to get it right, because I don't want hive-engine to be the only layer-2 that aiohivebot supports up to the sidechain level. In fact, the project so far went from 28 hours of total work spent on the project to 41, just to get things working the way that I have trust in the fact that I'm not going to have to do major refactoring if I'm going to add other side chains to the mix (even if my knowledge about other L2s is almost zero).
+
+The aiohivebot code ( available on [github](https://github.com/pibara/aiohivebot) and [pypi](https://pypi.org/project/aiohivebot/) ) now supports both setting event handlers on hive-engine blockchain events, and querying the hive-engine public-API nodes with JSON-RPC requests.
+
+# hive-engine support off by default
+
+Because eventhough aiohivebot balances API load between nodes. we still don't want everybodies bot ot layer-2 backend using aiohivebot to add to the load of the hive-engine public API nodes, hive-engine support is off by default.
+
+The refactored design allows you to turn on layer-2 blockchain monitoring for all required L2s, what at this moment in time is just Hive-Engine.
+
+```python
+from aiohivebot import BaseBot
+
+class MyBot(BaseBot):
+    """Example of an aiohivebot python bot without real utility"""
+    def __init__(self):
+        super().__init__(enable_layer2=["engine"])
+
+
+    async def engine_l2_node_status(
+            self,
+            node_uri,
+            error_percentage,
+            latency,
+            ok_rate,
+            error_rate,
+            block_rate):
+        print(
+                "STATUS:",node_uri,
+                "error percentage =", int(100*error_percentage)/100,
+                "latency= ", int(100*latency)/100,
+                "ok=", int(100*ok_rate)/100,
+                "req/min, errors=", int(100*error_rate)/100,
+                "req/min, blocks=", int(100*block_rate)/100,
+                "blocks/min" )
+```
+    
+Notice the *enable_layer2* line? That line tells aiohivebot to, next to the HIVE public API nodes also start a client collection for the hive-engine public API nodes.
+
+In this code example we define one callback method, *engine_l2_node_status*. This callback method is equivalent to the *node_status* method for HIVE public API nodes. It gets called roughly every 15 minutes for each of the konow  HIVE-engine API nodes and reports some basic node health stats.
+
+In normal operations you won't need these stats and auihivebot will take care of not using flaky or high latency nodes under the hood.
+    
+But lets for fun look at the output of running this code for 20 minutes
+
+
+![image.png](https://files.peakd.com/file/peakd-hive/pibara/23swe5Qq1SYXYgkABNQR42HSwsA2f1NCMQ648CLwhPeUNb3QucvsxXVS3hHATzRb89N5P.png)
+
+We see all but one HIVE-engine API nodes is working flawlesly. Only *ctpmain.com* seems to be down. Completely down. The *engine.rishipanthee.com* node , at 195 msec seemed to have a somewhat higher request latency than the other nodes that were all between 33 msec and 49 msec. Looking at the blocks per minute we see that aiohivebot does its job of balancing the load of block queries between the nodes. Not perfectly, but good enough.   
+
+# Hive-engine events without the side-chain
+
+Depending on your needs it might be possible that you don't actually need HIVE-engine API nodes.
+Afterall, much of the stuff happens on the main chain using *custom_json* operations.
+
+Or you might in some cases want both. HIVE-engine nodes for completeness and for querying the tables, and HIVE API node events for the slightly lower latency.
+
+
+The below code uses just the HIVE public API nodes. It prints whenever someone wants to buy SWAP.BTC on the hive-engine market based on *custom_json* events.
+
+```python
+class MyBot(BaseBot):
+    """Example of an aiohivebot python bot without real utility"""
+    def __init__(self):
+        super().__init__()
+
+     async def engine_market_buy(self, required_auths, required_posting_auths, body):
+        if body["symbol"] == "SWAP.BTC":
+            sender = (required_posting_auths + required_auths)[0]
+            quantity = body["quantity"]
+            price = body["price"]
+            print(sender,"wants to buy", quantity, "at a price of", price)
+```
+# And with the side chain.
+The same functionality can be implemented using the HIVE-engine public API nodes.
+```
+class MyBot(BaseBot):
+    """Example of an aiohivebot python bot without real utility"""
+    def __init__(self):
+        super().__init__(enable_layer2=["engine"])
+
+     async def engine_l2_market_buy(self, sender, body):
+        if body["symbol"] == "SWAP.BTC":
+            quantity = body["quantity"]
+            price = body["price"]
+            print(sender,"wants to buy", quantity, "at a price of", price)
+```
+
+Notice the extra *\_l2* in the method names. We  use this to distinguish between processing layer two nfo from *custom_json* events comming from the main chain, and processing L2 blockchain events.
+
+# JSON-RPC queries on hive-engine
+
+Now lets look at what we can do with the actual Hive-engine API.  We will create a handler for Hive-engine blocks that doesn't actually handle any of the block data, but instead queries the *metrics* table of the *market* contract for the lowest ask and highers bid in the SWAP.BTC market. 
+
+```python
+class MyBot(BaseBot):
+    """Example of an aiohivebot python bot without real utility"""
+    def __init__(self):
+        super().__init__(enable_layer2=["engine"])
+        self.count = 0
+        self.old_bid = 0.0
+        self.new_bid = 0.0
+        self.old_ask = float('inf')
+        self.new_ask = float('inf')
+
+    async def engine_l2_block(self):
+        self.old_ask = self.new_ask
+        self.old_bid = self.new_bid
+        info = await self.l2.engine.contracts.market.metrics.findOne(symbol="SWAP.BTC")
+        self.new_ask = float(info['lowestAsk'])
+        self.new_bid = float(info["highestBid"])
+```
+
+See how the query is structured? We invoke the *findOne* method specifying the symbol that we are interested in. Note that *market* and *metrics* are part of the designation of the findOne method,  making the API a bit more friendly than if we had to build a complex argument list for *findOne*.
+
+In the code above we continiously keep track of teh lowest ask and highest bid. 
+
+# Puting things together
+
+Now lets put things together and make a little useless bot that prints some market action info.
+
+```python
+
+class MyBot(BaseBot):
+    """Example of an aiohivebot python bot without real utility"""
+    def __init__(self):
+        super().__init__(enable_layer2=["engine"])
+        self.count = 0
+        self.old_bid = 0.0
+        self.new_bid = 0.0
+        self.old_ask = float('inf')
+        self.new_ask = float('inf')
+
+    async def engine_l2_block(self):
+        self.old_ask = self.new_ask
+        self.old_bid = self.new_bid
+        info = await self.l2.engine.contracts.market.metrics.findOne(symbol="SWAP.BTC")
+        self.new_ask = float(info['lowestAsk'])
+        self.new_bid = float(info["highestBid"])
+
+    async def engine_market_buy(self,
+                                required_auths,
+                                required_posting_auths,
+                                body,
+                                blockno,
+                                timestamp):
+        """Hive Engine custom json action for market buy"""
+        if body["symbol"] == "SWAP.BTC" and self.old_ask &gt; 0.0:
+            bid = float(body["price"])
+            quantity = float(body["quantity"])
+            relbid1 = int(10000*(self.old_ask - bid) / self.old_ask)/100
+            relbid2 = int(10000*(self.new_ask - bid) / self.new_ask)/100
+            if relbid2 &gt;= 0.0:
+                print(timestamp, "BUY", (required_posting_auths + required_auths)[0],
+                        quantity, "at", bid, relbid2, "(", relbid1, ") % below lowest ask")
+            else:
+                print(timestamp, "BUY", (required_posting_auths + required_auths)[0],
+                        quantity, "at", bid, -relbid2, "(", -relbid1, ") % ABOVE lowest ask")
+
+    async def engine_market_sell(self, 
+                                 required_auths,
+                                 required_posting_auths,
+                                 body,
+                                 timestamp):
+        """Hive Engine custom json action for market sell"""
+        if body["symbol"] == "SWAP.BTC" and self.old_bid &gt;0.0:
+            ask = float(body["price"])
+            quantity = float(body["quantity"])
+            relask1 = int(10000*(self.old_bid - ask) / self.old_bid)/100
+            relask2 = int(10000*(self.new_bid - ask) / self.new_bid)/100
+            if relask2 &gt;= 0.0:
+                print(timestamp, "SELL", (required_posting_auths + required_auths)[0],
+                        quantity, "at", ask, relask2,"(", relask1, ") % above highest bid")
+            else:
+                print(timestamp, "SELL", (required_posting_auths + required_auths)[0],
+                        quantity, "at", ask, -relask2,"(", -relask1, ") % BELOW highest bid")
+```
+
+In this bot script we query the HIVE-engine public API nodes at every new block so we can update the latest values for bid and ask. We choose to then follow the HIVE custom_json events as source for new bids and asks being submitted to hive-engine, that we compare to the numvers we have available.
+
+Let's have q quick ook at some of the output.
+
+
+![image.png](https://files.peakd.com/file/peakd-hive/pibara/23swg4x5ge99rrxjKEGU8tfTwrkNnQ1XH4XwryU7pJ4bKHTTHFM2D848Qz5EfD1ytzubT.png)
+
+# What's next?
+
+While I would like to integrate support for other layer 2 side chains, I'm currently lacking good leads as where to start. I have very little insights into the API infrastructure of these other side-chains, and puting substantial hours into looking at the code of project like the @spknetwork to see if and how I could or should integrate support seems like too much of a time sink right now. I've put them close to the bottom of my priority list. I'm very much open to pull requests though. If you are interested in adding a L2 support, have a look at the code in the [l2 dir](https://github.com/pibara/aiohivebot/tree/main/aiohivebot/l2), it is very doable to add another L2 to the library if you have some insights into the API landscape of that L2 (I currently don't myself). 
+
+The first big milesone on the roadmap right now are signed operations. 
+
+Right now my todo list for aiohivebot looks as follows:
+
+1) Add signed operations support
+2) Port the **Hive Archeology bot** to aiohivebot
+3) Add an example (plus personal use) frontend to the Hive Archeology bot
+4) Make a new Hive Archeology docker image
+5) Integrate **coinZdense** and coinZdense piggyback mode
+6) Explore and add support for other decentralized L2
+7) Look at supporting image hoster signed uploads
+8) Focus exclusively on coinZdense features and base maintenance and bug fixes.
+
+![image.png](https://files.peakd.com/file/peakd-hive/pibara/23wr5usndHucjRZiUmnjSDr9vAu8QfgcmtEiLUhuBPLQrxznsBVcsE22m4KMPzUv1Ch35.png)
+
+# Available for projects
+
+If you think my skills and knowledge could be usefull for your project, I will be available for contract work again for up to 20 hours a week starting next January.
+
+My hourly rate depends on the type of activity (Python dev, C++ dev or data analysis), wether the project at hand will be open source or not, and if you want to sponsor my pet project coinZdense that aims to create a multi-language programming library for post-quantum signing and least authority subkey management.
+
+| Activity | Hourly rate | Open source discount | Minimal hours | Maximum hours |
+| -- | -- | -- | -- | -- |
+| C++ development | 150 $HBD | 30 $HBD | 4 | - |
+| Python development | 140 $HBD | 30 $HBD | 4 | - |
+| Data analysis (python/pandas) | 120 $HBD | - | 2 | - |
+| Sponsored coinZdense work | 50 $HBD | - | 0 | - |
+| Paired up coinZdense work | 25 $HBD | - | 1 | 2x contract h |
+
+Development work on open-source project get a 30 $HBD discount on my hourly rates.
+
+Next to contract work, you can also become a sponsor of my coinZdense project.
+
+Note that if you pair up to two coinZdense sponsor hours with a contract hour, you can sponsor twice the amount of hours to the coinZdense project.
+
+If you wish to pay for my services or sponsor my project with other coins than $HBD, all rates are slightly higher (same rates, but in Euro or euro equivalent value at transaction time). I welcome payments in Euro (through paypall), $HIVE, $QRL $ZEC, $LTC, $DOGE, $BCH, $ETH or $BTC/lightning.
+
+If instead of hourly rates you want a fixed project price, I'm not offering that, but there are options I can offer to attenuate cost risks if the specs are close to fully defined at project start. It's a +20/-20/-50/-80 setup. Let me give an example. Say you have a decently defined project that I estimate will take me 60 hours. I could for example offer you two options:
+
+| hour | fixed rate | attenuated risk rate |
+| -- | -- | -- |
+| 1 .. 50 | 100% | 120 % |
+| 51 .. 75 | 100% | 80% |
+| 75 .. 125 | 100% | 50% |
+| &gt; 125 | 100% | 20% |
+
+
+![image.png](https://files.peakd.com/file/peakd-hive/pibara/23tHbr9ym6DkUd9VZRGDZdCNEimrsbsvdGXRVMZYC8o4afcPPQavg2bxoMeX14jrwmKyZ.png)
+
+
+Note that this is just an example, but it illustrates my take on providing you with the option to attenuate project cost risks. There is no fixed price, but still a pretty solid  attenuation of your financial risk and a strong incentive for me to not go too much above planning.
+
+Drop me a mail or DM me on [X](https://twitter.com/EngineerDiet) if you are interested in my services. I'm not on discord very often, but if need be, you can find me [here](https://discordapp.com/users/pibara_) on discors too.
+
+Contact: coin\<at>z-den.se
+&lt;/div&gt;
+  <footer class="hive-post-embed__source">
+    <span class="hive-post-embed__source-label">Source:</span>
+    <a href="https://hive.blog/@pibara/aiohivebot-minor-milestone-integrated-support-for-hive-engine">AioHiveBot, minor milestone:  Integrated support for hive-engine</a>
+    by
+    <a href="https://hive.blog/@pibara">@pibara</a>
+  </footer>
+&lt;/div&gt;
+
+</at></div></div>
+
+  </div><a class="u-url" href="/tools/python/aiohivebot/2023/11/12/aiohivebot-minor-milestone-integrated-support-for-hive-engine.html" hidden></a>
+</article>
+
+        </div>
+
+        
+        <aside class="page-sidebar" aria-label="Search and browse">
+          <section class="sidebar-section sidebar-search">
+            <h2 class="sidebar-heading">Search posts</h2>
+            <p class="sidebar-copy">Search the locally indexed post archive.</p>
+            <input type="text" id="search-input" placeholder="Search posts" autocomplete="off" />
+            <ul id="results-container"></ul>
+          </section>
+
+          <section class="sidebar-section sidebar-topics">
+            <h2 class="sidebar-heading">Browse topics</h2>
+            <p class="sidebar-copy">Jump into curated topic landing pages.</p>
+            <ul class="topic-list topic-list-sidebar"><li><a class="page-link" href="/account-recovery/">Account Recovery</a></li><li><a class="page-link" href="/core-development/">Core Development</a></li><li><a class="page-link" href="/dapps/">Dapps</a></li><li><a class="page-link" href="/docker/">Docker</a></li><li><a class="page-link" href="/hardfork/">Hardfork</a></li><li><a class="page-link" href="/hivemind/">Hivemind</a></li><li><a class="page-link" href="/javascript/">Javascript</a></li><li><a class="page-link" href="/multisig/">Multisig</a></li><li><a class="page-link" href="/python/">Python</a></li><li><a class="page-link" href="/ruby/">Ruby</a></li><li><a class="page-link" href="/testnet/">Testnet</a></li><li><a class="page-link" href="/tools/">Tools</a></li><li><a class="page-link" href="/witness/">Witness</a></li></ul>
+          </section>
+        </aside>
+        
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading"><a rel="author" href="/">Hive Chain Documentation</a></h2>
+    
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">site curated by: @inertia</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>Your resource for various levels of Hive Documentation.</p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+<script src="/assets/javascript/search.js"></script>
+    <script>
+      (function () {
+        var input = document.getElementById('search-input');
+        var results = document.getElementById('results-container');
+        if (input && results && typeof SimpleJekyllSearch !== 'undefined') {
+          SimpleJekyllSearch({
+            searchInput: input,
+            resultsContainer: results,
+            json: '/search.json'
+          });
+        }
+
+        if (typeof SteemContentRenderer === 'undefined') return;
+
+        var targets = document.querySelectorAll('[data-hive-render-target="true"]');
+        if (!targets.length) return;
+
+        var renderer = new SteemContentRenderer.DefaultRenderer({
+          baseUrl: 'https://hive.blog/',
+          breaks: true,
+          skipSanitization: false,
+          allowInsecureScriptTags: false,
+          addNofollowToLinks: true,
+          doNotShowImages: false,
+          ipfsPrefix: '',
+          assetsWidth: 640,
+          assetsHeight: 480,
+          imageProxyFn: function (url) { return url; },
+          usertagUrlFn: function (account) { return '/@' + account; },
+          hashtagUrlFn: function (hashtag) { return '/tags/#' + hashtag; },
+          isLinkSafeFn: function () { return true; }
+        });
+
+        targets.forEach(function (target) {
+          try {
+            var inputHtml = target.innerHTML;
+            target.innerHTML = renderer.render(inputHtml);
+          } catch (e) {
+            console.log(e);
+          }
+        });
+      })();
+    </script>
+
+  </body>
+
+</html>

@@ -131,7 +131,7 @@ hive.operations                    | 969 GB     |
 hive.transactions                  | 408 GB     |
 hive.transactions_multisig  | 438 MB     |
 hive.accounts                         | 108 MB     |
-hive.account_operations      | 190 GB     |
+hiveaccount_operations      | 190 GB     |
 
 The HAF database above occupies 2180GB after adding in table indexes and other overhead.
 
@@ -139,7 +139,7 @@ The last two tables above are the new ones that were just added. They increased 
 
 For apps that don’t require all this data, we will be adding a filtering option to what data is stored by sql_serializer, allowing standalone HAF apps to very dramatically lower their storage requirements (probably as low as 50GB or so).
 
-Note that the above requirement does not account for the normal storage requirements for a hived node (450GB for block_log and block_log.index) but it does eliminate the need for 580GB database for rocksdb account history plugin, which is obsoleted by the Hafah app. So a hived node + HAF server with full blockchain data would require about 2.7TB of space. I suspect the sweet spot now for performance vs cost for most API servers will be to get two 2TB nvme drives and configure them as a RAID0 stripe.
+Note that the above requirement does not account for the normal storage requirements for a hived node (450GB for block_log and block_log.index) but it does eliminate the need for 580GB database for rocksdb account history plugin, which is obsoleted by the Hafah app. So a hived node + HAF server with full blockchain data would require about 2.7GB of space. I suspect the sweet spot now for performance vs cost for most API servers will be to get two 2TB nvme drives and configure them as a RAID0 stripe.
 
 ### Confirmed that Hafah results match results from account history plugin
 
@@ -169,7 +169,6 @@ As a starter project they are implementing the API for the new HAF-based balance
 
 * Cleanup documentation for HAF and HAF apps
 * Fix slow down when sql_serializer swaps from massive sync to live sync mode because of sql_index_threshold being used improperly
-* Add operation filtering option to sql_serializer
 * Finish up balance_tracker application
 * Repo and branch cleanup
 * Finish conversion of hivemind to HAF-based app. Once we’re further along with HAF-based hivemind, we’ll test it using the fork-inducing tool.
@@ -177,7 +176,7 @@ As a starter project they are implementing the API for the new HAF-based balance
   <footer class="hive-post-embed__source">
     <span class="hive-post-embed__source-label">Source:</span>
     <a href="https://hive.blog/hive-139531/@blocktrades/30th-update-of-2021-on-blocktrades-work-on-hive-software">30th update of 2021 on BlockTrades work on Hive software</a>
-    <span>by</span>
+    by
     <a href="https://hive.blog/@blocktrades">@blocktrades</a>
   </footer>
 </div>

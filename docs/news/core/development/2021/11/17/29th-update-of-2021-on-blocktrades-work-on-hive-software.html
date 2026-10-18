@@ -119,7 +119,7 @@ The hope is that this will result in a speedup versus the current method, where 
 
 We have a first pass at this done now, but the sql_serializer phase takes twice as long as it did before, so we’re going to see if there is anything that can be done to optimize that, since it doesn’t seem like it should take twice as long.
 
-We’re also planning to add an option to sql_serializer to allow filtering of what operations get saved to the database. This should be useful for lowering the storage requirements and improving performance of HAF servers that are dedicated to supporting a specific HAF app.
+We’re also planning to add an option to sql_serializer to allow filtering of what operations get saved to the database. This should be useful for lowering the storage requirements and improving performance of HAF servers that are dedicated to supporting a specific HAF app..
 
 
 ### New example HAF app: balance_tracker
@@ -157,7 +157,7 @@ We deployed a new version of hive.blog with @quochuy’s change to display the a
 # Work in progress and upcoming work
 
 * Continue experimenting with generating the “impacted accounts” table directly from sql_serializer to see if it is faster than our current method where hafah generates this data on demand as it needs it.
-* Above task will also require creating a simplified form of hafah.
+* Above task will also require creating a simplified form of hafah. In fact, the new hafah would be so simplified on the indexer side, that we’re considering adding additional functionality to it, to allow it to maintain a per-block account balance history so that there is something that does real work in the indexing portion  f the code. This would also be useful as a template for future work on 2nd-layer tokens.
 * Fix the algorithm used by sql_serializer to determine when it should drop out of massive sync mode into normal live sync mode (currently it drops out of massive sync too early).
 * Finish up work on multi-threaded jsonrpc server.
 * Run tests to compare results between account history plugin and HAF-based account history apps.
@@ -166,7 +166,7 @@ We deployed a new version of hive.blog with @quochuy’s change to display the a
   <footer class="hive-post-embed__source">
     <span class="hive-post-embed__source-label">Source:</span>
     <a href="https://hive.blog/hive-139531/@blocktrades/29th-update-of-2021-on-blocktrades-work-on-hive-software">29th update of 2021 on BlockTrades work on Hive software</a>
-    <span>by</span>
+    by
     <a href="https://hive.blog/@blocktrades">@blocktrades</a>
   </footer>
 </div>

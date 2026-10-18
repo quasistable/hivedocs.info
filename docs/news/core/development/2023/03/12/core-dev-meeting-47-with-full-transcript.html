@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta property="og:image" content="/assets/images/sticker.png" />
+  <meta name="apple-mobile-web-app-title" content="Hive Docs" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" /><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Core dev meeting #47 (with full transcript) | Hive Chain Documentation</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Core dev meeting #47 (with full transcript)" />
+<meta name="author" content="howo" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="I am done with the development of the recurrent transfer updates, I have stumbled upon some issues on the CLI wallet parts, because basically now we have a unique id at the end so that you can specify the pair" />
+<meta property="og:description" content="I am done with the development of the recurrent transfer updates, I have stumbled upon some issues on the CLI wallet parts, because basically now we have a unique id at the end so that you can specify the pair" />
+<link rel="canonical" href="https://hive.blog/core/@howo/core-dev-meeting-47-with-full-transcript" />
+<meta property="og:url" content="https://hive.blog/core/@howo/core-dev-meeting-47-with-full-transcript" />
+<meta property="og:site_name" content="Hive Chain Documentation" />
+<meta property="og:image" content="https://hivedocs.info/assets/images/favicon.png" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2023-03-12T10:41:15-07:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="https://hivedocs.info/assets/images/favicon.png" />
+<meta property="twitter:title" content="Core dev meeting #47 (with full transcript)" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"howo"},"dateModified":"2023-03-12T10:41:15-07:00","datePublished":"2023-03-12T10:41:15-07:00","description":"I am done with the development of the recurrent transfer updates, I have stumbled upon some issues on the CLI wallet parts, because basically now we have a unique id at the end so that you can specify the pair","headline":"Core dev meeting #47 (with full transcript)","image":"https://hivedocs.info/assets/images/favicon.png","mainEntityOfPage":{"@type":"WebPage","@id":"https://hive.blog/core/@howo/core-dev-meeting-47-with-full-transcript"},"url":"https://hive.blog/core/@howo/core-dev-meeting-47-with-full-transcript"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://hivedocs.info/feed.xml" title="Hive Chain Documentation" /><script>
+if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNotTrack === "yes" || navigator.msDoNotTrack === "1")) {
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-161692811-1', 'auto');
+  ga('send', 'pageview');
+}
+</script>
+  
+<script src='https://unpkg.com/steem-content-renderer'></script>
+  <script src="/assets/javascript/universal-bridge-against-phishing.js"></script>
+  <script src="/assets/javascript/lazysizes.min.js" async=""></script>
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet" />
+  <link rel="shortcut icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="152x152" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="167x167" href="/assets/images/favicon-80x80.png" />
+</head>
+<body><header class="site-header" role="banner">
+  <div class="wrapper site-header-inner">
+    <a class="site-title" rel="author" href="/">Hive Chain Documentation</a>
+
+    <nav class="site-nav" aria-label="Primary">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/news/">News</a><a class="page-link" href="/howto/">How To</a><a class="page-link" href="/links/">Useful Links</a><a class="page-link" href="/authors/">Authors</a><a class="page-link" href="/topics/">Topics</a><a class="page-link" href="/search/">Search</a></div>
+    </nav>
+  </div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper page-layout has-search-panel">
+        <div class="page-main">
+          <article class="post h-entry post-article" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header post-hero">
+    <div class="post-hero-main">
+      <p class="post-kicker">Archive post</p>
+      <h1 class="post-title p-name" itemprop="name headline">Core dev meeting #47 (with full transcript)</h1>
+      <p class="post-meta">
+        <time class="dt-published" datetime="2023-03-12T10:41:15-07:00" itemprop="datePublished">Mar 12, 2023
+        </time>• <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">
+            <a href="/authors/#author-howo">howo</a>
+          </span></span></p><p class="post-summary">I am done with the development of the recurrent transfer updates, I have stumbled upon some issues on the CLI wallet parts, because basically now we have a unique id at the end so that you can specify the pair</p></div><aside class="post-author-card">
+      <img src="https://images.hive.blog/u/howo/avatar" width="128" height="128" class="lazyload post-author-avatar" alt="Avatar for @howo" />
+      <div class="post-author-name">@howo</div>
+    </aside></header>
+
+  <div class="post-content e-content post-body" itemprop="articleBody">
+    <div class="hive-post-embed" data-hive-author="howo" data-hive-permlink="core-dev-meeting-47-with-full-transcript">
+  <div id="content-howo-core-dev-meeting-47-with-full-transcript" class="hive-post-embed__content" data-hive-render-target="true">
+https://www.youtube.com/watch?v=6l_LgH7vSe4
+
+
+Transcript:
+
+## @howo: 
+
+I am done with the development of the recurrent transfer updates, I have stumbled upon some issues on the CLI wallet parts,
+because basically now we have a unique id at the end so that you can specify the pair. The issue with that is that there is a way to set up a
+parameter as optional, and somehow we cannot get it to work.
+The CLI wallet always asks for it regardless if it's optional or not So right now I made it mandatory, but I'll probably come back to you guys offline for some help on that, because right now it basically broke all the tests, because all the tests are now expecting an extra parameter.
+So I'm in the process of fixing all the tests. I saw that two weeks ago, Bartek put an issue on me. because there was a bug in recurrent transfers, so that's
+being fixed as wel.
+
+Also, I am hiring a new Dev, (!!) which is here, bloomyx. She will be helping me do stuff with HiveMind, mostly, We'll see what she ends up working on.
+But yeah, I expect the next month to be a bunch of on-boarding tasks here and there.
+
+## @blocktrades
+
+OK, great. Well, nice to hear a new developer joined us. Welcome.
+As far as we've been working on a bunch of different things, I guess as always. But on the blocktrades side, we've been working a lot on the dockers for both Hive and Hive we had a couple problems reported related to Hive, where when somebody would shut down their HAF node, or if it shut down its own for whatever reason, and they restarted it up, they had a problem restarting it. And we found there were two problems that were are tending to,one was the more serious problem, which was a permissions problem, where sometimes if the external system wasn't set up, the internal docker processes weren't able to properly access the external files. So those were just really permission problems in somebody's local system.
+But it was hard to troubleshoot those problems, because the permissions errors weren't showing up on the console. So we really made two kind of fixes.
+
+We made change to make it more difficult to have the permission problem. And second of all, we set up the docker in an attach mode so that now those, if there is any kind of error like that, not necessarily a permission problem, but some kind of error, it will more likely show up on the console where someone who's maintaining that HAF server will recognize will be able to understand what the problem is easier.
+
+So along with that, another thing we've been doing for half is we've been looking into how to control SQL resources under Postgres. This comes up for HAF servers now, because somebody might be hit with queries that take a long time, because we don't have any real limiting factor on how long a query can take right now. This is going to be an important feature for when we start working on the, well, I guess we could say we are, start working on the smart contract platform that runs on top of HAF, because there it's going to be critically important that smart contracts don't, for instance, run too long or take up too many resources.
+
+So we've been basically working on this new, new sub-task to both monitor Postgres resources being used and also to terminate queries if they take too long.  Like a sort of like a query watchdog, or we've also possibly referred to it as a query governor, this task of monitoring and measuring query times. So for measuring the query times, right now we're looking at using a PG stats extension. Using callbacks, so it's probably going to be a C++ extension that measures when the query starts and also when it ends and then can signal a border query if it takes too long. 
+
+Some other things we'll need to look at is potentially measuring the data stored by a smart contract. So again, we can cost that out appropriately. So that's kind of where we are on the smart contract stuff that's really preliminary phases really I'd say, just sort of obviously measuring resources used by smart contracts is going to be one of the most critical things we've seen in the past, a lot of smart contract platforms have had severe problems in this area. So we need to address those issues early as possible. 
+
+Other things going on, we're probably going to deploy a new version of develop to master. In other words, we're going to do a new release soon for HIVE and HAF. On the HIVE side, it's really just major changes to help HAF itself. So we've switched to this new mode I've talked about in the past where we'll be storing operations as binary data. And so that'll dramatically lower the amount of space used by HAF server because most of the space is used by the operations table and by storing them in the binary format, we're significantly reducing the amount of storage space required.
+
+We've been testing all this stuff, these changes, especially the binary storage changes, both in HAFAH and hivemind, and also testing the block API that runs on top of this. And so far, the performance has been good. The only thing we still yet to do is we need to test it on production, and I think we're planning this week to do final tests on our production. So in other words, our production server API.hive.blog will actually be served up by this new version of HAF and HIVE that have the binary format data. That'll be really the final test. But like I said, our synthetic tests, which are just making API calls to it through a Python script, there we've already seen performance seems fine so far. But it's always good to test the real thing just to see any unexpected issues can arise. 
+
+After we've done that, then we'll actually merge into master and it'll be available to everyone. There have been a number of improvements to HAF along the way since not only the binary storage, but some other things that came up when we were working on the block explorer. So for instance, we're now storing some of the dynamic properties data as being stored into the HAF database and is available so on a block by block basis. And that came up just recently. I think themarkymark, somebody asked me for some data like that, so it'll be there soon. And like I said, it's there now and develop if anybody wants to work in the development branch before it's released. And honestly, I'd say that's fine. If somebody's experimenting with HAF apps, I think it's perfectly fine to experiment with the development branch. The development branch, if it's a passing test, we only merge stuff and develop after it's a passing test. So we believe it's good to use for at least development of software, if not necessarily production.
+
+ Let's see what else. So besides HAF and hivemind, a couple other projects we've been working on. I don't think I've talked about this before, don't recall for sure, but one of the things we're working on is merging in OpenChat, which I guess everybody knows. OpenHiveChat is an instant messaging communications protocol we use at Hive. So we're looking at integrating that capability directly into Condenser. So that means you'll be able to do instant messages inside Condenser, aka, for instance, Hive.blog. So that's been going on for a little bit. And I think we're close to release on that. We've done some preliminary tests. We've got it working inside Condenser. But what we need, and it works on its own without Condenser, but we need to have it work together in both modes. And so we ran it to some problem having it operate in both modes simultaneously. So that's one last thing we have to do with OpenChat. But I suspect the next week or two, that'll be finished. 
+
+Other things we're working on is how, as @howo just recently noted in Mattermost, he saw a new repo appear called CLive. And that's where we're working on a, we've been working for about a month and a half now, experimenting with a new command line wallet for Hive. And this one's, it's a Python-based wallet. So this is basically an alternative to the existing CLI wallet that we have. So we've been designing from scratch to be more friendly, I guess, to users than the existing CLI wallet. So it has like what you might call a terminal-based UI. So it's not a graphics-based UI. It's not a GUI, but it has, if anybody's used something like Midnight Commander or any of these other applications where you have a full screen, but it's text-based full screen, that's the way this thing works. So you can, obviously, it's a little more friendly to use than a straight command line where it's just command, response, command, response kind of format. And so we developed this new application in part just for our own needs, but also just to meet needs that we thought customers might have that they might, users might have that they just found the existing wallet doesn't work very well for. So some of the things we can do is better transaction analysis, being able to save transactions to files, and also targeting offline usage for cold wallets and things like that. 
+
+So that's, I guess, and the last thing I mentioned in passing is the Block Explorer. We lost one of the programmers working in the Block Explorer, so we've assigned a new guy to that, but we still have the GUI guy who's working on it. So that's, we'll be repicking that up in the coming week. And so we'll see how that goes, but I think it's going decently well. That's pretty much where we're at now. So I guess I'll pass it on to whoever's here next. 
+
+Usually I'll pass it on to @imwatsy, so I'll go to him now. 
+
+## @imwatsi
+
+This month, the last month, I've been focusing on GNS. And I've released a bunch of notification types and support for notifications. That's mentions. When someone mentions you in a post or comment, auto rewards, duration rewards, comment benefactor rewards, field convert requests, among others. Also done a bunch of refactoring because some of the modules had too much code in them. So now I split the code up. So every type of notification specifically it's on SQL file. And now I'm currently working on supporting user preferences, which will allow people to customize the kinds of notifications they receive. For example, you can enable or disable individual notifications. And for maybe transfer notifications, you can say ignore transfers below 0.002 HBD or HIVE for something like that. 
+
+ ## @blocktrades
+
+So these customizations, will this be done through custom JSON transactions? 
+
+## @imwatsi
+
+Yes. So you post a custom JSON transaction, and then it updates the state in the database. It's not retroactive though. So when you change it going forward, that's when it will stop. That's been my focus this month. On the experimentation I've been doing with tokens, I have the white paper, but it's not ready yet. I'll probably maybe share it in the next week or so. And I've started writing some code for that. But yeah, the white paper will have more details on my ideas and what I'm planning to do with that. You also mentioned that someone asked about the global properties, whether or not they're stored in HAF. They actually wanted to know whether or not you could see what they were, block by block, going back in time. 
+
+ ## @blocktrades
+
+Yeah, that's exactly what. So basically, we're storing a bunch of the dynamic global properties from the DGPO object and now on a block by block basis into a table. Into a table in HAF. You have the historical date over time. The driving force was this, was the ability to translate Hive to vests due to Hive to vests calculations. But that was pretty hard to block, explorers. And I figured for other applications as well. 
+
+## @arcange
+
+I just want to know about OpenChat, is it condenser only or will other front end be able to use it?
+
+## @blocktrades
+
+ Oh, the integration is certainly open to anyone to use. OpenChat, I mean, RocketChat is an open source software, right? And all the integration we're doing to condenser will also be open source. So in theory, sure, I absolutely feel it should be able to, you know, other, we won't, in fact, other front ends to use it, HIVE front ends to use it for sure. As to the actual details of what they need to do to integrate it, I don't know that I can really answer that right off hand, because I haven't looked at the integrations being done, being done for condenser. I don't know if even @gtg would have an eye on that, but he might be able to comment on it. 
+
+## @arcange
+
+We understand messaging requires a transaction to be broadcast to the blockchain.
+
+## @gtg:
+
+No, no, no, it's off-chain. So the off-chain connects, to Hive for its authentication. So in a way that we can have Hive identity on the chat. So eventually, we would like to use some fancy features like entrant encryption using hopefully keys that you have from Hive. 
+
+
+
+## @brianoflondon:
+
+Just a question on the same thing. What's the chat system that peakD uses? That's not the same as this, or 
+
+## @crimsonclad
+
+If you're talking about beeChat, then that's something that is actually not the same as the other ones. It is actually not really they're going to move forward with. The OpenPeak team is working on another chat messaging client as well, that they're going to be hoping that a lot of people will be using. So I know there's going to be an iteration on that. But yeah, the one that you're thinking of is beeeChat.
+
+## @howo:
+
+I have questions regarding the Hive release that you're talking about. I get the changes for half in the JSON binary format, but what changes in Hive are needed for that? 
+
+## @blocktrades:
+
+So the way the data is injected, basically, right? So the data is being written to the HAFdatabase in a slightly different way. It's being written to this binary instead of this JSON data when it's being inserted. The insert queries were changed. 
+
+## @howo:
+
+OK, sounds good. OK, I don't really have anything more. I'll probably send a bunch of messages for Gandalf / Bartek when he's back regarding the optional format in the CLI wallet. But apart from that, everything is pretty clear on my end. I don't know if you guys have anything more. 
+
+## @brianoflondon
+
+I have a question. Testing the current transfers, should I contact you offline about, I don't know whether I'm technically capable of it, but I'll try to set up an environment where I can start testing? Or is there a test environment coming? 
+
+## @howo:
+
+Well, as soon as we are relatively ready for the half box, we're probably going to spin up a bunch of test nets. In regards to the actual changes, it's going to be very straightforward, so you don't have to worry too much about the testing. Basically, you just have one extra parameter when you create a recurrent transfers, which is like an ID. If you specify an ID that already exists, it's going to update the existing recurrent transfer. And if you don't specify one, it's just going to default to id 0. And when you use the API to fetch the recurrent transfers, it's going to basically show you all of them with the extra ID so that you can know which is which. 
+
+## @brianoflondon
+
+So if I insert my own ID if I want, and then I'll keep a record of what other details are around it. 
+
+## @howo:
+
+It's a UI similar to when you create, when you open sell orders on the DEX. You create an ID. So IDs don't need to follow each other. They just need to be unique. 
+
+## @brianoflondon
+
+UUID is okay ? 
+
+## @howo:
+
+UUID is not OK because it has letters in it. But yeah, it's an Int32, so literally you could do random, and the likelihood of it being the same is very low. But I would not recommend that. Speaking of which, last time we talked about creating a unified API for transfers and recurrent transfers, has there been any progress on that front? 
+
+## @blocktrades:
+
+Not that I'm aware of. I mean, I think it's still the plan, but I haven't heard anything about it lately. I don't know. Gandalf, did you hear anything about it? 
+
+@gtg:
+
+No, I didn't think so.
+
+## @howo:
+
+Yeah, I mean, we have time, so my changes have already been pushed, but as soon as I'm done with adding a bunch of unit tests and functional tests, I'll tag you guys for a review. That will happen in the coming weeks. that's it for me. 
+
+## @blocktrades:
+
+I'll guess you've merged develop, so you saw that there were new tests associated with the recurrent transfers ?
+
+## @howo:
+
+ All of them broke, so I'm well aware Haha 
+
+And that's pretty much it ! Thank you for tuning in</div>
+  <footer class="hive-post-embed__source">
+    <span class="hive-post-embed__source-label">Source:</span>
+    <a href="https://hive.blog/@howo/core-dev-meeting-47-with-full-transcript">Core dev meeting #47 (with full transcript)</a>
+    by
+    <a href="https://hive.blog/@howo">@howo</a>
+  </footer>
+</div>
+
+
+  </div><a class="u-url" href="/news/core/development/2023/03/12/core-dev-meeting-47-with-full-transcript.html" hidden></a>
+</article>
+
+        </div>
+
+        
+        <aside class="page-sidebar" aria-label="Search and browse">
+          <section class="sidebar-section sidebar-search">
+            <h2 class="sidebar-heading">Search posts</h2>
+            <p class="sidebar-copy">Search the locally indexed post archive.</p>
+            <input type="text" id="search-input" placeholder="Search posts" autocomplete="off" />
+            <ul id="results-container"></ul>
+          </section>
+
+          <section class="sidebar-section sidebar-topics">
+            <h2 class="sidebar-heading">Browse topics</h2>
+            <p class="sidebar-copy">Jump into curated topic landing pages.</p>
+            <ul class="topic-list topic-list-sidebar"><li><a class="page-link" href="/account-recovery/">Account Recovery</a></li><li><a class="page-link" href="/core-development/">Core Development</a></li><li><a class="page-link" href="/dapps/">Dapps</a></li><li><a class="page-link" href="/docker/">Docker</a></li><li><a class="page-link" href="/hardfork/">Hardfork</a></li><li><a class="page-link" href="/hivemind/">Hivemind</a></li><li><a class="page-link" href="/javascript/">Javascript</a></li><li><a class="page-link" href="/multisig/">Multisig</a></li><li><a class="page-link" href="/python/">Python</a></li><li><a class="page-link" href="/ruby/">Ruby</a></li><li><a class="page-link" href="/testnet/">Testnet</a></li><li><a class="page-link" href="/tools/">Tools</a></li><li><a class="page-link" href="/witness/">Witness</a></li></ul>
+          </section>
+        </aside>
+        
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading"><a rel="author" href="/">Hive Chain Documentation</a></h2>
+    
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">site curated by: @inertia</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>Your resource for various levels of Hive Documentation.</p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+<script src="/assets/javascript/search.js"></script>
+    <script>
+      (function () {
+        var input = document.getElementById('search-input');
+        var results = document.getElementById('results-container');
+        if (input && results && typeof SimpleJekyllSearch !== 'undefined') {
+          SimpleJekyllSearch({
+            searchInput: input,
+            resultsContainer: results,
+            json: '/search.json'
+          });
+        }
+
+        if (typeof SteemContentRenderer === 'undefined') return;
+
+        var targets = document.querySelectorAll('[data-hive-render-target="true"]');
+        if (!targets.length) return;
+
+        var renderer = new SteemContentRenderer.DefaultRenderer({
+          baseUrl: 'https://hive.blog/',
+          breaks: true,
+          skipSanitization: false,
+          allowInsecureScriptTags: false,
+          addNofollowToLinks: true,
+          doNotShowImages: false,
+          ipfsPrefix: '',
+          assetsWidth: 640,
+          assetsHeight: 480,
+          imageProxyFn: function (url) { return url; },
+          usertagUrlFn: function (account) { return '/@' + account; },
+          hashtagUrlFn: function (hashtag) { return '/tags/#' + hashtag; },
+          isLinkSafeFn: function () { return true; }
+        });
+
+        targets.forEach(function (target) {
+          try {
+            var inputHtml = target.innerHTML;
+            target.innerHTML = renderer.render(inputHtml);
+          } catch (e) {
+            console.log(e);
+          }
+        });
+      })();
+    </script>
+
+  </body>
+
+</html>

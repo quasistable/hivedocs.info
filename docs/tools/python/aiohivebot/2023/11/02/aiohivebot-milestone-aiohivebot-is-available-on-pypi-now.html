@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta property="og:image" content="/assets/images/sticker.png" />
+  <meta name="apple-mobile-web-app-title" content="Hive Docs" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" /><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>AioHiveBot: MILESTONE: aiohivebot is available on pypi now | Hive Chain Documentation</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="AioHiveBot: MILESTONE: aiohivebot is available on pypi now" />
+<meta name="author" content="pibara" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="How to install the async python aiohivebot lib and create a simple HIVE bot" />
+<meta property="og:description" content="How to install the async python aiohivebot lib and create a simple HIVE bot" />
+<link rel="canonical" href="https://hive.blog/hive-192847/@pibara/aiohivebot-milestone-aiohivebot-is-available-on-pypi-now" />
+<meta property="og:url" content="https://hive.blog/hive-192847/@pibara/aiohivebot-milestone-aiohivebot-is-available-on-pypi-now" />
+<meta property="og:site_name" content="Hive Chain Documentation" />
+<meta property="og:image" content="https://files.peakd.com/file/peakd-hive/pibara/23wr5usndHucjRZiUmnjSDr9vAu8QfgcmtEiLUhuBPLQrxznsBVcsE22m4KMPzUv1Ch35.png" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2023-11-02T04:13:21-07:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="https://files.peakd.com/file/peakd-hive/pibara/23wr5usndHucjRZiUmnjSDr9vAu8QfgcmtEiLUhuBPLQrxznsBVcsE22m4KMPzUv1Ch35.png" />
+<meta property="twitter:title" content="AioHiveBot: MILESTONE: aiohivebot is available on pypi now" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"pibara"},"dateModified":"2023-11-02T04:13:21-07:00","datePublished":"2023-11-02T04:13:21-07:00","description":"How to install the async python aiohivebot lib and create a simple HIVE bot","headline":"AioHiveBot: MILESTONE: aiohivebot is available on pypi now","image":"https://files.peakd.com/file/peakd-hive/pibara/23wr5usndHucjRZiUmnjSDr9vAu8QfgcmtEiLUhuBPLQrxznsBVcsE22m4KMPzUv1Ch35.png","mainEntityOfPage":{"@type":"WebPage","@id":"https://hive.blog/hive-192847/@pibara/aiohivebot-milestone-aiohivebot-is-available-on-pypi-now"},"url":"https://hive.blog/hive-192847/@pibara/aiohivebot-milestone-aiohivebot-is-available-on-pypi-now"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://hivedocs.info/feed.xml" title="Hive Chain Documentation" /><script>
+if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNotTrack === "yes" || navigator.msDoNotTrack === "1")) {
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-161692811-1', 'auto');
+  ga('send', 'pageview');
+}
+</script>
+  
+<script src='https://unpkg.com/steem-content-renderer'></script>
+  <script src="/assets/javascript/universal-bridge-against-phishing.js"></script>
+  <script src="/assets/javascript/lazysizes.min.js" async=""></script>
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet" />
+  <link rel="shortcut icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="152x152" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="167x167" href="/assets/images/favicon-80x80.png" />
+</head>
+<body><header class="site-header" role="banner">
+  <div class="wrapper site-header-inner">
+    <a class="site-title" rel="author" href="/">Hive Chain Documentation</a>
+
+    <nav class="site-nav" aria-label="Primary">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/news/">News</a><a class="page-link" href="/howto/">How To</a><a class="page-link" href="/links/">Useful Links</a><a class="page-link" href="/authors/">Authors</a><a class="page-link" href="/topics/">Topics</a><a class="page-link" href="/search/">Search</a></div>
+    </nav>
+  </div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper page-layout has-search-panel">
+        <div class="page-main">
+          <article class="post h-entry post-article" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header post-hero">
+    <div class="post-hero-main">
+      <p class="post-kicker">Archive post</p>
+      <h1 class="post-title p-name" itemprop="name headline">AioHiveBot:  MILESTONE: aiohivebot is available on pypi now</h1>
+      <p class="post-meta">
+        <time class="dt-published" datetime="2023-11-02T04:13:21-07:00" itemprop="datePublished">Nov 2, 2023
+        </time>• <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">
+            <a href="/authors/#author-pibara">pibara</a>
+          </span></span></p><p class="post-summary">How to install the async python aiohivebot lib and create a simple HIVE bot</p></div><aside class="post-author-card">
+      <img src="https://images.hive.blog/u/pibara/avatar" width="128" height="128" class="lazyload post-author-avatar" alt="Avatar for @pibara" />
+      <div class="post-author-name">@pibara</div>
+    </aside></header>
+
+  <div class="post-content e-content post-body" itemprop="articleBody">
+    <div class="hive-post-embed" data-hive-author="pibara" data-hive-permlink="aiohivebot-milestone-aiohivebot-is-available-on-pypi-now">
+  <div id="content-pibara-aiohivebot-milestone-aiohivebot-is-available-on-pypi-now" class="hive-post-embed__content" data-hive-render-target="true">
+![image.png](https://files.peakd.com/file/peakd-hive/pibara/23wr5usndHucjRZiUmnjSDr9vAu8QfgcmtEiLUhuBPLQrxznsBVcsE22m4KMPzUv1Ch35.png)
+
+
+I've posted a few times about my ongoing work on this project before, but now is the first time that 
+we've reached a milestone that could translate to actual use by people other than me.
+
+Before I over promise, a few notes on things that aren't working yet:
+
+* No broudcast operations yet.
+* No client side method/param checks.
+* REST
+
+The second one probably isn't that important for most users, and we discussed it in my [previous post](https://peakd.com/hive-192847/@pibara/aiohivebot-progress-report-closing-in-on-a-first-release) about aiohivebot. The first one though is pretty limiting and should be the first issue to address. 
+
+Basically you can use the aiohivebot lib to stream different blockchain events from the HIVE blockchain to user defined methods and you can use all of the querying API calls defined with JSON-RPC in order to fetch specific info from the chain, but you can't do any transactions yet with the 0.1.5 version of aiohivebot. You can do *some* things with this functionality for sure, but many usecases that require the bot or backend to create transactions won't open up untill I add support for that in the near future.
+
+## Installing aiohivebot
+
+But let's look at how to install and use *aiohivebot*. We start off with getching the library from pypi with pip:
+
+```
+python3 -m pip install aiohivebot
+``` 
+
+## A first bot
+
+When you have the lib install, you can make your first empty bot.
+
+```python
+#!/usr/bin/env python3
+import asyncio
+from aiohivebot import BaseBot, NoResponseError, JsonRpcError
+
+class MyBot(BaseBot):
+    def __init__(self):
+        super().__init__()
+
+    async def block_processed(self,blockno, timestamp, client_info):
+        print(timestamp.time.isoformat(), blockno, client_info[uri])
+
+pncset = MyBot()
+loop = asyncio.get_event_loop()
+loop.run_until_complete(pncset.run(loop))
+```
+Just to get an idea, let's look at that this code does when we run it:
+
+```
+22:25:21 79763118 api.openhive.network
+22:25:24 79763119 api.openhive.network
+22:25:27 79763120 api.openhive.network
+22:25:30 79763121 api.openhive.network
+22:25:33 79763122 api.openhive.network
+22:25:36 79763123 api.openhive.network
+22:25:39 79763124 api.openhive.network
+22:25:42 79763125 api.openhive.network
+22:25:45 79763126 api.openhive.network
+22:25:48 79763127 techcoderx.com
+22:25:51 79763128 techcoderx.com
+22:25:54 79763129 techcoderx.com
+22:25:57 79763130 api.openhive.network
+22:26:00 79763131 api.openhive.network
+22:26:03 79763132 api.hive.blog
+22:26:06 79763133 api.hive.blog
+22:26:09 79763134 api.hive.blog
+22:26:12 79763135 api.hive.blog
+22:26:15 79763136 api.hive.blog
+22:26:18 79763137 api.hive.blog
+22:26:21 79763138 api.hive.blog
+22:26:24 79763139 techcoderx.com
+22:26:27 79763140 techcoderx.com
+22:26:30 79763141 techcoderx.com
+22:26:33 79763142 techcoderx.com
+22:26:36 79763143 api.openhive.network
+22:26:39 79763144 api.openhive.network
+22:26:42 79763145 hive-api.3speak.tv
+22:26:45 79763146 hive-api.3speak.tv
+22:26:48 79763147 hive-api.3speak.tv
+22:26:51 79763148 hive-api.3speak.tv
+22:26:54 79763149 api.deathwing.me
+```
+
+This output gives a tiny bit of insight into what *aiohivebot* does under the hood. What happens when you instantiate and run your own bot like this, is that each of the known public API node gets it's own under the hood sub client that runs in it's own task. Each such task will  call [condenser_api.get_dynamic_global_properties](https://developers.hive.io/apidefinitions/#condenser_api.get_dynamic_global_properties), extract the last known block number from the return value, and if that block or any block before it hasn't yet been processed, it will start fetching blocks, one at a time, skipping blocks that were already fetched by another paralel running task. When the blocks are processed, or when there was nothing left to do, the task pauses for 3 seconds before invoking get_dynamic_global_properties again to see if there are any new blocks.
+
+In the bot we just created we made a single method, the **block_proccessed** method. This method gets called as last method after any other processing of a single block has finished.
+
+You see the blocks ariving once every 3 seconds, in order, and you see there are five differnt nodes returning blocks. 
+
+## Method arguments optional
+
+As we showed in [my last blog post](), method arguments are all optional in *aiohivebot*. If you don't use a given argumentm you can simply ommit it from the method fingerprint and everything will still work just fine:
+
+```python
+    async def block_processed(self, blockno, client_info):
+      print(blockno, int(client_info["latency"]), client_info["uri"])
+```
+
+Lets run it.
+
+```
+79763707 39 api.deathwing.me
+79763708 95 hive-api.3speak.tv
+79763709 46 api.openhive.network
+79763710 38 rpc.ausbit.dev
+79763711 54 api.deathwing.me
+79763712 39 api.openhive.network
+79763713 113 api.deathwing.me
+79763714 130 api.openhive.network
+79763715 91 api.openhive.network
+79763716 65 api.openhive.network
+79763717 50 api.openhive.network
+79763718 41 api.openhive.network
+79763719 34 api.openhive.network
+79763720 29 api.openhive.network
+79763721 28 api.openhive.network
+79763722 27 api.openhive.network
+79763723 31 api.openhive.network
+79763724 230 techcoderx.com
+79763725 213 techcoderx.com
+79763726 55 rpc.mahdiyari.info
+79763727 61 rpc.mahdiyari.info
+```
+
+Notice how much the (decaying average) request latency differs between nodes and also for a single node how it fluctuates over time.
+
+## What methods can you define ?
+
+Lets look a little closer at all the different methods you can define in your bot that will connect to actual blockchain or bot process events.
+
+There are basicly six types of defined methods.
+
+* periodicly called methods
+* low level methods
+* per operation type methods
+* per custom_json id l2 methods
+* hive engine action methods
+* exceptions method
+
+### periodicly called methods
+
+The BaseBot has two methods that get called for each node client roughly four times an hour.
+
+* node_status
+* node_api_support
+
+#### node_status
+
+* node_status(node_uri, error_percentage, latency, ok_rate, error_rate, block_rate)
+
+The node_status method is invoked every 15 minutes for each of the public API nodes. The node info available in this method is:
+
+* error_percentage: The decaying average percentage of JSON-RPC calls that resulted in a (non-JSON-RPC) server error.
+* latency : The decaying average JSON-RPC request-response latency in mili seconds
+* ok_rate : The number of succesfull JSON-RPC requests per minute over the last 15 minutes.
+* error_rate: The number of unsuccesfull JSON-RPC requests per minute over the last 15 minutes.
+* block_rate: The number of blocks fetched per minute from this node over the last 15 minutes.
+
+Most bots and backends won't need this info. It's currently meant mostly for development debugging and possibly for node operators. 
+
+#### node_api_support
+
+* node_api_support(node_uri, api_support)
+
+This method, like the previous one gets invoked roughly every 15 minutes for each node. Every 15 minutes, the nodes get scanned for what sub-APIs
+they support. The result is used internally by aiohivebot to determine what nodes it can send what JSON-RPC requests to. 
+The raw scan results are offered to any bots that wants them with this method. 
+
+Here is an example of the api_support dict provided to this method by aiohivebot:
+
+```json
+{
+  "wallet_bridge_api": {
+    "published": false,
+    "available": false
+  },
+  "database_api": {
+    "published": true,
+    "available": true
+  },
+  "block_api": {
+    "published": true,
+    "available": true
+  },
+  "follow_api": {
+    "published": false,
+    "available": true
+  },
+  "transaction_status_api": {
+    "published": false,
+    "available": true
+  },
+  "rc_api": {
+    "published": true,
+    "available": true
+  },
+  "bridge": {
+    "published": false,
+    "available": true
+  },
+  "jsonrpc": {
+    "published": true,
+    "available": true
+  },
+  "market_history_api": {
+    "published": true,
+    "available": true
+  },
+  "network_broadcast_api": {
+    "published": true,
+    "available": true
+  },
+  "account_by_key_api": {
+    "published": true,
+    "available": true
+  },
+  "account_history_api": {
+    "published": true,
+    "available": true
+  },
+  "condenser_api": {
+    "published": true,
+    "available": true
+  },
+  "reputation_api": {
+    "published": true,
+    "available": true
+  }
+}
+```
+
+This result is for the anyx.io node run by @anyx. 
+
+Note that currently if *published* is true, *available* might be unreliable, because *aiohivebot* currently trusts published sub-APIs to be available and won't scan them. 
+
+### low level methods
+
+There are four low level methods that a bot or backend can implement to regester itself to low level events:
+
+* block
+* transaction
+* operation
+* block_processed
+
+
+#### block
+* block(block, blockno, transactions, transaction_ids, client_info, timestamp)
+
+The block method is invoked before the block gets processed. It can provide the following info:
+
+* block : The stripped block (without transactions and transaction ids)
+* blockno : The block number that identifies this block
+* transactions : A list with all transactions in this block
+* client_info: A simple dict with basic info on the node this block was fetched from:
+  * uri : uri of the node
+  * latency : Current (decaying average) latency for this node
+  * error_percentage: Current (decaying average) server error percentage for the API node.
+* timestamp : Python timestamp object for the block time  
+
+We will see many of these same arguments in a lot of other user definable methods. 
+
+
+#### block_processed
+* block_processed( blockno, client_info, timestamp)
+
+While *block* gets called before any other processing of the block data, *block_processed* gets called after all transactions and operations have been processed.
+This method is meant mostly to allow bot developers to support loss-less restarts and persistency.
+
+#### transaction
+* transaction(tid, transaction, block, client_info, timestamp)
+
+This method has been added for completeness. It is suggested you use *operation* instead. Relevant arguments are:
+
+* tid: The transaction id
+* transaction : The (stripped) transaction (without operations).
+* *block*
+* *client\_info*
+* *timestamp*
+
+
+#### operation
+* operation(operation, tid, transaction, block, client_info, timestamp)
+
+The *operation* method, if it is defined, will be invoked for each and every operation in a block. It is the wildcard callback.
+The arguments that can be provided to this method are:
+
+* operation : The content dict of the operation
+* *tid*
+* *transaction*
+* *block*
+* *client\_info*
+* *timestamp*
+
+### per operation type methods
+
+Rather than defining one catch all *operation* method in your bot or backend, it is suggested that instead you define a method for the specific operations in question that you are actualy interested in.
+
+Any operation type defined by HIVE is a valid method name. All of the below methods, if defined, can have any of these method arguments:
+
+* body : The *value* content of the operation.
+* *operation*
+* *tid*
+* *transaction*
+* *block*
+* *client\_info*
+* *timestamp*
+
+A  non exaustive list of operation methods you may choose to define:
+
+* account_create_operation
+* account_update2_operation
+* account_update_operation
+* account_witness_proxy_operation
+* account_witness_vote_operation
+* cancel_transfer_from_savings_operation
+* change_recovery_account_operation
+* claim_account_operation
+* claim_reward_balance_operation
+* collateralized_convert_operation
+* comment_operation
+* comment_options_operation
+* convert_operation
+* create_claimed_account_operation
+* custom_json_operation
+* delegate_vesting_shares_operation
+* delete_comment_operation
+* feed_publish_operation
+* limit_order_cancel_operation
+* limit_order_create_operation
+* recover_account_operation
+* request_account_recovery_operation
+* set_withdraw_vesting_route_operation
+* transfer_from_savings_operation
+* transfer_operation
+* transfer_to_savings_operation
+* transfer_to_vesting_operation
+* update_proposal_votes_operation
+* vote_operation
+* withdraw_vesting_operation
+* witness_set_properties_operation
+* witness_update_operation
+
+### per custom_json id l2 methods
+
+Of the above operation types, one is a bit special. The *custom_json_operation*. That operation allows layer two applications to add L2 implementation specific operations specific to an implementation.
+If you are tempted to use  custom_json_operation method in your bot or backend, you may instead want to opt for using distinct **L2** methods that specify what L2s you are interested in.
+The l2_ methods look a bit deeper into the custom_json_operation, and one of them currently has special status.
+
+The arguments for l2 methods are as follows:
+
+* required_auths : list of required auth HIVE accounts
+* equired_posting_auths : list of hequired posting auth HIVE accounts
+* body : JSON-decoded (if possible) version of the custom L2 JSON object.
+* *tid*
+* *transaction*
+* *block*
+* *client\_info*
+* *timestamp*
+
+To illustrate, here is a short list of some possible methods you might want to define. The complete list is too long to list here. This list is just there to show a few notable examples.
+
+* l2_3speak_publish
+* l2_actifit
+* l2_dlux_claim
+* l2_duat_claim
+* l2_ecency_notify
+* l2_exode_market_sell
+* l2_nftmart
+* l2_peakd_notify
+* l2_pm_create_bid
+* l2_pp_podcast_live
+* l2_scot_claim_token
+* l2_sf_transfer_cards
+* l2_sm_burn_cards
+* l2_spkcc_shares_claim
+* l2_ssc_mainnet_hive
+* l2_terracore_equip
+* l2_tm_create
+* l2_waivio_guest_vote
+* l2_woo_claim_airdrop_rewards
+
+Note that methods never have a *-* character, if an operation type has a "-" character in it, you **MUST** replace it with an underscore.
+
+### hive engine action methods
+
+There is one L2 that *aiohivebot* has special support for events for. Hive-Engine. Hive-engine uses ssc-mainnet-hive to communicate contract actions.
+You can define a method for such a contract action vy writing your method name as follows:
+
+* engine_botcontroller_updateMarket
+* engine_hivepegged_withdraw
+* engine_market_buy
+* engine_market_cancel
+* engine_market_marketBuy
+* engine_market_marketSell
+* engine_marketpools_addLiquidity
+* engine_marketpools_removeLiquidity
+* engine_marketpools_swapTokens
+* engine_market_sell
+* engine_nft_issue
+* engine_nft_issueMultiple
+* engine_nftmarket_buy
+* engine_nftmarket_cancel
+* engine_nftmarket_changePrice
+* engine_nftmarket_sell
+* engine_nft_setProperties
+* engine_nft_transfer
+* engine_packmanager_open
+* engine_tokens_delegate
+* engine_tokens_issue
+* engine_tokens_stake
+* engine_tokens_transfer
+* engine_tokens_unstake
+* engine_witnesses_proposeRound
+
+The available arguments are tha same as for the l2 methods, but with a slightly diferent meaning:
+
+* *required\_auths*
+* *required\_posting\_auths* 
+* body : Content of the hive-engine contract payload. 
+* *tid*
+* *transaction*
+* *block*
+* *client\_info*
+* *timestamp* 
+
+### exceptions method 
+
+* exception(exception)
+
+This user definable method is a bit of a weird one. If you call the BaseBot constructor with the boolean *eat\_exceptions* argument set to true, then any exception thrown from a used defined method will get *eaten* by aiohivebot.
+More on this three sections down. By defining an *exception* method, you can do some logging on exceptions that got eaten.  
+
+
+## Calling other JSON-RPC API's from a handler.
+
+From within any of the user defined methods that we discussed this far, you can cal JSON-RPC API's that the HIVE public API nodes provide. An example.
+
+```python
+    async def vote_operation(self, body):
+        """Handler for cote_operation type operations in the HIVE block stream"""
+        if "voter" in body and "author" in body and "permlink" in body:
+            content = await self.bridge.get_post(author=body["author"], permlink=body["permlink"])
+            if content and "is_paidout" in content and content["is_paidout"]:
+                print("Vote by", body["voter"], "on expired post detected: @" + \
+                        body["author"] + "/" + body["permlink"] )
+            else:
+                print("Vote by", body["voter"], "on active post")
+```
+
+In this example, when a *vote* operation is found within a block, the user defined *vote\_operation* method gets called. After some sanity check, the code calls **self.bridge.get_post** to get info on the post that was voted on. 
+This info is then used to determine if the vote was done on an active post, or on a post that was already paid out. 
+
+So what happens under the hood? 
+
+* The BaseBot will check what nodes support the **bridge** sub-api
+* The BaseBot will sort the nodes that *could* awnser this query based on error rate first and current node latency second.
+* The Basebot will ask the top of the list node first,and if a server error happens, move on through the sorted list untill a non server-error response is given
+* If a valid JSON-RPC response is returned by the node, this result is returned.
+* If a valid JSON-RPC error is returned by the node, a JsonRpcError exception is raised
+* If after four rounds of server errors by all nodes no valid JSON-RPC response or error is found, a NoResponseError exception is raised
+
+
+## Eating exceptions
+
+Your bot or backend, once at production stable status, should catch and handle JsonRpcError and NoResponseError exceptions, and any other exceptions from other parts of your code. But there could always be some exceptions you didn't expect that arise at a bad time while your bot or backend is running production. It is no substitute for thorough development practices, but for resiliance, you can choose to let your bot run in exception eating mode just to make sure it won't crash because of some missing key in a custom_json operation that you didn't account for. 
+
+```python
+    def __init__(self):
+        super().__init__(eat_exceptions=True)
+
+    async def exception(self, exception):
+        print("ERROR:", str(exception))
+```
+
+## BaseBot constructor arguments
+
+We already saw the *start\_block* constructor argument above. There are currently four optional constructor arguments for the Basebot baseclass:
+
+* start\_block : Start at a designated different block than the current head of chain
+* roll\_back : Don't run life data but instead process roll_back number of blocks and process from that block till the current head block.
+* roll\_back\_units : Instead of blocks, roll back in "minutes", "hours" or "days"
+* *eat\_exceptions*
+
+## Basebot run arguments
+```python
+bot = MyBot()
+loop = asyncio.get_event_loop()
+loop.run_until_complete(pncset.run(loop, tasks))
+```
+
+This is a still fluid part of the aiohivebot, its about hopw to connect other async operations to your code. The *run* method od Basebot is async, so you can use it together with other async tasks in one big *gather* if you like.
+In some cases it might however be more convenient to ask *run* that already is build around a gather operation to take controll of the other tasks. The *tasks* argument to *run* allows you to supply aditional tasks. More work 
+is needed to get this working in a coherent way.
+
+## Up next: bot with a web server
+
+Python and async web framework have a bit of a problem right now when connecting the framework with other async services. Why? Because they mostly demand controll by using API's that rely on things like a synchonous run with framework specific ways to combine in other paralel tasks. Because aiohivebot is a Web3 library, I feel I can't just get away with letting the user deal with all the dificulties of connecting an async web framework. There is going to need to be some syntactic sugar in the lib for connecting with at least two flavors of popular async python web framework. If you have any suggestions or ideas with respect to the prefered supported frameworks, please leave a comment on this post.  
+
+## Other todo issues
+
+Now that aiohivebot is available on pypi, i am going to try to keep the API stable and backwards compatible from now on. My first next milestone will be to demonstrate async web framework compatibility, complete with . After that, support for signed operations will be a big next feature for the lib. I'm moving client side API fingerprint checks down in the priorities list as i want to combine that feature with REST HIVE API support. Integration of my coinZdense efforts is at the bottom of my priorities list, but can be brought up to prio two on my list by project donations (see below).
+
+# Available for projects
+
+If you think my skills and knowledge could be usefull for your project, I am currently available for contract work for up to 20 hours a week. My hourly rate depends on the type of activity (Python dev, C++ dev or data analysis), wether the project at hand will be open source or not, and if you want to sponsor my pet project coinZdense that aims to create a multi-language programming library for post-quantum signing and least authority subkey management.
+
+| Activity | Hourly rate | Open source discount | Minimal hours | Maximum hours |
+| -- | -- | -- | -- | -- |
+| C++ development | 150 $HBD | 30 $HBD | 4 | - |
+| Python development | 140 $HBD | 30 $HBD | 4 | - |
+| Data analysis (python/pandas) | 120 $HBD | - | 2 | - |
+| Sponsored coinZdense work | 50 $HBD | - | 0 | - |
+| Paired up coinZdense work | 25 $HBD | - | 1 | 2x contract h |
+
+Development work on open-source project get a 30 $HBD discount on my hourly rates.
+
+Next to contract work, you can also become a sponsor of my coinZdense project.
+Note that if you pair up to two coinZdense sponsor hours with a contract hour, you can sponsor twice the amount of hours to the coinZdense project.
+
+If you wish to pay for my services or sponsor my project with other coins than $HBD, all rates are slightly higher (same rates, but in Euro or euro equivalent value at transaction time). I welcome payments in Euro (through paypall), $HIVE, $QRL $ZEC, $LTC, $DOGE, $BCH, $ETH or $BTC/lightning.
+
+Contact: coin\<at>z-den.se
+&lt;/div&gt;
+  <footer class="hive-post-embed__source">
+    <span class="hive-post-embed__source-label">Source:</span>
+    <a href="https://hive.blog/@pibara/aiohivebot-milestone-aiohivebot-is-available-on-pypi-now">AioHiveBot:  MILESTONE: aiohivebot is available on pypi now</a>
+    by
+    <a href="https://hive.blog/@pibara">@pibara</a>
+  </footer>
+&lt;/div&gt;
+
+</at></div></div>
+
+  </div><a class="u-url" href="/tools/python/aiohivebot/2023/11/02/aiohivebot-milestone-aiohivebot-is-available-on-pypi-now.html" hidden></a>
+</article>
+
+        </div>
+
+        
+        <aside class="page-sidebar" aria-label="Search and browse">
+          <section class="sidebar-section sidebar-search">
+            <h2 class="sidebar-heading">Search posts</h2>
+            <p class="sidebar-copy">Search the locally indexed post archive.</p>
+            <input type="text" id="search-input" placeholder="Search posts" autocomplete="off" />
+            <ul id="results-container"></ul>
+          </section>
+
+          <section class="sidebar-section sidebar-topics">
+            <h2 class="sidebar-heading">Browse topics</h2>
+            <p class="sidebar-copy">Jump into curated topic landing pages.</p>
+            <ul class="topic-list topic-list-sidebar"><li><a class="page-link" href="/account-recovery/">Account Recovery</a></li><li><a class="page-link" href="/core-development/">Core Development</a></li><li><a class="page-link" href="/dapps/">Dapps</a></li><li><a class="page-link" href="/docker/">Docker</a></li><li><a class="page-link" href="/hardfork/">Hardfork</a></li><li><a class="page-link" href="/hivemind/">Hivemind</a></li><li><a class="page-link" href="/javascript/">Javascript</a></li><li><a class="page-link" href="/multisig/">Multisig</a></li><li><a class="page-link" href="/python/">Python</a></li><li><a class="page-link" href="/ruby/">Ruby</a></li><li><a class="page-link" href="/testnet/">Testnet</a></li><li><a class="page-link" href="/tools/">Tools</a></li><li><a class="page-link" href="/witness/">Witness</a></li></ul>
+          </section>
+        </aside>
+        
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading"><a rel="author" href="/">Hive Chain Documentation</a></h2>
+    
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">site curated by: @inertia</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>Your resource for various levels of Hive Documentation.</p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+<script src="/assets/javascript/search.js"></script>
+    <script>
+      (function () {
+        var input = document.getElementById('search-input');
+        var results = document.getElementById('results-container');
+        if (input && results && typeof SimpleJekyllSearch !== 'undefined') {
+          SimpleJekyllSearch({
+            searchInput: input,
+            resultsContainer: results,
+            json: '/search.json'
+          });
+        }
+
+        if (typeof SteemContentRenderer === 'undefined') return;
+
+        var targets = document.querySelectorAll('[data-hive-render-target="true"]');
+        if (!targets.length) return;
+
+        var renderer = new SteemContentRenderer.DefaultRenderer({
+          baseUrl: 'https://hive.blog/',
+          breaks: true,
+          skipSanitization: false,
+          allowInsecureScriptTags: false,
+          addNofollowToLinks: true,
+          doNotShowImages: false,
+          ipfsPrefix: '',
+          assetsWidth: 640,
+          assetsHeight: 480,
+          imageProxyFn: function (url) { return url; },
+          usertagUrlFn: function (account) { return '/@' + account; },
+          hashtagUrlFn: function (hashtag) { return '/tags/#' + hashtag; },
+          isLinkSafeFn: function () { return true; }
+        });
+
+        targets.forEach(function (target) {
+          try {
+            var inputHtml = target.innerHTML;
+            target.innerHTML = renderer.render(inputHtml);
+          } catch (e) {
+            console.log(e);
+          }
+        });
+      })();
+    </script>
+
+  </body>
+
+</html>

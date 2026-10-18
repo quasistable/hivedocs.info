@@ -118,7 +118,7 @@ We completed and merged in the code that I mentioned last week that creates a te
 To achieve the same results that we saw in our development testing, we found we had to perform a `vacuum analyze` on the `hive_votes` table prior to running the update_post_rshares function to ensure the query planner had the proper statistics to generate an efficient query plan. The merge request for the optimized code is here:
 https://gitlab.syncad.com/hive/hivemind/-/merge_requests/521
 
-### Optimized process of effective_comment_vote operation during massive sync
+###Optimized process of effective_comment_vote operation during massive sync
 
 When we know that a particular post will be paid out before end of massive sync block processing, we can skip processing of effective_comment_vote_operations for such posts. This optimization reduced the amount of post records that we need to flush to the database during massive sync by more than 50%. The merge request for this optimization is here: https://gitlab.syncad.com/hive/hivemind/-/merge_requests/525
 
@@ -132,7 +132,7 @@ While there are number of API nodes available nowadays, many Hive apps default t
 
 ![image.png](https://images.hive.blog/DQmWoWKQctKxSMTj5YXm7JfmVdZN42c2NCJt28StVKqwLvd/image.png)
 
-As you can see, our incoming API traffic (the top part of the graph) has roughly tripled over the year.
+As you can see, our incoming API traffic has roughly tripled over the year.
 
 ### Solved issue with transaction timeouts
 
@@ -156,7 +156,7 @@ Despite handling traffic fine now, I’m also a bit concerned about the use of b
 
 I’ve asked the library devs to look into changing their libraries to begin relying on the newer broadcast_transaction operation (a non-blocking call) and use the transaction_status API call to determine when their transaction has been included into the block, which should eliminate the large number of open connections that can occur when many transactions are being broadcast at once.
 
-@mahdiyari has already made changes to hive-js (the Javascript library for hive apps) along these lines (as well as replacing the use of legacy-formatted API calls with appbase formatted API calls) and apps developers are now beginning to test their apps with this beta version of hive-js. Assuming this process goes smoothly, I anticipate that other library devs will swiftly follow suit.
+@mahdiyari has made already made changes to hive-js (the Javascript library for hive apps) along these lines (as well as replacing the use of legacy-formatted API calls with appbase formatted API calls) and apps developers are now beginning to test their apps with this beta version of hive-js. Assuming this process goes smoothly, I anticipate that other library devs will swiftly follow suit.
 
 # Hive Application Framework (HAF)
 
@@ -170,7 +170,7 @@ We’ve resumed work on the sql_serializer plugin, which is one of the last key 
   <footer class="hive-post-embed__source">
     <span class="hive-post-embed__source-label">Source:</span>
     <a href="https://hive.blog/hive-139531/@blocktrades/20th-update-of-2021-on-blocktrades-work-on-hive-software">20th update of 2021 on BlockTrades work on Hive software</a>
-    <span>by</span>
+    by
     <a href="https://hive.blog/@blocktrades">@blocktrades</a>
   </footer>
 </div>

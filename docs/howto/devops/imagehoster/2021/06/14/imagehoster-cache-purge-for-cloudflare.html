@@ -95,17 +95,17 @@ We have 2 imagehoster instances right now, one run by Ecency team and another fr
 https://images.ecency.com
 https://images.hive.blog
 
-They both run in front of Cloudflare and images were not utilizing Cloudflare cache properly. For couple reasons, one - avatars cannot be cached for long time, when person updates avatar via apps/websites then they expect it see it instantly, two - Cloudflare considers them dynamic content by default.
+They both run in front of Cloudflare and images were not utilizing Cloudflare cache properly. For couple reasons, one - avatars cannot be cached for long time, when person updates avatar via apps/websites then they expect it see it instantly.
 
-If you force cache avatars with Cloudflare page rules then update only shown after cache is expired. That’s not acceptable for Blockchain that’s very fast but avatar update require cache expiry. On Ecency instance we had 10 seconds cache, while Hiveblog instance wasn’t using cache at first and couple days ago Blocktrades tried 4h. All other images could be cached for longer period because they don’t change at all, for avatars 4h. Which was still too long.
+On other hand if you force cache avatars then update only shown after cache is expired. And Cloudflare fetches new avatar. That’s not acceptable for Blockchain that’s very fast but avatar update require cache expiry. On Ecency instance we had 10 seconds cache, while Hiveblog instance wasn’t using cache at first and couple days ago Blocktrades tried 4h. All other images could be cached for longer period because they don’t change at all, for avatars 4h. Which is still too long.
 
-To solve avatar caching issue, created simple script that would purge cache from Cloudflare when account gets update on blockchain. If imagehoster instances are down or in maintenance, all images would be served from Cloudflare cache which is really great for user experience as well.
+To solve avatar caching issue, created simple script that would purge cache from Cloudflare when account gets update on blockchain. If imagehoster instances are down or in maintenance, all images would be served from Cloudflare cache which is really great for user experience.
 
-If you will be running Imagehoster instance in future or considering it, I would recommend running this script on separate server and set avatars caching to longer period safely. If you are not using Cloudflare, then consider removing caching avatars completely, it will put some load on your server but alternative is confusing user experience.
+If you will be running Imagehoster instance, I would recommend running this script on separate server and set avatars caching to longer period safely. If you are not using Cloudflare, then consider removing caching avatars, it will put some load on your server but alternative is confusing user experience.
 
 https://github.com/ecency/cf-cache
 
-Both instances running above script now and whenever account update triggered on Blockchain, above script purges relevant user’s avatar to keep it fresh, use new avatar on all apps that depend on it. 
+Both instances running above script now and whenever account update triggered on Blockchain, above script purges relevant user’s avatar to keep it fresh, use possibly new avatar on all apps that depend on it. 
 
 images.ecency.com cache period for avatars 1 week 
 images.hive.blog cache period for avatar 5 hours
@@ -114,11 +114,12 @@ After change, I noticed Ecency.com became even more faster... Caching images for
 
 ### Support proposals  
  
-[`Ecency`](https://hivesigner.com/sign/update-proposal-votes?proposal_ids=%5B141%5D&amp;approve=true) | [`Hivesearcher`](https://hivesigner.com/sign/update-proposal-votes?proposal_ids=%5B146%5D&amp;approve=true) | [`Hivesigner`](https://hivesigner.com/sign/update-proposal-votes?proposal_ids=%5B88%5D&amp;approve=true)</div>
+[`Ecency`](https://hivesigner.com/sign/update-proposal-votes?proposal_ids=%5B141%5D&amp;approve=true) | [`Hivesearcher`](https://hivesigner.com/sign/update-proposal-votes?proposal_ids=%5B146%5D&amp;approve=true) | [`Hivesigner`](https://hivesigner.com/sign/update-proposal-votes?proposal_ids=%5B88%5D&amp;approve=true) 
+</div>
   <footer class="hive-post-embed__source">
     <span class="hive-post-embed__source-label">Source:</span>
     <a href="https://ecency.com/hive-139531/@good-karma/imagehoster-cache-purge-for-cloudflare">Imagehoster cache purge for Cloudflare</a>
-    <span>by</span>
+    by
     <a href="https://hive.blog/@good-karma">@good-karma</a>
   </footer>
 </div>

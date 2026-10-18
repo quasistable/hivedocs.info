@@ -94,21 +94,19 @@ Below is a list of Hive-related programming issues worked on by the BlockTrades 
 
 This week we’ve been testing the first release candidate for hardfork 25.  In addition to manual testing of node operation, we're also writing a few more tests to test consensus changes under stress conditions.
 
-Although we haven’t found any bugs in the new consensus changes yet, we have made several fixes to long-standing bugs that we found as part of our manual node testing. Most of the bugs are related to startup issues and confusing log messages that might mislead a node operator:
+Although we haven’t found any bugs in the new consensus changes yet, we have made several fixes to long-standing bugs that we find as part of our manual node testing. Most of the bugs are related to startup issues and confusing log messages that might mislead a node operator:
 
 * We fixed an error message that erroneously reported that a peer node was on an irreversible fork when it most likely was just ahead of the user’s node.
-* We fixed a long-standing error that could cause a crash at startup if a node started receiving API requests before the node had fully initialized.
-* hived now reports the peer count in warning messages when the blockchain thread is warning that it hasn’t received any transactions or blocks from the P2P thread in the last 30 seconds.
-* Hived now delays connecting to seed nodes until the P2P network is initialized and ready to process peer requests. This prevent seed nodes from disconnecting because the user's node doesn't respond to them in a timely manner.
+* We fixed the error that could cause a crash at startup if a node started receiving API requests before the node had fully initialized.
+* Report peer count in warning messages when P2P node is warning that it hasn’t received any transactions or blocks in last 30 seconds.
+* Delay connecting to seed nodes until P2P network is initialized and ready to process peer requests. This prevent seed nodes from disconnecting because we don’t respond to them in a timely manner.
 * ulog messages are now logged to stderr (console) for the node. Ulog messages are used by the P2P thread to report important issues that should be seen by node operators. In particular, the user now receives a console warning when the node startup is delayed while the P2P thread is trying to get access to the P2P port from the operating system (when a node is shutdown via Ctrl-C, the OS may take up to 1 minute to release the port, delaying recapture of the port when the node is restarted).
 
-We’ve also updated hived nodes to begin reporting the Hive chainid of BEEABODE at startup (as a temporary measure, the node used to report a chainid of 0 at startup, then swap to reporting BEEABODE after they hit the genesis fork for Hive). 
-
-For the initial release of hardfork 25, hived nodes will still continue to allow connections from nodes with chainid of 0, despite reporting the new chainid, but after all Hive nodes have updated to the hardfork 25 code, we’ll change the code to reject connections from older nodes.
+We’ve also updated hived nodes to begin reporting the Hive chainid of BEEABODE at startup (as a temporary measure, the node used to report a chainid of 0 at startup, then swap to reporting BEEABODE after they hit the genesis fork for Hive). For the initial release of hardfork 25, hived nodes will still continue to allow connections from nodes with chainid of 0, despite reporting the new chainid, but after all Hive nodes have updated to the hardfork 25 code, we’ll change the code to reject connections from older nodes.
 
 ## Second release candidate for hived soon
 
-We’ll likely be publishing a second release candidate of hived in the next couple of days that contains the diagnostics and fixes discussed above (those changes have already been merged into the develop branch, so you can get them now for testing), plus one or two more small improvements that are still pending review.
+We’ll likely be publishing a second release candidate of hived in the next couple of days that contains the diagnostics and fixed discussed above (those changes have already been merged into the develop branch, so you can get them now for testing), plus one or two more small improvements that are still pending review.
 
 # Hivemind (2nd layer applications + social media middleware)
 
@@ -143,9 +141,8 @@ hivemind server direct server:  http://testnet.openhive.network:8080
 As mentioned previously, we’ve begun testing this testnet API node with condenser. You can visit it here: https://testblog.openhive.network 
 
  We will also setup a block explorer and a condenser-based wallet for the testnet soon.
-Update: @ausbitbank added block explorer for testnet https://test.ausbit.dev/
 
-We plan to leave this testnet running as a permanent testnet that apps can use to test against prior to making changes to their app operating on the mainnet. So Hive app devs are strongly urged to take advantage of this opportunity. As a side note, when doing so, please make sure to use the latest version of hive-js to make sure it's compatible with the testnet API node. We've also tested beempy successfully against the testnet API node.
+We plan to leave this testnet running as a permanent testnet that apps can use to test against prior to making changes to their app operating on the mainnet. So Hive apps are strongly urged to take advantage of this opportunity.
 
 # Planned date for hardfork 25
 
@@ -153,7 +150,7 @@ I’m still projecting the hardfork will be in the latter part of June, probably
   <footer class="hive-post-embed__source">
     <span class="hive-post-embed__source-label">Source:</span>
     <a href="https://hive.blog/hive-139531/@blocktrades/12th-update-of-2021-on-blocktrades-work-on-hive-software">12th update of 2021 on BlockTrades work on Hive software</a>
-    <span>by</span>
+    by
     <a href="https://hive.blog/@blocktrades">@blocktrades</a>
   </footer>
 </div>

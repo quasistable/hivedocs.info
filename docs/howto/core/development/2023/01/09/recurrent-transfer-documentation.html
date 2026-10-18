@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta property="og:image" content="/assets/images/sticker.png" />
+  <meta name="apple-mobile-web-app-title" content="Hive Docs" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" /><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Recurrent transfer documentation | Hive Chain Documentation</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Recurrent transfer documentation" />
+<meta name="author" content="howo" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Recurrent transfers can be a little tricky to understand, they do not in fact work like a series of transfer operations" />
+<meta property="og:description" content="Recurrent transfers can be a little tricky to understand, they do not in fact work like a series of transfer operations" />
+<link rel="canonical" href="https://hive.blog/documentation/@howo/recurrent-transfer-documentation" />
+<meta property="og:url" content="https://hive.blog/documentation/@howo/recurrent-transfer-documentation" />
+<meta property="og:site_name" content="Hive Chain Documentation" />
+<meta property="og:image" content="https://files.peakd.com/file/peakd-hive/howo/AKGb5BAGN7evZmu4dg29ZfbwR6CqdxSVLdtaF5Vp2EdGfWT9UJR4CWbQjrC48ae.png" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2023-01-09T08:37:21-08:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="https://files.peakd.com/file/peakd-hive/howo/AKGb5BAGN7evZmu4dg29ZfbwR6CqdxSVLdtaF5Vp2EdGfWT9UJR4CWbQjrC48ae.png" />
+<meta property="twitter:title" content="Recurrent transfer documentation" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"howo"},"dateModified":"2023-01-09T08:37:21-08:00","datePublished":"2023-01-09T08:37:21-08:00","description":"Recurrent transfers can be a little tricky to understand, they do not in fact work like a series of transfer operations","headline":"Recurrent transfer documentation","image":"https://files.peakd.com/file/peakd-hive/howo/AKGb5BAGN7evZmu4dg29ZfbwR6CqdxSVLdtaF5Vp2EdGfWT9UJR4CWbQjrC48ae.png","mainEntityOfPage":{"@type":"WebPage","@id":"https://hive.blog/documentation/@howo/recurrent-transfer-documentation"},"url":"https://hive.blog/documentation/@howo/recurrent-transfer-documentation"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://hivedocs.info/feed.xml" title="Hive Chain Documentation" /><script>
+if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNotTrack === "yes" || navigator.msDoNotTrack === "1")) {
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-161692811-1', 'auto');
+  ga('send', 'pageview');
+}
+</script>
+  
+<script src='https://unpkg.com/steem-content-renderer'></script>
+  <script src="/assets/javascript/universal-bridge-against-phishing.js"></script>
+  <script src="/assets/javascript/lazysizes.min.js" async=""></script>
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet" />
+  <link rel="shortcut icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="152x152" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="167x167" href="/assets/images/favicon-80x80.png" />
+</head>
+<body><header class="site-header" role="banner">
+  <div class="wrapper site-header-inner">
+    <a class="site-title" rel="author" href="/">Hive Chain Documentation</a>
+
+    <nav class="site-nav" aria-label="Primary">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/news/">News</a><a class="page-link" href="/howto/">How To</a><a class="page-link" href="/links/">Useful Links</a><a class="page-link" href="/authors/">Authors</a><a class="page-link" href="/topics/">Topics</a><a class="page-link" href="/search/">Search</a></div>
+    </nav>
+  </div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper page-layout has-search-panel">
+        <div class="page-main">
+          <article class="post h-entry post-article" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header post-hero">
+    <div class="post-hero-main">
+      <p class="post-kicker">Archive post</p>
+      <h1 class="post-title p-name" itemprop="name headline">Recurrent transfer documentation</h1>
+      <p class="post-meta">
+        <time class="dt-published" datetime="2023-01-09T08:37:21-08:00" itemprop="datePublished">Jan 9, 2023
+        </time>• <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">
+            <a href="/authors/#author-howo">howo</a>
+          </span></span></p><p class="post-summary">Recurrent transfers can be a little tricky to understand, they do not in fact work like a series of transfer operations</p></div><aside class="post-author-card">
+      <img src="https://images.hive.blog/u/howo/avatar" width="128" height="128" class="lazyload post-author-avatar" alt="Avatar for @howo" />
+      <div class="post-author-name">@howo</div>
+    </aside></header>
+
+  <div class="post-content e-content post-body" itemprop="articleBody">
+    <div class="hive-post-embed" data-hive-author="howo" data-hive-permlink="recurrent-transfer-documentation">
+  <div id="content-howo-recurrent-transfer-documentation" class="hive-post-embed__content" data-hive-render-target="true">Recurrent transfers can be a little tricky to understand, they do not in fact work like a series of `transfer` operations. So I thought I would write a doc to explain all of the details.
+
+
+![image.png](https://files.peakd.com/file/peakd-hive/howo/AKGb5BAGN7evZmu4dg29ZfbwR6CqdxSVLdtaF5Vp2EdGfWT9UJR4CWbQjrC48ae.png)
+<center> art by dall-e </center>
+
+## The recurrent transfer operation
+
+The recurrent transfer operation takes a lot of parameters, here's an example in javascript:
+
+Transfers assets, such as HIVE or HBD, from one account to another.
+```js
+hive.broadcast.recurrentTransfer(wif, from, to, amount, memo, recurrence, executions, extensions, function(err, result) {
+  console.log(err, result);
+});
+```
+
+|Parameter|Description|Datatype|Notes|
+|---|---|---|---|
+|wif|Active private key for the `from` account|string||
+|from|Account name to take asset from|string|No leading @ symbol|
+|to|Account name to place asset into|string|No leading @ symbol|
+|amount|Amount of of asset to transfer|string|"X.XXX ASSET" must have 3 decimal places. e.g. "5.150 HBD"|
+|recurrence|How often will the payment be triggered|integer|e.g. 48 - unit: hours|
+|executions|The times the recurrent payment will be executed|integer|e.g. 10 - one tranfer per recurrence|
+|extensions|Unused at the moment |array| you should just input `[]` here 
+|function()|Your callback|function||
+
+
+Some additional details:
+
+- The first recurrent transfer will be executed immediately, so the `from` account must have at least the `amount` in its account.
+- `executions` needs to be at least 2, otherwise there is no point in creating a recurrent transfer as it will expire instantly
+- The recurrence has to be at least **24**, aka 24 hours
+- The maximum time a recurrent transfer can exists is **730 days** (2 years), so if your `recurrence` is every 6 months, the max `executions` you'll be able to set will be `4` 
+- You cannot recurrent transfer Hive power 
+- The max `memo` size is **2048** (same for regular transfer memos)
+- You cannot execute recurrent transfers to yourself. If you really want to you could setup a recurrent transfer to another account that has a recurrent transfer set back to you:  Bob -&gt; Alice -&gt; Bob 
+
+## Validating that a recurrent transfer has been executed 
+
+Two virtual operations have been added to track recurrent transfer execution:
+
+### fill_recurrent_transfer
+
+It's a virtual operation that indicates that a recurrent transfer has been executed correctly.
+
+| Field               | Type                 | Description                                                           |
+|--------------------|----------------------|-----------------------------------------------------------------------|
+| from             | string | The user that initiated the transfer (source of `amount`).            |
+| to               | string | The user that is the target of the transfer (receiver of `amount`).  |
+| amount           | string              | The amount of HIVE or HBD transferred in the current iteration.       |
+| memo             | string             | A memo attached to the transfer.                                      |
+| remaining_executions | uint16       | The number of remaining pending transfers.                            |
+
+
+You can see a live example in this block: https://hiveblocks.com/b/55391310
+
+### failed_recurrent_transfer
+
+It can happen that a recurrent transfer fails if the `from` account does not have enough tokens to transfer when the recurrent transfer reaches it's due date.
+
+When this happens, the blockchain pushes a `failed_recurrent_transfer`:
+
+| Field                     | Type                 | Description                                                              |
+|---------------------------|----------------------|--------------------------------------------------------------------------|
+| from                    | string | The user that initiated the transfer (source of `amount` that has not enough balance to cover it). |
+| to                      | string | The user that is the target of the transfer (would be receiver of `amount`, but no transfer actually happened). |
+| amount                  | string              | The amount of HIVE or HBD that was scheduled for transfer in the current iteration but failed. |
+| memo                    | string             | A memo attached to the transfer.                                         |
+| consecutive_failures    | string            | The number of failed iterations.                                         |
+| remaining_executions    | uint16           | The number of remaining pending transfers.                               |
+| deleted                 | bool               | `true` if the whole recurrent transfer was discontinued due to too many consecutive failures. |
+
+Some details:
+
+if there are too many `consecutive_failures`, the blockchain will delete the recurrent transfer. At that point the `deleted` flag will be set to true to indicate of the deletion. Right now the threshold is set to **10** consecutive failed payments.
+
+In case of failure, the recurrent transfer will not be retried. This means that if your recurrent transfer is set to execute weekly, the next time the recurrent transfer would execute is in a week.
+
+## Recurrent transfers in practice:
+
+Here's a few examples to help you get started:
+
+## javascript
+
+```
+const hive = require('@hiveio/hive-js');
+async function recurrent_transfer(wif, from, to, amount, memo, recurrence, executions) {
+    return new Promise(resolve =&gt; {
+        hive.broadcast.recurrentTransfer(wif, from, to, amount, memo, recurrence, executions, [], function (err, result) {
+            console.log(err, result);
+            return resolve("=")
+        });
+    })
+}
+
+// Send 2 HBD from bob to initminer every week for a month
+await recurrent_transfer("5KS4VfGeaWLVG76P4QcBUiJD...", "bob", "initminer", "2.000 HBD", "this is a memo", 7, 4)
+```
+
+The best way to track the execution of recurrent transfers is to get the account history and filter on the two virtual operations:
+```
+    const { ChainTypes, makeBitMaskFilter } = require('@hiveio/hive-js/lib/auth/serializer')
+    const op = ChainTypes.operations
+
+    const walletOperationsBitmask = makeBitMaskFilter([
+      //  op.recurrent_transfer,
+        op.fill_recurrent_transfer,
+        op.failed_recurrent_transfer,
+    ])
+
+
+    hive.api.getAccountHistory("bob", 200, 200, ...walletOperationsBitmask,  function(err, result) {
+        console.log(err, result);
+    });
+```
+
+Output is an array with all the operations:
+
+```
+[
+  [
+    6,
+    {
+      "trx_id": "0000000000000000000000000000000000000000",
+      "block": 75,
+      "trx_in_block": 4294967295,
+      "op_in_trx": 2,
+      "virtual_op": true,
+      "timestamp": "2023-01-04T19:02:06",
+      "op": [
+        "fill_recurrent_transfer",
+        {
+          "from": "initminer",
+          "to": "bob",
+          "amount": "1.100 TBD",
+          "memo": "this is a memo",
+          "remaining_executions": 0
+        }
+      ]
+    }
+  ],
+  [
+    7,
+    {
+      "trx_id": "0000000000000000000000000000000000000000",
+      "block": 75,
+      "trx_in_block": 4294967295,
+      "op_in_trx": 2,
+      "virtual_op": true,
+      "timestamp": "2023-01-04T19:02:06",
+      "op": [
+        "failed_recurrent_transfer",
+        {
+          "from": "bob",
+          "to": "alice",
+          "amount": "2.000 TBD",
+          "memo": "this is a memo",
+          "consecutive_failures": 10,
+          "remaining_executions": 1,
+          "deleted": true
+        }
+      ]
+    }
+  ]
+]
+```
+
+## cli_wallet 
+
+Create a 1 HBD transfer from alice to bob every 24 hours for 5 days:
+
+`recurrent_transfer alice bob "1.000 HBD" "This is a memo" 24 5 true true`
+
+get the ops in the account history to track completion:
+
+`get_account_history bob 20 20`
+
+example output:
+
+```
+#        BLOCK #    TRX ID                                             OPERATION            DETAILS                                           
+---------------------------------------------------------------------------------------------------
+1        11         2ad56e183d3498dcdf2ec3a187a8ed9b7499a4e3           account_created      {"new_account_name":"bob","creator":"initminer","initial_vesting_shares":"0.000000 VESTS","initial_delegation":"0.000000 VESTS"}
+2        36         f843d208a773b5abb8bc9370caf228ad94868d4d           recurrent_transfer   {"from":"initminer","to":"bob","amount":"1.100 HBD","memo":"this is a memo","recurrence":1,"executions":200,"extensions":[]}
+3        36         0000000000000000000000000000000000000000           fill_recurrent_transfer {"from":"initminer","to":"bob","amount":"1.100 HBD","memo":"this is a memo","remaining_executions":199}
+4        46         36322b5d787f77a40ac6037b20f3d0118b6284e8           recurrent_transfer   {"from":"initminer","to":"bob","amount":"1.100 HBD","memo":"this is a memo","recurrence":1,"executions":2,"extensions":[]}
+5        55         0000000000000000000000000000000000000000           fill_recurrent_transfer {"from":"initminer","to":"bob","amount":"1.100 HBD","memo":"this is a memo","remaining_executions":1}
+6        75         0000000000000000000000000000000000000000           fill_recurrent_transfer {"from":"initminer","to":"bob","amount":"1.100 HBD","memo":"this is a memo","remaining_executions":0}
+7        76         18d281ec590f09e31a719eaa6fdd1a1f95d0d76e           transfer_to_vesting  {"from":"initminer","to":"bob","amount":"5000.000 TESTS"}
+8        76         18d281ec590f09e31a719eaa6fdd1a1f95d0d76e           transfer_to_vesting_completed {"from_account":"initminer","to_account":"bob","hive_vested":"5000.000 TESTS","vesting_shares_received":"129.595700 VESTS"}
+9        78         0159c7ebb95385accf979afddc3eba15b17d770a           recurrent_transfer   {"from":"bob","to":"initminer","amount":"2.000 HBD","memo":"this is a memo","recurrence":1,"executions":10,"extensions":[]}
+10       78         0000000000000000000000000000000000000000           fill_recurrent_transfer {"from":"bob","to":"initminer","amount":"2.000 HBD","memo":"this is a memo","remaining_executions":9}
+11       97         0000000000000000000000000000000000000000           failed_recurrent_transfer {"from":"bob","to":"initminer","amount":"2.000 HBD","memo":"this is a memo","consecutive_failures":1,"remaining_executions":8,"deleted":false}
+12       117        0000000000000000000000000000000000000000           failed_recurrent_transfer {"from":"bob","to":"initminer","amount":"2.000 HBD","memo":"this is a memo","consecutive_failures":2,"remaining_executions":7,"deleted":false}
+13       137        0000000000000000000000000000000000000000           failed_recurrent_transfer {"from":"bob","to":"initminer","amount":"2.000 HBD","memo":"this is a memo","consecutive_failures":3,"remaining_executions":6,"deleted":false}
+14       157        0000000000000000000000000000000000000000           failed_recurrent_transfer {"from":"bob","to":"initminer","amount":"2.000 HBD","memo":"this is a memo","consecutive_failures":4,"remaining_executions":5,"deleted":false}
+15       177        0000000000000000000000000000000000000000           failed_recurrent_transfer {"from":"bob","to":"initminer","amount":"2.000 HBD","memo":"this is a memo","consecutive_failures":5,"remaining_executions":4,"deleted":false}
+16       197        0000000000000000000000000000000000000000           failed_recurrent_transfer {"from":"bob","to":"initminer","amount":"2.000 HBD","memo":"this is a memo","consecutive_failures":6,"remaining_executions":3,"deleted":false}
+17       217        0000000000000000000000000000000000000000           failed_recurrent_transfer {"from":"bob","to":"initminer","amount":"2.000 HBD","memo":"this is a memo","consecutive_failures":7,"remaining_executions":2,"deleted":false}
+18       237        0000000000000000000000000000000000000000           failed_recurrent_transfer {"from":"bob","to":"initminer","amount":"2.000 HBD","memo":"this is a memo","consecutive_failures":8,"remaining_executions":1,"deleted":false}
+19       257        0000000000000000000000000000000000000000           failed_recurrent_transfer {"from":"bob","to":"initminer","amount":"2.000 HBD","memo":"this is a memo","consecutive_failures":9,"remaining_executions":0,"deleted":false}
+```</div>
+  <footer class="hive-post-embed__source">
+    <span class="hive-post-embed__source-label">Source:</span>
+    <a href="https://hive.blog/@howo/recurrent-transfer-documentation">Recurrent transfer documentation</a>
+    by
+    <a href="https://hive.blog/@howo">@howo</a>
+  </footer>
+</div>
+
+
+  </div><a class="u-url" href="/howto/core/development/2023/01/09/recurrent-transfer-documentation.html" hidden></a>
+</article>
+
+        </div>
+
+        
+        <aside class="page-sidebar" aria-label="Search and browse">
+          <section class="sidebar-section sidebar-search">
+            <h2 class="sidebar-heading">Search posts</h2>
+            <p class="sidebar-copy">Search the locally indexed post archive.</p>
+            <input type="text" id="search-input" placeholder="Search posts" autocomplete="off" />
+            <ul id="results-container"></ul>
+          </section>
+
+          <section class="sidebar-section sidebar-topics">
+            <h2 class="sidebar-heading">Browse topics</h2>
+            <p class="sidebar-copy">Jump into curated topic landing pages.</p>
+            <ul class="topic-list topic-list-sidebar"><li><a class="page-link" href="/account-recovery/">Account Recovery</a></li><li><a class="page-link" href="/core-development/">Core Development</a></li><li><a class="page-link" href="/dapps/">Dapps</a></li><li><a class="page-link" href="/docker/">Docker</a></li><li><a class="page-link" href="/hardfork/">Hardfork</a></li><li><a class="page-link" href="/hivemind/">Hivemind</a></li><li><a class="page-link" href="/javascript/">Javascript</a></li><li><a class="page-link" href="/multisig/">Multisig</a></li><li><a class="page-link" href="/python/">Python</a></li><li><a class="page-link" href="/ruby/">Ruby</a></li><li><a class="page-link" href="/testnet/">Testnet</a></li><li><a class="page-link" href="/tools/">Tools</a></li><li><a class="page-link" href="/witness/">Witness</a></li></ul>
+          </section>
+        </aside>
+        
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading"><a rel="author" href="/">Hive Chain Documentation</a></h2>
+    
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">site curated by: @inertia</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>Your resource for various levels of Hive Documentation.</p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+<script src="/assets/javascript/search.js"></script>
+    <script>
+      (function () {
+        var input = document.getElementById('search-input');
+        var results = document.getElementById('results-container');
+        if (input && results && typeof SimpleJekyllSearch !== 'undefined') {
+          SimpleJekyllSearch({
+            searchInput: input,
+            resultsContainer: results,
+            json: '/search.json'
+          });
+        }
+
+        if (typeof SteemContentRenderer === 'undefined') return;
+
+        var targets = document.querySelectorAll('[data-hive-render-target="true"]');
+        if (!targets.length) return;
+
+        var renderer = new SteemContentRenderer.DefaultRenderer({
+          baseUrl: 'https://hive.blog/',
+          breaks: true,
+          skipSanitization: false,
+          allowInsecureScriptTags: false,
+          addNofollowToLinks: true,
+          doNotShowImages: false,
+          ipfsPrefix: '',
+          assetsWidth: 640,
+          assetsHeight: 480,
+          imageProxyFn: function (url) { return url; },
+          usertagUrlFn: function (account) { return '/@' + account; },
+          hashtagUrlFn: function (hashtag) { return '/tags/#' + hashtag; },
+          isLinkSafeFn: function () { return true; }
+        });
+
+        targets.forEach(function (target) {
+          try {
+            var inputHtml = target.innerHTML;
+            target.innerHTML = renderer.render(inputHtml);
+          } catch (e) {
+            console.log(e);
+          }
+        });
+      })();
+    </script>
+
+  </body>
+
+</html>

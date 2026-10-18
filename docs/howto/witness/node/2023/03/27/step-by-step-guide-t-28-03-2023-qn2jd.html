@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta property="og:image" content="/assets/images/sticker.png" />
+  <meta name="apple-mobile-web-app-title" content="Hive Docs" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" /><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Step by step guide to setup a Hive Witness node from scratch without Docker | Hive Chain Documentation</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Step by step guide to setup a Hive Witness node from scratch without Docker" />
+<meta name="author" content="balaz" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Whenever I do a new setup and learn something new, it is my practice to write a guide and keep it as my reference. Recently I had to migrate my witness from one server to another server. This article is" />
+<meta property="og:description" content="Whenever I do a new setup and learn something new, it is my practice to write a guide and keep it as my reference. Recently I had to migrate my witness from one server to another server. This article is" />
+<link rel="canonical" href="https://hive.blog/hive-139531/@balaz/step-by-step-guide-t-28-03-2023-qn2jd" />
+<meta property="og:url" content="https://hive.blog/hive-139531/@balaz/step-by-step-guide-t-28-03-2023-qn2jd" />
+<meta property="og:site_name" content="Hive Chain Documentation" />
+<meta property="og:image" content="https://images.hive.blog/DQmNtzsw2WDcvE2UAqdPmrbGRvBQ1Q4gmVSiv1yx2MJkBB9/Hive-witness-guide.png" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2023-03-27T23:19:15-07:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="https://images.hive.blog/DQmNtzsw2WDcvE2UAqdPmrbGRvBQ1Q4gmVSiv1yx2MJkBB9/Hive-witness-guide.png" />
+<meta property="twitter:title" content="Step by step guide to setup a Hive Witness node from scratch without Docker" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"balaz"},"dateModified":"2023-03-27T23:19:15-07:00","datePublished":"2023-03-27T23:19:15-07:00","description":"Whenever I do a new setup and learn something new, it is my practice to write a guide and keep it as my reference. Recently I had to migrate my witness from one server to another server. This article is","headline":"Step by step guide to setup a Hive Witness node from scratch without Docker","image":"https://images.hive.blog/DQmNtzsw2WDcvE2UAqdPmrbGRvBQ1Q4gmVSiv1yx2MJkBB9/Hive-witness-guide.png","mainEntityOfPage":{"@type":"WebPage","@id":"https://hive.blog/hive-139531/@balaz/step-by-step-guide-t-28-03-2023-qn2jd"},"url":"https://hive.blog/hive-139531/@balaz/step-by-step-guide-t-28-03-2023-qn2jd"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://hivedocs.info/feed.xml" title="Hive Chain Documentation" /><script>
+if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNotTrack === "yes" || navigator.msDoNotTrack === "1")) {
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-161692811-1', 'auto');
+  ga('send', 'pageview');
+}
+</script>
+  
+<script src='https://unpkg.com/steem-content-renderer'></script>
+  <script src="/assets/javascript/universal-bridge-against-phishing.js"></script>
+  <script src="/assets/javascript/lazysizes.min.js" async=""></script>
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet" />
+  <link rel="shortcut icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="152x152" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="167x167" href="/assets/images/favicon-80x80.png" />
+</head>
+<body><header class="site-header" role="banner">
+  <div class="wrapper site-header-inner">
+    <a class="site-title" rel="author" href="/">Hive Chain Documentation</a>
+
+    <nav class="site-nav" aria-label="Primary">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/news/">News</a><a class="page-link" href="/howto/">How To</a><a class="page-link" href="/links/">Useful Links</a><a class="page-link" href="/authors/">Authors</a><a class="page-link" href="/topics/">Topics</a><a class="page-link" href="/search/">Search</a></div>
+    </nav>
+  </div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper page-layout has-search-panel">
+        <div class="page-main">
+          <article class="post h-entry post-article" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header post-hero">
+    <div class="post-hero-main">
+      <p class="post-kicker">Archive post</p>
+      <h1 class="post-title p-name" itemprop="name headline">Step by step guide to setup a Hive Witness node from scratch without Docker</h1>
+      <p class="post-meta">
+        <time class="dt-published" datetime="2023-03-27T23:19:15-07:00" itemprop="datePublished">Mar 27, 2023
+        </time>• <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">
+            <a href="/authors/#author-balaz">balaz</a>
+          </span></span></p><p class="post-summary">Whenever I do a new setup and learn something new, it is my practice to write a guide and keep it as my reference. Recently I had to migrate my witness from one server to another server. This article is</p></div><aside class="post-author-card">
+      <img src="https://images.hive.blog/u/balaz/avatar" width="128" height="128" class="lazyload post-author-avatar" alt="Avatar for @balaz" />
+      <div class="post-author-name">@balaz</div>
+    </aside></header>
+
+  <div class="post-content e-content post-body" itemprop="articleBody">
+    <div class="hive-post-embed" data-hive-author="balaz" data-hive-permlink="step-by-step-guide-t-28-03-2023-qn2jd">
+  <div id="content-balaz-step-by-step-guide-t-28-03-2023-qn2jd" class="hive-post-embed__content" data-hive-render-target="true">Whenever I do a new setup and learn something new, it is my practice to write a guide and keep it as my reference. Recently I had to migrate my witness from one server to another server. This article is going to be a guide for setting up a Hive node from scratch. I know some people would say Docker is convenient but I don't use Docker much so I wanted to do the setup without the help of Docker. This guide will provide you with step-by-step details to do the setup and finally, it will have information about the errors I came across during the setup and what would be the reason and resolution for the same. 
+
+Before I start the guide, I have to definitely credit two guides that I used for my reference. With these guides, it was definitely a smooth ride. I didn't have any bigger challenges. The [first guide](https://ecency.com/hive-139531/@mahdiyari/how-to-build-and-run-a-hive-node-witnessseedconsensus-and-account-history-nodes) was from @mahadiyari and the [second guide](https://ecency.com/hive-167922/@themarkymark/how-to-update-your-witness-to-hardfork-26-release-canidate-3) was more recent by @themarkymark. Thank you so much for taking the time to write the guide. 
+
+![Hivewitnessguide.png](https://images.hive.blog/DQmNtzsw2WDcvE2UAqdPmrbGRvBQ1Q4gmVSiv1yx2MJkBB9/Hive-witness-guide.png)
+
+### Step 1: Getting the server specs ready
+
+Getting the server is the first prerequisite. I'm using Ubuntu 22.04.1 LTS as my operating system in this guide. I would recommend using the same and not going with any version older than this. Maybe Ubuntu 20 is also okay but older than that is not recommended. 
+
+1 TB SSD
+32 GB RAM
+4 Cores
+
+In my case, I used an even more powerful dedicated server for doing the setup. But from what I understand the above specifications should be sufficient for now. Please also note that based on the blockchain data and based on the plugins you had enabled, the storage data might differ. Additionally, we have to also understand that based on the blockchain growth the storage requirements will also go up. 
+
+### Step 2: Initial server setup
+
+When I usually get a new server, I do the following first to make sure the server is up to date with the basic utilities. 
+
+```
+sudo apt-get update -y 
+sudo apt-get upgrade -y 
+sudo apt install git -y 
+sudo apt install ufw -y 
+sudo apt-get install fail2ban -y
+```
+You can google each one of them to know more about what it does. I personally find it important for my servers. In addition to the above below are some of the dependencies that are necessary for running a hived instance. 
+
+```
+apt-get install -y \
+autoconf \
+automake \
+autotools-dev \
+build-essential \
+cmake \
+make \
+g++ \
+doxygen \
+pkg-config \
+libboost-all-dev \
+libyajl-dev \
+libreadline-dev \
+libsnappy-dev \
+libssl-dev \
+libtool \
+liblz4-tool \
+ncurses-dev \
+pearl \
+python3 \
+python3-dev \
+python3-jinja2 \
+python3-pip \
+libgflags-dev \
+libsnappy-dev \
+zlib1g-dev \
+libbz2-dev \
+liblz4-dev \
+libzstd-dev \
+ninja-build \
+```
+
+I wouldn't say that I know what everything above does. I found these things in the other guides and I'm using them here as well. You can google and do the reading if you have time to understand what each one of the packages does. 
+
+### Step 3: Cloning the repository
+
+Now the server setup is done the next step is to clone the repository. There are a few places from which the repository can be cloned. I would recommend using the primary source to clone the repository and only if it is unavailable, it is recommended to use the mirror sources. 
+
+```
+git clone https://gitlab.syncad.com/hive/hive
+cd hive
+git checkout v1.27.3
+git submodule update --init --recursive
+```
+
+At the time of writing this article, 1.27.3 was the latest version and if you are checking this article later, you have to check which one is the current version and check out that version. Below are some of the mirror sites available to clone the repository if the primary repository is unavailable. 
+
+https://gitlab.com/hiveblocks/hive
+https://github.com/openhive-network/hive
+https://git.dbuidl.com/HiveClone/hive (maintained by @rishi556)
+
+I would recommend using them only if the primary is not available. There can be built errors if the repository was not properly cloned. 
+
+
+### Step 4: Create a build folder and compile the code
+
+There are two ways to compile the code. You can either use make or ninja. We can create a new directory inside the hive directory after cloning. We are already inside the hive directory from the previous step. 
+
+```
+mkdir build &amp;&amp; cd build
+```
+
+Below is the command to compile the code with make. 
+
+```
+cmake -DCMAKE_BUILD_TYPE=Release ..
+make -j$(nproc) hived
+make -j$(nproc) cli_wallet
+make install
+```
+
+Below is the command to compile the code with ninja
+
+```
+cmake -DHIVE_STATIC_BUILD=ON -DBUILD_HIVE_TESTNET=OFF -DCMAKE_BUILD_TYPE=Release -GNinja . 
+ninja install
+```
+
+The compiling works in both ways but I saw a few recommendations to use ninja instead of make. After this step is done, you can check the version of hived using the below command. 
+
+```
+hived --version
+```
+It should give an output similar to this based on the version you are running. 
+
+```
+{"version":{"blockchain_version":"1.27.3","hive_revision":"b512d8fc126fbbfb23d4de5b9154517aa00fcc4e","fc_revision":"b512d8fc126fbbfb23d4de5b9154517aa00fcc4e","node_type":"mainnet"}}
+```
+
+### Step 5: Downloading the Block_log file
+
+There are two options to get the block_logs. You can either download a copy from others and sync only the remaining blocks or replay the blocks from the beginning. In option one, if you would like to download the block_log file, it can be done from the below location. 
+
+https://gtg.openhive.network/get/blockchain/compressed/
+
+Thanks to @gtg for this. HF26 introduced a feature where we can use a compressed block_log file. This reduces the space requirement for hived instances. There is also a utility available in the package itself to compress the existing logs, if not you can download the compressed log from the above location and get started from there. 
+
+#### Directory for holding data
+
+You would be wondering where to place the above files and what would be the default location for the hived instance. Other guides recommended creating a new directory for this and copying the config with the below command. 
+
+
+```
+cd /root
+mkdir hive-data
+hived -d /root/hive-data --dump-config
+```
+
+In my case, I did not create a new directory but instead used the below command to create the config file.
+
+```
+hived --dump-config
+```
+
+This will by default create a folder called `.hived` inside the root and have all the data inside that folder. I found it comfortable and started using that. People who would like to replay the blockchain from the first block can ignore the below commands. 
+
+```
+cd /root/.hived/blockchain
+wget https://gtg.openhive.network/get/blockchain/compressed/block_log
+wget https://gtg.openhive.network/get/blockchain/compressed/block_log.artifacts
+```
+
+The block_log file and block_log.artifacts file can be downloaded to the above directory. If you had created your own data directory, the files should be placed inside the `/root/hive-data/blockchain` directory. 
+
+### Step 6: Updating the config file
+
+In the previous step, we would have used a command to dump a config file. That would create a config.ini file and place it inside the data folder which is `/root/.hived/` in our case. Updating the configuration is the next important step.
+
+```
+plugin = witness condenser_api database_api network_broadcast_api account_by_key account_by_key_api block_api wallet_bridge_api 
+webserver-http-endpoint = 0.0.0.0:8091
+webserver-ws-endpoint = 0.0.0.0:8090
+witness = 
+private-key = 
+
+``` 
+
+There are so many parameters in the file that can be updated, but I only updated the above parameters and it was enough for me. People can choose whichever plugin they want to enable in the node based on their needs. Some plugins are basic and other plugins can be enabled if they need it. 
+
+In my case, I'm going to be using my private key directly in the config file as I'm keeping my server private. If people want to use their private keys in a secure way, I strongly recommend the `cli_wallet` feature that is explained in the other guides. 
+
+### Step 7: Replaying the node and syncing
+
+The next important part is to replay the node and bring it to the current block. You either do the replay with a block_log file that you downloaded or without any block_log file. Doing the replay without the block_log file can take some time based on your server specs. The below command can be used to replay the node.
+
+
+```
+hived --replay-blockchain
+```
+
+The above command will check for the existing block_log file in the default location `/root/.hived/blockchain` and start replaying, if not available it will create a new file in that location and start replaying from the genesis block. For people using a custom data directory, the below command should be used. 
+
+```
+hived -d /root/hive-data --replay-blockchain
+```
+
+![image.png](https://images.hive.blog/DQmR8hHb9AsB3WAyGAeVkPxNxHfRdfeRjHqCtL2dSozyoDU/image.png)
+
+The above image shows what happens when the replay is started. There is no harm if we stop the replay. When we run the same command again, it would resume from where it left off. 
+
+### Step 8: Syncing and running your node
+
+If you have an existing block_log file, the replaying should be faster and after the replaying part gets over, syncing will start. For running the node, you don't have to use the command `--replay-blockchain` anymore. It is sufficient to run the command `hived` alone and if syncing is required, it would sink up to reach the latest block. 
+
+![image.png](https://images.hive.blog/DQmNcJCmVxZGJjbquPnfBJdDa5HmhfuxG9RDDggLbmDHzRN/image.png)
+
+The above screenshot shows that the replay is done and syncing is starting in the last line. 
+
+#### Difference between syncing and replay
+
+I had the same question too and I thought both were the same. Then I realized there is a small difference between both. Replaying is when the node catches up with an existing block_log file until the highest block in the file. Syncing usually happens after that. Let's say the current block of the chain is 7000 and the highest block in the block_log file is only 6000. The process of catching up after 6000 blocks till 7000 blocks are called syncing. In the case where there is no block_log file, the node would have to sync from the genesis block. 
+
+### Step 9: Keeping the node running
+
+Using the `hived` command directly would run the node and show us the logs but if we disconnect the node will stop. In order to keep it running in the background even after we disconnect, we can use 3 methods. 
+
+- tmux
+- screen
+- pm2
+
+The other guides mention using screen or tmux which is good. But I personally like using pm2 because I'm going to anyway use it to run my pricefeed service. I'm not going to go into details of installing nodejs. Assuming you have installed nodejs, the below commands can be used to run the node as a process inside pm2. 
+
+```
+npm i pm2 -g
+pm2 start "hived" --time
+```
+The above command will create a process and keep it running. Those who are familiar with pm2 should know the features and make use of them to start, stop, restart and view logs, etc. 
+
+![image.png](https://images.hive.blog/DQmTsfAAPtMexgtJNJTFtLWyKcC9dKT1Ft8zVy9QnCo6xo9/image.png)
+
+A normally running node should look like the above. A new block is produced every 3 seconds and details should be visible over there. 
+
+### Step 11: Enabling and updating the witness parameters
+
+The witness can be enabled with the help of the below command directly from the server. But I still prefer using the Peakd interface to do the update. 
+
+```
+update_witness "balaz" "[https://ecency.com/hive-163521/@balaz/hive-witness-update](https://ecency.com/hive-163521/@balaz/hive-witness-update)" "STM6c2J9uVYapUCDdKs3J6GXWJUEi8a3spfUY6hUbg1keakiC9fTr" {"account_creation_fee":"3.000 HIVE","maximum_block_size":65536,"hbd_interest_rate":2000} true
+
+```
+
+There is a nice interface available on Peakd to enable and update the witness parameters. 
+
+![image.png](https://images.hive.blog/DQmeKZs2xJS77u21LMbR4yCGTVpKaVLAh7hBvKYWGwmKxTX/image.png)
+
+For geeks who would like to do the update directly by broadcasting an operation, the below can be used to broadcast with your own code or via keychain from your own website. Whichever method is suitable and convenient for you can be used. 
+
+```
+[
+  [
+    "witness_update",
+    {
+      "owner": "balaz",
+      "url": "https://ecency.com/hive-163521/@balaz/hive-witness-update",
+      "block_signing_key": "STM6c2J9uVYapUCDdKs3J6GXWJUEi8a3spfUY6hUbg1keakiC9fTr",
+      "props": {
+        "account_creation_fee": "3.000 HIVE",
+        "maximum_block_size": 65536,
+        "hbd_interest_rate": 2000
+      },
+      "fee": "0.000 HIVE"
+    }
+  ]
+]
+
+```
+
+Some of the above parameters take effect only if you are a top 20 witness. But even otherwise it is a good practice to keep all the values up to date. 
+
+**Note:** The details about your witness will be visible only after you produce your first block.  
+
+
+### Step 10: Updating the price feed
+
+Pricefeed update is considered important and it sometimes is also used as a parameter by people to decide whether to vote for someone as a witness or not. It is very easy to update the price feed. Below are links to some of the public repositories that can be used to run a service that updates the price feed. 
+
+https://github.com/brianoflondon/v4vapp-hive-pricefeed - Credits and thanks to @brainoflondon. It has some unique logic and people who like python can use this. 
+
+ https://github.com/someguy123/hivefeed-js - Credits and thanks to @someguy123 and @rishi556. This is being used by many people and is very handy. It updates the price feed based on the interval we set. 
+
+https://github.com/Jolly-Pirate/pricefeed - Credits and thanks to @drakos. This is a little optimized version of the price feed and is also being maintained well. I personally use this. 
+
+### Step 11: Associating a domain to your hived node (optional)
+
+Some people keep their nodes private and some people are happy to associate a domain to their node and make it public. For people who would like to associate a domain with their nodes, the below article will provide the details.
+
+https://ecency.com/hive-163521/@balaz/step-by-step-guide-t-21-03-2023-guuqz
+
+Caddy is my preferred method. 
+
+**Note:** Keeping your Hive witness server protected is very important. If you want to run an RPC node or expose your RPC node to the public, it is recommended to run it in a separate box and not combine it with your witness server. Having an intermediate Cloudfare tunnel to your server from the DNS is also safe if you enable RPC and expose it for public use. 
+
+## Errors and challenges
+
+### Item 1:
+
+While doing the initial server setup while trying to install packages or upgrade packages, I came across the ablow error message. The issue was because the installation file Hetzner provided was having some unwanted package installations done. Removing those packages got the issue resolved.  
+ 
+![image.png](https://images.hive.blog/DQmTZukx8sWMyoFj5WqCE73CQ4qmHKWdYuTiexJjJovRGEg/image.png)
+
+The resolution for the above problem is available [here](https://www.sindastra.de/p/2694/hetzner-grub-efi-amd64-signed-update). 
+
+### Item 2: 
+
+After I tried to build the package I got the below error message. I did try using cmake as well as ninja as someone suggested, but the issue was still there. 
+
+![image.png](https://images.hive.blog/DQmZG1Ag5aXnVo6KAzeKKWXugyHs85YebfWRoXs17uFXrDX/image.png)
+
+Someone then suggested cloning the repository again from a different source. This time I cloned the repository from the GitLab directly instead of using any of the mirrors and tried to do the build again and it worked. 
+
+---
+
+If you like what I'm doing on Hive, you can vote me as a witness with the links below. 
+<center> Vote @balaz as a [Hive Witness](https://vote.hive.uno/@balaz) </center>
+<center> Vote @kanibot as a [Hive Engine Witness](https://votify.vercel.app/kanibot) </center>
+
+---
+
+<table>
+<tr>
+<td>
+<center><a href="https://discord.gg/bGmS2tE"><img src="https://images.hive.blog/DQmdthy4q4vyefBYmjMJtx7qHBmLnCfP2btiRPhRyc2U8hP/Indiaunited.png" /></a></center>
+</td>
+<td>
+<center><a href="https://kanibot.com/"><img src="https://images.hive.blog/DQmdm8hKPz9TZL8Gd8bPyeVHm9hfgMqqiHcKL8283RBv2eH/Kanibot.png" /></a></center>
+</td>
+<td>
+<center><a href="https://muterra.in/"><img src="https://images.ecency.com/p/FUkUE5bzkAZT3HzV5tJDiU2ik81PCd4JCyhWnRcDN8XJsVFY3UNB8DCRUuhCDN66wiMnTycF4W5TM6SbQHGDwYmP1FStMmkUvfPEVxYfXyDTCmU2bEwm3fiku8ti6aos9RroLdtDQHPhjEDFeNyzYWy7k1g6WcZGHHGJ.webp" /></a></center>
+</td>
+<tr>
+<td>
+<center><a href="https://r.honeygain.me/BALA4F8CD5"><img src="https://images.hive.blog/DQmdCZg8z6sxVukSdPm2kXRAhhnySqPZqK9YQ5hco65sp4n/Honeygain.png" /></a></center>
+</td>
+<td>
+<center><a href="https://www.privex.io/?r=bala41288"><img src="https://images.hive.blog/DQmPB85eAMrQNGV7C4ykbfVTDNaiGmb8PfuiFr2AL8N8JQm/Privex.png" /></a></center>
+</td>
+<td>
+<center><a href="https://www.publish0x.com/?a=YRdG6knybD"><img src="https://images.hive.blog/DQmcb3f3oJvjyxyScbim4gKPAnrHTyXjYtwk7HeC9aTN9Pn/Publish0x.png" /></a></center>
+</td>
+</tr>
+</tr>
+</table>
+
+---</div>
+  <footer class="hive-post-embed__source">
+    <span class="hive-post-embed__source-label">Source:</span>
+    <a href="https://hive.blog/@balaz/step-by-step-guide-t-28-03-2023-qn2jd">Step by step guide to setup a Hive Witness node from scratch without Docker</a>
+    by
+    <a href="https://hive.blog/@balaz">@balaz</a>
+  </footer>
+</div>
+
+
+  </div><a class="u-url" href="/howto/witness/node/2023/03/27/step-by-step-guide-t-28-03-2023-qn2jd.html" hidden></a>
+</article>
+
+        </div>
+
+        
+        <aside class="page-sidebar" aria-label="Search and browse">
+          <section class="sidebar-section sidebar-search">
+            <h2 class="sidebar-heading">Search posts</h2>
+            <p class="sidebar-copy">Search the locally indexed post archive.</p>
+            <input type="text" id="search-input" placeholder="Search posts" autocomplete="off" />
+            <ul id="results-container"></ul>
+          </section>
+
+          <section class="sidebar-section sidebar-topics">
+            <h2 class="sidebar-heading">Browse topics</h2>
+            <p class="sidebar-copy">Jump into curated topic landing pages.</p>
+            <ul class="topic-list topic-list-sidebar"><li><a class="page-link" href="/account-recovery/">Account Recovery</a></li><li><a class="page-link" href="/core-development/">Core Development</a></li><li><a class="page-link" href="/dapps/">Dapps</a></li><li><a class="page-link" href="/docker/">Docker</a></li><li><a class="page-link" href="/hardfork/">Hardfork</a></li><li><a class="page-link" href="/hivemind/">Hivemind</a></li><li><a class="page-link" href="/javascript/">Javascript</a></li><li><a class="page-link" href="/multisig/">Multisig</a></li><li><a class="page-link" href="/python/">Python</a></li><li><a class="page-link" href="/ruby/">Ruby</a></li><li><a class="page-link" href="/testnet/">Testnet</a></li><li><a class="page-link" href="/tools/">Tools</a></li><li><a class="page-link" href="/witness/">Witness</a></li></ul>
+          </section>
+        </aside>
+        
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading"><a rel="author" href="/">Hive Chain Documentation</a></h2>
+    
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">site curated by: @inertia</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>Your resource for various levels of Hive Documentation.</p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+<script src="/assets/javascript/search.js"></script>
+    <script>
+      (function () {
+        var input = document.getElementById('search-input');
+        var results = document.getElementById('results-container');
+        if (input && results && typeof SimpleJekyllSearch !== 'undefined') {
+          SimpleJekyllSearch({
+            searchInput: input,
+            resultsContainer: results,
+            json: '/search.json'
+          });
+        }
+
+        if (typeof SteemContentRenderer === 'undefined') return;
+
+        var targets = document.querySelectorAll('[data-hive-render-target="true"]');
+        if (!targets.length) return;
+
+        var renderer = new SteemContentRenderer.DefaultRenderer({
+          baseUrl: 'https://hive.blog/',
+          breaks: true,
+          skipSanitization: false,
+          allowInsecureScriptTags: false,
+          addNofollowToLinks: true,
+          doNotShowImages: false,
+          ipfsPrefix: '',
+          assetsWidth: 640,
+          assetsHeight: 480,
+          imageProxyFn: function (url) { return url; },
+          usertagUrlFn: function (account) { return '/@' + account; },
+          hashtagUrlFn: function (hashtag) { return '/tags/#' + hashtag; },
+          isLinkSafeFn: function () { return true; }
+        });
+
+        targets.forEach(function (target) {
+          try {
+            var inputHtml = target.innerHTML;
+            target.innerHTML = renderer.render(inputHtml);
+          } catch (e) {
+            console.log(e);
+          }
+        });
+      })();
+    </script>
+
+  </body>
+
+</html>

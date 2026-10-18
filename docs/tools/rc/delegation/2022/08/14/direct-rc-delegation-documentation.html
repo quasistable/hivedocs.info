@@ -113,14 +113,18 @@ Here I have 77 million RC out of 87 million **max** RC. When a user executes a d
 - When undelegating, the delegator only gets his max RC back, all unspent RC is burned. The delegator will regenerate the RC over time.
 - Delegating is done over `custom_json` and requires posting authority (more on that later)
 - You can delegate to as many accounts as you want.
-- You can't delegate all your RC (and end up with 0 RC), you have to always keep the RC equivalent of the account creation fee (3 HIVE as the time of writing).
-- You can delegate up to 100 accounts in a single operation.
+- You can't delegate more than the RC equivalent of the account creation fee (3 HIVE as the time of writing).
+- You can delegate to 100 accounts at once.
 
 ### RC reserve
 
 When an account is created, the `account_creation_fee` is burned (as the time of writing, 3 HIVE), that amount is converted in RC, this is why even 0 HP account have some RC. (this is also true for accounts created with account creation tokens).
 
 This "RC reserve" is not delegatable, this is to prevent a bad actor from delegating all your RC away effectively soft-locking your account.
+
+### Power downs
+
+When a power down happens, your vested HIVE (hive power) becomes liquid HIVE again, which means your max RC is also reduced by that amount, if you end up with less RC than the `account_creation_fee` (extreme case). Your active outbound RC delegations will be cancelled until enough RC has been regained.
 
 ## RC delegations in action
 
@@ -339,7 +343,7 @@ I'll be glad to answer any questions that come up in the comments and hope to se
   <footer class="hive-post-embed__source">
     <span class="hive-post-embed__source-label">Source:</span>
     <a href="https://peakd.com/rc/@howo/direct-rc-delegation-documentation">Direct RC delegation documentation</a>
-    <span>by</span>
+    by
     <a href="https://hive.blog/@howo">@howo</a>
   </footer>
 </div>

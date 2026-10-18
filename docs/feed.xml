@@ -1,830 +1,1093 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="https://hivedocs.info/feed.xml" rel="self" type="application/atom+xml" /><link href="https://hivedocs.info/" rel="alternate" type="text/html" /><updated>2026-04-04T17:14:38-07:00</updated><id>https://hivedocs.info/feed.xml</id><title type="html">Hive Chain Documentation</title><subtitle>Your resource for various levels of Hive Documentation.</subtitle><author><name>site curated by: @inertia</name></author><entry><title type="html">Hive-related software updates in past couple of months by BlockTrades team</title><link href="https://hivedocs.info/news/core/development/2023/01/02/hive-related-software-updates-in-past-couple-of-months-by-blocktrades-team.html" rel="alternate" type="text/html" title="Hive-related software updates in past couple of months by BlockTrades team" /><published>2023-01-02T08:53:15-08:00</published><updated>2023-01-02T08:53:15-08:00</updated><id>https://hivedocs.info/news/core/development/2023/01/02/hive-related-software-updates-in-past-couple-of-months-by-blocktrades-team</id><content type="html" xml:base="https://hivedocs.info/news/core/development/2023/01/02/hive-related-software-updates-in-past-couple-of-months-by-blocktrades-team.html"><![CDATA[<div class="hive-post-embed" data-hive-author="blocktrades" data-hive-permlink="hive-related-software-updates-in-past-couple-of-months-by-blocktrades-team">
-  <div id="content-blocktrades-hive-related-software-updates-in-past-couple-of-months-by-blocktrades-team" class="hive-post-embed__content" data-hive-render-target="true">![blocktrades update.png](https://images.hive.blog/DQmSihw8Kz4U7TuCQa98DDdCzqbqPFRumuVWAbareiYZW1Z/blocktrades%20update.png)
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="https://hivedocs.info/feed.xml" rel="self" type="application/atom+xml" /><link href="https://hivedocs.info/" rel="alternate" type="text/html" /><updated>2026-10-18T15:18:21-07:00</updated><id>https://hivedocs.info/feed.xml</id><title type="html">Hive Chain Documentation</title><subtitle>Your resource for various levels of Hive Documentation.</subtitle><author><name>site curated by: @inertia</name></author><entry><title type="html">Public HafSQL database on HAF</title><link href="https://hivedocs.info/tools/haf/sql/2023/12/25/public-hafsql-database-on-haf.html" rel="alternate" type="text/html" title="Public HafSQL database on HAF" /><published>2023-12-25T14:28:18-08:00</published><updated>2023-12-25T14:28:18-08:00</updated><id>https://hivedocs.info/tools/haf/sql/2023/12/25/public-hafsql-database-on-haf</id><content type="html" xml:base="https://hivedocs.info/tools/haf/sql/2023/12/25/public-hafsql-database-on-haf.html"><![CDATA[<div class="hive-post-embed" data-hive-author="mahdiyari" data-hive-permlink="public-hafsql-database-on-haf">
+  <div id="content-mahdiyari-public-hafsql-database-on-haf" class="hive-post-embed__content" data-hive-render-target="true">#### What is HafSQL
+It is built to run on HAF and provide gateway to certain data. For example with hafsql, you can query all the operations and virtual operations by their parameters. This includes getting `custom_json` operations based on their `id` with incredible speed. Or searching transfers based on their `memo`. Or having list of incoming delegations.
 
-It has been a while since my last post, but that’s just because I’ve been lazy about reporting, not because there’s not a lot going on. As it happens, we’ve added several new programmers to our Hive  development team since my last post, so if you look at the [hive repo](https://gitlab.syncad.com/hive/hive) and [haf repo]( https://gitlab.syncad.com/hive/haf), you’ll see several new people there making commits.
+It is just the matter of what data do you want or need. Then we can add certain indexes to provide that data easily.
 
-Below are a few highlights of the Hive-related programming issues worked on by the BlockTrades team in the past few months.
+On top of that, `hafsql-api` is built to provide JSON-RPC 2.0 API access. This again makes it possible to add/manage custom APIs that translate to SQL queries.
 
-# [Hived (blockchain node software)](https://gitlab.syncad.com/hive/hive)
+#### Why this post
+Although it is fairly "easy" to set up a development environment in 20 minutes and play with HAF and HafSQL, it is not as accessible for everyone. Thus I am providing a public database that is open to anyone. Just remember, this public database is not meant to be used in a production environment in your application.
 
-Since my last post, witnesses have upgraded the Hive network to hardfork 27 (1.27.x) and we’ve made several “point” releases ([1.27.1](https://gitlab.syncad.com/hive/hive/-/tags/v1.27.1), [1.27.2](https://gitlab.syncad.com/hive/hive/-/tags/v1.27.2), [1.27.3](https://gitlab.syncad.com/hive/hive/-/tags/v1.27.3) to fix problems, improve usage and maintenance of hived, and improve it’s performance in various ways based on our production testing. You can click on the links for each release to see detailed changes made in each release, but I’ll briefly summarize some of the more important changes at a high-level:
-* Upgraded the secp256k1 encryption library (speeds up blockchain validation time by about 42% as it reduces the time to verify transaction signatures).
-* Various improvements to the command-line hive wallet (this wallet is mostly used by exchanges and “power users”).
-* Added a minimum allowable RC (resource credit) delegation amount to avoid transaction spamming and also improved processing of RC delegations.
-* Improved realism of RC cost calculations for recurrent transfers.
-* New API calls and improvements to other ones to get more statistics and info related to RC usage.
-* Fixed longstanding bugs in market history API calls so that they return correct ticker-related data.
-* Fixed filtering of list_proposal_votes API call.
-* New tool for managing the block log (file containing the history of blockchain transactions). This tool includes features for comparing two block_log files for consistency (to detect corrupted files), truncating blocks from the end of a block log (to remove corrupted blocks from the end of a block_log file if, for example, a copy of a block_log file gets interrupted while it is in the middle of writing a block), and generating a checksum of the uncompressed block_log contents without having to actually decompress the block_log (this allows comparing checksums of two block_log files that were compressed differently without having to decompress the files, avoiding consuming more disk space).
-* Prevent nodes from crashing when they received a get_ops_in_block API call with just one parameter (longstanding bug).
-* Fixed bug in fc::uint128 decimal conversion.
-* New regression tests.
-* Improvements to testing code to make existing tests more stable.
+Play with it and see what data is available and what is not and see how it can help your project. It is possible to add a custom API designed for your needs to `hafsql-api` that we can potentially run on all the public RPC nodes. Including `rpc.mahdiyari.info`. Check my previous related posts and gitlab for example API calls.
 
-# [Hive Application Framework (HAF) and related apps](https://gitlab.syncad.com/hive/haf)
+Here are the details for the public HafSQL database.
 
-* Added an applied_hardforks table to the HAF database to simplify tracking of the block when each hardfork became active.
-* Improved performance of hive.get_block_from_views API call and fixed a problem with the returned order of transactions in the block.
-* Many improvements to ease upgrading an existing HAF database to a new version.
-* Various improvements to dockerized HAF configuration.
-* Improved stability of HAF tests.
+```
+host: hafsql.mahdiyari.info
+port: 5432
+database: haf_block_log
+user: hafsql_public
+password: hafsql_public
+```
+This server has been running for couple of months now. There is also a backup server running just in case. There is a 45s timeout on queries. If you hit the timeout it usually means the query is not using an index. You can change your query around, or open an issue, or MR, or reach out to me to potentially add a new index to fit your query if needed.
 
-## [Hivemind and HAF hivemind](https://gitlab.syncad.com/hive/hivemind)
+***
+https://gitlab.com/mahdiyari/hafsql
+https://gitlab.com/mahdiyari/hafsql-api
 
-We’ve released new versions of [legacy hivemind (v.1.26.3)](https://gitlab.syncad.com/hive/hivemind/-/tags/1.26.3) and [HAF-based hivemind(v.1.27.3.0.0)](https://gitlab.syncad.com/hive/hivemind/-/tags/1.27.3.0.0) and both are currently deployed on various production API nodes.
-
-Here’s some of the major changes:
-
-* Many performance optimizations specific to moving from PostgreSQL v10 to v12 or v14.
-* Used data stored in the HAF database itself instead of making some account history calls to hived. This led to a significant performance improvement for the initial “massive sync” process required to initially setup a hivemind server for production usage.
-* Fixed the dockerized setup of HAF hivemind (this got broken in the previous version).
-* Updated deployment documentation for HAF and HAF apps such as HAF-hivemind.
-
-### New versioning convention of HAF and HAF apps
-This is the first official release of the HAF-based hivemind application (prior ones were "experimental" and mainly only deployed on our node): 1.27.3.0.0
-
-Along with the official release of HAF-based hivemind, the astute reader may notice a change in our versioning for haf-based hivemind: the first three numbers (1.27.3) indicate the minimum version of hived required, the fourth number (0) indicates the associated sub-version of HAF required (i.e. 1.27.3.0), and the fifth number indicates the sub-version of hivemind itself (this is the first release of HAF hivemind for HAF version 1.27.3.0).
-
-
-## [HAF block explorer](https://gitlab.syncad.com/hive/haf_block_explorer)
-
-Work continued on the HAF block explorer and it is near completion now (mainly testing and bug fixes). This work has also led to some of the changes to the data collected by HAF via the sql_serializer so that HAF data is more complete for potential HAF applications.
-
-# Some upcoming tasks
-
-* Continue supporting Hive API node operators and witnesses as they continue upgrading their node infrastructure.
-* Re-use docker images in CI tests when possible to speedup testing time.
-* Continue work on HAF-based block explorer
-* Collect benchmarks for a hafah app operating in “irreversible block mode” and compare to a hafah app operating in “normal” mode (low priority)
-* Finalize plans for changes to hived and HAF in the coming year that the BlockTrades team will be working on.
-* Work out schedule for creation of various HAF-based applications (most important one here will be a HAF-based smart contract processing engine).</div>
+I would also recommend [DBeaver](https://dbeaver.io/) as a free database manager.</div>
   <footer class="hive-post-embed__source">
     <span class="hive-post-embed__source-label">Source:</span>
-    <a href="https://hive.blog/hive-139531/@blocktrades/hive-related-software-updates-in-past-couple-of-months-by-blocktrades-team">Hive-related software updates in past couple of months by BlockTrades team</a>
-    <span>by</span>
+    <a href="https://hive.blog/@mahdiyari/public-hafsql-database-on-haf">Public HafSQL database on HAF</a>
+    by
+    <a href="https://hive.blog/@mahdiyari">@mahdiyari</a>
+  </footer>
+</div>]]></content><author><name>mahdiyari</name></author><category term="tools" /><category term="haf" /><category term="sql" /><summary type="html"><![CDATA[The endpoint listed in this post is deprecated and will be dropped soon]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://hivedocs.info/assets/images/favicon.png" /><media:content medium="image" url="https://hivedocs.info/assets/images/favicon.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">7th update of 2023: Final testing of HAF 2.0 and associated apps</title><link href="https://hivedocs.info/news/core/development/2023/12/23/7th-update-of-2023-final-testing-of-haf-2-0-and-associated-apps.html" rel="alternate" type="text/html" title="7th update of 2023: Final testing of HAF 2.0 and associated apps" /><published>2023-12-23T20:43:21-08:00</published><updated>2023-12-23T20:43:21-08:00</updated><id>https://hivedocs.info/news/core/development/2023/12/23/7th-update-of-2023-final-testing-of-haf-2-0-and-associated-apps</id><content type="html" xml:base="https://hivedocs.info/news/core/development/2023/12/23/7th-update-of-2023-final-testing-of-haf-2-0-and-associated-apps.html"><![CDATA[<div class="hive-post-embed" data-hive-author="blocktrades" data-hive-permlink="7th-update-of-2023-final-testing-of-haf-2-0-and-associated-apps">
+  <div id="content-blocktrades-7th-update-of-2023-final-testing-of-haf-2-0-and-associated-apps" class="hive-post-embed__content" data-hive-render-target="true">![ "blocktrades update.png"](https://images.hive.blog/DQmSihw8Kz4U7TuCQa98DDdCzqbqPFRumuVWAbareiYZW1Z/blocktrades%20update.png)
+
+Below are a few highlights of the Hive-related programming issues worked on by the BlockTrades team since my last report.
+
+Originally, I thought we would be able released updates for a bunch of different tools by now, but everything took longer than expected, although in some cases the delays weren't always for bad reasons: we discovered several ways to dramatically improve performance of HAF, so we decided to delay the release to incorporate those changes and continue to add features to hived and HAF apps in the meantime. As for the "bad reasons", we've basically been overhauling the entire approach to deployment of HAF and HAF apps to make it super simple, and we ran into lots of issues along the way as we determined the best practices for what I'm now calling HAF 2.0.
+
+# What is HAF 2.0?
+
+HAF is a library and service for developing specialized Hive-based APIs and applications. It acts as a backend server for web-based applications that want to utilize the Hive blockchain network.
+
+We started working on HAF more than 2 years ago, and released the first production version about a year ago. Since then we've steadily been making incremental improvements, but in the past year we've been steadily increasing the number of developers working on HAF and HAF apps as it is the foundation for all our future apps including our layer 2 smart contract processing engine.
+
+### HAF 2.0: Completely overhauling deployment and maintenance
+
+With HAF 2.0, one key focus has been on easing deployment and maintenance of HAF servers and HAF apps. The recommended deployment method has completely changed with 2.0, as our goal is to create an ecosystem where any API node operator can quickly and easily install or uninstall any selection of HAF apps they want to support on their server(s). 
+
+Perhaps the best analogy (well, for programmers) is we're building something like a packaging system for HAF and HAF apps. Another way to look at is we're making HAF apps available as appliances that can easily interact with each other.
+
+Another deployment improvement has been to standardize on a ZFS dataset layout as a method of delivering "operation ready" snapshots of HAF servers that don't require a replay of the entire blockchain at setup.
+
+This is also extremely beneficial during development of HAF apps: you can take snapshots of your server at any point in time and then later rollback to that same state again, making it easy to: recover from database corruptions that occur while developing your app, reproduce bugs, etc. I've found the ability to easily reproduce bugs and performance problems to be especially useful in my work (in one case I rolled back to the same snapshot about 20 times while analyzing a performance problem that occurred in a specific block range).
+
+### HAF 2.0 uses docker compose scripts to deploy the entire stack for an API node
+
+HAF 2.0 also includes a full deployment stack with all the apps needed to run an API node. Previously an API node operator had to not only setup a HAF server, they also had to deploy various other apps such as nginx, jussi, varnish, haproxy, caddy, etc to setup an efficient server that caches API responses, allow re-routing of traffic to different services in the stack, and manage rate-limiting to prevent DDOS attacks. Varnish is a "newcomer" to our stack and is used to provide caching for the new REST-based APIs offered by our new HAF apps such as balance_tracker and the block_explorer. In practice, we've found these offered better performance than the older json-rpc based APIs (these are still cached by jussi).
+
+With HAF 2.0, you can deploy and manage all these services with docker compose scripts all configured by a single .env file. More about this setup can be found at https://gitlab.syncad.com/hive/haf_api_node
+
+### HAF 2.0: improving performance and decreasing hardware requirements 
+
+In the past few weeks, we improved massive sync replay time by 33% and live sync update performance by 45%. And looking at benchmarks over the past three months, a full replay of HAF used to take around 30 hours to process the entire 80 million blocks of the Hive blockchain and it is now down to 17.5 hours (13 hours for replay, 3.5 hours for creating HAF indexes). At the same time, we recently cut CPU usage by 10x (this doesn't show up as a 10x speedup because the code is heavily multi-threaded, but it does mean HAF can be run on a cheaper computers with fewer cores and consumes less energy or alternatively those extra cores can be used for running other processes like nginx, jussi, haproxy, varnish, more hived nodes, etc).
+
+Disk space storage has also dramatically been reduced. First by storing blockchain operations as binary data, and second by using lz4 compression via ZFS. These methods allowed us to cut database storage requirements by more than 2x. 
+
+HAF servers also require much less memory to operate now. Databases almost always like more memory, and HAF was originally targeted towards servers with 64GB memory, but by keeping hived's shared_memory.bin statefile on an NVME drive, we've found that a HAF server can quite comfortably operate as a production server with 32GB of RAM.
+
+It is worth mentioning we're not yet done with performance improvements for HAF: during our recent work we came up with a few more ideas for speedups, but we just ran out of time to fit those improvements into the upcoming release.
+
+# Other projects
+
+We're also working on a host of other tools (some of our devs have already made posts about [Clive](https://hive.blog/@thebeedevs), for example) and it has gotten to the point that I think it makes more sense if I post about the projects I spend the most time on and leave posts about the other projects to the devs involved in them (otherwise my posts would start to get really long nowadays given the number of devs involved on different projects). 
+
+So I'll leave it to them (hopefully) to make posts after the holidays about some of the other projects such as the block explorer, Denser, Helpy, WAX, Clive, beekeeper, etc.
+
+# Final testing started for HAF 2.0
+
+We started full replays of HAF servers with the latest code a couple of days ago. Although HAF only takes 17 hours to replay, hivemind takes considerably longer (something on the order of 80 hours I think) as we haven't had any time to further optimize its performance yet. 
+
+We should have several servers fully replayed by Tuesday, at which time we'll start directing production traffic from api.hive.blog to some of these servers as a final test of performance under real world conditions. 
+
+Barring any problems, we'll tag passing versions as final releases and setup downloadable snapshots for api node operators who don't want to wait on replays.</div>
+  <footer class="hive-post-embed__source">
+    <span class="hive-post-embed__source-label">Source:</span>
+    <a href="https://hive.blog/@blocktrades/7th-update-of-2023-final-testing-of-haf-2-0-and-associated-apps">7th update of 2023: Final testing of HAF 2.0 and associated apps</a>
+    by
     <a href="https://hive.blog/@blocktrades">@blocktrades</a>
   </footer>
-</div>]]></content><author><name>blocktrades</name></author><category term="news" /><category term="core" /><category term="development" /><summary type="html"><![CDATA[It has been a while since my last post, but that’s just because I’ve been lazy about reporting, not because there’s not a lot going on]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://images.hive.blog/DQmSihw8Kz4U7TuCQa98DDdCzqbqPFRumuVWAbareiYZW1Z/blocktrades%20update.png" /><media:content medium="image" url="https://images.hive.blog/DQmSihw8Kz4U7TuCQa98DDdCzqbqPFRumuVWAbareiYZW1Z/blocktrades%20update.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Hive Stream Updates: Version 2.0.5</title><link href="https://hivedocs.info/tools/nodejs/2022/11/16/hive-stream-updates-version-205.html" rel="alternate" type="text/html" title="Hive Stream Updates: Version 2.0.5" /><published>2022-11-16T06:22:03-08:00</published><updated>2022-11-16T06:22:03-08:00</updated><id>https://hivedocs.info/tools/nodejs/2022/11/16/hive-stream-updates-version-205</id><content type="html" xml:base="https://hivedocs.info/tools/nodejs/2022/11/16/hive-stream-updates-version-205.html"><![CDATA[<div class="hive-post-embed" data-hive-author="beggars" data-hive-permlink="hive-stream-updates-version-205">
-  <div id="content-beggars-hive-stream-updates-version-205" class="hive-post-embed__content" data-hive-render-target="true">Version 2.0.5 of [Hive Stream](https://github.com/Vheissu/hive-stream) has been published, and with it comes quite a few improvements and refactoring work.
-
-![Beggars_A_bee_hive_on_a_stream_f81e2212-6e2f-4725-92cc-175102d19bd0.png](https://files.peakd.com/file/peakd-hive/beggars/AKGZiNjxyxfCrbkgFMA2BXvmjdhbV4WPAaFCYfh1ej8qwwiH6UqEu3KNuTLZ7R1.jpg)
-
-In version 2.0.5 (now published on Npm), the following changes have been made:
-
-- **REFACTOR:** There was an issue with the logic for catching up on blocks if you're behind. It was quite slow and clunky. More work needs to be done here to fetch published blocks faster, but it's a start.
-- **REFACTOR:** Refactored the database adapter abstraction logic. The previous implementation was clunky and wasn't a true abstraction. The contracts were referencing the database instance directly. These are now proper abstractions with a common interface to inherit from numerous database methods.
-- **FIX:** The test server has been fixed. This allows you to do a test run with Hive Stream (start at specific blocks and parse specific custom JSON)
-- **REFACTOR:** Updated dependencies in `package.json` to their latest versions. Most notably, Jest.
-- **FIX:** Fixed a bunch of broken tests and test case logic.
-- **REFACTOR:** Removed MongoDB in-memory store in favour of stubbing out and mocking the abstraction interfaces themselves.
-- **FIX:** Fixed a bug where strings were not being escaped in SQLite queries and causing the server to crash if you tried to visit 
-
-As you can see, this release was largely just fixing bugs and getting tests to work. The next release will feature increased code coverage and speed improvements, probably some more bug fixes, and the tests will grow and discover them.
-
-To install the latest version, run the following:
-
-`npm install hive-stream` to install the package.
-
-----
-
-Feedback, help or user contributions are always welcomed over on the [Hive Stream GitHub repository](https://github.com/Vheissu/hive-stream). Don't be shy if you see room for improvement or encounter an issue. Until next time.</div>
-  <footer class="hive-post-embed__source">
-    <span class="hive-post-embed__source-label">Source:</span>
-    <a href="https://peakd.com/hive-139531/@beggars/hive-stream-updates-version-205">Hive Stream Updates: Version 2.0.5</a>
-    <span>by</span>
-    <a href="https://hive.blog/@beggars">@beggars</a>
-  </footer>
-</div>]]></content><author><name>beggars</name></author><category term="tools" /><category term="nodejs" /><summary type="html"><![CDATA[Version 2.0.5 of Hive Stream has been published, and with it comes quite a few improvements and refactoring work.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://files.peakd.com/file/peakd-hive/beggars/AKGZiNjxyxfCrbkgFMA2BXvmjdhbV4WPAaFCYfh1ej8qwwiH6UqEu3KNuTLZ7R1.jpg" /><media:content medium="image" url="https://files.peakd.com/file/peakd-hive/beggars/AKGZiNjxyxfCrbkgFMA2BXvmjdhbV4WPAaFCYfh1ej8qwwiH6UqEu3KNuTLZ7R1.jpg" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Core dev meeting #42</title><link href="https://hivedocs.info/news/core/development/2022/11/07/core-dev-meeting-42.html" rel="alternate" type="text/html" title="Core dev meeting #42" /><published>2022-11-07T14:42:42-08:00</published><updated>2022-11-07T14:42:42-08:00</updated><id>https://hivedocs.info/news/core/development/2022/11/07/core-dev-meeting-42</id><content type="html" xml:base="https://hivedocs.info/news/core/development/2022/11/07/core-dev-meeting-42.html"><![CDATA[<div class="hive-post-embed" data-hive-author="howo" data-hive-permlink="core-dev-meeting-42">
-  <div id="content-howo-core-dev-meeting-42" class="hive-post-embed__content" data-hive-render-target="true">
-![social_hive_light.jpg](https://files.peakd.com/file/peakd-hive/howo/23wN2RDCNPLiYdw6WJdTT7vXKrdkPN9WGeQg69m15z27Bqj1yDiYS5bo2Dwn4DGHByM2C.jpg)
-
-Hello,
-
-I'm really sorry about the lack of video, we had recording problems, and couldn’t record the meeting.
-
-Instead I wrote some notes to give you an idea of what was discussed, I'm sorry this is incomplete and we'll switch to @gtg's video solution next so that those issues won't happen again.
-
-## Developers sync: 
-
-On my end I mostly spent time updating my hivemind pull requests following the hardfork changes and supporting RC delegation questions (many heart attacks of people telling me it doesn’t work when in fact it’s something they did wrong).
-
-Then I started working on implementing a feature request by @brianoflondon for recurrent transfers: https://gitlab.syncad.com/hive/hive/-/issues/382 
-
-On @blocktrades side (this is somewhat of a non-exhaustive list and will probably be in greater details in a post of his own):
-
-There was some cleanup work following hard fork 26/27, doing some performance analysis on nodes, to see how things have changed.
-
-Then they pushed a bunch of small changes:
-
-- Fixed a problem with shutdowns that could happen sometimes when you did ctrl + c on a node.
-
-- Fixes and improvements to the block statistics 
-
-- Added more RC statistics in the form of daily report, with a new API about it (this will happen in hf 27.1)
-
-- New api calls for updated witness scheduling
-
-- CLI wallet side, fixed a longstanding bug to allow controlling it from websockets.
-
-- Updated our cryptography lib to increase performance (tests ongoing but so far the initial testing shows a 40% increase !)
-
-- New block log utility to help manage compressed block logs:
-
-   - Comparing compressed block logs to output a checksum even though they were compressed using different methods
-   - Truncating a compressed block log (previously you had to uncompress, truncate, then re-compress) 
-
--  Improved get_block_range by forcing it to use http to improve performance due to a websocket issue. The current suspect is that websockets is doing compression which causes slowdowns 
-
-
-## Adding a VOP to record successful RC delegation
-
-We talked a bunch about the potential use cases and  potential edge cases and issues.
-
-The main discussion revolved around the fact that it’s hard to track if an RC delegation got executed or not (and what was executed). But after some back and forth, we concluded that since the node rejects incorrect transactions, it made sense to let the custom json denote of the change.
-
-Hive version 1.27.1: 
-
-We want to ship version 1.27.1 very soon:tm: (aka in a few weeks) to provide improvements to HAF and hivemind. We’ll try to slot in a change to RC delegations to include an RC minimum to prevent spam and improve dev experience.
-
-We’ll try to include at the bug that @engrave brought up: https://gitlab.syncad.com/hive/hive/-/issues/338  
-
-There's then a lot of discussions between @arcange and @blocktrades on his specific HAF setup that I don't think are really worth talking about.</div>
-  <footer class="hive-post-embed__source">
-    <span class="hive-post-embed__source-label">Source:</span>
-    <a href="https://peakd.com/core/@howo/core-dev-meeting-42">Core dev meeting #42</a>
-    <span>by</span>
-    <a href="https://hive.blog/@howo">@howo</a>
-  </footer>
-</div>]]></content><author><name>howo</name></author><category term="news" /><category term="core" /><category term="development" /><summary type="html"><![CDATA[many heart attacks of people telling me it doesn’t work when in fact it’s something they did wrong]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://files.peakd.com/file/peakd-hive/howo/23wN2RDCNPLiYdw6WJdTT7vXKrdkPN9WGeQg69m15z27Bqj1yDiYS5bo2Dwn4DGHByM2C.jpg" /><media:content medium="image" url="https://files.peakd.com/file/peakd-hive/howo/23wN2RDCNPLiYdw6WJdTT7vXKrdkPN9WGeQg69m15z27Bqj1yDiYS5bo2Dwn4DGHByM2C.jpg" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Help with Hive getting added to Wikipedia</title><link href="https://hivedocs.info/news/media/wikipedia/2022/11/04/help-with-hive-getting-added-to-wikipedia.html" rel="alternate" type="text/html" title="Help with Hive getting added to Wikipedia" /><published>2022-11-04T11:52:54-07:00</published><updated>2022-11-04T11:52:54-07:00</updated><id>https://hivedocs.info/news/media/wikipedia/2022/11/04/help-with-hive-getting-added-to-wikipedia</id><content type="html" xml:base="https://hivedocs.info/news/media/wikipedia/2022/11/04/help-with-hive-getting-added-to-wikipedia.html"><![CDATA[<div class="hive-post-embed" data-hive-author="rubencress" data-hive-permlink="help-with-hive-getting-added-to-wikipedia">
-  <div id="content-rubencress-help-with-hive-getting-added-to-wikipedia" class="hive-post-embed__content" data-hive-render-target="true">![](https://i.imgur.com/n2nbSXD.jpg)
-
-Hey Hivers!
-
-After seeing a Tweet from [acidyo ](https://www.peakd.com/@acidyo)that showed that some brand using our logo I just went off and thought it was absolutely bonkers. On top of that, this brand is also using the exact name. Hive. I'm not going to share this Tweet here, to prevent more traffic from going to their website (as [crimsonclad ](https://www.peakd.com/@crimsonclad)mentioned), but this is just unbelievable and unacceptable.
-
-
-Either way, I feel that there is still a lot to do for Hive and we must embrace Web 2, and start registering our Hive name, even if we don't use the accounts, this example shows how important it is to at least lock these names in. 
-
-<br /><br /><hr /><br /><br />
-### Wikipedia
-As I was browsing Wikipedia, I noticed Hive isn't there yet.
-So, here's where I just went on autopilot and started writing a page for Wikipedia. Usually, I wouldn't do this, because my morale would first want to ask someone for permission. But who do we need to ask for permission if we are writing facts? Besides, we are the chain! And once a Wikipedia page is added, it can be edited by anyone.
-
-I also know how hard it is to get Hive on there. But, with our heads together, and some OG's that took part in starting the chain on March 20, 2020. I'm sure we can fact-check our way to Wikipedia. So, please reach out to me, as I will be busy formatting the page, or feel free to make adjustments (and keep an eye on the page) once the page is live, and accepted.
-
-<br /><br /><hr /><br /><br />
-### LET'S GET HIVE ON WIKIPEDIA
-Currently working on a "declined" draft for Hive, which gives me/us about 6 months to submit a new version of it.
-
-1. Facts
-2. No biased tone of voice (the greatest, best, unique, etc.)
-3. No political/sides --&gt; neutral only
-
-<br /><br />
-
-If I were to think for myself, I'd like to add the following. But if you have better suggestions to add. Do share. Take a look at Bitcoins Wikipedia: https://en.wikipedia.org/wiki/Bitcoin &lt;-- this is what we need. Dump any articles you can find about Hive here, and if you have time, do a short non-biased summary.
-
+</div>]]></content><author><name>blocktrades</name></author><category term="news" /><category term="core" /><category term="development" /><summary type="html"><![CDATA[Below are a few highlights of the Hive-related programming issues worked on by the BlockTrades team since my last report]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://images.hive.blog/DQmSihw8Kz4U7TuCQa98DDdCzqbqPFRumuVWAbareiYZW1Z/blocktrades%20update.png" /><media:content medium="image" url="https://images.hive.blog/DQmSihw8Kz4U7TuCQa98DDdCzqbqPFRumuVWAbareiYZW1Z/blocktrades%20update.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Introducing HiveAuth Mobile - Now available on Android</title><link href="https://hivedocs.info/news/hiveauth/authentication/2023/12/22/introducing-hiveauth-mobile-android.html" rel="alternate" type="text/html" title="Introducing HiveAuth Mobile - Now available on Android" /><published>2023-12-22T10:28:21-08:00</published><updated>2023-12-22T10:28:21-08:00</updated><id>https://hivedocs.info/news/hiveauth/authentication/2023/12/22/introducing-hiveauth-mobile-android</id><content type="html" xml:base="https://hivedocs.info/news/hiveauth/authentication/2023/12/22/introducing-hiveauth-mobile-android.html"><![CDATA[<div class="hive-post-embed" data-hive-author="arcange" data-hive-permlink="introducing-hiveauth-mobile-android">
+  <div id="content-arcange-introducing-hiveauth-mobile-android" class="hive-post-embed__content" data-hive-render-target="true">![](https://files.peakd.com/file/peakd-hive/arcange/23tGcJ3432bU8Hrx8ZhXxsjnKnjFtH56H7qWf9xyHDYMJ17XNjQjXYnMzqus6rMnGK1Sh.png)
 <br />
+Today I'm excited to announce the official launch of HiveAuth Mobile for Android, a new, user-friendly, and highly secure private key storage application unveiled at HiveFest 2023 in Rosarito. 
 
-1.	History
-a.	Founding (2020)
-2.	Design
-a.	Assets
-b.	Accounts
-c.	Nodes
-d.	Transactions
-3.	Applications
-4.	Notes
-5.	References
+HiveAuth Mobile addresses the community's desire for diversity and redundancy in key management applications. Providing an alternative to Hive Keychain reinforces the ecosystem's resilience and gives you more choices to manage your direct interactions with the Hive blockchain.
 
-<br /><br /><hr /><br /><br />
-```
-### History
+HiveAuth Mobile is designed to make your Hive experience smoother, safer, and more intuitive. The app’s simplicity ensures a more approachable experience for newcomers.
 
-##### Founding 2020
-Hive was founded on March 17, 2020, and launched on March 20, 2020, by a vast community of decentralization proponents. Hive is a hard fork of Steem, developed by Daniel Larimer, and is under further development by the Hive community itself. The announcement of the Hive launch was made on the 17th of March 2020., by the official account of Hive, which was created on the 6th of March 2020
+Let's dive into what makes HiveAuth the must-have app for both seasoned Hive blockchain enthusiasts and newcomers.
 
-<br />
+### Redefining the Concept of a Wallet App
 
-##### Hostile Takeover
-In 2020, Justin Sun acquired Steemit Inc.[a]. Dan Larimer left Steemit Inc. before the sale, and Ned Scott sold Steemit Inc. for roughly $8 million to Justin Sun. A significant number of stakeholders got their tokens stripped away[3], which happened right after Justin Sun took over the blockchain Steem. This event led to the creation of Hive, a fork of the Steem blockchain, created by a decentralized community.
+HiveAuth Mobile stands apart from conventional wallet applications, reimagining what it means to be a wallet in the blockchain space:
 
-<br />
+While HiveAuth Mobile serves as a wallet by securely storing your private keys, it intentionally omits certain features commonly found in other wallet applications. The app prioritizes the safeguarding of your keys above all else, diverging from the typical wallet functionalities that users might expect.
 
-##### Hard forks
-```CTA:Anyone```
+* **No information display**
+In keeping with our dedication to privacy and security, HiveAuth Mobile does not display any information about your account like balances or transactions history. This decision caters to individuals who value discretion, especially when they may be accessing their accounts in public or shared spaces.
+<br />In an era where screen privacy can be compromised by over-the-shoulder glances or while casting your mobile screen, maintaining control over when and where your financial information is displayed can provide users with peace of mind and an added sense of security.
+<br />Understanding that your financial portfolio is a personal affair, we've deliberately chosen not to display your asset balances within the app. Whether you're checking your account in a public place or prefer not to have your balances visible, HiveAuth Mobile respects your right to confidentiality.
+<br />Although all transactions on the Hive blockchain are public by nature, there's no need for your mobile device to broadcast this information. HiveAuth Mobile gives you the comfort of accessing the necessary functionality of your accounts while keeping your financial data discreet.
 
-HF20: Introduction of Resource Credits (RCs) [6]. RCs are non-transferable credits that accrue to each Hive account based on how much Hive Power (HP) it has. An account spends RC when it transacts on the Hive blockchain. RCs regenerate over 5 days. If an account doesn’t have sufficient credits, the transaction will not be allowed to occur.
+* **No In-App Operations**
+HiveAuth Mobile does not allow you to initiate transactions directly from the app. The goal is to reduce the possible attack surface by minimizing the amount of code or the introduction of functionality that could weaken the overall security context essential for the application.
 
-<br /><br /><br />
-### Design
+These are deliberate design choices to minimize security vulnerabilities and maintain operational simplicity. The primary function of HiveAuth Mobile is to facilitate secure login to applications that support the HiveAuth protocol and to sign transactions securely.
 
-<br />
+This streamlined approach reduces the risk of accidental disclosures and potential security threats, making HiveAuth Mobile a robust tool that serves the essential purpose of secure private key storage and seamless interaction with the Hive blockchain.
 
-##### Assets
-The Hive network comes with two classes of cryptocurrency assets named HIVE and Hive Backed Dollars (HBD). Moreover, HIVE exists both in a liquid form (simply called HIVE) and a staked form (called Hive Power). HIVE is the liquid currency of the Hive ecosystem. It may be traded, staked, bought, and sold. Hive Backed Dollars are intended to be pegged to the United States Dollar (USD) at a one-to-one rate. Hive Power (HP), the staked form of HIVE, is vested during a process referred to as a ”power up”. Upon being powered up, ‘’Hive Power’’ can then be entirely or partially un-staked at will, in a process referred to as a ”power down”. Staked HIVE then returns to its liquid form (i.e. HIVE) in equal amounts over 13 weeks period, with a segment delivered every 7 days.
+### Unparalleled Private Key Protection
 
-<br />
+One of the cornerstone principles of HiveAuth Mobile is the ironclad protection of your sensitive information. We've gone to great lengths to ensure that your private keys and sensitive data remain just that: private! 
 
-##### Accounts
-Accounts on the Hive blockchain, are Self-Sovereign-Digital-Identities (SSDI) to provide flexible functionality based on a set of standards-based primitives for building decentralized identity applications in a modular manner. Accounts are also universal and allow instant access to any application that is being built on top of the Hive blockchain.
+Here are the reasons why you can trust HiveAuth Mobile:
 
-<br />
+* **Data Extraction Prevention**
+With cutting-edge encryption and security protocols, the app is engineered to prevent any form of data extraction. No third-party app or malicious actor can access your sensitive information from within HiveAuth Mobile.
 
-##### Addresses
-All Hive accounts are non-fungible tokens that serve as easy to recognize user-handles, and wallet addresses. 
+* **No Display of Sensitive Data**
+As explained above, HiveAuth Mobile is designed with a 'safety-first' approach. The app ensures that your private keys are never displayed on-screen, mitigating the risk of accidental exposure or shoulder surfing.
 
-<br />
+* **Clipboard Restriction**
+The security of your blockchain identity is paramount. That's why we’ve implemented a stringent **no clipboard** policy for your private keys.<br />
+Once you've securely imported your private keys into HiveAuth Mobile, the app prevents any form of copying or sharing of these keys. This means that the private keys cannot be sent to the clipboard, an often-overlooked vulnerability in other applications.<br />
+The clipboard is a basic feature of mobile operating systems that temporarily stores copied text. Unfortunately, it can also be a target for malware looking to snatch sensitive data. By eliminating the possibility of clipboard use for your keys, HiveAuth Mobile significantly reduces the risk of unauthorized access.<br />
+The result is a full peace of mind. With HiveAuth Mobile, you can rest assured that even in the event of clipboard hijacking or accidental pasting, your private keys remain securely enclosed within the app.
 
-##### Nodes
+### Intuitive User Interface for a Seamless Experience:
 
-**Witness nodes**
-```CTA:Anyone```
-**Seed nodes**
-```CTA:Anyone```
-**API nodes**
-```CTA:Anyone```
-<br />
+We understand that complexity can lead to mistakes, especially for those new to the blockchain. HiveAuth Mobile reduces the likelihood of user error by providing a clear, intuitive interface and straightforward operation, safeguarding users against accidental data leaks or mistakes.
 
-##### Transactions
-```CTA:Anyone```
 
-<br /><br /><br />
-### Applications
-```CTA:Anyone```
+![](https://imgur.com/hlEWdKw.png)
 
-```
-<br /><br /><hr /><br /><br />
-
-
-![image.png](https://files.peakd.com/file/peakd-hive/rubencress/23tHLr3nGwBoDWs5fdHA7gGAJcNn8g99ZmqkdmRVh95Tz7DhF85noFomEMBxMcwVvq2Xd.png)
-
-**Blockchain versus Cryptocurrency**
-There is a difference between blockchain and cryptocurrency. Due to the records of Wikipedia and comments here that validate that, the chances that just HIVE (or HBD for that matter) is getting listed, will be very slim (which is to be expected). On the other hand, if we talk about _just_ the blockchain, and have less focus on the cryptocurrency (HIVE and HBD) and refer to or just mention built-on-top applications, I think the chances are much higher to get Hive on Wikipedia.
-
-**Once you understand that Hive is more than HIVE, Hivepower or HBD**
-The common mistake many people make is confusing Hive with currency or a social blogging platform. Social Media Platforms have become a big part of our lives, which makes it understandable that Hive is huge as well. What if I told you that a Social Media Platform like Hive.blog (or any other interface), is just only one possibility that we can create on Hive, what would you say? What is Hive?
-
-Hive is more or less a, distributed computing project, simplified. A decentralized network that runs validated data, the output of this data is what we’re reading right now, made possible by applications build on top of Hive. Hive is decentralized, but for example, LeoFinance itself is centralized, which is in this case not a bad thing at all. You see, LeoFinance utilizes the Hive blockchain, which shares only validated, and decentralized output data. For example, your LeoFinance blog is readable on Hive.blog, PeakD, Ecency, etcetera. This is a huge difference if we were to talk about HIVE the currency, which is a currency, simplified. 
-
-
-![image.png](https://files.peakd.com/file/peakd-hive/rubencress/23t7xG4YgVQ3M7kaQNSwTxq4SVBsHysZt4mNsjcS9Xnv5ECtSH9PZMH8fDp1B8q4PE7MJ.png)
-
-
-From this perspective, we basically strip down Hive to the core, and are left with just the things that make Hive, Hive. And here is where we see the magic. And if we can explain this magic, with "backed" 3rd party non-biased, and non-crypto-web-related articles, we should be able to get Hive listed. Oh the irony of Web2...
-
-
-<br /><br /><hr /><br /><br />
-### Formatting
-The formatting looks familiar to MarkDown. 
-
-![](https://i.imgur.com/gHyzKOx.png)
-<br />
-### Visual
-
-![](https://i.imgur.com/HaEGfRo.png)
-<br />
-### Declined
-This is way too little information to get accepted on Wikipedia, I wasn't expecting to be reviewed this fast, but it's nice to receive some feedback this fast so I know what to look out for. 
-
-![](https://i.imgur.com/qs3H8Jm.png)
-
-I've started to write a bit more and thought it would be nice to start from the beginning.
-If someone knows exactly which block number Hive was loose from Steem, that would be amazing. Couldn't find anything in block #41801981 https://hiveblocks.com/b/41801981, but it's good to see my friend louis88 there. 
-
-Any information you provide is more than welcome! If you're a (dApp) developer, and you want your full name on here, please let me know as well. 
-
-<br /><br /><hr /><br /><br />
-### The Infobox
-The infobox visually looks like this. Below you will find the format where I can add information. I'd like to add our core-dev team to it under "developers". The current list of Witness nodes is limited to 100 on Hiveblocks.com, out of 100, 13 are inactive, but I have a feeling we have more than 100 (Witness) Nodes running.
-
-![](https://i.imgur.com/0atjCpw.png)
-
-```
-{{Infobox distributed computing project
-| name                   = Hive
-| logo                   = File:Horizontal.svg|thumb|Hive logo
-| logo_caption           = Logo for Hive
-| author                 = 
-| developer              = Martin Lees, Dan Notestein, Gandalf, Abit, Bartek Wrona, ABW
-| released               = {{Start date and age|2020|03|20|df=yes}}
-| discontinued           = <!-- Set to yes if software is discontinued, otherwise omit. -->
-| latest release version = ‘Evolution’
-| latest release date    = {{Start date and age|2022|10|24|df=yes}}
-| frequently updated     = Yes
-| latest preview version = 
-| latest preview date    = 
-| status                 = Active
-| goal                   = 
-| software               = 
-| funding                = No VC funding
-| programming language   = [[C++|C++]], [[Python (programming language)|Python]]
-| operating system       = [[Cross-platform software|Cross-platform]]
-| platform               = 
-| size                   = 
-| language               = Multilingual, but primarily English
-| genre                  = [[Distributed computing]]
-| license                = [[Open-source license]]s
-| standard               = 
-| as of                  = 
-| performance            = 
-| active users           = 
-| total users            = 
-| active hosts           = 87/100 (2022-09-10)<ref>{{Cite web |title=Witnesses – hiveblocks.com - The Hive Network &amp; Node Explorer |url=https://hiveblocks.com/witnesses |access-date=2022-11-04 |website=hiveblocks.com}}</ref>
-| total hosts            = 
-| website                = {{URL|hive.io}}
-}}
-
-
-{{Infobox cryptocurrency
-| currency_name           = HIVE
-| image_1                 = File:Icon of Hive.svg
-| image_2                 = File:Icon of Hive.svg
-| alt1                    = Icon for HIVE
-| alt2                    = Icon for HIVE-Backed Dollar
-| image_title_1           = HIVE
-| image_title_2           = HBD
-| symbol                  = 
-| alt_symbol_title_1      = 
-| alt_symbol_1            = 
-| code                    = 
-| previous_names          = 
-| nickname                = 
-| precision               = 
-| white_paper             = https://hive.io/whitepaper.pdf
-| implementations         = 
-| code_repository         = https://gitlab.syncad.com/hive
-| project_fork_of         = Steem
-| developer               = 
-| source_model            = 
-| block_explorer          = https://hiveblocks.com
-| ledger_start            = {{Start date and age|2016|03|24|df=yes}}
-| split_height            = 
-| split_date              = 
-| split_from              = 
-| split_ratio             = 
-| hash_function           = 
-| issuance_schedule       = 
-| timestamping            = 
-| merged_mining_parent    = 
-| block_time              = 3000 milliseconds
-| block_reward            = 
-| circulating_supply      = 
-| supply_limit            = 
-| exchange_rate           = 
-| market_cap              = 
-| using_countries         = 
-| footnotes               = 
-| catISO4217              = 
-}}
-```
-
-**If you know, you know... I don't. If you do: Please fill in the blanks &lt;3**
-
-### REF links
-Ref links are a BIG thing on Wikipedia, without adding reliable sources -other- than just Hive's mentions etc. it will be a really difficult task to get Hive on Wikipedia.
-
-The formatting for reference URLs is as follows:
-```
-<ref>{{Cite web |last=AUTHOR_NAME |date=PUBLISHED_DATE |title=ARTICLE_TITLE |url=LIVE_URL_TO_WEB |access-date=ACCESSED_ON_TODAYS_DATE |website=PARENT_DOMAIN_NAME}}</ref>
-```
-
-Finding articles about Hive is already a PAIN due to Google's "shadow ban". &lt;-- this is giving even more reason to have a Wikipedia that is capable of storing -all- this these valuable information in articles. Wikipedia is based on facts, not on controllable algorithms like Google. 
-
-If you'd like to help, make sure to check out that the article is an in-depth article with date and author included.
+With its sleek design and focus on essential functionalities, HiveAuth delivers a straightforward and uncluttered user experience, perfect for enabling quick and hassle-free logins and transaction signings - making it ideal for users of all experience levels.
 
-<br /><br /><hr /><br /><br />
-### This comment section
-Please, I encourage you to provide factual non-biased information about the Hive blockchain, and if possible, provide an outside source (URL), so I can implement your bit in the wiki page. Use the comment section for this. Also, please check if someone has submitted what you're about to submit (or has already been added by me). My vote isn't worth much, but I'll try to see if I can curate any work you've shared with me. 
+Feedback from our dedicated beta testers has been overwhelmingly positive, with many reporting a smooth and intuitive first encounter with the app.
 
-<br /><br /><hr /><br /><br />
-### Hive LOGO
+Here are some of their testimonies:
 
-I've added the Hive logo ([roelandp](https://www.peakd.com/@roelandp), it's CC licensed right?) ```https://en.wikipedia.org/wiki/File:Icon_of_Hive.svg```, please let me know if this reference is fine or needs to be adjusted. I've also added the HIVE and HBD logo to give more body to the info-boxes. Will need to re-upload for proper licensing.
+&gt; _"For me it was very smooth, ... any experienced Hive user will find it very easy as it is simple and self-explanatory."_
 
-According to RoelandP's [blogpost](https://peakd.com/hive/@roelandp/hello-hive-first-post-hive-becoming-of-the-brand), I believe it is a CC BY-ND-4.0 license (could you please verify this, Roeland?)
+&gt; _"I've never felt more confident in managing my private keys. It's super user-friendly - exactly what the blockchain world needs!"_
 
-<br /><br /><hr /><br /><br />
-### Wiki guru?
-Hit me up on Discord! Let's make this page real and help me out. All the help is welcome.
+&gt; _"HiveAuth is working on my Android with my account ... and the magic happens."_
 
+&gt; _"Is it easy to use, to configure? Did I like the UI? YES to all of them!"_
 
+### How to Get Started?
 
-If you're curious about the draft: [https://en.wikipedia.org/w/index.php?title=Draft:Hive_(blockchain)](https://en.wikipedia.org/w/index.php?title=Draft:Hive_(blockchain)). ALL HELP IS WELCOME!
+#### Install and configure the app
 
-Cheers,
-Ruben
+* Download the app from [Google Play Store](https://play.google.com/store/apps/details?id=com.hiveauth.mobile). 
+<a href="https://play.google.com/store/apps/details?id=com.hiveauth.mobile"><img src="https://files.peakd.com/file/peakd-hive/arcange/23wBfvUpmaDwMGzfoCNtc51C1dFvD2aUH3nXxsGSQU7nUfP6k1CNwWEygoEDvpopEFfCq.png" /></a>
 
-ps; I'll be updating this page as I update the Wikipedia page.
-pps; I'll be removing tags for updates, dont want to spam.</div>
-  <footer class="hive-post-embed__source">
-    <span class="hive-post-embed__source-label">Source:</span>
-    <a href="https://peakd.com/hive/@rubencress/help-with-hive-getting-added-to-wikipedia">Help with Hive getting added to Wikipedia</a>
-    <span>by</span>
-    <a href="https://hive.blog/@rubencress">@rubencress</a>
-  </footer>
-</div>]]></content><author><name>rubencress</name></author><category term="news" /><category term="media" /><category term="wikipedia" /><summary type="html"><![CDATA[After seeing a Tweet from acidyo that showed that some brand using our logo I just went off and thought it was absolutely bonkers.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://i.imgur.com/n2nbSXD.jpg" /><media:content medium="image" url="https://i.imgur.com/n2nbSXD.jpg" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Hive x Ledger: Support for Ledger Hardware Wallets</title><link href="https://hivedocs.info/news/core/wallet/ledger/2022/11/01/hive-x-ledger-support-for-ledger-hardware-wallets.html" rel="alternate" type="text/html" title="Hive x Ledger: Support for Ledger Hardware Wallets" /><published>2022-11-01T10:54:51-07:00</published><updated>2022-11-01T10:54:51-07:00</updated><id>https://hivedocs.info/news/core/wallet/ledger/2022/11/01/hive-x-ledger-support-for-ledger-hardware-wallets</id><content type="html" xml:base="https://hivedocs.info/news/core/wallet/ledger/2022/11/01/hive-x-ledger-support-for-ledger-hardware-wallets.html"><![CDATA[<div class="hive-post-embed" data-hive-author="hiveio" data-hive-permlink="hive-x-ledger-support-for-ledger-hardware-wallets">
-  <div id="content-hiveio-hive-x-ledger-support-for-ledger-hardware-wallets" class="hive-post-embed__content" data-hive-render-target="true">![image.png](https://images.hive.blog/DQmY6V5CTeBWrQ6D72dG7K4pgP8bvHpHXz3V6xVsANDi5pc/image.png)
+* Import your private keys.
 
-We are thrilled to announce that Hive has been integrated with and is now available on Ledger Nano S, Nano S Plus, and Nano X hardware wallets effective today, November 1, 2022.
+* Done!
 
-The integration is the work of @engrave: 
-&gt; Ledger wallets are secure, trusted, and widely available. That makes them the perfect partner for the Hive decentralized blockchain. Ledger hardware wallets allow Hive to utilize an unlimited set of private and public key pairs to secure multiple Hive accounts with the same device. Read more [here](https://peakd.com/hive/@engrave/hive-is-now-officially-supported-by-ledger). 
+#### Audit the code
 
-Much technical effort went into this integration. Hive does not use the unspent transaction output (UTXO) protocol model. The Ledger implementation for Hive utilizes the [SLIP-0048: Deterministic Key Hierarchy for Graphene-based Networks](https://github.com/satoshilabs/slips/blob/master/slip-0048.md) standard  which extends BIP-44 standard to match role-based model.
+In my commitment to transparency and security, HiveAuth Mobile is more than just an app—it’s a community project. As such, the codebase is open-source on [GitHub](https://github.com/hiveauth/hive-auth-mobile), where it is available for auditing by anyone with the interest and technical expertise to do so.
 
-The Hive-Ledger implementation allows users to view and manage public keys using a special [Hive Ledger Wallet](https://hiveledger.io) companion application. It facilitates the review of transaction properties such as transfers and staking amounts, HIVE and HBD recipients, key derivation paths, delegation, governance voting, and much more. All operations and their properties are visible on a device screen. Users must approve transactions with a digital signature issued by the device.  
+### Acknowledgement 
 
-This is an amazing development and addition to the Hive ecosystem! 
+I would like to give credit to the pivotal role played by @sagarkothari88 in the genesis of this application. His expertise and dedication have been instrumental in bootstrapping the HiveAuth Mobile project, laying the groundwork for a tool that the Hive community may find invaluable.
 
-- [How to use Hive Ledger Wallet](https://peakd.com/engrave/@engrave/how-to-use-hive-ledger-wallet)
-- [How to create cold storage wallet with Ledger Nano and earn 20% HBD stable coin interest](https://peakd.com/engrave/@engrave/how-to-create-cold-storage-wallet-with-ledger-nano-and-earn-20-hbd-stable-coin-interest)
+Currently, Sagar is porting the app to iOS, ensuring that the secure, user-friendly experience of HiveAuth will be accessible to an even broader audience. 
 
-**About Ledger:**
-Founded in 2014, [Ledger](https://www.ledger.com) is a global digital asset and Web3 platform. More than 20 percent of the world’s crypto assets are secured through Ledger Nano wallets. Headquartered in Paris and Vierzon, France, with offices in London, New York, Singapore, and Portland, Ledger has a team of more than 700 professionals developing a variety of products and services to enable individuals and companies to securely buy, store, swap, and manage crypto assets. Devices include Ledger hardware wallets with more than 5 million units sold in more than 180 countries.
+Working with Sagar has been an absolute pleasure. It's been one of mutual enrichment and sharing of knowledge and skills that has benefited both the project and our personal growth.
 
-Ledger combines a hardware wallet—Nano S Plus or Nano X—and the Ledger Live app to offer consumers an easy start in their crypto journey while maintaining full control over their digital assets. 
+### Support
 
-With its ease of use, Ledger allows a user to begin investing in digital assets while achieving financial freedom in a safe and stress-free environment The Ledger Academy is a content portal that provides customers with education on the emerging Web3 ecosystem. Ledger has also developed Ledger Enterprise, a digital asset custody and security solution for institutional investors and financial players.</div>
-  <footer class="hive-post-embed__source">
-    <span class="hive-post-embed__source-label">Source:</span>
-    <a href="https://hive.blog/hive/@hiveio/hive-x-ledger-support-for-ledger-hardware-wallets">Hive x Ledger: Support for Ledger Hardware Wallets</a>
-    <span>by</span>
-    <a href="https://hive.blog/@hiveio">@hiveio</a>
-  </footer>
-</div>]]></content><author><name>hiveio</name></author><category term="news" /><category term="core" /><category term="wallet" /><category term="ledger" /><summary type="html"><![CDATA[We are thrilled to announce that Hive has been integrated with and is now available on Ledger Nano S, Nano S Plus, and Nano X hardware wallets effective today, November 1, 2022.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://images.hive.blog/DQmY6V5CTeBWrQ6D72dG7K4pgP8bvHpHXz3V6xVsANDi5pc/image.png" /><media:content medium="image" url="https://images.hive.blog/DQmY6V5CTeBWrQ6D72dG7K4pgP8bvHpHXz3V6xVsANDi5pc/image.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Hive is now officially supported by Ledger</title><link href="https://hivedocs.info/news/core/wallet/ledger/2022/11/01/hive-is-now-officially-supported-by-ledger.html" rel="alternate" type="text/html" title="Hive is now officially supported by Ledger" /><published>2022-11-01T10:23:57-07:00</published><updated>2022-11-01T10:23:57-07:00</updated><id>https://hivedocs.info/news/core/wallet/ledger/2022/11/01/hive-is-now-officially-supported-by-ledger</id><content type="html" xml:base="https://hivedocs.info/news/core/wallet/ledger/2022/11/01/hive-is-now-officially-supported-by-ledger.html"><![CDATA[<div class="hive-post-embed" data-hive-author="engrave" data-hive-permlink="hive-is-now-officially-supported-by-ledger">
-  <div id="content-engrave-hive-is-now-officially-supported-by-ledger" class="hive-post-embed__content" data-hive-render-target="true">![](https://files.peakd.com/file/peakd-hive/engrave/48YdnNGyye4zodge7bXCLy6bsded3n6732hGtyK3eBF4SK75e2Qet7pDJJDnuF8VyA.png)
+Support for the app is provided on Discord. I created a dedicated HiveAuth server where you can ask questions, write suggestions, report issues or get help as a developer. 
 
-I'm proud to announce that Ledger has finished their official review and published Hive application in their directory. **This means that Hive is now officially supported and available on all Ledger devices!** It has been already listed on [supported crypto assets](https://www.ledger.com/supported-crypto-assets) list on their official website. This is a huge milestone for Hive ecosystem as it drastically increases security and opens the ecosystem to more investors.
-
-After almost two years of effort, countless hours of development, testing, and writing documentation, everyone can easily install Hive app directly from Ledger Live and use it to protect their accounts. In case of any problems, they can also find some official [support articles](https://support.ledger.com/hc/en-us/articles/6672434290205-Hive-HIVE-?docs=true).
-
-# Why is it important?
-
-It is yet another milestone that Hive ecosystem has reached. Few weeks ago our core developers introduced [One-Block Irreversibility](https://peakd.com/hive-139531/@blocktrades/one-block-irreversibility-for-delegated-proof-of-stake-dpos) (changes introduced in HF26) and it puts Hive in a position of the industry leader in DPOS blockchains space. Let's take advantage of this!
-
-## Improved security
-
-Hardware wallets are considered one of the best ways to manage your crypto assets. Using a hardware wallet increases overall security because you never expose your private keys to the outside world. Private keys are securely stored inside the hardware and never leave it. Even if you connect the device via USB, there is no way to leak your private keys. That's essential for your account security as we all know that leaks happen all the time, even to those who take special care to prevent them.
-
-## More exposure for Hive ecosystem
-
-It also opens Hive to a broader audience. From now on, it can be targeted to people that rely on hardware wallets to protect their assets. It often happens, that crypto projects without hardware wallets support are not taken seriously. It is not a case anymore for Hive and combining it with 20% APR for keeping our stable coin, it makes a great opportunity to start onboarding more and more serious investors.
-
-
-# Hive Ledger Wallet
-
- * https://hiveledger.io
-
-[Hive Ledger Wallet](https://hiveledger.io) became the official wallet for Hive and Ledger integration. It is a featureful application that follows integration standards and allows Hive users to secure their accounts. It is available in Chrome, Opera and Brave browsers (unfortunately, other browsers do not support webUSB protocol).
-
-![](https://i.imgur.com/oGzyWc0.png)
-
-
-***
-
-**Btw, if you don't have a Ledger wallet yet, [buy one with this affiliate link](https://shop.ledger.com/?r=d5ee0e9dc3d0) to support me!**
-
-***
-
-I'm also eager to implement or help implement Hive Ledger support in other wallets, like **Vessel** and **Keychain** to make the experience even better and easier for the end user.
-
-***
-
-
-If you missed my previous posts, here's the list of useful links:
- * [How to use Hive Ledger Wallet](https://peakd.com/engrave/@engrave/how-to-use-hive-ledger-wallet)
- * [How to create cold storage wallet with Ledger Nano and earn 20% HBD stable coin interest](https://peakd.com/engrave/@engrave/how-to-create-cold-storage-wallet-with-ledger-nano-and-earn-20-hbd-stable-coin-interest)
-
-***
-
-# FAQ
-
-### What is it, for who and what does it do?
-
-This is a way to secure your account. Ultimately. You can replace your authority keys with those from your hardware wallet and use it to sign any transaction. It's not going to make your Hive experience easier but it will be a great way to create a safe cold wallet. 
-
-It is for everyone who wants to protect himself from being scammed or compromised. Keeping your `owner key` on Ledger device makes your account almost impossible to hack (this of course depends on how you treat your seed phrase). But from the key perspective - no one will have a chance to see it.
-
-
-### What happens if my device breaks / I lose it?
-
-All keys available on the device are derived from a single seed phrase in a deterministic and secure way by following SLIP-0048 standard. This means that in case of any problems with your device, you can recreate another one using the same seed phrase and replace it. You can even use multiple devices with the same seed phrase at the same time and it will work seamlessly.
-
-### Can I use my device to protect multiple accounts?
-
-Yes, keys can be derived from a hierarchical tree with an almost unlimited amount of branches, which means you can secure all of your accounts. I already did that and replaced owner keys in all my Hive accounts. You don't even need to remember anything - [hiveledger.io](https://hiveledger.io) will automatically discover all your accounts every time you visit it.
-
-### Can I power up Hive that is held on Ledger?
-
-First - it's crucial to understand that all your assets are stored in a decentralized database (blockchain) and Ledger device only keeps your private keys. This means that you can perform any operation while having an account associated with Ledger device.
-
-You can use Ledger to sign any transaction. It includes staking (powering up), governance operations, transfers and all L2 operations as well.
-
-### Would I still be able to vote and earn curation rewards?
-
-As stated above - yes, you can perform any operation on Hive blockchain. It **might be difficult** at the moment because if you replace `active` and `posting` keys, you rely on hiveledger.io which does not allow you to perform social operations easily but it will be accessible when we add Ledger support to Hive Keychain.
-
-### Can I replace only the master key to keep all social abilities like posting?
-
-That's correct and I would say it's recommended way. If you replace your `owner` key you are sure no one can steal your account. If you keep your old `active` and `posting` keys, you can keep using Hive Keychain or whatever wallet you're using right now.
-
-On this screen you need to unselect active and posting keys to keep the access in Hive Keychain:
-
-![](https://i.imgur.com/I0p20gD.png)
-
-You may want to replace all your keys only if you want to create a safe cold storage wallet that is ultimately protected.
-
-
-### I was using Hive app in developer mode, should I update it?
-
-It is recommended to disable developer mode in Ledger Live and update Hive app to the latest version. It introduces a blind signing feature that might be required to sign some of the transactions.
-
-### I use Hive so actively that it's probably a hassle for me to sign anything with the Ledger device.
-
-You can always replace only your owner key to ultimately protect your account, leaving current active and posting keys to be able to interact with other frontends. That's what I did. I'm able to write on peakd.com and sign it with Keychain and also interact with Hive Ledger Wallet at the same time.
-
-***
-
-# Call to action - Hive needs you!
-
-This is a great opportunity for the entire ecosystem and let's take advantage of this! Please spread and share this article to reach people that might be interested in Hive. Write your own and share it on Twitter, Facebook and other social media websites! The more people will hear about Hive the better for all of us!
-
-***
-
-**Don't forget to support me with your witness vote! Click [here](https://vote.hive.uno/@engrave) or on the image below:**
-
-<center>
-[![](https://images.hive.blog/DQmUghvic5TCPPvVkB4iB7eXmgQ3RQ4L8jkVizvuCBW8RMT/banner_engrave%20100.png)](https://vote.hive.uno/@engrave)
-</center>
-
-</div>
-  <footer class="hive-post-embed__source">
-    <span class="hive-post-embed__source-label">Source:</span>
-    <a href="https://peakd.com/hive/@engrave/hive-is-now-officially-supported-by-ledger">Hive is now officially supported by Ledger</a>
-    <span>by</span>
-    <a href="https://hive.blog/@engrave">@engrave</a>
-  </footer>
-</div>]]></content><author><name>engrave</name></author><category term="news" /><category term="core" /><category term="wallet" /><category term="ledger" /><summary type="html"><![CDATA[I'm proud to announce that Ledger has finished their official review and published Hive application in their directory.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://files.peakd.com/file/peakd-hive/engrave/48YdnNGyye4zodge7bXCLy6bsded3n6732hGtyK3eBF4SK75e2Qet7pDJJDnuF8VyA.png" /><media:content medium="image" url="https://files.peakd.com/file/peakd-hive/engrave/48YdnNGyye4zodge7bXCLy6bsded3n6732hGtyK3eBF4SK75e2Qet7pDJJDnuF8VyA.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Hive Authentication Services Development and Maintenance</title><link href="https://hivedocs.info/tools/authentication/2022/10/23/hiveauth-proposal-2.html" rel="alternate" type="text/html" title="Hive Authentication Services Development and Maintenance" /><published>2022-10-23T08:16:24-07:00</published><updated>2022-10-23T08:16:24-07:00</updated><id>https://hivedocs.info/tools/authentication/2022/10/23/hiveauth-proposal-2</id><content type="html" xml:base="https://hivedocs.info/tools/authentication/2022/10/23/hiveauth-proposal-2.html"><![CDATA[<div class="hive-post-embed" data-hive-author="arcange" data-hive-permlink="hiveauth-proposal-2">
-  <div id="content-arcange-hiveauth-proposal-2" class="hive-post-embed__content" data-hive-render-target="true">![](https://i.imgur.com/QnlB5h6.png)
-
-The Hive Authentication Services have been officially launched several months ago and I would like to thank everyone who has given their support and enabled its development.
-
-### What are Hive Authentication Services?
-
-![](https://i.imgur.com/dLPYaIT.png)
-
-Hive Authentication Services (HiveAuth) makes it easy and secure for users to authenticate without providing any password or private key
-• on any device (mobile, tablet, desktop, …)
-• on any operating System (Android, iOS, Windows, macOS, Linux, …)
-• on any applications (either web, desktop or mobile)
-
-As of today, HiveAuth provides the most simple and secure 3FA authentication process.
-
-HiveAuth solves password problems and is phishing-proof because you no longer need to provide your password or private key to any HiveAuth-enabled app or website.
-
-![](https://i.imgur.com/ZZhk0cv.png)
-
-More than 10K users have used it at least once to authenticate with their favorite application and the HiveAuth infrastructure handles more than 9K requests per day (authentications or transactions). And it's growing every day!
-
-### Work done
-
-A lot has happened since the first announcement and if you have regularly followed updates regarding HiveAuth, you know that we have never stopped working on the project, both visibly by implementing new features and behind the scenes providing help for app developers.
-
-Here is a quick recap of the work that has been done:
-
-* [The very first Annoucement](/@arcange/hive-authentication-services-proposal)
-* Creation of a guide for developers [[1]](/@arcange/hive-authentication-services-developer-guide-part-1) [[2]](/@arcange/hive-authentication-services-developer-guide-part-2)
-* Creation of a Private Key Storage Application (PKSA) [guide](/@arcange/hive-authentication-services-pksa)
-* Development and open-sourcing of a [PKSA](https://github.com/hiveauth/hive-auth-pksa) example
-* Creation of HiveAuth integration code [example](/@arcange/hiveauth-html-example)
-* Creation of the official [HiveAuth website](https://hiveauth.com)
-* Production infrastructure setup and official [Go Live](/@arcange/hive-authentication-services-going-live-on-22022022)
-
-Several important improvements have been made along the way:
-* [Session Recovery Feature](/@arcange/hive-authentication-services-broken-session-recovery-feature-added)
-* [New Visual Identity](/@arcange/has-visual-identity)
-
-
-Developer support work has also been substantial
-* creation of an open-source [HiveAuth library](/@arcange/has-wrapper-library) for developers
-* Support to @mintrawa for its [Hive Authentication Client](/@mintrawa/hive-authentication-client-hac) library (HAC)
-* Support to @quochuy for its [HiveAuth Client](/@quochuy/hiveauth-client-library) library
-* Help for integration into [Keychain Mobile](/@keychain/hive-keychain-dhf-3-weeks-30-31)
-* Help for integration into [Condenser](/@quochuy/working-on-hive-authentication-services-integration-for-the-condenser) (hive.blog)
-* Help for integration into [dBuzz](/@dbuzz/dbuzz-will-be-implementing-the-hive-authentication-services-has) [[2]](/@jacuzzi/hivekey-chain-hive-authentication-services-and-you)
-* Help for integration into [PeakD](/@peakd/calling-all-hiveauth-users-peakd-needs-your-input)
-* Help for integration into dlux.io
-* Help for integration into CryptoShots
-* Integration into [Engage](/@arcange/engage-update-hiveauth)
-
-Lot of time has also been spent on creating and maintaining a clear and exhaustive [documentation](https://docs.hiveauth.com) available at https://docs.hiveauth.com. It contains:
-* presentation of the project
-* detailed description of the HAS protocol
-* complete guide for application developers
-* complete guide for wallet developers (PKSA)
-* tutorials with multiple code examples
-* link to open-source repositories for PKSA and apps libraries
-* visual material for developers and writers
-
-Preparation of HiveAuth presentation for several events
-
-* Presentation at [HiveFest 6](https://www.youtube.com/watch?v=otrv7CrrYkE&amp;t=7605s)
-* The [CryptoManiacs Podcast](https://3speak.tv/watch?v=jongolson/hmpalavq) with @jongolson and @taskmaster4450
-* Presentation at [HiveFest 7](https://www.youtube.com/watch?v=dG65h-YCK8Q)
-* Presentation at [Oklahoma State University](/@arcange/presenting-hiveauth-at-oklahoma-state-university) Blockchain Summit
-
-
-## Request for funding
-
-This funding proposal aims to further develop, support and raise awareness of HiveAuth as well as cover the costs of the underlying infrastructure.
-
-### What's the benefit for Hive?
-
-Hive Authentication Services has become the first fully decentralized authentication service backed by a blockchain. It enables the concept of ***"Your Hive account is your key"*** to become a reality, both for the Hive ecosystem and for the "outside world".
-
-HiveAuth opens the door to countless possibilities. It also highlights the many functionality and ease of development on Hive. 
-
-Recent presentations to audiences outside of the Hive ecosystem have clearly demonstrated that this is not only attracting audience interest in HiveAuth but also in the Hive blockchain itself.
-
-### Budget
-
-For this new proposal, we are applying for a daily budget of 325 HBD for a period of 12 months.
-
-### What's the funding for?
-
-There is still a lot of work to be done, in terms of development, support and communication. 
-
-**1. Development roadmap**
-
-* support for multi-sig transactions (WIP)
-* support for variable timeouts for requests
-* support for signing transactions with multiple operations
-* support for signing transactions with multiple accounts
-* support for integration into existing new Apps and PKSA
-* support for multiple HAS nodes to allow load balancing and failover (WIP)
-* improve the redundancy and the scalability of the infrastructure (WIP)
-* dockerization of the HAS nodes for easy deployment
-* creation of a HAS node deployment tutorial
-* creation of new tutorials and code examples for additional development languages
-
-and much more...
-
-**2. Regular work**
-* Code maintenance and deployment
-* Support to users and (d)Apps developers
-* Documentation maintenance, both for users and developers
-* Communication and external awareness 
-
-**3. Infrastructure**
-
-* Server(s) + Firewall
-* Security management and monitoring tools
-* Performances monitoring tools
-* Domain registration
-* Backup services
-
-## Support
-
-I have always been easy to reach, responsive and as helpful as possible. 
-
-If you have any questions, support is provided on [Discord](https://discord.gg/Tk5dkAgQPh)
-
----
-# Support This Proposal:
-
-* [Vote for this proposal on Peakd](https://peakd.com/me/proposals/240)
-* [Vote for this proposal on Ecency](https://ecency.com/proposals/240)
-* [Vote for this Proposal on Hive.blog](https://wallet.hive.blog/proposals)
-* [Vote for this Proposal using HiveSigner](https://hivesigner.com/sign/update_proposal_votes?proposal_ids=%5B%22240%22%5D&amp;approve=true)
-
-Thank you for your support!</div>
-  <footer class="hive-post-embed__source">
-    <span class="hive-post-embed__source-label">Source:</span>
-    <a href="https://peakd.com/hive-139531/@arcange/hiveauth-proposal-2">Hive Authentication Services Development and Maintenance</a>
-    <span>by</span>
-    <a href="https://hive.blog/@arcange">@arcange</a>
-  </footer>
-</div>]]></content><author><name>arcange</name></author><category term="tools" /><category term="authentication" /><summary type="html"><![CDATA[The Hive Authentication Services have been officially launched several months ago and I would like to thank everyone who has given their support and enabled its development.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://i.imgur.com/QnlB5h6.png" /><media:content medium="image" url="https://i.imgur.com/QnlB5h6.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">HF27 is Coming on October 24th - Some Slight Additional Evolution Needed</title><link href="https://hivedocs.info/news/core/development/2022/10/22/hf27-is-coming-on-october-24th-some-slight-additional-evolution-needed.html" rel="alternate" type="text/html" title="HF27 is Coming on October 24th - Some Slight Additional Evolution Needed" /><published>2022-10-22T10:59:21-07:00</published><updated>2022-10-22T10:59:21-07:00</updated><id>https://hivedocs.info/news/core/development/2022/10/22/hf27-is-coming-on-october-24th-some-slight-additional-evolution-needed</id><content type="html" xml:base="https://hivedocs.info/news/core/development/2022/10/22/hf27-is-coming-on-october-24th-some-slight-additional-evolution-needed.html"><![CDATA[<div class="hive-post-embed" data-hive-author="hiveio" data-hive-permlink="hf27-is-coming-on-october-24th-some-slight-additional-evolution-needed">
-  <div id="content-hiveio-hf27-is-coming-on-october-24th-some-slight-additional-evolution-needed" class="hive-post-embed__content" data-hive-render-target="true">
-![](https://files.peakd.com/file/peakd-hive/hiveio/23t6zNLwhGYp6GuwE7AK8JC2gHRXBUbo18bBr3MxG4sfmTPUKLZPDtD8eBF1CcbucjsTD.gif)
-
-
-## Hardfork 26 has been live for more than a week, and the performance improvements and new features have been incredible across the board. It may seem a bit of a shock that we need to have another quick code upgrade two weeks later! Read on for details of why HF27 is already scheduled for an important fix.
-
-If you missed the fact that the Hive codebase has just undergone *Evolution* for expansion of ease of onboarding, higher performance, lowered costs, and other great benefits, you can find [the official explainer post here](https://hive.blog/hive/@hiveio/the-evolution-of-hive-hardfork-26). After more than a week, the new Resource Credit delegation system and features like OBI (one block irreversibility), compression, and snapshots are drastically improving quality of life for projects and users in the ecosystem. 
-
-However, shortly after the new hardfork went live, witnesses discovered one aspect of the new codebase is not behaving exactly as it should: the block production schedule is randomly shuffling through backup witnesses improperly. Some backups are scheduled to produce a block each round (similar to a top 20 witness) for multiple rounds, while others are being skipped for much longer than they should be according to their rank. While this bug requires a quick hardfork to fix, it does not pose a threat to the blockchain, tokens and assets, and does not require a replay of infrastructure.
-
-While there is no avenue for this shuffling issue to make it easier to attack the chain, it did impact reward incentives to backup witnesses, which could lead to a potential loss of backup witnesses in the long term. There's no doubt this has been a very frustrating time for backup witnesses who are waiting to have the shuffle land on them! It is important to note that all block production rewards were paid out at the correct rate and still at random to backup witnesses as scheduled: no additional rewards were paid, and none were missed. However, some backup witnesses have been lucky and have signed many more blocks than they normally would have, and some backup witnesses have not been scheduled at all when they normally would have been. It is very important to get this fixed as quickly as possible so that witness rank is properly impacting scheduling again, but not so fast that we disrupt exchanges, infrastructure providers, and users. 
-
-This fix has been in testing for a week now, and is ready to be deployed. If you check Hive's witness ranking lists, you will see some witnesses have already begun signalling Version 1.27.0. While there is very little by way of code that needed to be written to correct this shuffling issue, making sure the fix does not extend node downtime is paramount, as we are still having some infrastructure catching up after HF26. 
-
-### ♦️ What this means for witnesses:
-
-## *You must upgrade to version 1.27.0*
-
-**Hardfork 27 will not require a replay.** You will be able to stop your node, upgrade, and restart. There will be almost no downtime required to apply the new version that includes the scheduling fix.
-
-**Find the 1.27.0 release tagged on the official repo here:
-https://gitlab.syncad.com/hive/hive/-/tags/v1.27.0**
-
-HF27 will come into effect on or after Monday, October 24th at 12:00 UTC, when consensus is reached.
-
-
-### ♦️ What this means for our exchanges and other types of infrastructure provider:
-Hardfork 27 will not require any additional downtime. Much like witness nodes, exchange and other types of nodes will be able to stop, apply the new version, and restart. Our liaisons are working with exchanges and they have nearly completed their HF26 upgrades. Applying HF27 will not require an additional period of weeks of their nodes being kept offline.
-
-### ♦️ What this means for end users:
-You will not see any additional downtime, or much of anything at all! This hardfork does absolutely nothing above and beyond fixing the scheduling issue, as well as some small changes to snapshots, which are ways of recording the state of a node at a specific period in time for faster maintenance. There are no changes to any aspects of the core blockchain code apart from these "back end" fixes. 
-
-
-## While we've had a spectacular run with smooth code deployment over the past few years, it is inevitable that there will be some bumps along the way.
-Every hardfork is an opportunity to improve our testing regimen and to get more and more people contributing to code and bug hunting. This particular scheduling problem is overall harmless and does indeed still distribute block production rewards randomly, but definitely has a big impact on our backup witnesses and their block production rewards. It's fair to be concerned about chain security and to operate with that in mind, but equally important to make sure that Hive's decentralized distribution continues to all of the amazing block producers securing the chain from around the world.
-
-Working as a team and a community in co-operation, competition, and collaboration simultaneously can be really difficult. How we handle getting better with each hardfork, bug, success and hurdle is part of what has made this blockchain and its users so resilient.
-## Hive's Evolution thus far has been a pretty incredible feat to bee a part of, so thank you for your contribution! 🐝
-</div>
-  <footer class="hive-post-embed__source">
-    <span class="hive-post-embed__source-label">Source:</span>
-    <a href="https://peakd.com/hive/@hiveio/hf27-is-coming-on-october-24th-some-slight-additional-evolution-needed">HF27 is Coming on October 24th - Some Slight Additional Evolution Needed</a>
-    <span>by</span>
-    <a href="https://hive.blog/@hiveio">@hiveio</a>
-  </footer>
-</div>]]></content><author><name>hiveio</name></author><category term="news" /><category term="core" /><category term="development" /><summary type="html"><![CDATA[Quick Schedule Fix HF27 will come into effect on or after Monday, October 24th at 12:00 UTC, when consensus is reached.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://files.peakd.com/file/peakd-hive/hiveio/23t6zNLwhGYp6GuwE7AK8JC2gHRXBUbo18bBr3MxG4sfmTPUKLZPDtD8eBF1CcbucjsTD.gif" /><media:content medium="image" url="https://files.peakd.com/file/peakd-hive/hiveio/23t6zNLwhGYp6GuwE7AK8JC2gHRXBUbo18bBr3MxG4sfmTPUKLZPDtD8eBF1CcbucjsTD.gif" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Hive HF27 has been released for HIAB - please update (Hive-in-a-box update info)</title><link href="https://hivedocs.info/tools/docker/2022/10/20/hive-hf27-has-been-released-for-hiab-please-update-hive-in-a-box-update-info.html" rel="alternate" type="text/html" title="Hive HF27 has been released for HIAB - please update (Hive-in-a-box update info)" /><published>2022-10-20T10:34:30-07:00</published><updated>2022-10-20T10:34:30-07:00</updated><id>https://hivedocs.info/tools/docker/2022/10/20/hive-hf27-has-been-released-for-hiab-please-update-hive-in-a-box-update-info</id><content type="html" xml:base="https://hivedocs.info/tools/docker/2022/10/20/hive-hf27-has-been-released-for-hiab-please-update-hive-in-a-box-update-info.html"><![CDATA[<div class="hive-post-embed" data-hive-author="someguy123" data-hive-permlink="hive-hf27-has-been-released-for-hiab-please-update-hive-in-a-box-update-info">
-  <div id="content-someguy123-hive-hf27-has-been-released-for-hiab-please-update-hive-in-a-box-update-info" class="hive-post-embed__content" data-hive-render-target="true">As I’m currently travelling, I’ll keep this short. Apologies for any weird grammar, I’m writing this post on a tablet.
-
-Hard fork 27 has been released for Hive witness, seed, and rpc nodes - which fixes a bug in the witness scheduler, so that backup witnesses are scheduled normally as they were in HF25.
-
-I believe the HF triggers on Monday 24 Oct, but I’m not sure what time.
-
-Since I’m not at home, my backup admin has built and published the HF27 docker build for HIAB servers, so you can easily upgrade your servers.
-
-No replay is required, as it’s a minor update (treated as a HF due to consensus changes) - so you can simply install and restart:
-
-```
-./run.sh install
-./run.sh restart
-```
-
-If you have a @privex Hive Node-in-a-box server - as no replay is required, you can simply install and restart as shown above, but if you have problems, we’ll be updating our templates soon, so it’ll be possible to do a standard reinstall to upgrade to HF27.
-
-Thanks for reading!
-
-If you like what I do, please [vote for me as a witness](https://peskd.com/witnesses)! :)</div>
-  <footer class="hive-post-embed__source">
-    <span class="hive-post-embed__source-label">Source:</span>
-    <a href="https://peakd.com/witness-update/@someguy123/hive-hf27-has-been-released-for-hiab-please-update-hive-in-a-box-update-info">Hive HF27 has been released for HIAB - please update (Hive-in-a-box update info)</a>
-    <span>by</span>
-    <a href="https://hive.blog/@someguy123">@someguy123</a>
-  </footer>
-</div>]]></content><author><name>someguy123</name></author><category term="tools" /><category term="docker" /><summary type="html"><![CDATA[New HF fixes witness scheduling - instructions on updating Hive-in-a-box + Privex NIAB]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://hivedocs.info/assets/images/favicon.png" /><media:content medium="image" url="https://hivedocs.info/assets/images/favicon.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">HiveSQL Update - RC Delegations data available</title><link href="https://hivedocs.info/news/sql/database/2022/10/18/hivesql-update-20221018.html" rel="alternate" type="text/html" title="HiveSQL Update - RC Delegations data available" /><published>2022-10-18T05:23:06-07:00</published><updated>2022-10-18T05:23:06-07:00</updated><id>https://hivedocs.info/news/sql/database/2022/10/18/hivesql-update-20221018</id><content type="html" xml:base="https://hivedocs.info/news/sql/database/2022/10/18/hivesql-update-20221018.html"><![CDATA[<div class="hive-post-embed" data-hive-author="arcange" data-hive-permlink="hivesql-update-20221018">
-  <div id="content-arcange-hivesql-update-20221018" class="hive-post-embed__content" data-hive-render-target="true">![](https://i.imgur.com/tYFgjui.png)
-
-Retrieving information about RC delegations can be a bit tricky. Although the Hive API generally allows you to retrieve information from the blockchain, there is no API call to easily find who has delegated RCs to whom.
-
-### HiveSQL to the rescue
-
-Fortunately, HiveSQL allows you to retrieve related information from the `TxCustoms` table which includes all creation, modification or removal of RC delegation operations carried out by users.
-
-However, the main difficulty comes from the fact that you have to filter custom_json operations, parse the JSON payload and perform computations with each operation to get the state of the delegation between accounts.
-
-Add to this that you have to take into account a [bug that I discovered and reported](https://gitlab.syncad.com/hive/hive/-/issues/395) yesterday. This bug in the processing of RC delegation operations will probably be corrected soon, but it must be taken into account for existing operations.
-
-### HiveSQL to the rescue (bis repetita)
-
-Due to all the technical reasons mentioned above, retrieving an accurate list of delegators or delegatees is complex and resources consuming task.
-
-That's why I added a new non-consensus state table named `RCDelegations` to the HiveSQL database in order to allow its users to retrieve RC delegations data quickly and easily.
-
-It contains the list of all **active** RC delegations with the following info:
-
-|Column|Description|
-|-|-|
-|delegator|The account delegating Hive Power|
-|delegatee|The account receiving Hive Power delegation|
-|rc|The amount of RCs delegated|
-
-## Documentation
-
-HiveSQL documentation has been updated and can be viewed at https://docs.hivesql.io
-
-## Support
-
-If you have any questions or remarks, support for HiveSQL is provided on [Discord](https://discord.gg/kyEFDfT).
+You can join our Discord by following this link: https://discord.gg/VxtYPatjPG
 
 ---
 <center>
 
 ### Check out my apps and services
-<a href="/hive/@hive.engage/stay-connected-with-your-hive-audience-and-catch-attention"><img src="https://i.imgur.com/GiNJqlm.png" /></a><a href="/@hivebuzz"><img src="https://i.imgur.com/B4UTun2.png" /></a><a href="https://hivesql.io"><img src="https://i.imgur.com/EPN8RW6.png" /></a><a href="/hive/@arcange/introducing-hive-account-recovery"><img src="https://i.imgur.com/6TWeW7V.png" /></a><a href="/@hive.autoclaim"><img src="https://i.imgur.com/ih2pEOw.png" /></a></center>
+<a href="/hive/@hive.engage/stay-connected-with-your-hive-audience-and-catch-attention"><img src="https://i.imgur.com/GiNJqlm.png" /></a><a href="https://docs.hivebuzz.me"><img src="https://i.imgur.com/B4UTun2.png" /></a><a href="/@hivesql"><img src="https://i.imgur.com/EPN8RW6.png" /></a><a href="https://hiveauth.com"><img src="https://i.imgur.com/2Ws6KzW.png" /></a><a href="/hive/@arcange/introducing-hive-account-recovery"><img src="https://i.imgur.com/6TWeW7V.png" /></a><a href="/@hive.autoclaim"><img src="https://i.imgur.com/ih2pEOw.png" /></a><a href="https://hivexfer.com"><img src="https://imgur.com/LjJPCSy.png" /></a></center>
 <center>
 
-### [Vote for me as a witness ![](https://i.imgur.com/2bi4SnT.png)](https://vote.hive.uno/@arcange)</center></div>
+### [Vote for me as a witness ![](https://i.imgur.com/2bi4SnT.png)](https://hivesigner.com/sign/account-witness-vote?witness=arcange&amp;approve=1)
+</center></div>
   <footer class="hive-post-embed__source">
     <span class="hive-post-embed__source-label">Source:</span>
-    <a href="https://peakd.com/hive-139531/@arcange/hivesql-update-20221018">HiveSQL Update - RC Delegations data available</a>
-    <span>by</span>
+    <a href="https://hive.blog/@arcange/introducing-hiveauth-mobile-android">Introducing HiveAuth Mobile - Now available on Android</a>
+    by
     <a href="https://hive.blog/@arcange">@arcange</a>
   </footer>
-</div>]]></content><author><name>arcange</name></author><category term="news" /><category term="sql" /><category term="database" /><summary type="html"><![CDATA[HiveSQL has been updated with a new table that helps find information about RC delegations faster and easier.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://i.imgur.com/tYFgjui.png" /><media:content medium="image" url="https://i.imgur.com/tYFgjui.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>
+</div>]]></content><author><name>arcange</name></author><category term="news" /><category term="hiveauth" /><category term="authentication" /><summary type="html"><![CDATA[Today I'm happy release the HiveAuth Mobile for Android, a new, user-friendly, and highly secure app to store your keys]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://files.peakd.com/file/peakd-hive/arcange/23tGcJ3432bU8Hrx8ZhXxsjnKnjFtH56H7qWf9xyHDYMJ17XNjQjXYnMzqus6rMnGK1Sh.png" /><media:content medium="image" url="https://files.peakd.com/file/peakd-hive/arcange/23tGcJ3432bU8Hrx8ZhXxsjnKnjFtH56H7qWf9xyHDYMJ17XNjQjXYnMzqus6rMnGK1Sh.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Clive updates - the governance operations are completed in the TUI and savings-related commands are available in the CLI</title><link href="https://hivedocs.info/news/wallet/clive/2023/12/20/clive-updates-the-governance-operations-are-completed-in-the-tui-and-savings-related-commands-are-available-in-the-cli.html" rel="alternate" type="text/html" title="Clive updates - the governance operations are completed in the TUI and savings-related commands are available in the CLI" /><published>2023-12-20T14:02:03-08:00</published><updated>2023-12-20T14:02:03-08:00</updated><id>https://hivedocs.info/news/wallet/clive/2023/12/20/clive-updates-the-governance-operations-are-completed-in-the-tui-and-savings-related-commands-are-available-in-the-cli</id><content type="html" xml:base="https://hivedocs.info/news/wallet/clive/2023/12/20/clive-updates-the-governance-operations-are-completed-in-the-tui-and-savings-related-commands-are-available-in-the-cli.html"><![CDATA[<div class="hive-post-embed" data-hive-author="thebeedevs" data-hive-permlink="clive-updates-the-governance-operations-are-completed-in-the-tui-and-savings-related-commands-are-available-in-the-cli">
+  <div id="content-thebeedevs-clive-updates-the-governance-operations-are-completed-in-the-tui-and-savings-related-commands-are-available-in-the-cli" class="hive-post-embed__content" data-hive-render-target="true">We were focused on two main tasks during the last weeks: implementing the voting for proposals, completing the configuration of the account proxy (for governance votes), and implementing new commands in the CLI.
+
+## The governance operations 
+
+Voting for witnesses, voting for proposals, and setting a proxy - all governance operations you may do using Clive. 
+See: [Voting for witnesses and setting a proxy](/@thebeedevs/clive-updates-vote-for-witnesses-using-clive)
+
+Now we added the last governance operation: voting for proposals.
+
+### Voting for proposals
+
+![Update your proposal votes](https://images.hive.blog/DQmRVYVxCxhp9UHMKo7wupJiBzWShUh6YFTAYUfMTyf9QRj/img1.png)
+
+The proposals view works like the witnesses view.
+
+It is divided into three parts:
+
+- On the left side, there is a list of proposals - by default ordered by total votes, but your votes are first. You can change the vote by clicking on the checkbox (`[X]`).
+- The list of proposals is long - you can go to the previous/next page of the list using your mouse by clicking the arrows placed in the header or via your keyboard using PgUp/PgDn buttons.
+- On the right side, there is a list of Actions to be performed - here you can see the list of vote operations that you want to add to the cart (marked green or red) or that you have already added to the cart (grayed out), but have not been broadcast yet.
+- On the bottom, a section allows you to order a list by:
+    - Total votes,
+    - Total votes, yours first,
+    - Start date,
+    - End date,
+    - Creator.
+- Additionally, you can choose the ordering direction (descending or ascending) and select the proposal status (all, active, inactive, votable, expired).
+
+The vote for proposal operation works the same as any other operation in Clive, so you may:
+- Fast broadcast
+- Add to cart
+- Finalize transaction
+
+### Setting a proxy
+
+If a user sets a proxy, the witnesses and proposals for whose the proxy votes are listed on the witnesses view and on the proposal view.
+
+![Witnesses](https://images.hive.blog/DQmNWDtdZ9bMdC6F6ck4q3URpnnBhcZSwPZ5g1s5c5tr5hL/img2.png)
+
+![Proposals](https://images.hive.blog/DQmagnnkEgLawFnb2AfZYxWB4Fsqydk5raUipF8jg2zHqUG/img3.png)
+
+## CLI Savings operations
+
+The savings operations are: transfer to savings, transfer from savings and cancel transfer from savings.
+
+There are the following savings related commands:
+ - clive process savings deposit - transfer to savings,
+ - clive process savings withdrawal - transfer from savings,
+ - clive process savings withdrawal - cancel transfer form savings. 
+
+See: [How it works in TUI](/@thebeedevs/clive-updates-savings-operations-are-now-available)
+
+Information about parameters of the `clive process savings` command can be displayed by running `clive process savings -h`.
+
+![clive process savings](https://images.hive.blog/DQmY6KqpTxj8rLV2BGjCkGBAWY8PNaHLZHUGZJZrszTvd7t/img4.png)
+
+### CLI Savings operation - deposit
+
+Information about parameters of `clive process savings deposit` command  can be displayed by running `clive process savings deposit -h`.
+
+If you have defined a default profile (or you only have a single profile), the default profile is used and you don’t have to enter `profile-name`.
+
+If you want to broadcast the transfer, you will always have to enter the `password`. 
+
+![clive process savings deposit help](https://images.hive.blog/DQmb4MwJQbNnEqe9BqCSRyfhHotSAEFVkqvUsSPbDMpqXgR/img5.png)
+
+Example:
+
+Broadcasting transfer to savings.
+
+![clive process savings deposit example](https://images.hive.blog/DQmPQvR3nqUSoiajwEpp1gjKXo3hsw9ay7cBqQ2tbPtorZT/img6.png)
+
+### CLI Savings operation - withdrawal
+
+Information about parameters of `clive process savings withdrawal`command can be displayed by running `clive process savings withdrawal -h`.
+
+If you have defined a default profile (or you only have a single profile), the default profile is used and you don’t have to enter `profile-name`.
+
+If you want to broadcast the transfer, you will always have to enter the `password`. 
+
+![clive process savings withdrawal help](https://images.hive.blog/DQmaiKye7Xt6Sdcy2qhJSNNtaptmzwkFhyk38B6sxyitANb/img7.png)
+
+Example:
+
+Broadcasting transfer from savings.
+
+![clive process savings withdrawal example](https://images.hive.blog/DQmWp1hL9TUfReny5ffMDBCjzvgZQ9wC6qF9JU6xYpPL3W9/img8.png)
+
+You can check pending transfers from savings by using `clive show pending withdrawals` command.
+
+![clive show pending withdrawals](https://images.hive.blog/DQmdnjifwV8gtaYW1yr7vUbu8H2q4oZdqh5aYxJP8gr3XW7/img9.png)
+
+### CLI Savings operation - withdrawal-cancel
+
+Information about parameters of the `clive process savings withdrawal-cancel` command can be displayed by running `‘clive process savings withdrawal-cancel -h`.
+
+If you have defined a default profile (or you only have a single profile), the default profile is used and you don’t have to enter `profile-name`.
+
+If you want to broadcast the transfer, you will always have to enter the `password`. 
+
+![clive process savings withdrawal-cancel help](https://images.hive.blog/DQmR29dAC6NwLTo8SRcLZwYfhXPBxwsboTYz9fWUFzGTj2N/img10.png)
+
+Example:
+
+Transaction `withdrawal-cancel` is created and signed but not broadcast.
+
+![clive process savings withdrawal-cancel example](https://images.hive.blog/DQmWq1sVUwWmsGUGEMqkdWebTo2LqDezAd3vtB6gVPf22Ju/img11.png)
+
+[Updated command schema](https://gitlab.syncad.com/hive/clive/-/blob/master/clive/__private/cli/commands_structure.md)
+
+[Complete list of corrected issues](https://gitlab.syncad.com/hive/clive/-/releases/v1.27.5.5)
+
+More info about running Clive can be found here: [Clive - alpha release](/@thebeedevs/clive-alpha-release). Please make sure you are using the most recent version: **v1.27.5.5**
+
+## TL;DR
+
+```
+docker run -ti hiveio/clive:v1.27.5.5
+```
+
+### Your feedback is invaluable and always welcome.</div>
+  <footer class="hive-post-embed__source">
+    <span class="hive-post-embed__source-label">Source:</span>
+    <a href="https://hive.blog/@thebeedevs/clive-updates-the-governance-operations-are-completed-in-the-tui-and-savings-related-commands-are-available-in-the-cli">Clive updates - the governance operations are completed in the TUI and savings-related commands are available in the CLI</a>
+    by
+    <a href="https://hive.blog/@thebeedevs">@thebeedevs</a>
+  </footer>
+</div>]]></content><author><name>thebeedevs</name></author><category term="news" /><category term="wallet" /><category term="clive" /><summary type="html"><![CDATA[We were focused on two main tasks during the last weeks: implementing the voting for proposals, completing the configuration of the account proxy (for governance votes), and implementing new commands in the CLI]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://images.hive.blog/DQmRVYVxCxhp9UHMKo7wupJiBzWShUh6YFTAYUfMTyf9QRj/img1.png" /><media:content medium="image" url="https://images.hive.blog/DQmRVYVxCxhp9UHMKo7wupJiBzWShUh6YFTAYUfMTyf9QRj/img1.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Vaultec’s multisig proposal to BlockTrades dev team</title><link href="https://hivedocs.info/news/core/multisig/2023/12/15/vaultec-s-multisig-proposal-to-blocktrades-dev-team.html" rel="alternate" type="text/html" title="Vaultec’s multisig proposal to BlockTrades dev team" /><published>2023-12-15T12:49:33-08:00</published><updated>2023-12-15T12:49:33-08:00</updated><id>https://hivedocs.info/news/core/multisig/2023/12/15/vaultec-s-multisig-proposal-to-blocktrades-dev-team</id><content type="html" xml:base="https://hivedocs.info/news/core/multisig/2023/12/15/vaultec-s-multisig-proposal-to-blocktrades-dev-team.html"><![CDATA[<div class="hive-post-embed" data-hive-author="blocktrades" data-hive-permlink="vaultec-s-multisig-proposal-to-blocktrades-dev-team">
+  <div id="content-blocktrades-vaultec-s-multisig-proposal-to-blocktrades-dev-team" class="hive-post-embed__content" data-hive-render-target="true">![blocktrades update.png](https://images.hive.blog/DQmSihw8Kz4U7TuCQa98DDdCzqbqPFRumuVWAbareiYZW1Z/blocktrades%20update.png)
+
+I've been super busy for the past couple of months as we're trying to get out a major upgrade to the Hive/HAF software suite, so I've fallen behind on my progress posts.  I'll try to get one out next week, but in the meantime, I thought I would share a recording of the discussion our team had with @vaultec regarding layer 1 support for a more efficient signature system for signatures with multiple signers (i.e. multisigs).
+
+We didn't make a transcript of the recording, but for those who don't have time to listen, the short summary is we discussed some of the potential challenges and we're tentatively planning to support BLS signatures, unless something unexpectedly comes up once we dive into the details of implementing it. Note this feature wouldn't be in the upcoming 1.27.5 release as that is planned to be released very soon. 
+
+Below is a link to the recording:
+
+https://gtg.openhive.network/6a1b65ec/vaultec-bls.webm</div>
+  <footer class="hive-post-embed__source">
+    <span class="hive-post-embed__source-label">Source:</span>
+    <a href="https://hive.blog/@blocktrades/vaultec-s-multisig-proposal-to-blocktrades-dev-team">Vaultec&#39;s multisig proposal to BlockTrades dev team</a>
+    by
+    <a href="https://hive.blog/@blocktrades">@blocktrades</a>
+  </footer>
+</div>]]></content><author><name>blocktrades</name></author><category term="news" /><category term="core" /><category term="multisig" /><summary type="html"><![CDATA[I've been super busy for the past couple of months as we're trying to get out a major upgrade to the Hive/HAF software suite, so I've fallen behind on my progress posts]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://images.hive.blog/DQmSihw8Kz4U7TuCQa98DDdCzqbqPFRumuVWAbareiYZW1Z/blocktrades%20update.png" /><media:content medium="image" url="https://images.hive.blog/DQmSihw8Kz4U7TuCQa98DDdCzqbqPFRumuVWAbareiYZW1Z/blocktrades%20update.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Clive case study - CLI broadcasting a transaction using a private key from an offline computer</title><link href="https://hivedocs.info/howto/wallet/clive/2023/12/06/clive-case-study-cli-broadcasting-a-transaction-using-a-private-key-from-an-offline-computer.html" rel="alternate" type="text/html" title="Clive case study - CLI broadcasting a transaction using a private key from an offline computer" /><published>2023-12-06T12:06:51-08:00</published><updated>2023-12-06T12:06:51-08:00</updated><id>https://hivedocs.info/howto/wallet/clive/2023/12/06/clive-case-study-cli-broadcasting-a-transaction-using-a-private-key-from-an-offline-computer</id><content type="html" xml:base="https://hivedocs.info/howto/wallet/clive/2023/12/06/clive-case-study-cli-broadcasting-a-transaction-using-a-private-key-from-an-offline-computer.html"><![CDATA[<div class="hive-post-embed" data-hive-author="thebeedevs" data-hive-permlink="clive-case-study-cli-broadcasting-a-transaction-using-a-private-key-from-an-offline-computer">
+  <div id="content-thebeedevs-clive-case-study-cli-broadcasting-a-transaction-using-a-private-key-from-an-offline-computer" class="hive-post-embed__content" data-hive-render-target="true">## Assumptions
+
+A user wants to send a transfer and security is extremely important for him, so to broadcast a transfer, he uses two computers. The first computer is offline and has a private key, the second computer is online but has no access to the user's private key (air gap).
+
+Is it possible to do so using Clive? 
+YES!
+
+## Steps
+
+Precondition: 
+1. The user has to have Clive on both computers. 
+2. The first computer is online and has no access to private keys. 
+3. The second computer, where the keys are stored, is offline.
+
+### Step 1. The user prepares the transaction with the transfer on the online computer.
+
+To do this, the user has to:
+- Create a profile and add his account as a working account. The user may add the working account while creating a profile or later.
+
+![clive configure profile](https://images.hive.blog/DQmPiQabSFt9DKto5PspT6q4QDmopMmtrYNdjdjzNgURVjY/img1.png)
+
+- Prepare the transaction with the transfer - the transaction is not signed, not broadcast but saved to a file. Be aware that `--no-broadcast` must be explicitly specified.
+
+![clive process transfer help](https://images.hive.blog/DQmd7BsM6TidHpfgXRTAfYnybSwAHkhemmkKtVGMeAw6sRX/img2.png)
+
+
+![clive process transfer no broadcast](https://images.hive.blog/DQmVRR6mVtTSrE7CHaUnWQaMSLWLQoAeom9Qa2y559935aB/img3.png)
+
+File `transaction_unsigned.json`
+
+
+```
+{
+  "ref_block_num": 80617016,
+  "ref_block_prefix": 759485455,
+  "expiration": "2023-11-30T15:11:54",
+  "extensions": [],
+  "signatures": [],
+  "operations": [
+	{
+  	"type": "transfer_operation",
+  	"value": {
+    	"from": "guest4test1",
+    	"to": "gtg",
+    	"amount": {
+      	"amount": "1",
+      	"precision": 3,
+      	"nai": "@@000000021"
+    	},
+    	"memo": "test"
+  	}
+	}
+  ]
+}
+
+```
+
+### Step 2. The user moves the `transaction_unsigned.json` file to the offline computer.
+
+
+### Step 3 The user signs the transaction on the offline computer.
+
+To do this, a user has to:
+
+- Create a profile and add his account as a working account.
+
+![clive configure profile](https://images.hive.blog/DQmawFz1wPyF16PT2kJnd8M4Fzc9FPLbQKSVZrDjuSWj6iy/img4.png)
+
+- Add a key to the Beekeeper - Clive has access to the private key via the Beekeeper.
+
+![clive configure key add usage](https://images.hive.blog/DQmYxHMezXjsyZsYAC5HdA8ZepPuMeRwJER2umRZNZT7pGE/img5.png)
+
+![clive configure key add](https://images.hive.blog/DQmSgoRETEkJiETJDqGoGreLU385Fp9d5xggviTNc4K3Z2N/img6.png)
+
+- Load the transaction from the file,sign it using the private key and save it to another file.
+
+![clive process transaction usage](https://images.hive.blog/DQmQBhSZQM1CyUoVv8EJDbVhwxiPAw1N5ai1Nh45oraBfzE/img7.png)
+
+![clive process transaction](https://images.hive.blog/DQmcvPdxxv7Dm4wuQ6qfUsMC9goR5NtSixa1wkGw2tTU2JW/img8.png)
+
+File `transaction_signed.json`
+
+```
+{
+  "ref_block_num": 80617016,
+  "ref_block_prefix": 759485455,
+  "expiration": "2023-11-30T15:11:54",
+  "extensions": [],
+  "signatures": [
+    "1f07a022c90e1dac0d561eef74783427aafd9b89e7540ca7cec8e24127727ed4733cdf98a87efc98c0c86880e2c9553e7eba1b23a52a0801430686e4ea7105c9c5"
+  ],
+  "operations": [
+    {
+      "type": "transfer_operation",
+      "value": {
+        "from": "guest4test1",
+        "to": "gtg",
+        "amount": {
+          "amount": "1",
+          "precision": 3,
+          "nai": "@@000000021"
+        },
+        "memo": "test"
+      }
+    }
+  ]
+}
+```
+
+Of course, actions specific to profile creation and importing a private key must be performed only once on a given machine. You can use this profile and imported keys anytime you need to sign a transaction later.
+
+### Step 4. The user moves the `transaction_signed.json` file to the online computer.
+
+### Step 5. The user broadcasts the transaction on the online computer
+(we just skipped the `--broadcast` option since transaction broadcast is performed as a default action).
+
+![clive process transaction broadcast](https://images.hive.blog/DQmUNdBrvzpon5q6tho2CxjLNSgg6WVwpDFA6NnA4U3ixWB/img9.png)
+
+You can check the result here as well: https://hiveblocks.com/tx/2608e60e9ce0cf33f86c02e95efba0b364e1c8c4.
+
+[The updated command schema](https://gitlab.syncad.com/hive/clive/-/blob/master/clive/__private/cli/commands_structure.md)
+
+[The complete list of corrected issues](https://gitlab.syncad.com/hive/clive/-/releases/v1.27.5.4)
+
+More info about running Clive can be found here: [Clive - alpha release](/@thebeedevs/clive-alpha-release). Just please make sure to use the recent version: **v1.27.5.4**
+
+## TL;DR
+
+```
+docker run -ti hiveio/clive:v1.27.5.4
+```
+
+### Your feedback is invaluable and always welcome.</div>
+  <footer class="hive-post-embed__source">
+    <span class="hive-post-embed__source-label">Source:</span>
+    <a href="https://hive.blog/@thebeedevs/clive-case-study-cli-broadcasting-a-transaction-using-a-private-key-from-an-offline-computer">Clive case study - CLI  broadcasting a transaction using a private key from an offline computer</a>
+    by
+    <a href="https://hive.blog/@thebeedevs">@thebeedevs</a>
+  </footer>
+</div>]]></content><author><name>thebeedevs</name></author><category term="howto" /><category term="wallet" /><category term="clive" /><summary type="html"><![CDATA[A user wants to send a transfer and security is extremely important for him, so to broadcast a transfer, he uses two computers]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://images.hive.blog/DQmPiQabSFt9DKto5PspT6q4QDmopMmtrYNdjdjzNgURVjY/img1.png" /><media:content medium="image" url="https://images.hive.blog/DQmPiQabSFt9DKto5PspT6q4QDmopMmtrYNdjdjzNgURVjY/img1.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Fragile state - a development story (technical).</title><link href="https://hivedocs.info/news/core/development/2023/12/04/fragile-state-a-development-story.html" rel="alternate" type="text/html" title="Fragile state - a development story (technical)." /><published>2023-12-04T18:49:39-08:00</published><updated>2023-12-04T18:49:39-08:00</updated><id>https://hivedocs.info/news/core/development/2023/12/04/fragile-state-a-development-story</id><content type="html" xml:base="https://hivedocs.info/news/core/development/2023/12/04/fragile-state-a-development-story.html"><![CDATA[<div class="hive-post-embed" data-hive-author="andablackwidow" data-hive-permlink="fragile-state-a-development-story">
+  <div id="content-andablackwidow-fragile-state-a-development-story" class="hive-post-embed__content" data-hive-render-target="true">Some of you might have heard that RC will become part of consensus some time in the future. The plan is to make all necessary changes first, then leave it with no changes for one whole hardfork, to make sure all nodes are "on the same page". Only then make a single line change to turn warning into hard assertion making the whole mechanism part of consensus.
+<sub>I'd actually prefer to speed it up, since RC consensus is a direct or indirect prerequisite to many must-have features. So if all top witnesses switch to upcoming v1.27.5, maybe we can make it even for HF28.</sub>
+
+While RC was always required to broadcast transactions/blocks and to run a witness, it was (and still is) possible for it to be modified, so nodes with different code versions see state of RC differently and the differences are even retroactive (new code computes different RC state not just for new transactions, but for old ones too). Historically those differences were big and frequent, due to rapid changes after HF20 when RC was introduced as a replacement for bandwidth mechanism. Later there were still bugs that could cause disagreements between nodes even on the same code version. The bugs were fixed for HF26. But the fact that RC is still not part of consensus is actually pretty convenient from development standpoint since only one version of the code has to be kept. As a result there are differences between minor versions of current HF27 nodes. Such differences can cause warnings in node logs similar to this one:
+`Accepting transaction by notaboat, has 31621211 RC, needs 916378051 RC, block 69392132, witness r0nd0n.`
+It means there was a block (`69392132`) containing transaction that the node thinks was incorrectly allowed (by `r0nd0n`) because payer account (`notaboat`) did not have enough RC mana - the node notes its protest in its own log, but accepts the block with such transaction.
+
+As an example of recent differences, `hived` version 1.27.4 differs from previous versions in such a way that it does not put RC mana into negative. Previously in case the node was forced to accept transaction it thought was RC-incorrect, it would allow payer's RC to dip into negative for up to 2 hours worth of regeneration (if the hole was bigger, it would still only put negative 2 hours). The change in 1.27.4 puts the limit at zero (if anyone used more RC mana than they have and such transaction was somehow included in block, their RC mana is set to 0 instead of going negative). It was a step in right direction because, after RC becomes consensus, it will be impossible to ever use more mana than user has, making zero the absolute bottom. But such difference also means that 1.27.4 nodes might think affected users have more mana in comparison to what older nodes think.
+
+![](https://images.ecency.com/DQmZW4VYzJhWH3WhQTs1CodkPNSGQ5HVgMT8vCVkF7LFS6M/plates.jpg)
+<sub>[source](https://www.istockphoto.com)</sub>
+
+I'm slowly making changes towards the final goal of RC becoming consensus. In current version of `develop` RC is no longer a plugin, its code was moved to main code, but for safety reasons it is still temporarily isolated as if it was still a plugin (that is, exception from RC code will be stopped on the barrier and won't propagate further causing whole block to fail). I'm currently in the process of removing that isolation, starting with handling of virtual operations. After I've finished the batch of changes, I've run full replay to see if everything was still ok.
+
+One new "Accepting ..." warning showed up that I've not seen before. It was from fairly fresh block, so I didn't have it in the pattern because the pattern stopped earlier. I'd probably ignore it if it was from some witness running old version, but it was `blocktrades` that allowed RC-incorrect transaction:
+`Accepting transaction by pocketjs, has 91720737 RC, needs 91767026 RC, block 79129983, witness blocktrades.`
+
+---
+## Unexpected difference
+
+To find the possible problem with my changes I've run whole replay again (twice) with full logging for `pocketjs`. I thought the problem will show close to the block mentioned in the "Accepting ..." message, but the differences started very early:
+ - old `{"payer":"pocketjs","usage":[1182,0,0,4245248,166965],"cost":[499619042,0,0,1519011622,38465384],"max":"182243363280","rc":"161409039261","op":1}`
+ - new `{"payer":"pocketjs","usage":[1182,0,0,4245248,166965],"cost":[499619042,0,0,1519011622,38465384],"max":"182243363280","rc":"161409039262","op":1}`
+
+A difference of one seems like insignificant, but there should be none... Of course I just had to forget to add block number to the message, but the log also contained performance report, so I found that it was third comment (`"op":1`) made by `pocketjs` after block 36547200. And immediately before that it received an upvote and a curation.
+
+![](https://images.ecency.com/DQmQ6r2pDXQvvGShP7FXAhkDV62A63ovABVLJdmQqtvp97P/pocketjs.png)
+
+Hm... received upvotes don't influence RC, neither do curations...
+💡Aha! Curations don't change RC, but they did! When in testnet configuration RC could start at any block, it had to handle all operations that could influence vests. Once the code was changed, so testnet also starts RC with HF20 like mainnet, a lot of virtual operations no longer needed to be handled by RC code. That included curation related vops. Up to HF17 comment related rewards were stored directly on user main balances, but since then they were moved to separate reward balance, which has to be explicitly claimed. Since HF17 is before HF20, RC code no longer needed to look at those vops, so it no longer does.
+
+Ok, but how do those changes affect mainnet that always activated RC on HF20? Let's see what the change was about:
+https://gitlab.syncad.com/hive/hive/-/commit/db338d32f8c401d25103ed38fd703056bcea5f9c
+As you can see from the commit message, the change around curation related vop isn't even main topic of the commit. It was just done on the fly, since main change affected the code in similar fashion. The code is the same for every operation that can update vests. First the RC mana is regenerated using old parameters (amount of vests and therefore max mana) up to the point of operation execution. It is called in "pre apply operation" signal handler. Once operation updates vests, RC parameters are recalculated, so next time regeneration happens, it will use updated values. Update is called in "post apply operation" signal handler.
+&gt; Surely removing regeneration of RC mana when parameters don't change and no-op update of parameters can't change anything, right?
+
+Unfortunately not true. While update of parameters truly didn't do anything (computed exactly the same values as were already in the state), mana regeneration is not entirely neutral. It is done by calculating fraction of "time of full regeneration" that had actually passed since last regeneration and multiplied by power of that regeneration (max mana). The calculations are done on large integers, which means final division actually truncates resulting value if it does not divide perfectly. This means that the more regeneration cycles are performed, the less there might be on final mana. F.e. if we have `max = 12` and start at zero, single regeneration after 5 days will set the value to 12, however if we do superfluous regenerations before that, after 2 and 4 days, we'll get `0 + (12*2)/5 = 4` and `4 + (12*2)/5 = 8`, with final `8 + (12*1)/5 = 10` (the real values of RC mana are in billions on average and time is expressed in seconds and not whole days, but the principle is the same).
+
+**So, that innocent looking change influenced RC mana, case closed.**
+
+&gt; Wait a minute. Didn't you just show that new version will see more RC mana on the same account compared to old version? It doesn't at all fit situation with `blocktrades` that is running 1.27.4 - older than 1.27.5+ that is in `develop`.
+
+Ok, ok, you got me. We need to investigate further.
+
+---
+## I've seen that already...
+
+Every time `pocketjs` reached either zero or full mana the tiny differences caused by above problem would reset, so half of the old-vs-new logs actually matched.
+
+The exact moment when the new "Accepting ..." message shows up is with the following difference:
+ - old: `{"payer":"pocketjs","usage":[127,0,0,24320,119099],"cost":[63697579,0,0,3877090,24192357],"max":42228130976,"rc":15168,"op":0}`
+ - new: `{"payer":"pocketjs","usage":[127,0,0,24320,119099],"cost":[63697579,0,0,3877090,24192357],"max":42228130976,"rc":0,"op":0}`
+
+So, everything is the same except for the mana, but the difference is much bigger and new code showed less mana than old code. Since it bottomed mana at zero, let's see difference on previous operation:
+ - old: `{"payer":"pocketjs","usage":[130,0,0,24320,119099],"cost":[65227475,0,0,3874565,24200940],"max":42228130976,"rc":44862049,"op":0}`
+ - new: `{"payer":"pocketjs","usage":[130,0,0,24320,119099],"cost":[65227475,0,0,3874565,24200940],"max":42228130976,"rc":44800592,"op":0}`
+
+A big, 61457 difference (well, maybe not that big for RC value, but enough to cause problem). The difference is in the middle of a very long sequence of differences starting as early as block 68428800 - over 10M blocks before the problem exposed itself. The first difference in the sequence is the following:
+ - old: `{"payer":"pocketjs","usage":[131,0,0,24320,119099],"cost":[146631188,0,0,2690242,26789722],"max":42228130976,"rc":0,"op":0}`
+ - new: `{"payer":"pocketjs","usage":[131,0,0,24320,119099],"cost":[146631444,0,0,2690213,26789728],"max":42228130976,"rc":0,"op":0}`
+
+But what is it? 🤔 There are differences in resource costs...
+
+And then I remembered, that I've actually investigated such difference before and even made new pattern for "RC stats". The difference in costs was caused by the following change:
+https://gitlab.syncad.com/hive/hive/-/commit/1516893ebe56f7773e22bd12d7fb3c190e7c8ffd
+Among other changes calculation of extra cost (above cost of `custom_json_operation`) associated with execution of RC delegation was moved from signal handler to the evaluator. The change put it **after** check (see line 34) on activation of the feature at HF26. It made no difference for valid RC delegations, but changed cost of those that were ignored (posted too early), namely eliminated extra cost for them (after all they were not executed).
+
+The influence of that change was not straightforward. It shifted popularity share of resources. The change eliminated consumption of some resources, which made them less popular (therefore less costly), but that also means other resources became relatively more popular increasing their cost. The influence is not permanent. Over time its significance diminished and the old and new values would converge after several million blocks, but before that the differences in transaction costs easily reached the values observed in this case. When the differences in costs finally stopped affecting `pocketjs`, the difference in RC mana was at the level only slightly more than when the problem occurred. If the user burned all mana or let it regenerate, the difference would reset, but it is not unusual for accounts to fly between both extremes for extended periods of time.
+
+**And that concludes the investigation on extra "Accepting ..." message. But there is more to the story.**
+
+---
+## RC stamps
+
+During time leading to HF24, when the whole team was doing many optimizations while learning the code, the most common problem we've encountered was the replay failing on `claim_reward_balance_operation`. That time I wondered why the operation is so wasteful. After all it requires user to tell how much of each of reward balances they want to claim. And the wallets pretty much always put whole reward balances there. Wouldn't it be cheaper if the operation just claimed everything there is to claim? I don't know if it was made this way on purpose, but in the light of the problems we had with that operation, the way it works is a blessing. It protected us from so many subtle bugs, I can't even count. The thing is, whenever someone made a change that even slightly, by a single point, changed amount of vests a user had or how much was in reward pool, or a global price, or inflation, or the way rewards are calculated, then after a week or a month, or even longer time, but surely and inevitably some `claim_reward_balance_operation` would blow up during replay. Super annoying, because once that happened, it marked a start of painstaking investigation consisting of multiple replays with extra logging to find the source of unwanted change. Annoying, but incredibly useful.
+
+I wanted something with similar effect but for RC. After all, once RC becomes part of consensus, differences in RC levels might lead to forks, so it will be too late to learn that some change caused nodes to diverge million blocks before the failure. Previously I thought that daily reports in `RC stats` will provide enough data to detect such issues, but the problem described above (the first one) showed that even if all parameters, resource usage values and costs are the same, there are still some changes that might slip through unnoticed. That's why I've decided to compute a rolling hash made of RC mana values of payers taken after the transaction (a stamp of RC mana state) and add it to daily reports. The addition is here:
+https://gitlab.syncad.com/hive/hive/-/commit/fb359bbfcc13b2201636fe260a7ed0d7d3fb172d
+
+Once the new RC stamp was included in `develop` I've rebased my branch and decided to run replay again. Just a formality. After all the investigation found the source of the problem and new RC reality was accepted.
+
+---
+## And then it broke...
+
+The next day I've checked results and first couple daily reports were the same. But after that nearly all reports differed in stamps... 😱
+
+😢 At least I know the new RC stamps mechanism is working as intended. 😢 
+
+Time for yet more replays. 😞 This time with full RC logging, but only up to 28M, ~1.5M of RC activity. Even before I got the results (10GB extra log from each run 😨 have fun comparing that), I knew what happened (it is sometimes good to get some sleep). The difference is of the same kind as the first problem, but a bit more subtle. Here it is:
+https://gitlab.syncad.com/hive/hive/-/commit/229621a42c17864af29445e22dce97a424ddc72c
+Previously RC regeneration always happened when `fill_vesting_withdraw_operation` was encountered. That is because visitor code inside signal handling didn't have easy access to information if that regeneration was actually needed. However once the code was moved to where the action happens, it is natural to only perform regeneration when it is necessary, that is, when vests are being changed. The change affects accounts that were targets of vesting route with liquid Hive on its end. They would previously had their RC mana needlessly regenerated, which does not happen after the change.
+
+Three full replays later I could confirm that was the last source of differences:
+ - on version right before the change - result was exactly like previous pattern, showing that changes prior to the identified one didn't change RC stamps
+ - on version with only the selected change - new pattern
+ - on version with all changes from the merge request - result was exactly like new pattern, showing no further commits caused additional changes in RC stamps
+
+---
+
+The two good things that resulted from all the above was:
+ - implementation of RC stamps - it proved its usefulness already
+ - I was able to catch up with requests for code review while waiting for replays to finish 😉</div>
+  <footer class="hive-post-embed__source">
+    <span class="hive-post-embed__source-label">Source:</span>
+    <a href="https://hive.blog/@andablackwidow/fragile-state-a-development-story">Fragile state - a development story (technical).</a>
+    by
+    <a href="https://hive.blog/@andablackwidow">@andablackwidow</a>
+  </footer>
+</div>]]></content><author><name>andablackwidow</name></author><category term="news" /><category term="core" /><category term="development" /><summary type="html"><![CDATA[Some of you might have heard that RC will become part of consensus some time in the future. The plan is to make all necessary changes first, then leave it with no changes for one whole hardfork]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://images.ecency.com/DQmZW4VYzJhWH3WhQTs1CodkPNSGQ5HVgMT8vCVkF7LFS6M/plates.jpg" /><media:content medium="image" url="https://images.ecency.com/DQmZW4VYzJhWH3WhQTs1CodkPNSGQ5HVgMT8vCVkF7LFS6M/plates.jpg" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Core dev meeting #54: Big one with lots of updates</title><link href="https://hivedocs.info/news/core/development/2023/12/04/core-dev-meeting-54.html" rel="alternate" type="text/html" title="Core dev meeting #54: Big one with lots of updates" /><published>2023-12-04T14:50:09-08:00</published><updated>2023-12-04T14:50:09-08:00</updated><id>https://hivedocs.info/news/core/development/2023/12/04/core-dev-meeting-54</id><content type="html" xml:base="https://hivedocs.info/news/core/development/2023/12/04/core-dev-meeting-54.html"><![CDATA[<div class="hive-post-embed" data-hive-author="howo" data-hive-permlink="core-dev-meeting-54">
+  <div id="content-howo-core-dev-meeting-54" class="hive-post-embed__content" data-hive-render-target="true">https://www.youtube.com/watch?v=_vYs59sa1XI
+
+Very long meeting today, we had lots of things to cover. Also big news, I have [started my own witness](https://peakd.com/witness/@howo/annoucing-my-solo-witness) Please consider voting for me 
+
+# @Howo 
+
+What did I do over the past month? So I believe there was the optimization for hivemind but I think that was from last month. 
+
+I sent a bug fix for the issue where beneficiary payments were not included in the the payout in hivemind. So if you had a post which had the wrong beneficiary, a post with hard beneficiaries, the total payout would not show the correct value. Basically, all of the beneficiaries would not be included in the payout. So the value you would see was not the correct one. And literally, if you made a post which had 100% beneficiaries, you'd only see the curator rewards. So as a user, you wouldn't actually see how much money the post generates. That's a bit deceptive. So that's been solved. It's in a merge request and it has tested everything ready to be merged.
+
+I started working on the beneficiary feature and...
+
+# @Blocktrades 
+So a quick question. Did that require any changes to the index ? 
+
+
+# @Howo 
+It did require changes to the indexing, but nothing with an impact, it's basically the way it already works. It's like payout = author reward + curation. And now it's payout + author reward + beneficiaries. So it's not introducing any more data. I mean, it's changing the data, but it's not extra work being done. Basically there is like a virtual operation which has like the author rewards. And so we just added the, I mean, the field was already there for beneficiary rewards. And so we added that on top of it. I mean, I added that to be computed value for payout.
+
+# @Blocktrades
+Okay. So it sounds like this, it shouldn't impact indexing speed.
+
+# @Howo
+No, there should be literally no, no impact. Then I worked a bunch on the beneficiary feature for communities where you can set a beneficiary setting. I found out that you can set beneficiaries for a post way after you, you made the post as long as there was no votes. And so that, I, so that did create a lot of performance issues because then I can just assume that everything is going to happen in the same block, which led me to the realization that we need to, in order to do that, you know, in an optimal way, we need to have a muted reason, which is also a change regardless.
+
+So the muted reason feature is basically a new field in all of the APIs. I made an issue if you want to look at it (https://gitlab.syncad.com/hive/hivemind/-/issues/219). It's important for me because then if a post was muted during indexing, I don't have to redo some of the processing. And it's useful just for general users because now there is like five different ways as to how a post may be muted. And so it's important to just let them know why a certain post was muted. 
+
+And that way, font ends can either choose to ignore a muted reason, like, let's say a front end wants to allow low reputation members to be displayed as non muted. Or if they just want to have like a little icon to be like, why was this post muted? "It's because you posted in the wrong community" or "it's because a moderator muted you" or something like this.
+
+# @Blocktrades
+Okay, so this would show up in like a list when you when you get like a list of posts too, right? 
+
+# @Howo
+
+So well, yeah, there'll be a muted reason which would contain an array of enums
+
+# @Blocktrades
+okay, so you can have codes for the different types of reasons.
+
+# @Howo
+On the database side, we've just all like an array of numbers too, so that it's as like the number value of the enums. So it's as small as possible.
+
+So I'm working on that. I realized that there was like a thousand SQL queries that I had to change to add the extra field.
+
+# @Blocktrades
+Yeah, so would there be a function to get like the list of the reason with them, like strings associated with the reasons? 
+
+# @Howo
+I guess we can add a function as well. That's a good idea. So that the frontends don't have to worry about it. I mean, so I was either thinking of adding like a function with strings or directly returning the strings like doing the translation. But I'm afraid that like, people will then start comparing strings
+
+# @Blocktrades
+yeah, I agree. It's not I thought about it too at the beginning, but it would also be just a lot of data, right? That could get long. 
+
+# @Howo
+I mean, we would store it in like number format, and then we would just return, like do the translation as the API..
+
+# @Blocktrades
+I think it's better to just, I agree. Let's just have codes for it. But we should have a way that somebody can look up on the codes.
+
+
+# @Howo
+that's a good idea. So I'm gonna add that as well, I guess. That's like one thing where you query like muted reason, any restrictions, all of the reasons, it's probably the easiest way to do it.
+
+# @Blocktrades:
+
+Yeah, I think you just pick up a list of all of them and then you can use it in your own code. 
+
+# @Howo
+Yeah, and realistically, there will be like 10 of those. So yeah
+
+
+# @Blocktrades
+it also allows us to do like language, you know, language translation too. So yeah, that's what I've been working on. I'm still in the early stages for that. The only issue that I have is that the muted reason in is computed at two different places. So there is sometimes you get muted like directly in the database, like let's say if moderator mutes you, or sometimes the post gets muted, but it's computed at query time. Like for instance, if you have minus one reputation, the post gets flagged as muted, even though the database is not muted.
+
+
+So that means I'll have to compute that like muted reason list in two different places. But it's not the end of the world. It's just like the if someone decides to query directly from the hivemind database, then maybe it's all confused. But I don't know that anyone is doing that. And we want people to move away from querying the hivemind database in favor of  HAF anyways. 
+
+# @Blocktrades
+Well, I mean, hivemind is  HAF now. 
+
+# @Howo
+Yeah, I know. But like in the sense that we want people to build their own apps, like you shouldn't want to, to like query hivemind instead, if you want to have post information, you should just like build your own hivemind, your own  HAF application to do what you want.
+
+# @Blocktrades
+ Yeah, I mean, I honestly think it's likely to be a mix. I think people will have their own stuff in  HAF. But I suspect it front ends that are doing that are showing posts are probably always going to be making hivemind functions, I suspect.
+ 
+# @Howo
+I mean, yeah, but those front ends are going to call the hivemind API so that won't be the issue. I'm talking about a Dapps that's going to spin up hivemind then do SQL queries like raw SQL queries. I don't believe anyone is doing that slash should be doing that. 
+
+# @Blocktrades
+Yeah, I mean, at that point, they'll probably just using they could be using the same SQL calls that are hivemind uses, they just wouldn't be doing it through an API call.
+
+# @Howo
+What else? I believe that is it. 
+ 
+# @Blocktrades
+Okay. Let's see, I guess cover what we've been doing next. I'm just some of it because it's it's been a long time. So it's been a lot of stuff. Let me just go through the list here. So one of the things we did along the way was if you if like hive, if hiveD crashes, for instance, or your computer shuts down, either one, it can be in the middle of writing a block to the block log, which can leave you with a basically a corrupted block log, because it's only got  HAF the block written to it.
+
+So we added a feature added a command line option that you can use that'll detect that condition and automatically sort of throw away the last the half completed blocks so that you have a solid block log again, without having to download a whole nother block log. It does require a replay though at that point. So but that's still better than having to at least you don't have to download a whole another block log from somewhere.
+
+
+Let's see what else we made some changes to the JSON serializer. I won't go into that too much just to handle numbers more standard way. This is the FC, the JSON serializer that's inside FC, the library that we that use by hiveD.
+
+We're also working on the beginnings of being able to do block log pruning or various sorts. Basically, here are the ideas you might be to run like a light hiveD node that doesn't have the entire block log. So you could basically just have like the last couple blocks, for instance, or we there's various alternatives here. We talked, there's been some discussions about it in the mattermost channels.
+
+So probably most you guys who are aware of it, but just people aware this would give us an opportunity to have special hiveD nodes that are very, very lightweight. Don't require a lot of this space to run. Let's see. We've did some work on the crash handler. Again, I don't think this is into interest to most people unless they happen to be running hiveD nodes, but this will just give us better error reporting in the case of a crash. And more, we had that before, but sometimes it didn't work so well. So let's fix some of those problems.
+
+We added an API to hiveD, which allows you to check the status of a node while it's replaying. So basically, while you're replaying a node, it'll tell you what block number it's on. So you can use this, if you've got any, if you're just have a tool that wants to find out how long before the hiveD node comes back into sync after the replay, you can use this this API called Aquaria. It's basically the only API node that will work to a hiveD node will respond to while it's replaying before it's entered live sync. We're using it for various things like  HAF,  HAF apps can use it to check the status of the hiveD node that might be feeding them, for instance, but in general, anything that wants to talk to a hiveD node wants to know how long before it's going to be ready could use this API call.
+
+ We did work on the features that was requested in a post. The idea being that when you vote right now, when you vote after you vote once the next vote you have has less power and the third vote you have after that has less power and basically your voting power dwindles temporarily based on previous votes because it uses how much mana you have. So this change allows you to basically vote full strength until you run out of voting power instead of just dwindling each time. So instead of taking  HAF a step along the way and never getting to your goal you can basically exhaust your mana pretty fast in your voting just by voting full power each time. So there's a bunch of discussions about this and some people pointed out that there was also a benefit to the old way which allowed you to didn't allow you to vote with your full strength and I think the solution that @Smooth proposed was that we allow UIs to support the option of voting without your full strength on the second votes and so on.
+ 
+So basically we could still have front ends allow the old behavior which didn't use your full strength of votes and basically be an option as to how you want to vote. 
+
+I hope I've explained that clearly. If anybody's read the discussions on the blockchain and the high post they probably know what I'm talking about but otherwise feel free to ask questions about that now. Is that familiar to everybody? Yeah. Okay I won't cover that more now then. 
+
+We're also doing some work related to eventually making RC consensus not that we're doing it now but there's preliminary steps that have to be done along the way so we've completed some steps towards that. As to whether that'll actually happen of course we'll be up to the decision of the witnesses in the long run. We made some fixes to the account history RocksDB regarding getting reversible transactions. We found some problems there. Now even though the account history RocksDB is mostly deprecated now some people are still going to run it just because it's a little more lightweight than running a  HAF server so probably exchanges and things like that will still be depending on that plugin for quite a while so that's why we made the fixes there. 
+
+We added some documentation to it's in the Hive repo itself. It's basically a bunch of .MD files that describe all the various Hive operations that can be put into transactions. 
+
+We added a bunch of tests to Hive. I'm not going to get into all the tests that were added. It's a bunch mostly testing various Hive operations that we just hadn't got around to testing yet. We also made some improvements to the automatic testing system that continues integration system in order to detect in order to make the tests more stable. We've had problems where sometimes the test would fail even though there was nothing wrong.
+
+So the other thing we're working on lately is BeeKeeper. BeeKeeper is basically a tool for storing keys in a secure way. They are basically stored encrypted in memory and the idea behind BeeKeeper is to have a common way that apps can hold keys securely. So we've got two interfaces for it nowadays. There's a binary interface for like desktop applications and there's also a WASM based version, WebAssembly based version, which can be used by like JavaScript applications. So things like HiveBlog and PeakD and stuff like that can potentially incorporate it and store the keys that way.
+
+It was originally being developed for Clive, which I'll talk about next, I guess. So is it clear what BeeKeeper is? I don't know if I've addressed it, explained it well enough that everybody understands the idea behind it.
+
+
+# @mcfarhat
+Yes, but how does it work? I mean, is it a plugin extension? What is it exactly?
+
+# @Blocktrades
+So the WASM version has a TypeScript interface around it. So WASM itself, it's basically WebAssembly code, so sort of like lower level JavaScript, if you will. And it's got a TypeScript object growing interface. So basically you would just incorporate the code into your application directly. It's like a library. 
+
+# @mcfarhart
+I love that it's TypeScript. I mean, it can be easily integrated to a JavaScript interface. That's fantastic. So it could be an alternative to a keychain or just using the... 
+
+# @Blocktrades
+That's right. That's right. It can be just a directly local library used to manage the keys.
+
+Let's see. So Clive is basically a command line interface wallet. But unlike the existing command line wallet, it has like a... I don't know if I say curses interface, if that don't mean anything to anybody. But it's like a console interface where you get to use the whole console, not just one line. So, sort of a console user interface. And we've been adding features to it recently. So originally, it just had the ability to do things like transfer funds. We've added a feature for savings, for managing savings, the saving features of Hive. We've added functions for loading and saving transactions. So this is for basically doing offline cold wallet signing and things like that. So that's going to be quite useful, I think. We also added features for governance, because that's one of the other things that a lot of people want to use a secure wallet for, is for voting for witnesses and voting for proposals, and also for changing your proxy.
+
+It's also got like a... We also have interface that works more like a traditional command line tool, which is a single line. And you can use that... Basically, you can basically control Clive through like a bash script, for instance, and give it commands through a bash script. So, sort of for more automated wallet work, if you want to write scripting for it. 
+
+And Gandalf has just posted more info on Clive features (https://peakd.com/@thebeedevs), or posted on a post. So I won't go into too much more detail. So, a bunch more fixes were done to it as well. And we've got... Basically, you can download it as a Docker, so it's super easy to just try it out. So, I recommend people follow that post he mentioned, and you can actually just try it out real time and see how it works. 
+
+
+Let's see. So, another thing we've got is something called Wax. And this is like a low-level module that's used by... We're using for other parts or other tools, but it's a kind of common level. For right now, it supports Python and TypeScript. And this basically allows you to hook into a bunch of functions that are built into Hive itself. So, it basically incorporates some code from Hive into a separate library. So, you can do Hive-like things without having to talk to Hive.
+
+Let's see. What else? So, we made one improvement to  HAF a speeded up the performance of the most... I'd say one of the most important functions in the Account history, which is get Account history itself. @mahdiyari reported some cases where filtering account history was slow, so we speeded up that query quite a bit. 
+
+
+hivemind. Well, two main changes to hivemind. How I mentioned one, we incorporated his changes for new community types. 
+
+@GoodKarma also added a feature for reporting reblog counts. So, that's added to some of the queries. 
+
+
+Let's see. Then, I guess, on Hive itself, there's been quite a lot done. That's... Hive is where we've been spending quite a bit of our time. And so, we've been doing a lot of performance improvements, experimenting with various ways to speed things up. I made a change to do async commits that speeded it up about 30% the replay time for  HAF. And I'm also trying a suggestion from another guy here. @mahdiyari had done some preliminary tests on it too, which was good. And he showed it basically twice speeded up. So, we're running full tests now, which will allow you to basically, hopefully, massive sync  HAF about twice the speed it does now. 
+
+There's been a lot... We've also figured out a bunch of other things to speed things up. We figured out how to speed up the time it takes to... When  HAF reindexes from massive sync, it has to create a bunch of indexes in your database, and that usually took hours. And so, we figured out... And then, it also creating foreign keys takes several more hours. So, we figured out a way that we don't really need to verify the foreign keys during massive sync. And that basically cuts a couple hours off the massive sync time, just doing that alone. Then, they get checked afterwards, though, during live sync.
+
+So many things in  HAF. It's hard to find all the changes. We added support for recognizing For basically structural, like, record types on the SQL side for hive operations. So, this will make it easier for people who are writing  HAF apps to basically process high operations without having to write their own code for doing that. 
+
+We added a bunch of the default plugins to the hiveD node that's used by  HAF. So, basically, you'll be able to use a single hiveD node, both to feed your  HAF server and also to reply to API calls. So, we're basically trying to make a  HAF API node as small as possible in terms of resources. And along the same lines, we created a new repo called  HAF API node. And what that node... What that repo does... It's a pretty small repo. Basically, it's a bunch of Docker-related stuff. So, it allows you to use Docker composed to basically launch and run a  HAF API node, basically an API node, a hiveD API node, that has everything configured to be a public API node.
+
+As part of that, one of the implicit ideas is you'll be using ZFS for your file system. So, what we'll be able to do is basically deliver ZFS snapshots of a fully in sync API node. So, if you want, instead of doing a full replay on your own, which will take days, still the best, you'll be able to just download one and have it running really... Basically, the time you can download it will be pretty much the time it takes to get it started. Maybe five or ten minutes or 20 minutes after that to sync up. But really, really quick.
+
+So, we should be able to launch  HAF API nodes. I mean, get... I have API nodes running very, very quickly once this stuff is all done. It's pretty close now. 
+
+# @BriandOfLondon
+I'll just ask you a quick question. What's the front... What are you using like as the reverse boxy at the front? Is it Docker composed? 
+
+
+# @Blocktrades
+It's actually a kind of complicated question. There's several things being used. Caddy's being used for rate limiting. We've got Jussi in there for handling the old style calls. We have Varnish in there for handling the new style calls. So, we've actually... I guess I'll bring that up. We've actually got two different types of API calls now. So, we've got the old sort of JSON API calls, still supported. But the new API calls we're all doing is REST calls. So, that's why Varnish is there. Varnish is there to basically cache the new style calls. And we use Jussi to cache the old style calls.
+
+When I say it sets up the entire node, I mean, it sets up the entire thing. I mean, it's... So, with Docker Compose, they've got things called profiles. And a profile is like a set of applications you want... Dockers that you want to launch. So, we've made up different profiles for different things. So, like, there's a basic profile called core. And if you just use the core profile by itself, you just get a hiveD node and you get a  HAF database. And that's it. If... Then there's another layer which we call admin. If you run admin, that'll add... If you add the admin profile, that'll add a PG Hero and a PG Admin Docker.
+
+And basically, that means... With those, PG Hero is like a web interface to your database that accumulates statistics on the API that the SQL calls, the SQL queries. So, you can use that for, like, an analyzing the performance of your database.
+PG Admin is another web-based interface for communicating to a database. But it's more in terms of administration. So, PG Hero is really focused on optimization of queries and identifying performance problems. Whereas, PG Admin is more generalized tool for, I guess, exploring your database and making changes.
+
+So, we use those quite a lot in our work and have. So, we have those as options you can set up. So, even if you're not doing development, I think a lot of  HAF API node will probably find it useful to run those, too, just for analyzing problems with their... If they have any performance problems on their server for whatever reason.
+
+there's another... So, then there's another profile called apps. And apps will basically start up a bunch of the standardized applications that we're seeing  HAF API nodes will typically want to run. So, right now, that's hivemind, Hafah, and also the new  HAF Block Explorer API. So, those three apps will be added if you add that profile. And then we have a final profile called Servers. And the Servers profile is basically addresses the question you were asking, Brian, which is about setting up, like, the proxies and things like that. So, Servers adds things for varnish, for caddy, for jussi, et cetera. 
+
+So, that one's basically if you want to expose it to... When you're looking to expose it to... The Servers layer is when you're looking to expose your interface to external, you know, external people or to external sites, web servers.
+
+So, yeah, I mean, basically my goal here is to have it so it's very minimal steps to set up your server. You basically do something like first create a ZFS pool. And then we've got a script that basically lays out that pool, sets up all the file systems on that pool. And then after that, you can basically just run a command, a Docker compose command, which will start fetching all the Dockers from, you know, from Servers. And you basically have a system up. And then you also want to... We probably want to fetch a snapshot to fill it up with current... Or you can replay from scratch. It's up to you. It does take a while to replay, though, everything.
+
+But I think we did cut down quite a bit just recently at the time. So, I think hivemind. Like I said, we've probably cut down hivemind replay as well as  HAF replay and  HAF. I haven't got the final numbers yet, so I can't report them with complete confidence, but I believe it's going to be about twice as fast. So, probably, I think we're talking... It went from about four days, four and a  HAF days to about two days and 10 hours now for a full hivemind replay.
+
+I probably missed a few things. We've been continuing to do a lot of work on the  HAF block explorer. So, there's a dedicated team working on that. And there's two parts to that. There's the backend, which is basically all the API calls. And that'll be generally useful to anybody. So, I think even other... Basically, other  HAF block... Other block explorers will use those calls. I think they'll be useful because they should be more efficient than the calls they're likely to be able to do now to do analysis.
+
+We've also working on the front end for it as well. So, one of the things that it recently was the ability to do, like, searching blocks and searching posts and comments. So, that's a little heavy weight, though. So, I'm personally still wondering if we shouldn't move that to a separate application, but we'll see how that goes. 
+
+
+Other than that, I don't want to get into everything else we've done. We've made a lot of changes on the CI side, continuous integration, and a lot of things to make things lighter weight, consume less resources. But that's probably enough talking for me now. So, I'll pass it on to whoever else... Anybody else want to discuss what they've been working on recently?
+
+# @howo
+Actually, I have questions about your stuff. And also, one thing I forgot to mention is, in hivemind, there is another merge request rate to merge, containing, like, a helper tool to basically push marked blocks. Like, I found out that when I'm working, it's quite difficult to just add one extra block with one operation. Sometimes you want to just test your query just once. So, I made that. It's just a simple helper tool where you just execute it and it's going to increase the block by one and then populate that to  HAF and then hivemind.
+
+# @blocktrades
+So, it adds another block, a mock block, but what's in the block?
+
+# @howo
+Well, whatever you want. Basically, you pass it as param, like, a mock block and it's automatically going to figure out what block it should be. So, it just gets added to the next block ahead of what's currently synced on hivemind.
+
+# @blocktrades
+ Okay. So, is this a script or how does it work? 
+ 
+# @blocktrades
+It's a standalone Python script. Okay. It's like a wrapper over populate_mocked_blocks. Okay. I saw the commit. I mean, I saw the merge request. I hadn't looked at it because it's in the testing side of hivemind, which I know very little about. So, I kind of left it to Bartek to look at. I don't know Bartek. Bartek, did you have a chance to look at that yet?
+
+# Bartek
+I didn't see yet, but I will take a look on that and also the separate merge request from howo which one were made there. Okay.
+
+# @Howo
+It's really not urgent to merge it. If it's important to merge at all, it's a tool that I find myself useful and maybe you guys will find it useful as well. But really, 
+
+# @blocktrades
+if I made tests, I would definitely probably use it.
+
+# @Howo
+So, I mean, I pushed it because I made a bunch of other scripts like this, like want to dump and redo the database and stuff like this. And this helper script felt like it could be useful to others. So, I pushed it. But if you feel like it's not, if not that's useful, then I'd be happy to drop them at request. Okay. So, yeah, that's the other thing. 
+
+
+And regarding all of the work to have quote, unquote, light nodes, do you think they would apply for history nodes or for witness nodes? What's the use case here?
+
+# @blocktrades
+So, I mean, it's kind of open. We haven't really defined it well yet. So, certain, I don't, I really wasn't intending abuse and witness nodes at all. I think witness nodes, at least, you know, I think witnesses should keep all the blocks personally. But for other nodes, I mean, there's a lot of other nodes out there besides witness nodes, right? Every application means that big, big time should probably consider running their own node, I think, just so they don't load, load down the other, you know, the public nodes. So nodes like that. But so now when somebody this, I mean, if we lower the cost for those guys to run their own node, it would make much more sense for those guys to run their own node. 
+
+And also the idea for your personal node, right, you may just want to have your own personal node to totally trust your, you know, situation better. In that case, you know, every, every, every Hive user shouldn't be consuming 500 gigabytes of data to run their own local Hive node. Yeah.
+
+# Bartek
+Exactly. Actually, our intention was to make that option, especially for  HAF nodes, because  HAF requires a lot of space and making free another 400 gigabytes because of missing block lock could help here. So I hope that could be useful. 
+
+# @gtg
+I'm currently running Hive consensus node on the machine that eats seven watts of energy, eight up to 10 when we're synching. But the biggest limitation is that I need a big drives here. So that would be a perfect use case.
+
+# @mcfarhat
+I probably won't beat your seven watts. But I mean, when I saw the tutorial by block trades about the  HAF API node, I mean, we wanted to, to upgrade our active Hive API node for a while. So this came in handy actually on time. So we just rented a four terabyte server. We're going to be signing up. So I'm hopeful the process goes as smooth as it's explained. I think it should be, but yeah, we're going to try it out over the course. 
+
+# @blocktrades
+I'll say we're still making improvements. I'd hope to release this like, you know, a week or two or three ago. We keep just finding improvements. But I think we're down to the last little bit. So I'm hoping within a week or two, we will make an official release. I know just very few things left that I need to be addressed. I mean, it works now. Don't get me wrong. You can set it up now. But we still, like the speed ups, for instance, haven't been yet merged in yet, a couple of speed ups haven't been merged in yet. So it still takes quite a while to synch Hivemind. 
+
+# @mcfarhat
+Okay, yeah. I mean, we're going to give it a test. 
+
+# @blocktrades
+Yeah, absolutely. And if you, you know, any feedback is useful. It's, you know, we do as much, we're doing a lot of testing in-house. I've got probably seven monster machines that we use for testing. And I usually try to keep at least four or five of them running with tests, you know, at any given time. But outside testing is always useful because outside people always try things a little bit differently than what we do. So that way we find problems that identifies problems. We don't mean, you know, no, they're there because we never tried to do something quite that way.
+
+# @mcfarhat
+Regarding the block explorer, we're going to be setting up also another one. So instead of reinventing wheel, I mean, we're going to reuse the code that you guys have. Is there a test environment right now that runs the front end so that we can at least have a look at how it's functioning and maybe set up our own nodes so that it interfaces using the same GitHub?
+
+# Bartek
+We have that instance, but it is available internally, but we plan to publish it soon. And I hope it can be available maybe next two weeks. 
+
+# @mcfarhat
+Okay, so let's say we set up the  HAF node, the  HAF API node, we can connect once we set up the GitHub clone of your repo, we can connect it to the  HAF API node and then we can start them, hopefully running a block explorer testing it out and seeing how it functions. 
+
+# Bartek
+Actually, you can of course start a block explorer and because it is a regular  HAF application, and you can also start a UI, both parts are dockerized. So the processes should be repeatable and succeed also at your site. So yeah, that should be possible. And I hope the documentation written there is sufficient to be repeated by you also. If not, please write some issue there and we will try to improve documentation. 
+
+# @blocktrades
+So just to sort of give you the way I would do that right now, you'd first go to the  HAF API node repo and read the instructions there, which is basically telling you how to set up your  HAF API. Yeah, so that'll give you basically, if you configure for the apps, you'll get the  HAF block explorer as part of that. So that'll, it'll sync up your  HAF block explorer and it has to replay just like the other app, just like hivemind. So once it's, and it takes, it also takes a few days, but once it's replayed, you basically have the API support and then you just run the UI in order to talk to it and you basically, at that point, you have a web server, you have a front end running with the block explorer.
+
+# @mcfarhat
+Excellent, excellent. Okay, okay. Because for me, I mean, I just pulled, I cloned the block explorer front end, the UI, and I tried to run it and of course it needs an API for the block explorer to read.
+
+# @blocktrades
+ Yes, that's right. And that's, so that's in the  HAF, that's the  HAF, that's the  HAF API node part will give you that.
+
+# Bartek
+The important note for block explorer, both block explorer repos is to use develop branches.
+
+# @mcfarhat
+Yeah, I'm always using that. Yeah, absolutely. Okay. Maybe I'll share the quick update from our, and I might have mentioned several weeks back, I mean, we've had, we've been trying to revamp the notifications for Actifit and we tried to use the blockchain notifications, but we found few issues. I think I mentioned them on a call. So, I mean, right now we are parsing the whole blockchain on our own for Actifit, so we revamped our notifications. We're not using  HAF yet, but I mean, we have, we set up some sort of a Firebase notification push notification system. So, we just set up a whole new approach to notifications and we launched a Chrome extension for notifications for the whole Hive ecosystem. I'm not sure if you guys saw it, it's called Hive Alert. It's not core development, but it's something that, because I mentioned it before, so I wanted to share it quickly. So anyone who wants to get notifications on their browser, they can use that with the Hive Alert Chrome extension. It's open source, of course, and it's not HAF, it's push notifications via Firebase and we're just parsing the whole blockchain for that.
+
+# @blocktrades
+Well, I mean, that's, you know, HAF is doing a similar thing, so it's not, it's the same, I think at some level, just a different technique. And I guess I should also think, I mean, I, we call this core dev, but I mean, I think it's all stuff that anything that, it's, I think this meeting's about any kind of software that, you know, all the apps are interested in. So, yeah, libraries of general, I think libraries for, are certainly, I consider core, any kind of thing that's used by apps developers, I think is what these meetings are supposed for.
+
+# @howo
+I initially made sure to call this core dev, because I didn't want this to turn into, like, a town hall where all of the dev apps would share their let's say, advances on something that only concerns their Dapp, but now there's been a few years, the, everyone pretty much got the thing. So anything that concerns the other dev is free game in my opinion.
+
+
+# @mcfarhat
+Quick question, block trades. You had a, a release candidate coming soon. Is that, is that planned still for December or with that? 
+
+
+# @blocktrades
+Yes, it's still planned for December. It was planned for like two weeks ago. But it's still planned for quite soon. I would like to say next week, but I'm, I'm kind of shy at this point of saying that after being burned a couple of times. 
+
+# @mcfarhat
+Looks like we're going to have fun on over the holidays. 
+
+# @blocktrades
+We'll try to avoid that at least.</div>
+  <footer class="hive-post-embed__source">
+    <span class="hive-post-embed__source-label">Source:</span>
+    <a href="https://hive.blog/@howo/core-dev-meeting-54">Core dev meeting #54: Big one with lots of updates</a>
+    by
+    <a href="https://hive.blog/@howo">@howo</a>
+  </footer>
+</div>]]></content><author><name>howo</name></author><category term="news" /><category term="core" /><category term="development" /><summary type="html"><![CDATA[Very long meeting today, we had lots of things to cover]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://files.peakd.com/file/peakd-hive/howo/EoiZWNg2LUExhTF1QSjtsgiLYvjW4AwSFbnKLgZQ3vcqNeB9sv6gRLjKhsDMnJSp3mq.png" /><media:content medium="image" url="https://files.peakd.com/file/peakd-hive/howo/EoiZWNg2LUExhTF1QSjtsgiLYvjW4AwSFbnKLgZQ3vcqNeB9sv6gRLjKhsDMnJSp3mq.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Clive updates - vote for witnesses using Clive</title><link href="https://hivedocs.info/news/wallet/clive/2023/11/27/clive-updates-vote-for-witnesses-using-clive.html" rel="alternate" type="text/html" title="Clive updates - vote for witnesses using Clive" /><published>2023-11-27T13:19:12-08:00</published><updated>2023-11-27T13:19:12-08:00</updated><id>https://hivedocs.info/news/wallet/clive/2023/11/27/clive-updates-vote-for-witnesses-using-clive</id><content type="html" xml:base="https://hivedocs.info/news/wallet/clive/2023/11/27/clive-updates-vote-for-witnesses-using-clive.html"><![CDATA[<div class="hive-post-embed" data-hive-author="thebeedevs" data-hive-permlink="clive-updates-vote-for-witnesses-using-clive">
+  <div id="content-thebeedevs-clive-updates-vote-for-witnesses-using-clive" class="hive-post-embed__content" data-hive-render-target="true">During the last weeks, we were focused on two topics: governance operation and CLI (Command Line Interface) development. 
+
+## Governance operation
+The governance operations are: voting for witnesses, voting for proposals, or setting a proxy. 
+In this release, we implemented two of them: voting for witnesses and setting a proxy, the voting for proposals will be available soon.
+
+![governance operations](https://images.hive.blog/DQmVGZCpoZXU5tAWKSXWN55YULvxtDkp2Bp9MefxxBmEW2Z/img1.png)
+
+The Governance operations are divided into three tabs: Proxy, Witnesses, and Proposals
+
+### Voting for witnesses
+
+![modify the votes for witnesses](https://images.hive.blog/DQmYDgzUrdpzwE4fqSyh9VS8X9kaBMneBWh99oVDPPgmRy6/img2.png)
+
+The witness view is divided into three parts:
+- On the left side, there is a list of witnesses sorted by their HP - you can see your votes, and you can change them by clicking on the checkbox (`[X]`). You can go to the previous/next page of the list using your mouse by clicking the arrows placed in the header or via your keyboard and  PgUp/PgDn buttons.
+- On the right side, there is a list of Actions to be performed - here you can see the list of vote operations that you have added to the cart but have not been broadcast yet. 
+- On the bottom, a section allows you to search for a witness based on his name.
+
+The vote for witness operation works the same as any other operation in Clive, so you may:
+- Fast broadcast 
+- Add to cart 
+- Finalize transaction
+
+### Setting a proxy
+Using the Proxy tab you can set, change, or remove a proxy. If the proxy is set for your working account, you cannot vote for witnesses or for proposals. 
+
+![Setting a proxy](https://images.hive.blog/DQmaPfTbown6aR8ei6fHxLmCTE5w9ZKgTJaAmUnEaWhTbWB/img3.png)
+
+The proxy operation works the same as any other operation in Clive, so you may:
+- Fast broadcast 
+- Add to cart 
+- Finalize transaction
+
+## CLI (Command Line Interface) development. 
+
+We decided to reorganize the command structure to make them easier to use. The commands are divided into three groups:
+- Configuration - `clive configure` - used to manage things like: keys, nodes, profiles, working and watched accounts
+
+![clive configure](https://images.hive.blog/DQmQw8JECgmHXrcdq4iu44zschkG9VMvRWzDjutEY4HXYvC/img4.png)
+
+- List - `clive show` - lists accounts, balances, keys, node, profile(s), and transaction-status
+
+![clive show](https://images.hive.blog/DQmamdpZYUHi92meG9nzK6tYAwZHc5pKiawiNe8wGmAaSdq/img5.png)
+
+- Actions - `clive process` - performs an operation (now only transfer but the next operations will be coming soon) or transaction.
+
+![clive process](https://images.hive.blog/DQmfK8cZQrBhJrkmc2Npb16BaDVzBrqnc12yUvRgsW37TKL/img6.png)
+
+The command `clive process transaction` is a special command among the other commands that allows the creation of an operation. It can load a signed or unsigned transaction from file, sign, list, save to file, or broadcast a transaction. 
+
+![clive process transaction](https://images.hive.blog/DQmexQZ2RqfYvztx6MKw33uHF4hoirNmcR7zFvmbbioTWCM/img7.png)
+
+The updated command schema is here:
+
+[The updated command schema](https://gitlab.syncad.com/hive/clive/-/blob/master/clive/__private/cli/commands_structure.md)
+
+[The complete list of corrected issues](https://gitlab.syncad.com/hive/clive/-/merge_requests/233)
+
+More info about running Clive can be found here: [Clive - alpha release](/@thebeedevs/clive-alpha-release). Just please make sure to use the recent version: **v1.27.5.3**
+
+## TL;DR
+```
+docker run -ti hiveio/clive:v1.27.5.3
+```
+### Your feedback is invaluable and always welcome.</div>
+  <footer class="hive-post-embed__source">
+    <span class="hive-post-embed__source-label">Source:</span>
+    <a href="https://hive.blog/@thebeedevs/clive-updates-vote-for-witnesses-using-clive">Clive updates - vote for witnesses using Clive</a>
+    by
+    <a href="https://hive.blog/@thebeedevs">@thebeedevs</a>
+  </footer>
+</div>]]></content><author><name>thebeedevs</name></author><category term="news" /><category term="wallet" /><category term="clive" /><summary type="html"><![CDATA[During the last weeks, we were focused on two topics: governance operation and CLI (Command Line Interface) development]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://images.hive.blog/DQmYDgzUrdpzwE4fqSyh9VS8X9kaBMneBWh99oVDPPgmRy6/img2.png" /><media:content medium="image" url="https://images.hive.blog/DQmYDgzUrdpzwE4fqSyh9VS8X9kaBMneBWh99oVDPPgmRy6/img2.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Hive PHP Lib - First production version update</title><link href="https://hivedocs.info/news/php/library/2023/11/18/hive-php-lib-first-production.html" rel="alternate" type="text/html" title="Hive PHP Lib - First production version update" /><published>2023-11-18T00:56:54-08:00</published><updated>2023-11-18T00:56:54-08:00</updated><id>https://hivedocs.info/news/php/library/2023/11/18/hive-php-lib-first-production</id><content type="html" xml:base="https://hivedocs.info/news/php/library/2023/11/18/hive-php-lib-first-production.html"><![CDATA[<div class="hive-post-embed" data-hive-author="bambukah" data-hive-permlink="hive-php-lib-first-production">
+  <div id="content-bambukah-hive-php-lib-first-production" class="hive-post-embed__content" data-hive-render-target="true">Hello everyone! This time, I've made some things to attract more PHP developers on Hive. Ladies and Gentlemen, please welcome the first production version of [**Hive-PHP-Lib**](https://gitlab.syncad.com/hive/hive-php-lib)!
+
+![Light Hive PHP Lib logo on dark background](https://images.ecency.com/DQmW31Q3CfHqb8BHphGW6CLUba3JD1ezB4gViaeXVdzTwgR/gbsn.png)
+
+For those who don't know, [**Hive-PHP-Lib**](https://gitlab.syncad.com/hive/hive-php-lib) is a PHP Library made to interact more easily with HIVE blockchain. Instead of writing many lines of code with cURL and use a "raw style" every time you made a query, this library use easier functions/method for that.
+
+This project is release under the open-source [MIT license](https://opensource.org/license/mit/). Many things are added, and it's time to take a tour of the news features. You can download it now : [Last release](https://gitlab.syncad.com/hive/[**Hive-PHP-Lib**](https://gitlab.syncad.com/hive/hive-php-lib)/-/releases/v1.0.1)
+
+## New Condenser API methods
+To bring [**Hive-PHP-Lib**](https://gitlab.syncad.com/hive/hive-php-lib) in a production version, I add more methods for Condenser API (the production API used by Hive):
+
+- get_market_history
+- get_market_history_buckets
+- get_order_book
+- get_recent_trades
+- get_trade_history
+- get_volume
+- list_proposal_votes
+- list_proposals
+- verify_authority
+
+So, almost all methods for Condenser API are implemented in PHP. Of course, each method have his phpDoc block.
+
+---
+
+<center>
+<strong>Any PHP developer can now create a Hive project with PHP!</strong>
+</center>
+
+---
+
+## New APIs
+It's OK for production but I also add some tests API for new devs: **Rewards API** and **RC API**.
+
+Each API is now implemented in PHP and can be used right now. As every method in [**Hive-PHP-Lib**](https://gitlab.syncad.com/hive/hive-php-lib), you can check the phpDoc for each function.
+
+Don't forget: the Rewards API is for testing purpose only, don't use it on production.
+
+## Raw style example
+Remember the start of this post? I've talked about "Raw style.". Do you know you can do that too on [**Hive-PHP-Lib**](https://gitlab.syncad.com/hive/hive-php-lib)? For only one reason: If HIVE blockchain will have a new HardFork, and if I don't have time to update this lib before the HF, you can still use it for new functions with Raw style.
+
+If you need to use it, don't panic, I add a documented example file (in `/resources/example`).
+
+## More docs &amp; examples
+I want to bring HIVE to new PHP developers (some beginners or students). That's why I added phpDoc blocks everywhere in the code. The documentation can be generated with any phpDoc software (Like [phpDocumentor](https://www.phpdoc.org/), [phpDox](https://phpdox.net/), ...).
+
+Also, each Hive method have a `@link` tag which leads to Hive Developer portal. It's useful when you need more information about parameters or return data.
+
+To finish with documentation, I fixed some typo errors or bad comments.
+
+Why I do that? It's simple, just go to the `/docs/` folder and you'll see the entire developer documentation for each function in [**Hive-PHP-Lib**](https://gitlab.syncad.com/hive/hive-php-lib)!
+
+## Hive-Engine History integration
+Hive-Engine has two types of nodes: Standard node and History node. In [**Hive-PHP-Lib**](https://gitlab.syncad.com/hive/hive-php-lib), we can now interact with the second one. The three methods are implemented: 
+
+- accountHistory($account, $limit)
+- marketHistory($symbol)
+- nftHistory($nfts, $symbol)
+
+## NetworkStatus integration
+Maybe you don't know, but I've a project who checks the Hive-Engine nodes health. It's [NetworkStatus](https://netstat.hivelive.me/), a small API for developers who need to avoid node errors. Now, you can take the best online node before sending your query.
+
+What does that have to do with [**Hive-PHP-Lib**](https://gitlab.syncad.com/hive/hive-php-lib)? It's simple, the API calls are embedded is this library! Write three lines of code, and you get the best online node to interact with Hive-Engine:
+
+```php
+use Hive\PhpLib\NetStat;
+$api = new netStat();
+$result = $api-&gt;getEngineBestNode();
+```
+
+![Developer by Innovalabs](https://images.ecency.com/DQmcHBLQwmSrbJyJh96bGVBSmrpeYayF6AwVeXMrGrdbon3/software_developer_6521720_1280.jpg)
+
+## Code Quality
+
+To bring the best possible quality, [**Hive-PHP-Lib**](https://gitlab.syncad.com/hive/hive-php-lib) use static analysis tools. I do my best to follow the PHP Standard Recommendations to create this API. The code must be clear and understandable by every PHP developer.
+
+To start, I follow [PHP-PDS](http://php-pds.com/) standard filesystem skeleton, and you can check that with the `composer pds` command.
+
+About the code, every file is [PSR-1](https://www.php-fig.org/psr/psr-1) and [PSR-12](https://www.php-fig.org/psr/psr-12) compliant. You can also check that with a command: `composer psr`
+
+I implement a [Psalm](https://psalm.dev/) config file for those who use this static analysis tool, but it's not the only one! You can also use `composer phpstan` command to create a [PHPStan](https://phpstan.org/) instant report.
+
+At this time, I bring Psalm to level 3 and PHPStan to level 5 but the target is to have level 1 for both.
+
+## Fixes
+
+Small features/fixes are also added :
+
+- [Feature] Add encodePublicKey() and decodePublicKey() functions
+- [Feature] Add Hive-Engine getRichList() shortcut function
+- [Fix] Hive-engine getBlockInfo() bad type bug
+- [Fix] Default values for config array when not declared by user
+- [Fix] Debug message Display
+- [Fix] Extra slash in NetworkStatus endpoints
+- [Fix] HiveSQL status typo in endpoint
+
+## Conclusion
+
+It's been awhile from the [last update](https://peakd.com/hive-139531/@bambukah/hive-php-lib-update-new) (Jul 14, 2023) and I hope this one will attract more developers to Hive Blockchain. Before this version, [**Hive-PHP-Lib**](https://gitlab.syncad.com/hive/hive-php-lib) had more than 150 downloads.
+
+If you want to support this project and all the [HiveLive](https://hivelive.me/) universe projects:
+
+- Upvote and/or reblog this post
+- Comment if you have feedback / question or feature request
+- Please consider to make a [donation](https://stream.hivelive.me/donate/bambukah)
+
+Also, if you want to talk with me and many other great members, you can join the official [HiveLive Discord Server](https://discord.gg/u2qfuaFMwt)
+
+---
+
+Photo credit : Image by <a href="https://pixabay.com/fr/users/innovalabs-22783312/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=image&amp;utm_content=6521720">Innova Labs</a> from <a href="https://pixabay.com/fr//?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=image&amp;utm_content=6521720">Pixabay</a></div>
+  <footer class="hive-post-embed__source">
+    <span class="hive-post-embed__source-label">Source:</span>
+    <a href="https://hive.blog/@bambukah/hive-php-lib-first-production">Hive PHP Lib - First production version update</a>
+    by
+    <a href="https://hive.blog/@bambukah">@bambukah</a>
+  </footer>
+</div>]]></content><author><name>bambukah</name></author><category term="news" /><category term="php" /><category term="library" /><summary type="html"><![CDATA[Hello everyone! This time, I've made some things to attract more PHP developers on Hive. Ladies and Gentlemen, please welcome the first production version of Hive-PHP-Lib! For those who don't know]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://images.ecency.com/DQmW31Q3CfHqb8BHphGW6CLUba3JD1ezB4gViaeXVdzTwgR/gbsn.png" /><media:content medium="image" url="https://images.ecency.com/DQmW31Q3CfHqb8BHphGW6CLUba3JD1ezB4gViaeXVdzTwgR/gbsn.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>

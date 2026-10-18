@@ -86,19 +86,17 @@ if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNo
 
   <div class="post-content e-content post-body" itemprop="articleBody">
     <div class="hive-post-embed" data-hive-author="rishi556" data-hive-permlink="how-to-set-up-a-hive-witness-using-hiab-at-version-1-24-4">
-  <div id="content-rishi556-how-to-set-up-a-hive-witness-using-hiab-at-version-1-24-4" class="hive-post-embed__content" data-hive-render-target="true"><sub>This post has been updated from 1.24.4 to 1.27.2</sub>
-
-<center><img src="https://images.hive.blog/p/HuuaCwcKuiEjNgLb5Q7HbtUvB1HEHgck8hUkQMB4bFSJaxwFsYXGx7N9qtgEvLdGaoY?format=match&amp;mode=fit" />
+  <div id="content-rishi556-how-to-set-up-a-hive-witness-using-hiab-at-version-1-24-4" class="hive-post-embed__content" data-hive-render-target="true"><center><img src="https://images.hive.blog/p/HuuaCwcKuiEjNgLb5Q7HbtUvB1HEHgck8hUkQMB4bFSJaxwFsYXGx7N9qtgEvLdGaoY?format=match&amp;mode=fit" />
 <sub>Used With Permission From @someguy123</sub></center>
 
-Because @someguy123 hasn't written a post about using HIAB I decided to do it, mainly because I use it and always end up referring to discord chats on how to set it up. Much easier to just have it all in one place, and what better place than the chain itself? Im just going over basic setup using p2p sync but theres even more functionality(you can replay the server instead of using p2p, or use a snapshot) which you can read about here: https://github.com/someguy123/hive-docker. 
+Because @someguy123 hasn't written a post about using HIAB I decided to do it, mainly because I use it and always end up referring to discord chats on how to set it up. Much easier to just have it all in one place, and what better place than the chain itself? Im just going over basic setup using snapshots but theres even more functionality(you can replay the server instead of using snapshot, or sync without a blocks_log file) which you can read about here: https://github.com/someguy123/hive-docker. 
 
 
 ### Server
 
-First thing that you'll need is a server for this. Thanks to the efforts from Blocktrades and team, its become quite a bit easier to run I would recommend a<a href="https://privex.io?r=rishi556"> Privex</a> server for this because you can pay with Hive and HBD, but because we have a lot of witnesses already on Privex and its important to have our chain be distributed between different datacenter and providers, I would recommend that you find your own. I do run a company which rents out servers so you could potentially use that, check out <a href="https://ryamer.com">Ryamer</a>.
+First thing that you'll need is a server for this. Thanks to the efforts in HF 24, its become quite a bit easier to run I would recommend a<a href="https://privex.io?r=rishi556"> Privex</a> server for this because you can pay with Hive and HBD, but because we have a lot of witnesses already on Privex and its important to have our chain be distributed between different datacenter and providers, I would recommend that you find your own.
 
-I run my main witness(@hextech) node on a server with 32 gigs of RAM and 8 CPUs for the witness along with 1TB(about 400 GB being used right now) on a NVME on Ubuntu 20. You could possibly get by with less threads and 16 gigs of RAM, but please use a fast disk or else it'll take a long time to get caught up.
+I run my witness(@hextech) on a server with 16 gigs of RAM and 4 threads for the witness along with 400 GB(320 GB being used right now) on a NVME on Ubuntu 20. Higher ram usage is required during the snapshot import process(reaching about 15.3 GB used). 
 
 
 ### Setting Up HIAB
@@ -131,6 +129,27 @@ We can then install the latest docker image for the witness with. It will grab w
 ./run.sh install
 ```
 
+The next step is to download the block_log(somewhere around 300 GB around now) as well as the snapshot files. We are going to do this in a screen so we don't need to remain connected while this goes on. 
+
+```
+screen -S download
+export BC_HTTP_RAW="http://files.privex.io/hive/block_log" 
+export RSYNC_BASE="rsync://files.privex.io/hive"
+./run.sh fix_blocks
+```
+You'll be presented with a screen like this. For downloading the rest of blocks_log, you'll want to say yes (y). This will take a while, depending on the connection speed. The best thing to do is wait. 
+
+![Screen Shot 20201107 at 5.17.16 PM.png](https://files.peakd.com/file/peakd-hive/rishi556/NBjD9C5C-Screen20Shot202020-11-0720at205.17.1620PM.png)
+
+
+After that you'll be asked if you want to grab block_log.index as well. Say yes to that as well. 
+
+Then you'll get asked about snapshot, again say yes.
+
+Finally you'll be asked about shared_memory.bin, for that say no(n). 
+
+While those are downloading, you can move onto the next few steps, I'll let you know where you'll need those files to move on. 
+
 ### CLI Wallet And Keys
 
 Now we are going to want to generate our witness signing keys. You can reuse some keys that you already use, but it's recommended to generate new ones just for signing blocks. To do that, we use the cli_wallet. 
@@ -138,7 +157,7 @@ Now we are going to want to generate our witness signing keys. You can reuse som
 We'll be using the remote wallet as our local instance isn't ready yet.
 
 ```
-./run.sh wallet
+./run.sh remote_wallet
 ```
 
 You should get presented with something like this on a fresh install. If it says `locked` instead of `new` then you already have a wallet setup(you won't unless you are updating) and you can unlock it and skip the init step.
@@ -152,12 +171,6 @@ Once you are unlocked you can use `suggest_brain_key` to get a public private ke
 You can exit the wallet by pressing control + D. If you ever forget your password, you can wipe the wallet clean and use a new password. A `wallet.json` file is generated and stored within the `data` directory. Just delete that and it'll start the wallet fresh again.
 
 ### Config 
-
-First let's increase the shared memory file size.
-
-```
-./run.sh shm_size 24G
-```
 
 Next we'll  need to modify the config file to work with our witness. Its located at `data/witness_node_data_dir/config.ini` directory. We'll want to modify that. 
 
@@ -175,14 +188,16 @@ The place we want to modify is `witness = ` and `private-key = `. They are alrea
 
 ### Starting Up
 
-We are going to start the node up, and to do that, run the following command
+Going on, you'll need to have all the files that we started downloaded earlier ready to go. If not, please finish downloading then continue. While you wait for this to download, some good things to do are write a post about you staring up your witness, voting @hextech for witness and thinking about how you can help benefit the hive ecosystem. 
+
+We are going to load in the snap that we got so that we don't need to replay. 
 ```
-./run.sh start
+./run.sh load_snap privexsnap  
 ```
 
-This does take some time, on my machine I mentioned above, it took about a day to sync to head. You can monitor what step of the process this is at by using `./run.sh logs`.
+This does take some time, but nowhere near as long as it would take if we had to run a replay. You can monitor what step of the process this is at by using `./run.sh logs`.
 
-Once the older blocks are synced up, it'll automatically start syncing up to live. You can check the sync progress using `./run.sh monitor`. It'll tell you how long it'll take to get synced up. Again this is a time to wait. You'll know that you are live when you see individual blocks being produced in `./run.sh logs`. That'll look like this:
+Once the snapshot loads in, it'll automatically start syncing up to live. You can check the sync progress using `./run.sh monitor`. It'll tell you how long it'll take to get synced up. Again this is a time to wait. You'll know that you are live when you see individual blocks being produced in `./run.sh logs`. That'll look like this:
 
 ![Screen Shot 20201107 at 6.58.25 PM.png](https://files.peakd.com/file/peakd-hive/rishi556/dmpGRIr9-Screen20Shot202020-11-0720at206.58.2520PM.png)
 
@@ -190,7 +205,7 @@ The block numbers will be going up by one. Nows the big time, time to enable as 
 
 ### Enabling Your Witness
 
-Let's enable the witness, you can do so using the wallet. Run the following to open it up:
+Let's enable the witness, you can do so using either the remote wallet or the local one. To use the local wallet, use `./run.sh wallet` and remote is `./run.sh remote_wallet`.
 
 ```
 ./run.sh wallet
@@ -222,16 +237,14 @@ As time goes on, you'll need to update. The update process might involve a repla
 
 <center>
 
-If you like what I do, feel free to vote for my witness https://vote.hive.uno/@rishi556
-
-Looking for a server to host on? Check out <a href="https://ryamer.com">Ryamer</a>
+If you like what I do, feel free to vote for my witness https://vote.hive.uno/@hextech
 
 </center>
 </div>
   <footer class="hive-post-embed__source">
     <span class="hive-post-embed__source-label">Source:</span>
-    <a href="https://peakd.com/hive-139531/@rishi556/how-to-set-up-a-hive-witness-using-hiab-at-version-1-24-4">How To Set Up A Hive Witness Using HIAB At Version 1.27.2</a>
-    <span>by</span>
+    <a href="https://peakd.com/hive-139531/@rishi556/how-to-set-up-a-hive-witness-using-hiab-at-version-1-24-4">How To Set Up A Hive Witness Using HIAB At Version 1.24.4</a>
+    by
     <a href="https://hive.blog/@rishi556">@rishi556</a>
   </footer>
 </div>

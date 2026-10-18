@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta property="og:image" content="/assets/images/sticker.png" />
+  <meta name="apple-mobile-web-app-title" content="Hive Docs" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" /><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>A New API for Hive | Hive Chain Documentation</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="A New API for Hive" />
+<meta name="author" content="blocktrades" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="When Hive was first launched, an early topic of discussion among all of Hive’s devs was “How should we create a next generation API for Hive?”" />
+<meta property="og:description" content="When Hive was first launched, an early topic of discussion among all of Hive’s devs was “How should we create a next generation API for Hive?”" />
+<link rel="canonical" href="https://hive.blog/hive-139531/@blocktrades/a-new-api-for-hive" />
+<meta property="og:url" content="https://hive.blog/hive-139531/@blocktrades/a-new-api-for-hive" />
+<meta property="og:site_name" content="Hive Chain Documentation" />
+<meta property="og:image" content="https://images.hive.blog/DQmSihw8Kz4U7TuCQa98DDdCzqbqPFRumuVWAbareiYZW1Z/blocktrades%20update.png" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2023-08-21T11:17:09-07:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="https://images.hive.blog/DQmSihw8Kz4U7TuCQa98DDdCzqbqPFRumuVWAbareiYZW1Z/blocktrades%20update.png" />
+<meta property="twitter:title" content="A New API for Hive" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"blocktrades"},"dateModified":"2023-08-21T11:17:09-07:00","datePublished":"2023-08-21T11:17:09-07:00","description":"When Hive was first launched, an early topic of discussion among all of Hive’s devs was “How should we create a next generation API for Hive?”","headline":"A New API for Hive","image":"https://images.hive.blog/DQmSihw8Kz4U7TuCQa98DDdCzqbqPFRumuVWAbareiYZW1Z/blocktrades%20update.png","mainEntityOfPage":{"@type":"WebPage","@id":"https://hive.blog/hive-139531/@blocktrades/a-new-api-for-hive"},"url":"https://hive.blog/hive-139531/@blocktrades/a-new-api-for-hive"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://hivedocs.info/feed.xml" title="Hive Chain Documentation" /><script>
+if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNotTrack === "yes" || navigator.msDoNotTrack === "1")) {
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-161692811-1', 'auto');
+  ga('send', 'pageview');
+}
+</script>
+  
+<script src='https://unpkg.com/steem-content-renderer'></script>
+  <script src="/assets/javascript/universal-bridge-against-phishing.js"></script>
+  <script src="/assets/javascript/lazysizes.min.js" async=""></script>
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet" />
+  <link rel="shortcut icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="152x152" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="167x167" href="/assets/images/favicon-80x80.png" />
+</head>
+<body><header class="site-header" role="banner">
+  <div class="wrapper site-header-inner">
+    <a class="site-title" rel="author" href="/">Hive Chain Documentation</a>
+
+    <nav class="site-nav" aria-label="Primary">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/news/">News</a><a class="page-link" href="/howto/">How To</a><a class="page-link" href="/links/">Useful Links</a><a class="page-link" href="/authors/">Authors</a><a class="page-link" href="/topics/">Topics</a><a class="page-link" href="/search/">Search</a></div>
+    </nav>
+  </div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper page-layout has-search-panel">
+        <div class="page-main">
+          <article class="post h-entry post-article" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header post-hero">
+    <div class="post-hero-main">
+      <p class="post-kicker">Archive post</p>
+      <h1 class="post-title p-name" itemprop="name headline">A New API for Hive</h1>
+      <p class="post-meta">
+        <time class="dt-published" datetime="2023-08-21T11:17:09-07:00" itemprop="datePublished">Aug 21, 2023
+        </time>• <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">
+            <a href="/authors/#author-blocktrades">blocktrades</a>
+          </span></span></p><p class="post-summary">When Hive was first launched, an early topic of discussion among all of Hive’s devs was “How should we create a next generation API for Hive?”</p></div><aside class="post-author-card">
+      <img src="https://images.hive.blog/u/blocktrades/avatar" width="128" height="128" class="lazyload post-author-avatar" alt="Avatar for @blocktrades" />
+      <div class="post-author-name">@blocktrades</div>
+    </aside></header>
+
+  <div class="post-content e-content post-body" itemprop="articleBody">
+    <div class="hive-post-embed" data-hive-author="blocktrades" data-hive-permlink="a-new-api-for-hive">
+  <div id="content-blocktrades-a-new-api-for-hive" class="hive-post-embed__content" data-hive-render-target="true">![blocktrades update.png](https://images.hive.blog/DQmSihw8Kz4U7TuCQa98DDdCzqbqPFRumuVWAbareiYZW1Z/blocktrades%20update.png)
+
+When Hive was first launched, an early topic of discussion among all of Hive’s devs was “How should we create a next generation API for Hive?”.  To answer that question, we started looking at the current API to see what kind of problems it had. In this post, I’ll walk through the problems we found and our solution to those problems.
+
+# What’s an API?
+
+If you’re not a programmer (and maybe even if you are), the first question you may be asking is “What is an API?”. API stands for Application Programming Interface, but that probably doesn’t help you much :-) 
+
+In the modern web-based programming world, software often needs to talk to other software. This allows people to take advantage of features in your software when they create their own software.
+
+If you want to allow other software to talk to your software, you program it with an API. This API defines the ways in which other programs can talk to your software. The API defines the set of function calls that can be made to the software by external programs to either tell it to do something or get some information from the software. Not every piece of software has an API, however, because it takes extra programming work to support an API.
+
+Software programs with APIs are often considered “backend” or “middle-ware” software, because they frequently don’t have their own user-interface (users don’t “talk” to them, only other programs do). In such case, users interact with other programs that then talk to the software that has the API. 
+
+But this isn’t a hard-and-fast rule: some software with its own user-interface may also have an API. In such cases the API is often used to by scripts that mimic the behavior of a bunch of user actions (these scripts are often called macros). If you’ve used a spreadsheet program, you may be familiar with its language for creating macros. That’s an API for the spreadsheet software, although in this case the API isn’t used by other programs, but directly by users themselves.
+
+# What does this have to do with Hive programming?
+
+The core software that maintains the Hive network is a backend program called hived. Witnesses, exchanges, and other “power users” run hived nodes that receive user transactions, put these transactions into blocks, and communicate with each other over the internet. Hived doesn’t have a user interface. Instead it has an API that is used by “front-end” programs such as hive.blog, peakd, ecency, splinterlands, etc.
+
+# Problems with the original API
+
+Back in the Steem days, hived (called steemd back then) directly implemented the entire Steem API. Unfortunately, this solution wasn’t scalable in two ways: 1) as more API calls were made to a node, the node had to do more work and too many requests could cause a node to fail and 2) modifications to the API required modifications to the core code, which risked problems whenever the API was changed or extended to support new API calls.
+
+### A mismatch between hived’s database design and an API’s needs
+
+Hived’s original database stored all its data in memory (instead of on a hard disk). But this data needed to be kept around when a hived node was shutdown, so a specialized database called chainbase was created that allowed this data to be kept in memory (or even on a hard disk) after the program was shutdown.
+
+Unfortunately, while chainbase did solve the problem it was designed for, it lacks many of the useful features of a traditional database. 
+
+One particularly severe problem is that chainbase only allows one thread at a time to write to the database, and while that thread is writing to the database, no other thread can do anything, including even reading information in the database. So hived has only one thread that collects new transactions and blockchain blocks and writes to the chainbase database. 
+
+It also allows the creation of many other threads that can read this database. Whenever hived receives an API call from another piece of software, one of these “read threads” reads the database and returns the requested info to the calling program.
+
+### Thousands of programs talking to a hived node create a performance bottleneck
+
+Whenever a hived node is being used as an “API server”, it is is constantly receiving many calls from other programs. For example, the entire Hive network only has around 10-20 public API nodes, but there are tens of thousands of programs talking to these nodes (each person browsing a Hive-based web site such as hive.blog is running one of these programs that talks to hived). And when you look at a single web page on these sites, that site will generally make several calls to Hive’s API (the number of calls made can depend on many things including what Hive account is browsing the page).
+
+As mentioned previously, hived can’t write anything to its database while any API call is reading from chainbase. But it is imperative that hived is able to write to its database in a timely manner, otherwise the node won’t be able to keep up with other nodes in the network. So hived prioritizes the writer thread that writes to the database: once it requests access to the database, all reader threads are blocked until the writer thread finishes. But all existing reader threads still get to finish doing any work they were doing, so the writer thread still may have to wait a while.
+
+In a traditional database, such as a SQL database, this kind of problem doesn’t happen as much. In a traditional database, reader threads are able to read any part of the database that isn’t being directly written to by a writer. And they also allow multiple writer threads to run simultaneously, as long as they are writing to different parts of the database. Unfortunately, chainbase’s design essentially treats the whole database as one single huge piece of data, so reading and writing by multiple threads can easily become a performance bottleneck.
+
+To get around this problem, Steemit used to run many API nodes and distributed the API calls across these nodes, but this required a lot of computers to be rented to run all these nodes (i.e. it was costly).
+
+### Hivemind as a partial solution to the performance bottleneck of chainbase
+
+Steemit created a new program called hivemind to act as an “intermediary” for API calls to steemd nodes. Hivemind makes API calls to a steemd node to read some of the data from new blockchain blocks and stores that data in its own SQL-based database. 
+
+Hivemind still has to read the data one time using the node’s API, but after that web sites and other programs can read the information from hivemind’s SQL database instead of from the node’s chainbase. In this way, chainbase bottlenecks are avoided for all the API calls supported by hivemind, since SQL allows individual locking on different pieces of data in the database. The number of API calls to steemd are drastically reduced, giving the node more time to write to its own database.
+
+### The rise of Hive and the need for cheaper API servers
+
+While hivemind reduced the load on the blockchain nodes, the blockchain nodes still needed to do a lot of work. First to respond to API calls that were not handled by hivemind and second to handle the calls made by hivemind itself. This meant that Steemit still had to run a lot of blockchain nodes to respond to  API calls from web apps.
+
+When the Hive network was started, there was no longer a centralized company that was economically incentivized to run such a large number of API servers. So Hive devs needed to figure out how to lower the number of servers required to support the Hive user base.
+
+The first step just involved reconfiguring the internal software components of the API servers to run more efficiently while consuming fewer resources.
+
+Next, devs began migrating the functionality of more Hive API calls from the blockchain nodes (i.e. hived nodes) to hivemind servers. This was a lot of work, because it meant new information had to be added to hivemind that it didn’t have previously, and the code had to be written in a different language since hived is written in C++ and hivemind is written in Python and SQL. But the payoff was far fewer calls being made to hived nodes and it also reduced the amount of memory used by them. 
+
+Of course, the hivemind servers now had to handle more API calls, but they were already better suited to do this because of the underlying SQL database, and Hive devs also devoted significant effort to speeding up the handling of API calls by hivemind. These changes enabled hivemind servers to process more than 10x the amount of API calls they could previously handle. Nowadays, a single properly-configured Hive API node can handle all the traffic of the entire Hive network.
+
+### Wanted: a better API for Hive
+
+Once the immediate need to reduce the costs of running the Hive network was completed, Hive devs started looking at how to decentralize the development of Hive software. All Hive apps rely on the Hive API to interact with the Hive network, but this API was defined by just two pieces of software: hived and hivemind. Anyone who wanted to extend the Hive API needed to change one of them. This required a programmer to spend a lot of time understanding these two pieces of software, and any change would potentially break them. So there were relatively few programmers willing to take on this challenge even though pretty much all the devs thought the API needed improvements.
+
+#### Hivemind to the rescue?
+
+So in order to decentralize the evolution of the Hive API, the API needed to be easier to change and it had to be more resistant to breaking during modifications. And hivemind already suggested a way to accomplish the first goal of making the API easier to change, because there are more programmers who know Python and SQL than know C++. 
+
+But hivemind was still challenging to work with, because it wasn’t easy to know if making a change one place might break other parts of the code. But software engineers have long had a solution to this particular problem: it is called modular design. In a modular design, software is broken up into distinct pieces, where each piece is responsible for just a few related things, and changes to one piece doesn’t affect the other pieces. 
+
+Hivemind already had some aspects of a modular design: there was one piece of software that fetched data from hived and put the data in hivemind’s SQL database (this piece is called an indexer) and another piece of software that implemented the API calls that read from this database (this piece is hivemind’s server process). 
+
+But all of hivemind’s API calls are implemented by this one piece of server code and there is no clear separation of which API calls use which tables in the database (tables are a way of separating the storage of different types of data in a a database). 
+
+#### The birth of HAF (Hive Application Framework)
+
+So Hive devs started looking at ways of creating a new, more modular version of hivemind. This new piece of software (eventually dubbed HAF) would allow developers to individually define their own clearly defined set of tables and API calls they wanted to create, and it encourages that these new API calls could be developed independently (modularly) from the API calls created by other devs.
+
+When we compare hivemind and HAF, we see that several important design changes were made.
+
+##### HAF keeps more blockchain data than hivemind
+
+Perhaps the most important change is that a HAF server keeps a raw copy of all the Hive blockchain data, so virtually any blockchain data that someone may new to create a new set of API calls is available. Hivemind only kept a subset of this data and it sometimes stored it in an altered form from which the original data wasn’t always reproducible. By making all this data available to HAF apps, these apps no longer have any need to talk directly to a hived node. This is very important, because this eliminates the scalability bottleneck that chainbase imposed on apps that talk directly to hived.
+
+##### HAF is immune to forks
+
+Another important change is that hivemind wasn’t resilient against forks. A fork occurs in a blockchain network when one or more blocks that have previously been accepted by blockchain nodes get replaced by another set of blocks in a longer chain. To workaround this problem somewhat, hivemind delayed processing of new blocks, so that hivemind nodes would only get “bad” data if a fork longer than a few blocks occurred (this is relatively uncommon, but it does happen). But when such forks did occur, hivemind would still have data from blocks that were no longer part of the blockchain, which obviously isn’t a good thing. The only way to fix such a hivemind node was to replay the entire blockchain from scratch, which takes days (even far longer before hivemind was speeded up).
+
+HAF gets around this problem by keeping track of the changes made to the HAF database by each block, so if blocks get replaced by a fork, all the changes made by the old blocks can be reversed prior to applying the new replacement blocks to the database. This completely eliminates the possibility of bad data from orphaned blocks. As a side note, the chance for long forks was also mostly eliminated with Hive’s introduction of one-block irreversibility (aka OBI).
+
+##### Each HAF app maintains its own set of database tables (ensures modular design)
+
+In SQL, a set of logically related tables is called a “schema”. Each schema is assigned its own name when it is created. Schemas are an important way to ensure that your database is designed in a modular way.
+
+In hivemind, there was one schema used by all API calls. In HAF, there is still a schema called “hive” that stores all the “raw” blockchain data written to the database by hived. Each HAF can read from the hive schema, but they cannot write to it (only hived can write to this common schema). But each HAF app then creates its own separate schema where it stores any additional data that it needs (normally this additional data is computed by a HAF app from the raw data stored in the hive schema).
+
+Another way to look at a HAF app is that it is the implementation of a set of related API calls, running on top of a HAF server. With each app having its own schema, changes to one HAF app can’t break other HAF apps, thus achieving the desired design modularity and ensuring that devs can create their own new API calls without breaking the API calls developed by other devs.
+
+##### “Old” Hivemind polled hived, hived pushes to HAF
+
+Hivemind would periodically ask its hived node for more blocks by making a get_block API call. For somewhat technical reasons, this call requires additional computation by hived nodes and is a rather expensive API call (although Hive devs have lowered the cost of this call somewhat nowadays). This could be particularly problematic when a hivemind node is being setup for the first time, because it needs to fetch all the existing blockchain blocks to fill its SQL database. Making all these get_block calls would significantly slow down a hived node and it could only reply so fast, so it would take quite a while for a new hivemind node to get all the block data it needed.
+
+To resolve this problem, HAF communicates with hived in a different way. Instead of making get_block API calls to hived, hived tells HAF about new blocks as it gets them. This does have a disadvantage: it requires that a hived node be replayed to fill a HAF database, whereas hivemind could get its data from a normally operating hived node. But a big advantage is that hived can push blocks much more efficiently to the HAF server, so the HAF server can be filled much faster. As another benefit, hived sends new blocks faster to HAF servers (because it doesn’t have to wait to be asked), so HAF servers can process new blocks as soon as they are received or produced by the hived node.
+
+# The current state of HAF and the Hive API
+
+Nowadays we have defined several new APIs using HAF apps:
+
+The first HAF app was Hafah, an app that replaces the rather expensive account history API that previously relied on direct calls to hived nodes. Hafah’s implementation of the account history API is faster and can handle many more simultaneous calls (and most importantly these calls no longer place a load on the hived node). Running Hafah is particularly cheap for HAF servers since it doesn’t create any new data, it just uses data available in the common “hive” schema of HAF. This also means that this HAF app requires no syncing before it can start serving up date from a synced HAF server.
+
+There is also a HAF app called balance_tracker that provides API calls for graphing Hive account balances over time (over each block even). This was originally created as an example app to demonstrate how to create a pure SQL-based HAF app, but it was later found to be useful for the development of a new block explorer for Hive, so its functionality has increased over time.
+
+There is another HAF app called block_explorer that provides an API for the kind of data needed by Hive block explorers. 
+
+And, of course, not to be forgotten is the largest existing HAF app: a rewrite of hivemind, which implements all the API calls of hivemind, but doesn’t suffer from the potential forking issues faced by the old hivemind.
+
+We’ve also created a new “query_supervisor” for HAF that allows rate-limiting of API calls to a HAF server. We’re currently testing this functionality soon on our public HAF server, enabling direct queries to the HAF database.
+
+The above HAF apps were all developed by the same team that created HAF itself, but we’re also seeing other developers beginning to develop HAF apps. Most recently, @mahdiyari developed a HAF app that supports the same API as Hive SQL. We are hoping that with the recently developed query_supervisor acting as a rate limiter, public Hive API servers will be able to reasonably support the HIVE SQL set of API calls.
+
+# Should every new Hive API be developed with HAF?
+
+The short answer is “yes”, but right now this isn’t yet true. Several new APIs have been developed over time before HAF existed. These often were developed with a somewhat similar design methodology to the original hivemind: they make get_block calls to get data from hived and they make other API calls to get data from hivemind, then they write their own data to a local database. They are already modular, like HAF apps, in the sense that they maintain an entirely separate database for storing their data. 
+
+So why do I think these APIs should be turned into HAF apps? There’s a couple of reasons, some the same as the reason why we made hivemind a HAF app: they generally aren’t designed to handle forking and they make many expensive get_block API calls to hived nodes when a new server for the API is being established.
+
+But there’s a much more fundamental reason why I’d like to see these APIs implemented as HAF apps…
+
+# Decentralizing Hive’s API server network
+
+Right now, the so-called “core” API of Hive is decentralized, because we have around 20+ public API servers that Hive apps can make calls to. But for “new” API calls implemented without using HAF, generally only the original developer runs a server for that API. But if new APIs are developed as HAF apps, then it becomes very easy for the public API servers to add support for these new APIs.
+
+# HAF-based APIs increase software re-use
+
+If APIs are available across multiple public nodes, it is much more likely that application developers will be comfortable making calls to those APIs. If only one server supports a set of API calls, then your app stops working when that server goes down. If there are many servers supporting the API, then your app can seamlessly switch to another API server, and it is safer to use the calls provided by that API. This technique is already used by all the main social media apps of Hive because they primarily rely on the Hive API supported by the public API servers.
+
+
+# HAF apps are the new Hive API
+
+When Hive first got started, devs were asking each other, how should we create a next generation API for Hive? We wanted a new API that incorporated all the lessons that were learned from developing the original API, including fixing problems with existing API calls. 
+
+But it quickly became obvious that API servers for a platform such as Hive that can serve many diverse software applications will need an API that can easily evolve to meet future needs. So we needed to allow for many developers creating their own specialized APIs in a way that the work done by independent teams wouldn’t conflict with each other (i.e. we needed a very modular design). 
+
+We also wanted to encourage the use of best practices when new API calls were implemented, so that the API calls were as efficient and scalable as possible and also robust against forks. 
+
+By achieving these three goals (scalability, robust operation during forks, and modularity), it becomes safe for public API servers to quickly add support for new API calls without worrying about breaking existing functionality or introducing too much loading on their server.
+
+HAF meets these three goals and is also implemented using a programming methodology that is familiar to many developers. To further ease the effort required for Hive API servers to add support for new Hive APIs, each HAF app is normally deployed inside a separate docker container. This means that a HAF server can add support for a new HAF app/API with a single command. With a dev-friendly programming environment, guard rails to protect against mistakes that can take down servers, and easy deployment, HAF apps are perfectly designed to meet the future needs of Hive-based software.</div>
+  <footer class="hive-post-embed__source">
+    <span class="hive-post-embed__source-label">Source:</span>
+    <a href="https://hive.blog/@blocktrades/a-new-api-for-hive">A New API for Hive</a>
+    by
+    <a href="https://hive.blog/@blocktrades">@blocktrades</a>
+  </footer>
+</div>
+
+
+  </div><a class="u-url" href="/news/core/development/api/2023/08/21/a-new-api-for-hive.html" hidden></a>
+</article>
+
+        </div>
+
+        
+        <aside class="page-sidebar" aria-label="Search and browse">
+          <section class="sidebar-section sidebar-search">
+            <h2 class="sidebar-heading">Search posts</h2>
+            <p class="sidebar-copy">Search the locally indexed post archive.</p>
+            <input type="text" id="search-input" placeholder="Search posts" autocomplete="off" />
+            <ul id="results-container"></ul>
+          </section>
+
+          <section class="sidebar-section sidebar-topics">
+            <h2 class="sidebar-heading">Browse topics</h2>
+            <p class="sidebar-copy">Jump into curated topic landing pages.</p>
+            <ul class="topic-list topic-list-sidebar"><li><a class="page-link" href="/account-recovery/">Account Recovery</a></li><li><a class="page-link" href="/core-development/">Core Development</a></li><li><a class="page-link" href="/dapps/">Dapps</a></li><li><a class="page-link" href="/docker/">Docker</a></li><li><a class="page-link" href="/hardfork/">Hardfork</a></li><li><a class="page-link" href="/hivemind/">Hivemind</a></li><li><a class="page-link" href="/javascript/">Javascript</a></li><li><a class="page-link" href="/multisig/">Multisig</a></li><li><a class="page-link" href="/python/">Python</a></li><li><a class="page-link" href="/ruby/">Ruby</a></li><li><a class="page-link" href="/testnet/">Testnet</a></li><li><a class="page-link" href="/tools/">Tools</a></li><li><a class="page-link" href="/witness/">Witness</a></li></ul>
+          </section>
+        </aside>
+        
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading"><a rel="author" href="/">Hive Chain Documentation</a></h2>
+    
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">site curated by: @inertia</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>Your resource for various levels of Hive Documentation.</p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+<script src="/assets/javascript/search.js"></script>
+    <script>
+      (function () {
+        var input = document.getElementById('search-input');
+        var results = document.getElementById('results-container');
+        if (input && results && typeof SimpleJekyllSearch !== 'undefined') {
+          SimpleJekyllSearch({
+            searchInput: input,
+            resultsContainer: results,
+            json: '/search.json'
+          });
+        }
+
+        if (typeof SteemContentRenderer === 'undefined') return;
+
+        var targets = document.querySelectorAll('[data-hive-render-target="true"]');
+        if (!targets.length) return;
+
+        var renderer = new SteemContentRenderer.DefaultRenderer({
+          baseUrl: 'https://hive.blog/',
+          breaks: true,
+          skipSanitization: false,
+          allowInsecureScriptTags: false,
+          addNofollowToLinks: true,
+          doNotShowImages: false,
+          ipfsPrefix: '',
+          assetsWidth: 640,
+          assetsHeight: 480,
+          imageProxyFn: function (url) { return url; },
+          usertagUrlFn: function (account) { return '/@' + account; },
+          hashtagUrlFn: function (hashtag) { return '/tags/#' + hashtag; },
+          isLinkSafeFn: function () { return true; }
+        });
+
+        targets.forEach(function (target) {
+          try {
+            var inputHtml = target.innerHTML;
+            target.innerHTML = renderer.render(inputHtml);
+          } catch (e) {
+            console.log(e);
+          }
+        });
+      })();
+    </script>
+
+  </body>
+
+</html>

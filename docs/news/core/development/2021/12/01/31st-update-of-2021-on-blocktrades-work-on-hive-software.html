@@ -108,7 +108,7 @@ But even if we get a 4x speedup in live sync performance, it is still much slowe
 
 As a real-world measurement of the impact of this, we replayed a hived with a block_log that was 6.5 days old, so it was missing about 189K blocks, and it only took 7.15 hours to process the 59M blocks in the block log. But it took another 10 hours to process the remaining 189K new blocks that it received from the peer-to-peer network that were missing from the block_log (plus it had to process new blocks that got created while processing the old blocks). 
 
-We can envision an impractical “worst case” scenario where we sync a hived with an empty block_log with the sql_serializer enabled. This would currently take 59M blocks / 6.7 blocks/s / 3600 seconds/hr / 24 hrs/day = 101 days! I say this is an impractical scenario, because this can be worked around by first performing a normal sync of the hived node without the sql_serializer (which takes about 14 hours), then replaying with the sql_serializer with a fully filled block_log (so add another 7.5 hrs). But it does demonstrate one motivation for improving performance of the serializer with regard to live sync mode.
+We can envision an impractical “worst case” scenario where we sync a hived with an empty block_log with the sql_serializer enabled. This would currently take 69M blocks / 6.7 blocks/s / 3600 seconds/hr / 24 hrs/day = 119 days! I say this is an impractical scenario, because this can be worked around by first performing a normal sync of the hived node without the sql_serializer (which takes about 7 hours), then replaying with the sql_serializer with a fully filled block_log (so add another 7.5 hrs). But it does demonstrate one motivation for improving performance of the serializer with regard to live sync mode.
 
 ### Why does sql_serializer switch from massive sync to live sync so early?
 
@@ -156,7 +156,7 @@ This approach could be very interesting for experienced SQL developers, I think.
   <footer class="hive-post-embed__source">
     <span class="hive-post-embed__source-label">Source:</span>
     <a href="https://hive.blog/hive-139531/@blocktrades/31st-update-of-2021-on-blocktrades-work-on-hive-software">31st update of 2021 on BlockTrades work on Hive software</a>
-    <span>by</span>
+    by
     <a href="https://hive.blog/@blocktrades">@blocktrades</a>
   </footer>
 </div>

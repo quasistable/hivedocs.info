@@ -16,7 +16,7 @@ module Hivedocs
     def extract_from_body(body)
       return nil if body.nil? || body.strip.empty?
 
-      text = body.dup
+      text = body.gsub(/[​-‍﻿]/, '')
       text = text.gsub(/```.*?```/m, ' ')
       text = text.gsub(/^ {4}.*$/, ' ')
       text = text.gsub(/\{\%.*?\%\}/m, ' ')

@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta property="og:image" content="/assets/images/sticker.png" />
+  <meta name="apple-mobile-web-app-title" content="Hive Docs" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" /><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Paving the way for a new async Python HIVE library (aiohivebot) : Querying the nodes to create a config json. | Hive Chain Documentation</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Paving the way for a new async Python HIVE library (aiohivebot) : Querying the nodes to create a config json." />
+<meta name="author" content="pibara" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Exploring the HIVE jsonrpc api calls for querying HIVE public API nodes as a preparation for aiohivebot lib" />
+<meta property="og:description" content="Exploring the HIVE jsonrpc api calls for querying HIVE public API nodes as a preparation for aiohivebot lib" />
+<link rel="canonical" href="https://hive.blog/hive-139531/@pibara/paving-the-way-for-a-new-async-python-hive-library-aiohivebot--querying-the-nodes-to-create-a-config-json" />
+<meta property="og:url" content="https://hive.blog/hive-139531/@pibara/paving-the-way-for-a-new-async-python-hive-library-aiohivebot--querying-the-nodes-to-create-a-config-json" />
+<meta property="og:site_name" content="Hive Chain Documentation" />
+<meta property="og:image" content="https://hivedocs.info/assets/images/favicon.png" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2023-10-22T14:43:39-07:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="https://hivedocs.info/assets/images/favicon.png" />
+<meta property="twitter:title" content="Paving the way for a new async Python HIVE library (aiohivebot) : Querying the nodes to create a config json." />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"pibara"},"dateModified":"2023-10-22T14:43:39-07:00","datePublished":"2023-10-22T14:43:39-07:00","description":"Exploring the HIVE jsonrpc api calls for querying HIVE public API nodes as a preparation for aiohivebot lib","headline":"Paving the way for a new async Python HIVE library (aiohivebot) : Querying the nodes to create a config json.","image":"https://hivedocs.info/assets/images/favicon.png","mainEntityOfPage":{"@type":"WebPage","@id":"https://hive.blog/hive-139531/@pibara/paving-the-way-for-a-new-async-python-hive-library-aiohivebot--querying-the-nodes-to-create-a-config-json"},"url":"https://hive.blog/hive-139531/@pibara/paving-the-way-for-a-new-async-python-hive-library-aiohivebot--querying-the-nodes-to-create-a-config-json"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://hivedocs.info/feed.xml" title="Hive Chain Documentation" /><script>
+if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNotTrack === "yes" || navigator.msDoNotTrack === "1")) {
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-161692811-1', 'auto');
+  ga('send', 'pageview');
+}
+</script>
+  
+<script src='https://unpkg.com/steem-content-renderer'></script>
+  <script src="/assets/javascript/universal-bridge-against-phishing.js"></script>
+  <script src="/assets/javascript/lazysizes.min.js" async=""></script>
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet" />
+  <link rel="shortcut icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="152x152" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="167x167" href="/assets/images/favicon-80x80.png" />
+</head>
+<body><header class="site-header" role="banner">
+  <div class="wrapper site-header-inner">
+    <a class="site-title" rel="author" href="/">Hive Chain Documentation</a>
+
+    <nav class="site-nav" aria-label="Primary">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/news/">News</a><a class="page-link" href="/howto/">How To</a><a class="page-link" href="/links/">Useful Links</a><a class="page-link" href="/authors/">Authors</a><a class="page-link" href="/topics/">Topics</a><a class="page-link" href="/search/">Search</a></div>
+    </nav>
+  </div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper page-layout has-search-panel">
+        <div class="page-main">
+          <article class="post h-entry post-article" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header post-hero">
+    <div class="post-hero-main">
+      <p class="post-kicker">Archive post</p>
+      <h1 class="post-title p-name" itemprop="name headline">Paving the way for a new async Python HIVE library (aiohivebot) : Querying the nodes to create a config json.</h1>
+      <p class="post-meta">
+        <time class="dt-published" datetime="2023-10-22T14:43:39-07:00" itemprop="datePublished">Oct 22, 2023
+        </time>• <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">
+            <a href="/authors/#author-pibara">pibara</a>
+          </span></span></p><p class="post-summary">Exploring the HIVE jsonrpc api calls for querying HIVE public API nodes as a preparation for aiohivebot lib</p></div><aside class="post-author-card">
+      <img src="https://images.hive.blog/u/pibara/avatar" width="128" height="128" class="lazyload post-author-avatar" alt="Avatar for @pibara" />
+      <div class="post-author-name">@pibara</div>
+    </aside></header>
+
+  <div class="post-content e-content post-body" itemprop="articleBody">
+    <div class="hive-post-embed" data-hive-author="pibara" data-hive-permlink="paving-the-way-for-a-new-async-python-hive-library-aiohivebot--querying-the-nodes-to-create-a-config-json">
+  <div id="content-pibara-paving-the-way-for-a-new-async-python-hive-library-aiohivebot--querying-the-nodes-to-create-a-config-json" class="hive-post-embed__content" data-hive-render-target="true">
+This is the first post in a short series of posts about a python library that I'm working on. Right now the [Hive Archeology Bot](https://hive.blog/hive-139531/@pibara/installing-hive-archeology-bot-on-your-nas-your-personal-bot-for-transparent-up-votes-of-older-posts) uses the  **lighthive** python library. The **lighthive** library is a pretty good python library for HIVE, especialy for simple scripts, and its significantly better and more pythonic than the beem python library, but as I've noticed for the Hive Archeology Bot, its less of a good fit for stand alone bots or DApp back-ends.
+
+
+Its been quit a while since the last version of [asyncsteem](https://peakd.com/utopian-io/@mattockfs/writing-an-asynchronous-steem-web-app-in-python-with-asyncsteem), an asynchonic python library for HIVE (then STEEM). So long ago that asyncsteem was a python 2 library running on top of the Twisted async framework, because at that time Twisted didn't fully run on Pyhton 3 yet, and async support in Python3 was still inferior to what was available in Twisted. I really didn't want to build a new async library for HIVE again, but with the Hive Archeology Bot, and my desire to integrate coinzdense signing into some python HIVE library for proof of concept purposes, I'm now ariving at the point where I realize there is no way around it. I need to start work on a new async HIVE library for Python.
+
+Things are still early, but I want to take you all with me on my journey as I continue building.
+
+##  API nodes and APIs
+
+According to the documentation there are 13 public API nodes for HIVE, but when running some code, some of these 13 don't seem to be operational. and others seem to be a bit flaky.
+
+Next to this, not all of the APIs are run by all of the public API nodes.  This can be a problem if your bot or DApp backend needs a specific API. 
+
+We are going to make out Python library take care of all of these details. It would be interesting to do all of this completely dynamically, and we may do so in futrure versions, but right now, we are going to start off with a little script that will generate a static configuration file for our library. It's so we have a start. Ideally, if the failing nodes would  get fixed or if nodes added or removed certain API's from their supported subset, it should dynamicly get updated, but we are starting small and statically.
+
+So lets look at a little class:
+
+```python
+class PubNodeClient:
+    def __init__(self, clientset, nodenurl):
+        self._clientset = clientset
+        self._abandon = False
+        self._lastblock = None
+        self.nodenurl = nodenurl
+        headers = {"user-agent": "aiohivebot-build-api-json/0.1"}
+        self._client = httpx.AsyncClient(base_url="https://" + nodenurl, headers = headers)
+        self.api_info = {}
+
+    async def _initialize_api(self):
+        ...
+
+    async def run(self):
+        await self._initialize_api()
+``` 
+
+
+
+A core little async class for handling a single API node. Let's fill out the _initialize api method:
+
+```python
+async def _initialize_api(self):
+  global COUNT
+  try:
+    r2 = None
+    method = None
+    cont = True
+    trycount = 0
+    while cont:
+      r = await self._client.post("/", content='{
+        "jsonrpc":"2.0",
+         "method":"jsonrpc.get_methods",
+         "params":{},
+         "id":1}')
+      if r.status_code not in [408,420,429,500,502,503,504,529,598,599]:
+        rjson = r.json()
+        if "result" in rjson or "jsonrpc" in rjson and \
+                                "error" in rjson and \
+                                rjson["error"]["code"] not in [-32603]:
+          cont = False
+        elif "jsonrpc" in rjson and \
+             "error" in rjson and \
+             rjson["error"]["code"] not in [-32603]:
+          trycount += 1
+          if trycount &gt; 5:
+            print(self.nodenurl,
+                  "JSONRPC ERROR, code",
+                  rjson["error"]["code"],
+                  "too many tries")
+            return False
+          print(self.nodenurl,
+                "JSONRPC ERROR, code",
+                rjson["error"]["code"],
+                "retrying in 1 minute")
+          await asyncio.sleep(60)
+        else:
+          print(self.nodenurl,
+                "JSONRPC ERROR,
+                invalid jsonrpc response, abandoning.")
+          return False
+      else:
+        trycount += 1
+        if trycount &gt; 5:
+          print(self.nodenurl,
+                "ERROR, status",
+                r.status_code,
+                "too many tries")
+          return False
+        print(self.nodenurl,
+              "ERROR, status",
+              r.status_code,
+              " retrying in 1 minute")
+        await asyncio.sleep(60)
+      else:
+        print(self.nodenurl,
+        "JSONRPC ERROR, invalid jsonrpc response, abandoning.")
+        return False
+    else:
+      trycount += 1
+      if trycount &gt; 5:
+        print(self.nodenurl,
+              "ERROR, status",
+              r.status_code,
+              "too many tries")
+        return False
+      print(self.nodenurl,
+            "ERROR, status",
+            r.status_code,
+            " retrying in 1 minute")
+      await asyncio.sleep(60)
+    if "result" in r.json():
+      for method in r.json()['result']:
+        cont = True
+        while cont:
+          r2 = await self._client.post("/",
+                                       content='{
+                                         "jsonrpc":"2.0", 
+                                          "method":"jsonrpc.get_signature",
+                                          "params":{
+                                            "method": "' + method +  '"
+                                          },
+                                          "id":1}')
+          if r2.status_code not in [408,420,429,500,502,503,504,529,598,599]:
+            r2json = r2.json()
+            if "result" in r2json:
+              cont = False
+              self.api_info[method] = r2.json()['result']['args']
+              await asyncio.sleep(0.2)
+            elif "jsonrpc" in r2json and \
+                 "error" in r2json and \
+                  r2json["error"]["code"] not in [-32603]:
+              print(self.nodenurl,
+                    "JSONRPC ERROR for",
+                    method,
+                    "code",
+                    r2json["error"]["code"],
+                    "retrying in 1 second")
+              await asyncio.sleep(1)
+            else:
+              self.api_info = {}
+              print(self.nodenurl,
+                    "JSONRPC ERROR for",
+                    method,
+                    "invalid JSONRPC response, abandoning")
+              return False
+          else:
+            print(self.nodenurl,
+                  "ERROR for",
+                  method,
+                  "status",
+                  r2.status_code,
+                  "retrying in 1 second" )
+            await asyncio.sleep(1)
+    COUNT += 1
+    print(self.nodenurl,"initialized", COUNT)
+    return True
+  except json.decoder.JSONDecodeError as exp:
+    print("### JSON ERROR")
+    print(self.nodenurl,"abandon")
+    print(r)
+    print(method)
+    print(r2)
+    if r2 is not None:
+      print(r2.status_code)
+    return False
+  except KeyError as exp:
+    print("### KEY ERROR")
+    print(self.nodenurl,"abandon")
+    print(r)
+    print(r.json())
+    print(method)
+    print(r2)
+    if r2 is not None:
+      print(r2.status_code)
+      print(r2.json())
+    return False
+```
+It's not the cleanest code, bit as it won't be part of our actual library, its not wortht the effort to clen it up.
+
+What this code tries to do is call two JSON RPC methods on a giben node:
+
+* [jsonrpc.getmethod](https://developers.hive.io/apidefinitions/#jsonrpc.get_methods)
+* [jsonrpc.get_signature](https://developers.hive.io/apidefinitions/#jsonrpc.get_signature)
+
+Basicly it first calls **jsonrpc.getmethod** and with the results it calls **jsonrpc.get_signature** for each of the methods returned by the first.  Most of the code above is error handling because the flaky and broken public API nodes that are active. 
+
+That is for one node, let's add some code to get this info from all of the known nodes:
+
+```python
+class PubNodeClientSet:
+  def __init__(self):
+    self._clients = []
+    self._abandon = False
+    for public_api_node in [
+          "api.hive.blog",
+          "api.deathwing.me",
+          "hive-api.arcange.eu",
+          "hived.emre.sh",
+          "api.openhive.network",
+          "rpc.ausbit.dev",
+          "rpc.mahdiyari.info",
+          "hive-api.3speak.tv",
+          "anyx.io",
+          "techcoderx.com",
+          "api.hive.blue",
+          "hived.privex.io",
+          "hive.roelandp.nl"]:
+      self._clients.append(PubNodeClient(self, public_api_node))
+
+  async def run(self, loop):
+    tasks = []
+    for nodeclient in self._clients:
+      tasks.append(loop.create_task(nodeclient.run()))
+    await asyncio.gather(*tasks)
+    result = {}
+    for nodeclient in self._clients:
+      node_url = nodeclient.nodenurl
+      apitree = nodeclient.api_info
+      for key, values in apitree.items():
+        namespace, method = key.split(".")
+        if namespace not in result:
+          result[namespace] = {}
+          result[namespace]["methods"] = {}
+          result[namespace]["nodes"] = []
+        if node_url not in result[namespace]["nodes"]:
+          result[namespace]["nodes"].append(node_url)
+        if method not in result[namespace]["methods"]:
+          result[namespace]["methods"][method] = values
+    with open("aiohivebot/api.json", "w") as outfil:
+        json.dump(result, outfil, indent=2)
+
+pncset = PubNodeClientSet()
+loop = asyncio.get_event_loop()
+loop.run_until_complete(pncset.run(loop))
+print("DONE")
+``` 
+
+Basicly we run the per node code with 13 instances in paralel, and when all 13 instances are done, we combine the result in one json file containing info on that node supports what API namespace and on what parameters each method of the HIVE API takes.
+
+When we buikt our library we shall use the first to make sure we use an API on a node known to support that API.
+
+Let's run the script as a whole and see what happens:
+
+```
+hived.privex.io ERROR, status 503  retrying in 1 minute
+api.hive.blue JSONRPC ERROR, invalid jsonrpc response, abandoning.
+hive-api.arcange.eu JSONRPC ERROR for account_by_key_api.get_key_references code 1000 retrying in 1 second
+hive.roelandp.nl ERROR for condenser_api.broadcast_transaction_synchronous status 500 retrying in 1 second
+hive.roelandp.nl ERROR for condenser_api.find_proposals status 500 retrying in 1 second
+hive-api.arcange.eu JSONRPC ERROR for condenser_api.broadcast_transaction code 1000 retrying in 1 second
+hive.roelandp.nl ERROR for condenser_api.get_account_reputations status 500 retrying in 1 second
+hive.roelandp.nl ERROR for condenser_api.get_active_votes status 500 retrying in 1 second
+hive.roelandp.nl ERROR for condenser_api.get_block status 500 retrying in 1 second
+hive-api.arcange.eu JSONRPC ERROR for condenser_api.get_account_votes code 1000 retrying in 1 second
+hive.roelandp.nl ERROR for condenser_api.get_blog_authors status 500 retrying in 1 second
+hive.roelandp.nl ERROR for condenser_api.get_blog_authors status 500 retrying in 1 second
+hive.roelandp.nl ERROR for condenser_api.get_collateralized_conversion_requests status 500 retrying in 1 second
+hive.roelandp.nl ERROR for condenser_api.get_current_median_history_price status 500 retrying in 1 second
+hive.roelandp.nl ERROR for condenser_api.get_discussions_by_active status 500 retrying in 1 second
+hive.roelandp.nl ERROR for condenser_api.get_discussions_by_created status 500 retrying in 1 second
+hive.roelandp.nl ERROR for condenser_api.get_discussions_by_hot status 500 retrying in 1 second
+hive.roelandp.nl ERROR for condenser_api.get_discussions_by_hot status 500 retrying in 1 second
+hive.roelandp.nl ERROR for condenser_api.get_expiring_vesting_delegations status 500 retrying in 1 second
+api.openhive.network JSONRPC ERROR for wallet_bridge_api.get_collateralized_conversion_requests invalid JSONRPC response, abandoning
+rpc.ausbit.dev initialized 1
+hive.roelandp.nl ERROR for condenser_api.get_feed status 500 retrying in 1 second
+api.deathwing.me initialized 2
+hive.roelandp.nl ERROR for condenser_api.get_feed_history status 500 retrying in 1 second
+rpc.mahdiyari.info initialized 3
+hived.emre.sh initialized 4
+hive.roelandp.nl ERROR for condenser_api.get_followers status 500 retrying in 1 second
+hive.roelandp.nl ERROR for condenser_api.get_followers status 500 retrying in 1 second
+hive-api.3speak.tv initialized 5
+hive.roelandp.nl ERROR for condenser_api.get_market_history status 500 retrying in 1 second
+hived.privex.io ERROR, status 503  retrying in 1 minute
+anyx.io initialized 6
+hive.roelandp.nl ERROR for condenser_api.get_reblogged_by status 500 retrying in 1 second
+hive-api.arcange.eu initialized 7
+hive.roelandp.nl ERROR for condenser_api.get_reblogged_by status 500 retrying in 1 second
+api.hive.blog initialized 8
+hive.roelandp.nl ERROR for condenser_api.get_state status 500 retrying in 1 second
+hive.roelandp.nl ERROR for condenser_api.get_transaction_hex status 500 retrying in 1 second
+hive.roelandp.nl ERROR for condenser_api.get_witness_schedule status 500 retrying in 1 second
+hive.roelandp.nl ERROR for condenser_api.get_witness_schedule status 500 retrying in 1 second
+hive.roelandp.nl ERROR for condenser_api.get_witnesses status 500 retrying in 1 second
+hive.roelandp.nl ERROR for condenser_api.get_witnesses status 500 retrying in 1 second
+hive.roelandp.nl ERROR for condenser_api.get_witnesses_by_vote status 500 retrying in 1 second
+hive.roelandp.nl ERROR for condenser_api.get_witnesses_by_vote status 500 retrying in 1 second
+hive.roelandp.nl ERROR for condenser_api.get_witnesses_by_vote status 500 retrying in 1 second
+hive.roelandp.nl ERROR for condenser_api.lookup_witness_accounts status 500 retrying in 1 second
+hive.roelandp.nl ERROR for database_api.find_change_recovery_account_requests status 500 retrying in 1 second
+hive.roelandp.nl ERROR for database_api.find_hbd_conversion_requests status 500 retrying in 1 second
+hive.roelandp.nl ERROR for database_api.find_savings_withdrawals status 500 retrying in 1 second
+techcoderx.com initialized 9
+hive.roelandp.nl ERROR for database_api.find_vesting_delegation_expirations status 500 retrying in 1 second
+hive.roelandp.nl ERROR for database_api.find_vesting_delegation_expirations status 500 retrying in 1 second
+hive.roelandp.nl ERROR for database_api.find_votes status 500 retrying in 1 second
+hive.roelandp.nl ERROR for database_api.find_witnesses status 500 retrying in 1 second
+hive.roelandp.nl ERROR for database_api.get_comment_pending_payouts status 500 retrying in 1 second
+hived.privex.io ERROR, status 503  retrying in 1 minute
+hive.roelandp.nl ERROR for database_api.get_required_signatures status 500 retrying in 1 second
+hive.roelandp.nl ERROR for database_api.get_reward_funds status 500 retrying in 1 second
+hive.roelandp.nl ERROR for database_api.is_known_transaction status 500 retrying in 1 second
+hive.roelandp.nl ERROR for database_api.is_known_transaction status 500 retrying in 1 second
+hive.roelandp.nl ERROR for database_api.is_known_transaction status 500 retrying in 1 second
+hive.roelandp.nl ERROR for database_api.is_known_transaction status 500 retrying in 1 second
+hive.roelandp.nl ERROR for database_api.is_known_transaction status 500 retrying in 1 second
+hive.roelandp.nl ERROR for database_api.list_accounts status 500 retrying in 1 second
+hive.roelandp.nl ERROR for database_api.list_change_recovery_account_requests status 500 retrying in 1 second
+hive.roelandp.nl ERROR for database_api.list_change_recovery_account_requests status 500 retrying in 1 second
+hive.roelandp.nl ERROR for database_api.list_collateralized_conversion_requests status 500 retrying in 1 second
+hive.roelandp.nl ERROR for database_api.list_proposal_votes status 500 retrying in 1 second
+hive.roelandp.nl ERROR for database_api.list_proposals status 500 retrying in 1 second
+hive.roelandp.nl ERROR for database_api.list_proposals status 500 retrying in 1 second
+hive.roelandp.nl ERROR for database_api.verify_signatures status 500 retrying in 1 second
+hive.roelandp.nl ERROR for rc_api.get_resource_pool status 500 retrying in 1 second
+hive.roelandp.nl ERROR for rc_api.get_resource_pool status 500 retrying in 1 second
+hive.roelandp.nl ERROR for rc_api.get_resource_pool status 500 retrying in 1 second
+hive.roelandp.nl ERROR for rc_api.list_rc_direct_delegations status 500 retrying in 1 second
+hive.roelandp.nl ERROR for reputation_api.get_account_reputations status 500 retrying in 1 second
+hive.roelandp.nl ERROR for reputation_api.get_account_reputations status 500 retrying in 1 second
+hive.roelandp.nl JSONRPC ERROR for wallet_bridge_api.find_rc_accounts code -32003 retrying in 1 second
+hived.privex.io ERROR, status 503  retrying in 1 minute
+hive.roelandp.nl JSONRPC ERROR for wallet_bridge_api.find_rc_accounts code -32003 retrying in 1 second
+hive.roelandp.nl ERROR for wallet_bridge_api.find_rc_accounts status 500 retrying in 1 second
+hive.roelandp.nl JSONRPC ERROR for wallet_bridge_api.get_account code -32003 retrying in 1 second
+hive.roelandp.nl ERROR for wallet_bridge_api.get_account status 500 retrying in 1 second
+hive.roelandp.nl JSONRPC ERROR for wallet_bridge_api.get_account code -32003 retrying in 1 second
+hive.roelandp.nl JSONRPC ERROR for wallet_bridge_api.get_account code -32003 retrying in 1 second
+hive.roelandp.nl JSONRPC ERROR for wallet_bridge_api.get_chain_properties code -32003 retrying in 1 second
+hive.roelandp.nl ERROR for wallet_bridge_api.get_chain_properties status 500 retrying in 1 second
+hive.roelandp.nl ERROR for wallet_bridge_api.get_collateralized_conversion_requests status 500 retrying in 1 second
+hive.roelandp.nl JSONRPC ERROR for wallet_bridge_api.get_collateralized_conversion_requests code -32003 retrying in 1 second
+hive.roelandp.nl JSONRPC ERROR for wallet_bridge_api.get_collateralized_conversion_requests code -32003 retrying in 1 second
+hive.roelandp.nl ERROR for wallet_bridge_api.get_collateralized_conversion_requests status 500 retrying in 1 second
+hive.roelandp.nl ERROR for wallet_bridge_api.get_collateralized_conversion_requests status 500 retrying in 1 second
+hive.roelandp.nl ERROR for wallet_bridge_api.get_conversion_requests status 500 retrying in 1 second
+hive.roelandp.nl JSONRPC ERROR for wallet_bridge_api.get_conversion_requests code -32003 retrying in 1 second
+hive.roelandp.nl ERROR for wallet_bridge_api.get_open_orders status 500 retrying in 1 second
+hive.roelandp.nl ERROR for wallet_bridge_api.get_open_orders status 500 retrying in 1 second
+hive.roelandp.nl ERROR for wallet_bridge_api.get_open_orders status 500 retrying in 1 second
+hive.roelandp.nl JSONRPC ERROR for wallet_bridge_api.get_version code -32003 retrying in 1 second
+hive.roelandp.nl ERROR for wallet_bridge_api.get_version status 500 retrying in 1 second
+hive.roelandp.nl JSONRPC ERROR for wallet_bridge_api.get_version code -32003 retrying in 1 second
+hive.roelandp.nl JSONRPC ERROR for wallet_bridge_api.get_version code -32003 retrying in 1 second
+hive.roelandp.nl JSONRPC ERROR for wallet_bridge_api.get_version code -32003 retrying in 1 second
+hive.roelandp.nl ERROR for wallet_bridge_api.get_withdraw_routes status 500 retrying in 1 second
+hive.roelandp.nl JSONRPC ERROR for wallet_bridge_api.get_witness code -32003 retrying in 1 second
+hive.roelandp.nl JSONRPC ERROR for wallet_bridge_api.get_witness_schedule code -32003 retrying in 1 second
+hive.roelandp.nl ERROR for wallet_bridge_api.list_my_accounts status 500 retrying in 1 second
+hive.roelandp.nl ERROR for wallet_bridge_api.list_my_accounts status 500 retrying in 1 second
+hive.roelandp.nl JSONRPC ERROR for wallet_bridge_api.list_proposals code -32003 retrying in 1 second
+hive.roelandp.nl JSONRPC ERROR for wallet_bridge_api.list_proposals code -32003 retrying in 1 second
+hive.roelandp.nl JSONRPC ERROR for wallet_bridge_api.list_proposals code -32003 retrying in 1 second
+hive.roelandp.nl ERROR for wallet_bridge_api.list_proposals status 500 retrying in 1 second
+hived.privex.io ERROR, status 503  retrying in 1 minute
+hive.roelandp.nl ERROR for wallet_bridge_api.list_rc_direct_delegations status 500 retrying in 1 second
+hive.roelandp.nl ERROR for wallet_bridge_api.list_witnesses status 500 retrying in 1 second
+hive.roelandp.nl JSONRPC ERROR for wallet_bridge_api.list_witnesses code -32003 retrying in 1 second
+hive.roelandp.nl ERROR for wallet_bridge_api.list_witnesses status 500 retrying in 1 second
+hive.roelandp.nl initialized 10
+hived.privex.io ERROR, status 503 too many tries
+DONE
+```
+
+So what do we see? 
+
+One nodes just failed. The node **api.hive.blue** run by @hiveio failed instantly in this run because the results arent expected HTTP errors and aren't valid JSON-RPC responses either. I haven't looked deeper in what they do return, maybe I should, for now we consider them broken.
+
+One other node, **hived.privex.io** run by @privex at the moment we run this kept returning HTTP 503 errors and as a result didn't end up in the results.
+
+Three other nodes showed more or less flaky bahaviour during the run. The node **hive-api.arcange.eu** run by @arcange on four occasions gave a JSON-RPC 1000 error, but in the end finished the run.
+A second node, **hive.roelandp.nl** seemed even more flaky as it gave a HTTP 500 error a total of 98 times, but in the end it completed the run. Thirdly api.openhive.network showed some flaky responses but also got through at the end.
+
+The other eithr nodes, **rpc.ausbit.dev** run by @ausbitbank, **api.deathwing.me** run by @deathwing, **rpc.mahdiyari.info** run by @mahdiyari , **hived.emre.sh** run by @emrebeyler, **hive-api.3speak.tv** run by @threespeak, **anyx.io** run by @anyx, **api.hive.blog** run by @blocktrades and **techcoderx.com** run by @techcoderx all seem to be running perfectly during this run.
+
+But let's look a little bit closer looking at part of the produced JSON:
+
+```
+{
+  "account_by_key_api": {
+    "methods": {
+      "get_key_references": {
+        "keys": []
+      }
+    },
+    "nodes": [
+      "api.hive.blog",
+      "api.deathwing.me",
+      "hive-api.arcange.eu",
+      "hived.emre.sh",
+      "api.openhive.network",
+      "rpc.ausbit.dev",
+      "rpc.mahdiyari.info",
+      "hive-api.3speak.tv",
+      "anyx.io",
+      "techcoderx.com",
+      "hive.roelandp.nl"
+    ]
+  },
+  "account_history_api": {
+    "methods": {
+      "enum_virtual_ops": {
+        "block_range_begin": 1,
+        "block_range_end": 2
+      },
+      "get_account_history": {
+        "account": "",
+        "start": "18446744073709551615",
+        "limit": 1000
+      },
+      "get_ops_in_block": {
+        "block_num": 0,
+        "only_virtual": false
+      },
+      "get_transaction": {
+        "id": ""
+      }
+    },
+    "nodes": [
+      "api.hive.blog",
+      "hived.emre.sh",
+      "api.openhive.network",
+      "anyx.io",
+      "hive.roelandp.nl"
+    ]
+  },
+  ..
+}
+  
+```
+
+When we look at the *nodes* sections, we see that not all nodes support all the API namespaces.
+
+| api | number of nodes |
+| -- | -- |
+| account_by_key_api | 11/11 |
+| account_history_api  | 5/11 |
+| block_api | 11/11 |
+| condenser_api | 11/11 |
+| database_api | 11/11 |
+| market_history_api | 11/11 |
+| network_broadcast_api | 11/11 |
+| rc_api | 11/11 |
+| reputation_api | 10/11 |
+| transaction_status_api | 9/11 |
+| wallet_bridge_api | 8/11 |
+
+Lets look a bit closer at the API's not supported by one or more nodes.
+
+| | account_history | reputation | transaction_status | wallet_bridge |
+| -- | -- | -- | -- | -- |
+| api.hive.blog | YES | YES | YES | YES |
+| **api.deathwing.me** | **NO** | YES | YES |  YES | 
+| **hive-api.arcange.eu** | **NO** | YES | YES | **NO** | 
+| hived.emre.sh | YES |  YES |  YES | YES |
+| api.openhive.network | YES | YES |  YES | YES |
+| **rpc.ausbit.dev** | **NO** | YES |  YES | YES |
+| **rpc.mahdiyari.info** | **NO** | **NO** |  YES | YES |
+| **hive-api.3speak.tv** | **NO** | YES | YES | YES |
+| **anyx.io** | YES |  YES |  **NO** |  **NO** |
+| **techcoderx.com** | **NO** | YES |  YES | YES |
+| **hive.roelandp.nl** | YES | YES | **NO** | **NO** |
+
+Looking at the methods sections, we see some info that will come in handy when we want to implement different API calls. In the mext post in this series we are going to look at using __getattr__ in two Python classes to implement most of the API without any API specific code, just using something quite close to the JSON we produced today. We are likely going to remove the **nodes** part of the JSON as that part is quite doable in a dynamic way.
+
+# Available for projects
+
+If you think my skills and knowledge could be usefull for your project, I am currently available for contract work for up to 20 hours a week. My hourly rate depends on the type of activity (Python dev, C++ dev or data analysis), wether the project at hand will be open source or not, and if you want to sponsor my pet project coinZdense that aims to create a multi-language programming library for post-quantum signing and least authority subkey management.
+
+| Activity | Hourly rate | Open source discount | Minimal hours | Maximum hours |
+| -- | -- | -- | -- | -- |
+| C++ development | 150 $HBD/€ | 30 $HBD/€ | 4 | - |
+| Python development | 140 $HBD/€ | 30 $HBD/€ | 4 | - |
+| Data analysis (python/pandas) | 120 $HBD/€ | - | 2 | - |
+| Sponsored coinZdense work | 50 $HBD/€ | - | 0 | - |
+| Paired up coinZdense work | 25 $HBD/€ | - | 1 | 2x contract h |
+
+Development work on open-source project get a 30 $HBD discount on my hourly rates.
+
+Next to contract work, you can also become a sponsor of my coinZdense project.
+Note that if you pair up to two coinZdense sponsor hours with a contract hour, you can sponsor twice the amount of hours to the coinZdense project.
+
+If you wish to pay for my services or sponsor my project with other coins than $HBD, all rates are slightly higher (same rates, but in Euro or euro equivalent value at transaction time). I welcome payments in Euro (through paypall), $HIVE, $QRL $ZEC, $LTC, $DOGE, $BCH, $ETH or $BTC/lightning.
+
+Contact: coin\<at>z-den.se&lt;/div&gt;
+  <footer class="hive-post-embed__source">
+    <span class="hive-post-embed__source-label">Source:</span>
+    <a href="https://hive.blog/@pibara/paving-the-way-for-a-new-async-python-hive-library-aiohivebot--querying-the-nodes-to-create-a-config-json">Paving the way for a new async Python HIVE library (aiohivebot) : Querying the nodes to create a config json.</a>
+    by
+    <a href="https://hive.blog/@pibara">@pibara</a>
+  </footer>
+&lt;/div&gt;
+
+</at></div></div>
+
+  </div><a class="u-url" href="/tools/python/aiohivebot/2023/10/22/paving-the-way-for-a-new-async-python-hive-library-aiohivebot-querying-the-nodes-to-create-a-config-json.html" hidden></a>
+</article>
+
+        </div>
+
+        
+        <aside class="page-sidebar" aria-label="Search and browse">
+          <section class="sidebar-section sidebar-search">
+            <h2 class="sidebar-heading">Search posts</h2>
+            <p class="sidebar-copy">Search the locally indexed post archive.</p>
+            <input type="text" id="search-input" placeholder="Search posts" autocomplete="off" />
+            <ul id="results-container"></ul>
+          </section>
+
+          <section class="sidebar-section sidebar-topics">
+            <h2 class="sidebar-heading">Browse topics</h2>
+            <p class="sidebar-copy">Jump into curated topic landing pages.</p>
+            <ul class="topic-list topic-list-sidebar"><li><a class="page-link" href="/account-recovery/">Account Recovery</a></li><li><a class="page-link" href="/core-development/">Core Development</a></li><li><a class="page-link" href="/dapps/">Dapps</a></li><li><a class="page-link" href="/docker/">Docker</a></li><li><a class="page-link" href="/hardfork/">Hardfork</a></li><li><a class="page-link" href="/hivemind/">Hivemind</a></li><li><a class="page-link" href="/javascript/">Javascript</a></li><li><a class="page-link" href="/multisig/">Multisig</a></li><li><a class="page-link" href="/python/">Python</a></li><li><a class="page-link" href="/ruby/">Ruby</a></li><li><a class="page-link" href="/testnet/">Testnet</a></li><li><a class="page-link" href="/tools/">Tools</a></li><li><a class="page-link" href="/witness/">Witness</a></li></ul>
+          </section>
+        </aside>
+        
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading"><a rel="author" href="/">Hive Chain Documentation</a></h2>
+    
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">site curated by: @inertia</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>Your resource for various levels of Hive Documentation.</p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+<script src="/assets/javascript/search.js"></script>
+    <script>
+      (function () {
+        var input = document.getElementById('search-input');
+        var results = document.getElementById('results-container');
+        if (input && results && typeof SimpleJekyllSearch !== 'undefined') {
+          SimpleJekyllSearch({
+            searchInput: input,
+            resultsContainer: results,
+            json: '/search.json'
+          });
+        }
+
+        if (typeof SteemContentRenderer === 'undefined') return;
+
+        var targets = document.querySelectorAll('[data-hive-render-target="true"]');
+        if (!targets.length) return;
+
+        var renderer = new SteemContentRenderer.DefaultRenderer({
+          baseUrl: 'https://hive.blog/',
+          breaks: true,
+          skipSanitization: false,
+          allowInsecureScriptTags: false,
+          addNofollowToLinks: true,
+          doNotShowImages: false,
+          ipfsPrefix: '',
+          assetsWidth: 640,
+          assetsHeight: 480,
+          imageProxyFn: function (url) { return url; },
+          usertagUrlFn: function (account) { return '/@' + account; },
+          hashtagUrlFn: function (hashtag) { return '/tags/#' + hashtag; },
+          isLinkSafeFn: function () { return true; }
+        });
+
+        targets.forEach(function (target) {
+          try {
+            var inputHtml = target.innerHTML;
+            target.innerHTML = renderer.render(inputHtml);
+          } catch (e) {
+            console.log(e);
+          }
+        });
+      })();
+    </script>
+
+  </body>
+
+</html>

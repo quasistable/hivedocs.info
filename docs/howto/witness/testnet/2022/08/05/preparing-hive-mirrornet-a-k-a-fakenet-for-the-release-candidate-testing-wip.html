@@ -108,57 +108,28 @@ I strongly recommend you read it before doing anything that involves Hive Mirror
 <sup>Logo reveal video that I’ve featured in my previous post converted to a fancy animated GIF</sup></center>
 
 # Notes
-- ~~The "Recipe for Copy&amp;Paste Experts" will currently not work~~
+- The "Recipe for Copy&amp;Paste Experts" will currently not work (it needs all the components to be updated) - TBD (see Changelog for the info on progress)
 - Conversion process is time consuming and resource hungry (like everything that runs on such a huge amount of data), fortunately it needs to be done only once for the whole mirror. Other participants will just download the converted one.
-- To have a better idea about the amount of data, we are processing `629GB` of data, just getting md5 checksum for the input file could take a couple of minutes (on a regular HDD it might take more than an hour). With a 1Gbps network you will need roughly two hours to just download it.
+- To have a better idea about amount of data, we are processing `629GB` of data, just getting md5 checksum for the input file could take couple of minutes (on regular HDD it might take more than an hour). With 1Gbps network you will need roughly two hours to just download it.
 - I've used a trick to speed things up - knowing that there were no significant changes in the blockchain converter itself, I’m reusing converted `block_log` that was used for a previous instance of the mirror and resume feature so I could just convert blocks in range `66000000-66755355`. That saves us two days if the replay will succeed.
-- It wasn't possible to just replay previous instance because the gap between the blocks that was too big and caused unexpected issues. (In the real world scenario it is very unlikely for Hive to be stopped for more than 7 days!)
-- Sleeping is such a waste of time.
-- Replay on my node took unexpectedly long time so I used plan B (that is I borrowed @blocktrades resources) - before my node reached 50M blocks, I was able to move data there, do the replay, do the snapshot, get the snapshot back to my infrastructure, load it and start production).
-- Mirrornet (converted) `block_log` and binaries are already uploaded to my server (the usual place where you can get the useful Hive stuff from), so those who are willing to run their own nodes can start downloading it. Before you download it, I will have a snapshot ready.
-- The "Recipe for Copy&amp;Paste Experts" should work again (see my
-[previous post](/@gtg/hive-mirrornet-a-k-a-fakenet-is-up-and-running))
-- The original "Recipe for Copy&amp;Paste Experts" used `block_log.index` file instead of the new fancy `block_log.artifacts`, so those who would use that would have to recreate artifacts on their own. Now with the updated recipe it's downloaded which saves some time (assuming fast Internet connection). (IO+CPU) vs (Bandwidth) trade-off.
-- Please note, that if you want to build a `hived` binary yourself, you need to configure it properly to work with the mirror, i.e. with cmake's `-DHIVE_CONVERTER_BUILD=ON`.
-- New instance started, please make sure that you are using `hived` at `9b1e913acafd42ef1fe30e97310fa2dab8241ea7` or later, because otherwise you will fork out (due to witness schedule change)
-- Providing a fully functional Mirrornet API node is far more tricky than just running a bunch of consensus nodes, I already have an Account History node up, and Hivemind sync in progress. Once it's done I will be able to patch all the pieces together.
+- It wasn't possible to just replay previous instance because the gap between the blocks that was to big and caused unexpected issues. (In the real world scenario it is very unlikely for Hive to be stopped for more than 7 days!)
 
 # Changelog
 - Using current latest `develop` i.e. `5885515c2e99064213b3b2b33708ada28a8702e0`.
-- Using the current state of the mainnet, i.e. as the input for the converter.
+- Using current state of mainnet, i.e. as the input for converter.
   - Mainnet uncompressed `block_log` at block `66755355`
     - size `674947358456`
     - md5 `0a686f863ab32cc8d6265b3c82384994`
 - Conversion started (incremental, see Notes above)
-- Conversion finished
-- Mirrornet compressed `block_log` at block `66755355`
-    - size `368370305268`
-    - md5 `0e7d66af3c757f1c71bb34b96ea3180e`
-- Production on Mirrornet started
-    - `Generated block #66755356 with timestamp 2022-08-06T06:39:09 at time 2022-08-06T06:39:09`
-- Mirrornet `block_log` and binaries uploaded  to https://gtg.openhive.network/get/testnet/mirror/
-- Updated `mirror-consensus-bootstrap` snapshot is now available.
-- Attached `config.ini` file that's compatible with the snapshot.
-- Updated original "Recipe for Copy&amp;Paste Experts" to include the `block_log.artifacts` file instead of the obsolete `block_log.index`.
-- Processing Mainnet transactions (through node based converter) starting at block `66866000` (that's 66840234 on the Mirrornet).
-- `HARDFORK 26 at block 66840644`
-- I've found some issues #350, #351, #352 related to different versions with different witness schedules, which forces me to reinitialize the whole Mirrornet.
-- New instance of the Mirrornet started, same `block_log` height as previous one, with `HIVE_HF26_TIME` unchanged.
-  - Using current latest develop i.e. `9b1e913acafd42ef1fe30e97310fa2dab8241ea7`
-- `HARDFORK 26 at block 66755388`
-- Processing Mainnet transactions (through node based converter) starting at block `66906969` (that's 66756449 on the Mirrornet).
-- Another node with extra validation was started.
-- Account history node that's needed for Hivemind was revived from the snapshot.
-- Hivemind sync from scratch survived replacing the AH node.
-- Apparently a bug in RocksDB based account history node requires an update, so replaced binaries with current latest develop i.e. `0ace05ebfbcdf8ac887e1ad5c5b2a2dcf082b5fd`
+
 
 # Work in progress...
-This post will be updated during the next few days until the mirror consensus will be fully functional and other participants could join it. That of course will include a "starter pack" to download and bootstrap your nodes. So please, pay attention, and then, once it's up and running, please participate.
+This post will be updated during the next few days until the mirror consensus will be fully functional and other participants could join it. That of course will include "starter pack" to download and bootstrap your nodes. So please, pay attention, and then, once it's up and running, please participate.
 (That's a mirror so you will participate to some extent even if you don't know it ;-) )</div>
   <footer class="hive-post-embed__source">
     <span class="hive-post-embed__source-label">Source:</span>
-    <a href="https://hive.blog/hive-160391/@gtg/preparing-hive-mirrornet-a-k-a-fakenet-for-the-release-candidate-testing-wip">Preparing Hive Mirrornet (a.k.a. fakenet) for the release candidate testing</a>
-    <span>by</span>
+    <a href="https://hive.blog/hive-160391/@gtg/preparing-hive-mirrornet-a-k-a-fakenet-for-the-release-candidate-testing-wip">Preparing Hive Mirrornet (a.k.a. fakenet) for the release candidate testing [WIP]</a>
+    by
     <a href="https://hive.blog/@gtg">@gtg</a>
   </footer>
 </div>

@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta property="og:image" content="/assets/images/sticker.png" />
+  <meta name="apple-mobile-web-app-title" content="Hive Docs" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" /><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>On using aiohivebot in conjunction with an async python web framework like aiohttp or starlette | Hive Chain Documentation</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="On using aiohivebot in conjunction with an async python web framework like aiohttp or starlette" />
+<meta name="author" content="pibara" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="On hooks added for aiohivebot and web framework interaction, and how to use these with aiohttp or starlette framework" />
+<meta property="og:description" content="On hooks added for aiohivebot and web framework interaction, and how to use these with aiohttp or starlette framework" />
+<link rel="canonical" href="https://hive.blog/hive-139531/@pibara/on-using-aiohivebot-in-conjunction-with-an-async-python-web-framework-like-aiohttp-or-starlette" />
+<meta property="og:url" content="https://hive.blog/hive-139531/@pibara/on-using-aiohivebot-in-conjunction-with-an-async-python-web-framework-like-aiohttp-or-starlette" />
+<meta property="og:site_name" content="Hive Chain Documentation" />
+<meta property="og:image" content="https://files.peakd.com/file/peakd-hive/pibara/Eo1uwTyPqMGmkAMGEcMtAhYK2ChcgzJmqZc5o497VY3w3qkxMNDWdfDmicaJDWLxxYB.png" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2023-11-06T07:22:45-08:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="https://files.peakd.com/file/peakd-hive/pibara/Eo1uwTyPqMGmkAMGEcMtAhYK2ChcgzJmqZc5o497VY3w3qkxMNDWdfDmicaJDWLxxYB.png" />
+<meta property="twitter:title" content="On using aiohivebot in conjunction with an async python web framework like aiohttp or starlette" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"pibara"},"dateModified":"2023-11-06T07:22:45-08:00","datePublished":"2023-11-06T07:22:45-08:00","description":"On hooks added for aiohivebot and web framework interaction, and how to use these with aiohttp or starlette framework","headline":"On using aiohivebot in conjunction with an async python web framework like aiohttp or starlette","image":"https://files.peakd.com/file/peakd-hive/pibara/Eo1uwTyPqMGmkAMGEcMtAhYK2ChcgzJmqZc5o497VY3w3qkxMNDWdfDmicaJDWLxxYB.png","mainEntityOfPage":{"@type":"WebPage","@id":"https://hive.blog/hive-139531/@pibara/on-using-aiohivebot-in-conjunction-with-an-async-python-web-framework-like-aiohttp-or-starlette"},"url":"https://hive.blog/hive-139531/@pibara/on-using-aiohivebot-in-conjunction-with-an-async-python-web-framework-like-aiohttp-or-starlette"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://hivedocs.info/feed.xml" title="Hive Chain Documentation" /><script>
+if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNotTrack === "yes" || navigator.msDoNotTrack === "1")) {
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-161692811-1', 'auto');
+  ga('send', 'pageview');
+}
+</script>
+  
+<script src='https://unpkg.com/steem-content-renderer'></script>
+  <script src="/assets/javascript/universal-bridge-against-phishing.js"></script>
+  <script src="/assets/javascript/lazysizes.min.js" async=""></script>
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet" />
+  <link rel="shortcut icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="152x152" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="167x167" href="/assets/images/favicon-80x80.png" />
+</head>
+<body><header class="site-header" role="banner">
+  <div class="wrapper site-header-inner">
+    <a class="site-title" rel="author" href="/">Hive Chain Documentation</a>
+
+    <nav class="site-nav" aria-label="Primary">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/news/">News</a><a class="page-link" href="/howto/">How To</a><a class="page-link" href="/links/">Useful Links</a><a class="page-link" href="/authors/">Authors</a><a class="page-link" href="/topics/">Topics</a><a class="page-link" href="/search/">Search</a></div>
+    </nav>
+  </div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper page-layout has-search-panel">
+        <div class="page-main">
+          <article class="post h-entry post-article" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header post-hero">
+    <div class="post-hero-main">
+      <p class="post-kicker">Archive post</p>
+      <h1 class="post-title p-name" itemprop="name headline">On using aiohivebot in conjunction with an async python web framework like aiohttp or starlette</h1>
+      <p class="post-meta">
+        <time class="dt-published" datetime="2023-11-06T07:22:45-08:00" itemprop="datePublished">Nov 6, 2023
+        </time>• <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">
+            <a href="/authors/#author-pibara">pibara</a>
+          </span></span></p><p class="post-summary">On hooks added for aiohivebot and web framework interaction, and how to use these with aiohttp or starlette framework</p></div><aside class="post-author-card">
+      <img src="https://images.hive.blog/u/pibara/avatar" width="128" height="128" class="lazyload post-author-avatar" alt="Avatar for @pibara" />
+      <div class="post-author-name">@pibara</div>
+    </aside></header>
+
+  <div class="post-content e-content post-body" itemprop="articleBody">
+    <div class="hive-post-embed" data-hive-author="pibara" data-hive-permlink="on-using-aiohivebot-in-conjunction-with-an-async-python-web-framework-like-aiohttp-or-starlette">
+  <div id="content-pibara-on-using-aiohivebot-in-conjunction-with-an-async-python-web-framework-like-aiohttp-or-starlette" class="hive-post-embed__content" data-hive-render-target="true">Asynchonous code in Python is pretty powerfull. While Python, despite of some threading support, is fundamentally a single threaded language (CPU-intensive code tends to get slower if you add more threads), by making use of the language its async features, you can do much of the stuff that many languages throw threads at in a way more natural and quite efficient way. Instead of threads you have multiple tasks, and whenever a task is waiting for IO or doing an asynchonous *sleep*, other tasks will get awakened because of IO operations completing. 
+
+My *aiohivebot* library, that I'm currently actively developing does exactly this for HIVE. It starts a collection of tasks, each communicating with its own HIVE public API server (work on adding Hive-Engine nodes as well is on its way), and that's cool, but connecting different asynchonous python libraries can sometimes be a bit of a hastle.
+
+Sometimes different async libs can be a bit of a chalange to fit together, and this can be especialy true when one of the async libs is an asynchonous web framework. The problem with web frameworks is that they often insist on being in the lead, and playing nice with other long runing tasks isn't always a standard feat.
+
+With HIVE being a Web 3.0 ecosystem, web frameworks are pretty important, so I've spent a few days on trying to make aiohivebot play nice with a few top async web frameworks. I managed to get some generic helper functions added to aiohivebot, and I've added one framework specific helper function. 
+
+In this post, I'm going to give a simeple example of a completely useless aiohivebot script with a web server serving a JSON report, remember it's not about what the example does exactly, its about the fact that the bot and the web frontend play nice together and form a whole.
+
+# A simple bot
+
+```python
+#!/usr/bin/env python3
+"""Simple demo script that looks for votes on already paid out posts"""
+import asyncio
+import json
+from aiohivebot import BaseBot
+
+class MyBot(BaseBot):
+    """Example of an aiohivebot python bot without real utility"""
+    async def node_api_support(self, node_uri, api_support):
+        print("NODE:", node_uri)
+        sup = {
+                key: ("published" if value["published"] else
+                    ("hiden" if value["available"]
+                        else "disabled")) for key, value in api_support.items()}
+        for key, val in sup.items():
+            print(" -", key, ":", val)
+
+bot = MyBot()
+asyncio.run(bot.run())
+```
+
+This is a dumb bot that processes the per API node reports on the sub-API support of the different nodes. The aiohivebot lib will scan this info a few times an hour and use the info internaly, but its also available to the user defined *node_api_support* method, and this bot uses the supplied info to print a simple report like this.
+
+```
+NODE: hive-api.arcange.eu
+ - reputation_api : published
+ - jsonrpc : published
+ - condenser_api : published
+ - transaction_status_api : published
+ - block_api : published
+ - account_history_api : hiden
+ - rc_api : published
+ - network_broadcast_api : published
+ - account_by_key_api : published
+ - market_history_api : published
+ - database_api : published
+ - bridge : hiden
+ - follow_api : hiden
+ - wallet_bridge_api : disabled
+```
+
+# The convenience methods
+
+If we look at the last line of the code, we see:
+
+```python
+asyncio.run(bot.run())
+```
+
+What this last line basicly does is that it creates and activates an event loop and within this event loop it invokes the asynchonous *run* method of the bot. 
+
+This is great if there is only one async lib with async tasks to worry about, but what if there were more? The first convenience method we defined for this purpose is the method *wire_up_get_tasks()*
+
+Now imagine we have two libs like these, one with a HIVE bot and one with a FlureeDB bot with a similar API, how would we make them both run?
+
+```python
+async def run_both(bot1, bot2):
+    tasks = bot1.wire_up_get_tasks() + bot2.wire_up_get_tasks()
+    await asyncio.gather(*tasks)
+
+asyncio.run(run_both(hivebot, flureebot))
+```
+
+There is a bit of a caveat here, if one of the bots stops operation, the long running tasks in both bots will need to be aborted. This means the two bots will need to be aware of eachother in order for the two bots to be terminated correctly.
+
+There is a second convenience method that could be used to decouple this a bit. The *wire_up_get_runnables* method returns objects that have both an async *run* method and a synchonour *abort* method.  I'm not going any deeper into that one, but I hope it's clear that with those you have less convenient but maximaly flexible options.
+
+But there is also a third and a fourth convenience method that we shall demonstrate with *starlette*.
+
+# Hooking up bot to starlette
+
+Starlette, like basicaly every single async python web framework wants to be in control. But unlike a wide range of other frameworks, starlette has a pretty generic way of allowing other code to be hooked in on startup and shut down. The next two convenience methods were made precicely to fit on this pattern.
+
+The *wire_up_on_startup* method creates the tasks and keeps an internal reference to them. The *wire_up_on_shutdown_async* method invokes *abort* to tell all running tasks to abort as soon as possible, and then calls asyncio.gather on the running tasks.
+
+So how does this allow us to hook *starlette* to our bot. Let's change our code a tiny bit to integrate a dumb web server in our bot.
+
+```python
+import json, typing
+import asyncio
+from aiohivebot import BaseBot
+from starlette.applications import Starlette
+from starlette.responses import Response
+from starlette.routing import Route
+
+class JsonResponse(Response):
+    media_type = "application/json"
+
+    def render(self, content: typing.Any) -&gt; bytes:
+        return json.dumps(
+            content,
+            ensure_ascii=False,
+            allow_nan=False,
+            indent=2,
+            separators=(", ", ": "),
+        ).encode("utf-8")
+
+class MyBot(BaseBot):
+    """Example of an aiohivebot python bot without real utility"""
+    def __init__(self):
+        super().__init__()
+        self.supportmap = {}
+
+    async def node_api_support(self, node_uri, api_support):
+        sup = {
+                key: ("published" if value["published"] else
+                    ("hiden" if value["available"]
+                        else "disabled")) for key, value in api_support.items()}
+        self.supportmap[node_uri] = sup
+
+bot = MyBot()
+
+async def node_api_support(request):
+    return JsonResponse(bot.supportmap)
+
+app = Starlette(debug=True, routes=[
+    Route('/', node_api_support)],
+    on_startup=[bot.wire_up_on_startup],
+    on_shutdown=[bot.wire_up_on_shutdown_async]
+)
+```
+
+Notice how we can just set the on_startup and on_shutdown to hook the two libraries together?
+
+Also notice that there is no run?
+
+This is because starlette code is started through *uvicorn* or a similar server.
+
+```
+uvicorn server_starlette:app
+```
+
+![image.png](https://files.peakd.com/file/peakd-hive/pibara/Eo1uwTyPqMGmkAMGEcMtAhYK2ChcgzJmqZc5o497VY3w3qkxMNDWdfDmicaJDWLxxYB.png)
+
+
+If we start the bot now, and let it run and press ctrl-C to stop it, we see something like this.
+It still takes a few seconds for the bot to start, but everything works as it should.
+When we visit the URL, we see some dencently formated JSON like this:
+
+
+![image.png](https://files.peakd.com/file/peakd-hive/pibara/23uRJKkgJNu5RfahyqsBLPEaHqwNQ4Rm6dQp1wHDaijfPS1mM6GTTJTFXkDGQxWAwXMzz.png)
+
+I think the starlette code is pretty much self explanatory, and this isn't a starlette tutorial, so let's leave it as this for now.
+
+# hooking up a bot to aiohttp
+
+Starlette is a pretty decent option to use for a async web framework, but if you want something a little closer to the metal, aiohttp is a great alternative. There are many more alternatives, and opinions may differ, but I personaly feel these two are the best options out of the eight of them that I've tried. 
+
+For aiohttp we've added its own convenience method to aiohivebot. The *wire_up_aiohttp* method.
+
+Let's look how it makes our bot look:
+
+```python
+#!/usr/bin/env python3
+import asyncio
+from aiohivebot import BaseBot
+from aiohttp import web
+
+class MyBot(BaseBot):
+    """Example of an aiohivebot python bot without real utility"""
+    def __init__(self):
+        super().__init__()
+        self.supportmap = {}
+
+    async def node_api_support(self, node_uri, api_support):
+        sup = {
+                key: ("published" if value["published"] else
+                    ("hiden" if value["available"]
+                        else "disabled")) for key, value in api_support.items()}
+        self.supportmap[node_uri] = sup
+
+async def node_api_support(request):
+    return web.json_response(bot.supportmap)
+
+bot = MyBot()
+
+app = web.Application()
+app.add_routes([web.get('/', node_api_support)])
+bot.wire_up_aiohttp(app)
+web.run_app(app)
+``` 
+
+See the code is even simpler than for starlette, but overall pretty similar.
+
+The output when started (as a refular python script) is pretty bare:
+
+
+![image.png](https://files.peakd.com/file/peakd-hive/pibara/23swfwJLA2PxwyQdXiEKZenU8c1MEayhH5DBigfj5MFea3x18c9ugAyfJYhCL4pKWQ7o8.png)
+
+And the output of the JSON from the web port isn't as slick because we arent using a pretty print option, but usually this wouldn't be relevant.
+
+# What's next?
+
+I've started working on hive-engine support for aiohivebot. It's not complete yet, but its quickly approaching something working. Hive-engine support should be the last feature before the big missing feature, *signed operations*, is coming. I think that just like the web framework connectivity, hive-engine support is absolutely crucial.
+
+Right now my todo list for aiohivebot looks as follows:
+
+1) Add hive-engine JSON-RPC support
+2) Make layer-2 support modular
+3) Add signed operations support
+4) Port the **Hive Archeology bot** to aiohivebot
+5) Add an example (plus personal use) frontend to the Hive Archeology bot
+7) Make a new Hive Archeology docker image
+8) Integrate **coinZdense** and coinZdense piggyback mode
+9) Explore and add support for other decentralized L2
+10) Look at supporting image hoster signed uploads
+11) Focus exclusively on coinZdense features and base maintenance and bug fixes.
+
+![image.png](https://files.peakd.com/file/peakd-hive/pibara/23wr5usndHucjRZiUmnjSDr9vAu8QfgcmtEiLUhuBPLQrxznsBVcsE22m4KMPzUv1Ch35.png)
+
+# Available for projects
+
+If you think my skills and knowledge could be usefull for your project, I will be available for contract work again for up to 20 hours a week starting next January.
+
+My hourly rate depends on the type of activity (Python dev, C++ dev or data analysis), wether the project at hand will be open source or not, and if you want to sponsor my pet project coinZdense that aims to create a multi-language programming library for post-quantum signing and least authority subkey management.
+
+| Activity | Hourly rate | Open source discount | Minimal hours | Maximum hours |
+| -- | -- | -- | -- | -- |
+| C++ development | 150 $HBD | 30 $HBD | 4 | - |
+| Python development | 140 $HBD | 30 $HBD | 4 | - |
+| Data analysis (python/pandas) | 120 $HBD | - | 2 | - |
+| Sponsored coinZdense work | 50 $HBD | - | 0 | - |
+| Paired up coinZdense work | 25 $HBD | - | 1 | 2x contract h |
+
+Development work on open-source project get a 30 $HBD discount on my hourly rates.
+
+Next to contract work, you can also become a sponsor of my coinZdense project.
+
+Note that if you pair up to two coinZdense sponsor hours with a contract hour, you can sponsor twice the amount of hours to the coinZdense project.
+
+If you wish to pay for my services or sponsor my project with other coins than $HBD, all rates are slightly higher (same rates, but in Euro or euro equivalent value at transaction time). I welcome payments in Euro (through paypall), $HIVE, $QRL $ZEC, $LTC, $DOGE, $BCH, $ETH or $BTC/lightning.
+
+If instead of hourly rates you want a fixed project price, I'm not offering that, but there are options I can offer to attenuate cost risks if the specs are close to fully defined at project start. It's a +20/-20/-50/-80 setup. Let me give an example. Say you have a decently defined project that I estimate will take me 60 hours. I could for example offer you two options:
+
+| hour | fixed rate | attenuated risk rate |
+| -- | -- | -- |
+| 1 .. 50 | 100% | 120 % |
+| 51 .. 75 | 100% | 80% |
+| 75 .. 125 | 100% | 50% |
+| &gt; 125 | 100% | 20% |
+
+
+![image.png](https://files.peakd.com/file/peakd-hive/pibara/23tHbr9ym6DkUd9VZRGDZdCNEimrsbsvdGXRVMZYC8o4afcPPQavg2bxoMeX14jrwmKyZ.png)
+
+
+Note that this is just an example, but it illustrates my take on providing you with the option to attenuate project cost risks. There is no fixed price, but still a pretty solid  attenuation of your financial risk and a strong incentive for me to not go too much above planning.
+
+Drop me a mail or DM me on [X](https://twitter.com/EngineerDiet) if you are interested in my services. I'm not on discord very often, but if need be, you can find me [here](https://discordapp.com/users/pibara_) on discors too.
+
+Contact: coin\<at>z-den.se
+&lt;/div&gt;
+  <footer class="hive-post-embed__source">
+    <span class="hive-post-embed__source-label">Source:</span>
+    <a href="https://hive.blog/@pibara/on-using-aiohivebot-in-conjunction-with-an-async-python-web-framework-like-aiohttp-or-starlette">On using aiohivebot in conjunction with an async python web framework like aiohttp or starlette</a>
+    by
+    <a href="https://hive.blog/@pibara">@pibara</a>
+  </footer>
+&lt;/div&gt;
+
+</at></div></div>
+
+  </div><a class="u-url" href="/tools/python/aiohivebot/2023/11/06/on-using-aiohivebot-in-conjunction-with-an-async-python-web-framework-like-aiohttp-or-starlette.html" hidden></a>
+</article>
+
+        </div>
+
+        
+        <aside class="page-sidebar" aria-label="Search and browse">
+          <section class="sidebar-section sidebar-search">
+            <h2 class="sidebar-heading">Search posts</h2>
+            <p class="sidebar-copy">Search the locally indexed post archive.</p>
+            <input type="text" id="search-input" placeholder="Search posts" autocomplete="off" />
+            <ul id="results-container"></ul>
+          </section>
+
+          <section class="sidebar-section sidebar-topics">
+            <h2 class="sidebar-heading">Browse topics</h2>
+            <p class="sidebar-copy">Jump into curated topic landing pages.</p>
+            <ul class="topic-list topic-list-sidebar"><li><a class="page-link" href="/account-recovery/">Account Recovery</a></li><li><a class="page-link" href="/core-development/">Core Development</a></li><li><a class="page-link" href="/dapps/">Dapps</a></li><li><a class="page-link" href="/docker/">Docker</a></li><li><a class="page-link" href="/hardfork/">Hardfork</a></li><li><a class="page-link" href="/hivemind/">Hivemind</a></li><li><a class="page-link" href="/javascript/">Javascript</a></li><li><a class="page-link" href="/multisig/">Multisig</a></li><li><a class="page-link" href="/python/">Python</a></li><li><a class="page-link" href="/ruby/">Ruby</a></li><li><a class="page-link" href="/testnet/">Testnet</a></li><li><a class="page-link" href="/tools/">Tools</a></li><li><a class="page-link" href="/witness/">Witness</a></li></ul>
+          </section>
+        </aside>
+        
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading"><a rel="author" href="/">Hive Chain Documentation</a></h2>
+    
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">site curated by: @inertia</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>Your resource for various levels of Hive Documentation.</p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+<script src="/assets/javascript/search.js"></script>
+    <script>
+      (function () {
+        var input = document.getElementById('search-input');
+        var results = document.getElementById('results-container');
+        if (input && results && typeof SimpleJekyllSearch !== 'undefined') {
+          SimpleJekyllSearch({
+            searchInput: input,
+            resultsContainer: results,
+            json: '/search.json'
+          });
+        }
+
+        if (typeof SteemContentRenderer === 'undefined') return;
+
+        var targets = document.querySelectorAll('[data-hive-render-target="true"]');
+        if (!targets.length) return;
+
+        var renderer = new SteemContentRenderer.DefaultRenderer({
+          baseUrl: 'https://hive.blog/',
+          breaks: true,
+          skipSanitization: false,
+          allowInsecureScriptTags: false,
+          addNofollowToLinks: true,
+          doNotShowImages: false,
+          ipfsPrefix: '',
+          assetsWidth: 640,
+          assetsHeight: 480,
+          imageProxyFn: function (url) { return url; },
+          usertagUrlFn: function (account) { return '/@' + account; },
+          hashtagUrlFn: function (hashtag) { return '/tags/#' + hashtag; },
+          isLinkSafeFn: function () { return true; }
+        });
+
+        targets.forEach(function (target) {
+          try {
+            var inputHtml = target.innerHTML;
+            target.innerHTML = renderer.render(inputHtml);
+          } catch (e) {
+            console.log(e);
+          }
+        });
+      })();
+    </script>
+
+  </body>
+
+</html>

@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta property="og:image" content="/assets/images/sticker.png" />
+  <meta name="apple-mobile-web-app-title" content="Hive Docs" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" /><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Understanding the Hive Debt Ratio and the Haircut Rule | Hive Chain Documentation</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Understanding the Hive Debt Ratio and the Haircut Rule" />
+<meta name="author" content="arcange" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Learn what are the Hive Debt Ratio and Haircut Rule and how important they are to the financial health of Hive" />
+<meta property="og:description" content="Learn what are the Hive Debt Ratio and Haircut Rule and how important they are to the financial health of Hive" />
+<link rel="canonical" href="https://hive.blog/hbd/@arcange/hive-debt-ratio-and-haircut-rule" />
+<meta property="og:url" content="https://hive.blog/hbd/@arcange/hive-debt-ratio-and-haircut-rule" />
+<meta property="og:site_name" content="Hive Chain Documentation" />
+<meta property="og:image" content="https://i.imgur.com/1dCG0T9.png" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2023-04-17T09:18:36-07:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="https://i.imgur.com/1dCG0T9.png" />
+<meta property="twitter:title" content="Understanding the Hive Debt Ratio and the Haircut Rule" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"arcange"},"dateModified":"2023-04-17T09:18:36-07:00","datePublished":"2023-04-17T09:18:36-07:00","description":"Learn what are the Hive Debt Ratio and Haircut Rule and how important they are to the financial health of Hive","headline":"Understanding the Hive Debt Ratio and the Haircut Rule","image":"https://i.imgur.com/1dCG0T9.png","mainEntityOfPage":{"@type":"WebPage","@id":"https://hive.blog/hbd/@arcange/hive-debt-ratio-and-haircut-rule"},"url":"https://hive.blog/hbd/@arcange/hive-debt-ratio-and-haircut-rule"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://hivedocs.info/feed.xml" title="Hive Chain Documentation" /><script>
+if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNotTrack === "yes" || navigator.msDoNotTrack === "1")) {
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-161692811-1', 'auto');
+  ga('send', 'pageview');
+}
+</script>
+  
+<script src='https://unpkg.com/steem-content-renderer'></script>
+  <script src="/assets/javascript/universal-bridge-against-phishing.js"></script>
+  <script src="/assets/javascript/lazysizes.min.js" async=""></script>
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet" />
+  <link rel="shortcut icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="152x152" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="167x167" href="/assets/images/favicon-80x80.png" />
+</head>
+<body><header class="site-header" role="banner">
+  <div class="wrapper site-header-inner">
+    <a class="site-title" rel="author" href="/">Hive Chain Documentation</a>
+
+    <nav class="site-nav" aria-label="Primary">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/news/">News</a><a class="page-link" href="/howto/">How To</a><a class="page-link" href="/links/">Useful Links</a><a class="page-link" href="/authors/">Authors</a><a class="page-link" href="/topics/">Topics</a><a class="page-link" href="/search/">Search</a></div>
+    </nav>
+  </div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper page-layout has-search-panel">
+        <div class="page-main">
+          <article class="post h-entry post-article" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header post-hero">
+    <div class="post-hero-main">
+      <p class="post-kicker">Archive post</p>
+      <h1 class="post-title p-name" itemprop="name headline">Understanding the Hive Debt Ratio and the Haircut Rule</h1>
+      <p class="post-meta">
+        <time class="dt-published" datetime="2023-04-17T09:18:36-07:00" itemprop="datePublished">Apr 17, 2023
+        </time>• <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">
+            <a href="/authors/#author-arcange">arcange</a>
+          </span></span></p><p class="post-summary">Learn what are the Hive Debt Ratio and Haircut Rule and how important they are to the financial health of Hive</p></div><aside class="post-author-card">
+      <img src="https://images.hive.blog/u/arcange/avatar" width="128" height="128" class="lazyload post-author-avatar" alt="Avatar for @arcange" />
+      <div class="post-author-name">@arcange</div>
+    </aside></header>
+
+  <div class="post-content e-content post-body" itemprop="articleBody">
+    <div class="hive-post-embed" data-hive-author="arcange" data-hive-permlink="hive-debt-ratio-and-haircut-rule">
+  <div id="content-arcange-hive-debt-ratio-and-haircut-rule" class="hive-post-embed__content" data-hive-render-target="true">![](https://i.imgur.com/1dCG0T9.png)
+
+Many of you have probably already heard about the Hive Debt Ratio and the Haircut Rule that comes with it. But few understand these two notions which are important for the good financial health of the Hive ecosystem.
+
+In this post, I will try to explain to you in the simplest possible way the mechanisms that come into play, starting from the basics that are necessary for your understanding.
+
+### 1. One blockchain, two tokens
+
+The Hive ecosystem has two tokens: HIVE and HBD (Hive Backed Dollars)
+
+&gt; To avoid confusion, because the Hive platform has the same name as its HIVE token, we used to capitalize it when talking about the last one.
+
+HIVE is the main liquid currency of the Hive ecosystem. It may be traded, staked, bought, and sold. 
+
+HBD was designed as an attempt to bring stability to the individuals who use the Hive network. Although HBD can also be traded, bought and sold (but not staked, although some see moving HBD to savings as a form of staking), it is considered a debt by the blockchain.
+
+### 2. Why a debt?
+
+HBD are created by a mechanism similar to convertible notes, which are often used to fund startups. In the startup world, convertible notes are **short-term debt** instruments that can be converted to ownership at a rate determined in the future, typically during a future funding round.
+
+HIVE can be viewed as ownership in the community whereas HBD can be viewed as a debt denominated in HIVE. 
+
+The **terms** of the convertible note allow the holder to **convert** to the backing token (HIVE) with a minimum **notice** at the fair market **price** of the token. 
+
+Translated to the Hive ecosystem, the above sentence means that:
+- the "terms" are embedded into the blockchain code as a smart contract 
+- it allows its users to convert each HBD they own into the equivalent of $1 USD worth of HIVE
+- the conversion process will take 3.5 days
+- the conversion price is the "median" HIVE price observed during those 3.5 days using the price feeds from the Hive witnesses. This has been put in place to factor out short-term price fluctuations.
+
+Each HBD is essentially an IOU *("I Owe You [HIVE tokens]"*) issued by the platform and given out as a reward to its users.
+
+### 3. What is the debt ratio?
+
+As we have seen above, if HIVE is viewed as ownership in the whole supply of tokens, then HBD can be viewed as debt. 
+
+The debt ratio is the ratio between the HIVE virtual supply and the HBD supply.
+
+* The **HIVE supply** is the number of HIVE tokens, both liquid (HIVE) and staked (Hive Power), that are in existence.
+* The **HBD supply** is the number of HBD tokens that are in existence.
+* The **HIVE virtual supply** is the HIVE supply plus the amount of HIVE we would get if we instantly converted all the HBD supply into HIVE.
+
+&gt; **Note:** since hardfork 24, HBD stored in the treasury (@hive.fund wallet) don't count towards the HBD debt ratio because it doesn't make sense to count them in the debt ratio as they are "locked" by another "smart contract" which prevents them to be liquidated at once (the daily outflows are capped at 1/100th of its holdings).
+
+A pseudo formula to compute the debt ratio would be :
+
+```
+      convert_to_HIVE( HBD_supply - hive_fund_HBD_balance )
+-------------------------------------------------------------------
+convert_to_HIVE( HBD_supply - hive_fund_HBD_balance ) + HIVE_supply
+```
+
+You can find a visual representation of its value over time in my [financial stats](/@arcange/hive-finance-20230416-en):
+
+![](https://arcange.eu/hive-images/2023-04-16-HiveSupplyVirtual-EN.png)
+
+### 4. What is the Haircut rule?
+
+Some might wonder why does the debt ratio matter?
+
+Tha answer is: the debt ratio determines how and when the blockchain creates new HBD.
+
+There are 5 mechanisms involved in the creation of HBD:
+1. payout of author rewards
+2. conversion from HIVE to HBD
+3. interest payment on HBD stored in savings
+4. allocation of part of the inflation to DHF
+5. conversion from the ninja mined HIVE
+
+The Haircut Rule is the fact that **when the debt ratio is higher than predefined thresholds, the blockchain will slow down or even stop printing new HBDs for some of its HBD creation mechanisms**.
+
+The haircut rule comes with three thresholds: soft-low-limit, soft-high-limit and hard-limit. As of writing, the thresholds have the following values:
+
+|Threshold|Value|pre-HF26|
+|-|-|-|
+|soft-lower-limit|**20%**|9%|
+|soft-upper-limit|**20%**|10%|
+|hard-limit|**30%**|10%|
+
+&gt; _**Note**: Pre-HF26 values are shown in the above table so you can see that soft-lower-limit may be different from soft-upper-limit_
+
+Each of these thresholds may be used (or not) depending on each HBD creation mode.
+
+### 5. What are the effects of the Debt Ratio and the Haircut Rule?
+
+I will now describe each different ways to create HBD and how they are subject to the influence of the debt ratio and the haircut rule thresholds.
+
+#### **Author rewards**
+
+When publishing posts on Hive, authors can choose the 50/50 payment method  which means their author reward will be split into 50% HBD and 50% Hive Power
+
+When the debt ratio is higher than the soft-lower-limit, the amount of HBD printed for author rewards is reduced and authors receive less HBD. The missing part is replaced by liquid HIVE.
+
+When the debt ratio is higher than the soft-upper-limit, HBD stops to be printed and the author no longer receives HBD. These are completely replaced by liquid HIVE.
+
+As soon as the debt ratio falls back, HBD may start to be printed again.
+
+Paying for posts can be summarized as follows:
+
+|Debt ratio|Payout|
+|-|-|
+|&lt; soft-lower-limit|Hive Power + HBD|
+|between soft-lower-limit and soft-upper-limit| Hive Power + HBD + HIVE|
+|&gt; soft-upper-limit|Hive Power + HIVE|
+
+When the debt ratio is between soft-lower-limit and soft-upper-limit, the blockchain will print HBD on the basis of this formula:
+
+`HBD print rate = 100% * (10 - debt ratio)`
+
+This means that the closer the debt ratio is to the soft-upper-limit, the less HBD will be printed and replaced by more HIVE until it will be HIVE only when the debt ratio reaches the soft-upper-limit
+
+&gt; **Note**: If you go back to the graph provided in section 3, you will notice that around the end of September 2021, the debt ratio was over 9% and then 10% for a few days, which is why the blockchain shrank and then completely stopped paying rewards to authors with HBD.
+&gt;
+&gt; But, as you can see in the thresholds table in section 4, since hardfork 26 the soft-lower-limit is the same as the soft-upper-limit. This has the effect that there is no longer a transition period during which authors receive both HBD and liquid HIVE as was the case before hardfork 26. As soon as the debt ratio exceeds the soft-lower-limit, the HBD parts of the author rewards are paid in liquid HIVE only.
+
+#### **Conversion from HIVE to HBD**
+
+When you convert HIVE to HBD, the HIVE are locked for 3 days as collateral (they are removed from the account's balance) and 50% of the value (based on the current median price) is instantly converted into new HBD (added to the user's balance). Three days later, the value will be recomputed based on the median price from those 3 days and part of the collateralized HIVE will be returned to the account accordingly.
+
+Regarding the role of the debt ratio, things are more simple in this case: 
+
+When the debt ratio is **higher than the soft-upper-limit**, the **conversion requests are rejected** by the blockchain to avoid printing new HBD!
+
+#### **Interest payment**
+
+Each top 20 witnesses propose an APR rate for HBD. The median value of those propositions is used by the blockchain to pay interest to users for holding HBD. Of course, the interest is paid by printing new HBD.
+
+&gt; **Note:** Since Hive hardfork 25, interest is only paid for HBD stored in savings.
+
+The debt ratio has **no influence** on interest payment.
+
+#### **Allocation of part of inflation to DHF**
+
+Every hour, 10% of the HIVE inflation is converted from HIVE to HBD and sent to the DHF (Decentralized Hive Fund - [@hive.fund HBD balance](https://peakd.com/@hive.fund/wallet)).
+
+This HBD creation process is **not influenced** by the debt ratio.
+
+#### **Conversion from the ninja-mined HIVE**
+
+Long story made short, the so-called "ninja mined" HIVE are tokens that have been minted during the creation process of the ~~Steem~~ blockchain and put into an account controlled by Steemit inc, with the promise to use it for the development of the community.
+
+When Justin Sun made his hostile takeover and the community decided to fork ~~Steem~~ and create Hive, those funds were moved to the DHF blockchain-controlled account @hive.fund
+
+Later, it has been decided to peacefully convert those HIVE into HBD over ~5 years. Therefore, every day since 2020-10-31, the blockchain converts to HBD 0.05% of the HIVEs that were stored in the @hive.fund balance on that date.
+
+This HBD creation process is **not influenced** by the debt ratio.
+
+### **Conversion from HBD to HIVE**
+
+Although we are not in the case of the creation of new HDBs, quite the opposite, the debt ratio also has an effect on this process.
+
+To perform this conversion, the blockchain uses the median price feed provided by the witnesses. When the debt ratio exceeds the hard-limit, the HIVE price used for the conversion will no longer be the median price feed but a corrected price feed.
+
+The aim is to limit the effective price to force HBD to remain at or below the hard-limit threshold of the combined market cap of HIVE and HBD. This way, we can protect the blockchain by preventing individuals with a lot of HBD to take advantage of a sharp decline in the HIVE price to make in-chain-but-out-of-market conversions to HIVE and take over the blockchain.
+
+### 6. Why the debt ratio logic?
+
+If the debt-to-ownership ratio gets too high then the entire currency can become unstable.
+
+Debt conversions can dramatically increase the token supply, which in turn can be sold on the market and put down pressure on the price. 
+
+Subsequent conversions require the issuance of even more tokens. Left unchecked the system can collapse leaving worthless ownership backing a mountain of debt. A rapid change in the value of HIVE can dramatically change the debt-to-ownership ratio. 
+
+The blockchain prevents the debt-to-ownership ratio from getting too high and the debt ratio logic has been put in place to ensure that the blockchain will never have higher than a hard-limit debt-to-ownership ratio.
+
+### Conclusion
+
+I hope you now have a better understanding of what the debt ratio is, why it was created, what its effects are, and when they come into play.
+
+Thanks for reading.
+
+---
+<center>
+
+### Check out my apps and services
+<a href="/hive/@hive.engage/stay-connected-with-your-hive-audience-and-catch-attention"><img src="https://i.imgur.com/GiNJqlm.png" /></a><a href="/@hivebuzz"><img src="https://i.imgur.com/B4UTun2.png" /></a><a href="/@hivesql"><img src="https://i.imgur.com/EPN8RW6.png" /></a><a href="https://hiveauth.com"><img src="https://i.imgur.com/2Ws6KzW.png" /></a><a href="/hive/@arcange/introducing-hive-account-recovery"><img src="https://i.imgur.com/6TWeW7V.png" /></a><a href="/@hive.autoclaim"><img src="https://i.imgur.com/ih2pEOw.png" /></a></center>
+<center>
+
+### [Vote for me as a witness ![](https://i.imgur.com/2bi4SnT.png)](https://vote.hive.uno/@arcange)
+</center></div>
+  <footer class="hive-post-embed__source">
+    <span class="hive-post-embed__source-label">Source:</span>
+    <a href="https://hive.blog/@arcange/hive-debt-ratio-and-haircut-rule">Understanding the Hive Debt Ratio and the Haircut Rule</a>
+    by
+    <a href="https://hive.blog/@arcange">@arcange</a>
+  </footer>
+</div>
+
+
+  </div><a class="u-url" href="/howto/core/hbd/2023/04/17/hive-debt-ratio-and-haircut-rule.html" hidden></a>
+</article>
+
+        </div>
+
+        
+        <aside class="page-sidebar" aria-label="Search and browse">
+          <section class="sidebar-section sidebar-search">
+            <h2 class="sidebar-heading">Search posts</h2>
+            <p class="sidebar-copy">Search the locally indexed post archive.</p>
+            <input type="text" id="search-input" placeholder="Search posts" autocomplete="off" />
+            <ul id="results-container"></ul>
+          </section>
+
+          <section class="sidebar-section sidebar-topics">
+            <h2 class="sidebar-heading">Browse topics</h2>
+            <p class="sidebar-copy">Jump into curated topic landing pages.</p>
+            <ul class="topic-list topic-list-sidebar"><li><a class="page-link" href="/account-recovery/">Account Recovery</a></li><li><a class="page-link" href="/core-development/">Core Development</a></li><li><a class="page-link" href="/dapps/">Dapps</a></li><li><a class="page-link" href="/docker/">Docker</a></li><li><a class="page-link" href="/hardfork/">Hardfork</a></li><li><a class="page-link" href="/hivemind/">Hivemind</a></li><li><a class="page-link" href="/javascript/">Javascript</a></li><li><a class="page-link" href="/multisig/">Multisig</a></li><li><a class="page-link" href="/python/">Python</a></li><li><a class="page-link" href="/ruby/">Ruby</a></li><li><a class="page-link" href="/testnet/">Testnet</a></li><li><a class="page-link" href="/tools/">Tools</a></li><li><a class="page-link" href="/witness/">Witness</a></li></ul>
+          </section>
+        </aside>
+        
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading"><a rel="author" href="/">Hive Chain Documentation</a></h2>
+    
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">site curated by: @inertia</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>Your resource for various levels of Hive Documentation.</p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+<script src="/assets/javascript/search.js"></script>
+    <script>
+      (function () {
+        var input = document.getElementById('search-input');
+        var results = document.getElementById('results-container');
+        if (input && results && typeof SimpleJekyllSearch !== 'undefined') {
+          SimpleJekyllSearch({
+            searchInput: input,
+            resultsContainer: results,
+            json: '/search.json'
+          });
+        }
+
+        if (typeof SteemContentRenderer === 'undefined') return;
+
+        var targets = document.querySelectorAll('[data-hive-render-target="true"]');
+        if (!targets.length) return;
+
+        var renderer = new SteemContentRenderer.DefaultRenderer({
+          baseUrl: 'https://hive.blog/',
+          breaks: true,
+          skipSanitization: false,
+          allowInsecureScriptTags: false,
+          addNofollowToLinks: true,
+          doNotShowImages: false,
+          ipfsPrefix: '',
+          assetsWidth: 640,
+          assetsHeight: 480,
+          imageProxyFn: function (url) { return url; },
+          usertagUrlFn: function (account) { return '/@' + account; },
+          hashtagUrlFn: function (hashtag) { return '/tags/#' + hashtag; },
+          isLinkSafeFn: function () { return true; }
+        });
+
+        targets.forEach(function (target) {
+          try {
+            var inputHtml = target.innerHTML;
+            target.innerHTML = renderer.render(inputHtml);
+          } catch (e) {
+            console.log(e);
+          }
+        });
+      })();
+    </script>
+
+  </body>
+
+</html>

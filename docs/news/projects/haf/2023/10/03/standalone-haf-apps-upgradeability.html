@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta property="og:image" content="/assets/images/sticker.png" />
+  <meta name="apple-mobile-web-app-title" content="Hive Docs" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" /><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Standalone HAF Apps - Upgradeability | Hive Chain Documentation</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Standalone HAF Apps - Upgradeability" />
+<meta name="author" content="peak.open" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Creating infrastructure to help make building apps on Hive fast and easy" />
+<meta property="og:description" content="Creating infrastructure to help make building apps on Hive fast and easy" />
+<link rel="canonical" href="https://hive.blog/hive-139531/@peak.open/standalone-haf-apps-upgradeability" />
+<meta property="og:url" content="https://hive.blog/hive-139531/@peak.open/standalone-haf-apps-upgradeability" />
+<meta property="og:site_name" content="Hive Chain Documentation" />
+<meta property="og:image" content="https://files.peakd.com/file/peakd-hive/borislavzlatanov/23tmmXSdQAU4k3hdF85LqEzbhEkajyGkMRLsQxfhVqnVnRwRPhJAXKLipHRoksdofwVXS.png" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2023-10-03T10:29:51-07:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="https://files.peakd.com/file/peakd-hive/borislavzlatanov/23tmmXSdQAU4k3hdF85LqEzbhEkajyGkMRLsQxfhVqnVnRwRPhJAXKLipHRoksdofwVXS.png" />
+<meta property="twitter:title" content="Standalone HAF Apps - Upgradeability" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"peak.open"},"dateModified":"2023-10-03T10:29:51-07:00","datePublished":"2023-10-03T10:29:51-07:00","description":"Creating infrastructure to help make building apps on Hive fast and easy","headline":"Standalone HAF Apps - Upgradeability","image":"https://files.peakd.com/file/peakd-hive/borislavzlatanov/23tmmXSdQAU4k3hdF85LqEzbhEkajyGkMRLsQxfhVqnVnRwRPhJAXKLipHRoksdofwVXS.png","mainEntityOfPage":{"@type":"WebPage","@id":"https://hive.blog/hive-139531/@peak.open/standalone-haf-apps-upgradeability"},"url":"https://hive.blog/hive-139531/@peak.open/standalone-haf-apps-upgradeability"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://hivedocs.info/feed.xml" title="Hive Chain Documentation" /><script>
+if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNotTrack === "yes" || navigator.msDoNotTrack === "1")) {
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-161692811-1', 'auto');
+  ga('send', 'pageview');
+}
+</script>
+  
+<script src='https://unpkg.com/steem-content-renderer'></script>
+  <script src="/assets/javascript/universal-bridge-against-phishing.js"></script>
+  <script src="/assets/javascript/lazysizes.min.js" async=""></script>
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet" />
+  <link rel="shortcut icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="152x152" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="167x167" href="/assets/images/favicon-80x80.png" />
+</head>
+<body><header class="site-header" role="banner">
+  <div class="wrapper site-header-inner">
+    <a class="site-title" rel="author" href="/">Hive Chain Documentation</a>
+
+    <nav class="site-nav" aria-label="Primary">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/news/">News</a><a class="page-link" href="/howto/">How To</a><a class="page-link" href="/links/">Useful Links</a><a class="page-link" href="/authors/">Authors</a><a class="page-link" href="/topics/">Topics</a><a class="page-link" href="/search/">Search</a></div>
+    </nav>
+  </div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper page-layout has-search-panel">
+        <div class="page-main">
+          <article class="post h-entry post-article" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header post-hero">
+    <div class="post-hero-main">
+      <p class="post-kicker">Archive post</p>
+      <h1 class="post-title p-name" itemprop="name headline">Standalone HAF Apps - Upgradeability</h1>
+      <p class="post-meta">
+        <time class="dt-published" datetime="2023-10-03T10:29:51-07:00" itemprop="datePublished">Oct 3, 2023
+        </time>• <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">
+            <a href="/authors/#author-peak.open">peak.open</a>
+          </span></span></p><p class="post-summary">Creating infrastructure to help make building apps on Hive fast and easy</p></div><aside class="post-author-card">
+      <img src="https://images.hive.blog/u/peak.open/avatar" width="128" height="128" class="lazyload post-author-avatar" alt="Avatar for @peak.open" />
+      <div class="post-author-name">@peak.open</div>
+    </aside></header>
+
+  <div class="post-content e-content post-body" itemprop="articleBody">
+    <div class="hive-post-embed" data-hive-author="peak.open" data-hive-permlink="standalone-haf-apps-upgradeability">
+  <div id="content-peak.open-standalone-haf-apps-upgradeability" class="hive-post-embed__content" data-hive-render-target="true">This is a continuation of a previous post where we discussed the idea of Standalone HAF Apps. Check out [the post](https://peakd.com/hive-139531/@peak.open/standalone-haf-apps-project-a-request-for-feedback) if you haven't.
+
+Why?
+-----
+
+Hive offers vast opportunities and possibilities, supported by a decentralized community and governance system. Myriads of apps can be created that greatly benefit from all of this. What is discussed here is how to make developing apps fast, easy, cheap and in a way that developing something for one app can be reused by other apps. 
+
+The post does a deep dive into the technical specifics of how blockchain data can be put into databases that support apps. As such, its intended audience is developers. For non-developers, we can summarize that we are discussing approaches to create infrastructure on top of which apps can be built easily, and to furthermore make it easy to change and improve this infrastructure in the future, without such changes requiring apps to do much or anything to still take advantage of the infrastructure.
+
+For Developers
+-----
+
+None of the ideas discussed here are final in any way, and your feedback would be essential for creating truly useful infrastructure on top of which apps can be easily built. This is the case regardless of whether the solutions look like standalone HAF apps, or standard HAF apps, or anything else. It is up to all of us to make this blockchain a place where each app is a part of a larger puzzle, a network of apps, where each app greatly benefits the other ones. Such a network holds vastly more possibility than any single app. Creating such networks and larger systems requires that we dedicate some of our attention to the greater whole, while also keeping our attention on our own app.
+
+Technical Discussion
+-----
+
+If such standalone HAF apps are made, one of the main issues becomes that if there is any change to the underlying way they work (for example, let’s say we find a better way to get blockchain data into the apps), the app developers then might have to do extra work to make their app compatible with the new approach. Such changes to the underlying infrastructure can take a lot of time from developers. Imagine if there are hundreds of such small standalone HAF apps and they all have to be upgraded because there is a breaking change. This would cause lots of extra work, a lack of desire to keep improving the infrastructure, and would defeat the purpose of letting developers simply focus on their app, without the blockchain getting in their way.
+
+Rather than coming up with the best infrastructure design upfront, the premise here is that it’s even more desirable to make change easy, so that the design can be improved over time. 
+
+One way to do this is to decouple the standardized functionalities related to retrieving blockchain data from the functionalities specific to the app (e.g. interpreting of polls data). This will make it so that there is a standard standalone HAF app software that can be upgraded to take advantage of improvements, and on top of it there can be the code for the app’s unique functionalities. 
+
+In the more simple sense of separation of code/files, this can be achieved by creating a docker image with a Postgres database that takes care of the data retrieval, with a dedicated folder left for the app’s files (which, presumably, would typically be SQL files containing PL/pgSQL functions). This would allow developers to have a repository containing only their app’s files, and their repository can tie in with the standardized repository for the docker image.
+
+In the more complex sense of separation of functionalities, we can break it down into three main infrastructure elements that can change: the data source, the data retrieval method, and the relay app. Here it is in a schematic presentation: 
+
+
+![Standalone HAF apps.png](https://files.peakd.com/file/peakd-hive/borislavzlatanov/23tmmXSdQAU4k3hdF85LqEzbhEkajyGkMRLsQxfhVqnVnRwRPhJAXKLipHRoksdofwVXS.png)
+
+
+**Data source** refers to where the data for the standalone HAF app is coming from. This would typically be a full HAF server, or a HAF server filled with only some portion of blockchain data. It’s also possible for the source to be some database containing off-chain data such as is planned for the SPK network. Or in the future there could be a p2p network of databases that propagate blockchain data to one another, in a similar fashion to torrents. Or other possibilities.
+
+**Data retrieval method** refers to how the data gets from the source to the standalone HAF app. The app could pull the data by making queries, or the source could push the data to the app. Or there could be any combination of the two (e.g. push data needed in real time and pull data needed once a day).
+
+**Relay app** refers to the app that gives notifications to the standalone HAF app that there is new blockchain data of interest. If the source pushes data, then there is no need for a relay app. But if the standalone HAF app pulls data which it needs in real time, then it has to be notified that such data has been added to the blockchain so that it can make a query. 
+
+The above three elements describe how the data gets from the blockchain to the standalone HAF app without assuming any particular design. If we come up with a better design and there is a change at any of these three elements, there has to be no work or very little work for the app developers to do to keep their app compatible with this underlying blockchain data retrieval infrastructure.
+
+So how can we do this? How can we make it so that we can change from pulling data to pushing data, or from receiving notifications by a relay app to no relay app being needed, or from getting data from a HAF server to also getting data from a database containing off-chain data, or coming up with a p2p data sharing network, and make any such design improvements without creating extra work for app developers to have to adjust to the changed infrastructure? 
+
+Two Main Things To Standardize
+-----
+
+To keep it as simple as possible, yet highly flexible, we can standardize two main things in the infrastructure: the table structure of the data source, and the data the standalone HAF app is interested in. 
+
+First, the table structure of the data source. The source database contains tables with posts, accounts, upvotes, transfers, etc. Each of these can be standard table structures, no matter the data source. So if at some future time an app wants to include both on-chain and off-chain posts, then the off-chain database can just be added as a data source. No need for any changes to the app’s SQL queries and functions.
+
+Next, the data the standalone HAF app is interested in. The app can have a configuration file that specifies which blockchain operations it wants, along with any filters for them (exactly the same as the filters of hived's sql_serializer plugin), and additionally the frequency at which it wants them (real-time, hourly, daily, etc.). This configuration file would be made publicly accessible, so that the data source can read exactly which data the standalone HAF app is interested in. Let’s do a mental test to see how it holds up. If we change from pulling data to pushing, then the data source can simply read which data it has to push to the app - no need for any work on the app’s end. If we change the data source to off-chain, that db reads the config file just the same. If we want to pull some data and push the rest, still no change required on the app’s end (the relay app reads the configuration file and knows to stop or to start sending notifications). If at any point the app wants to change the data it is interested in, that’s a simple config file change - no need to contact node operators and ask them to make changes on their end. In order words, the standalone HAF app makes publicly known which data it is interested in, which allows for flexibility in the infrastructure.
+
+This also has the added benefit that the information about which blockchain data an app works with becomes programmatically readable. This can allow for some neat capabilities that can help the self-organization of the blockchain community and developers. Let’s say you wanted to see the data that any individual apps or all apps as a whole work with. You would be able to see which apps work with which ops. How could this be useful? It becomes a way to explore/navigate the development happening for the blockchain - you can browse the existing apps by the ops they work with. It becomes like a structured way to explore the development going on. You can see who is doing what and if there is any overlap/similarity between what you are doing and what someone else is doing. New apps will be automatically added and organized, and the info will be automatically updated, instead of manually creating project directories. 
+
+This setup also allows for variation in how the standalone HAF apps retrieve data, instead of all of them necessarily having to use the same method. For example, if an app works with derived data (e.g. not the raw custom_json ops but the app’s interpretation of them), then it could choose to query the data source and store only derived data in its db. However, this might turn out a slower method than the data source pushing to the app. If the app chooses the latter method, the data source will push the raw custom_json ops and the app will store them in a table, using the standardized table structure, and then it will additionally interpret and store the derived interpretations. This comes at a potential cost of requiring more database space for the raw ops. The important thing is that the app will have the flexibility to choose whichever method is more suitable for its use case, and to even use different methods for different ops and filters (e.g. it could store raw posts but only interpreted custom_jsons).
+
+All the above has been purely a conceptual development and it will take developing real apps and seeing how they function in practice to assess if a setup like this works and truly has these benefits. Iterations and adjustments on this setup are fully expected. 
+
+In summary
+-----
+
+Standardizing just two things - the table structure and the publicly accessible config file describing the blockchain data the app is interested in - should allow us to make design changes to the infrastructure without breaking compatibility with already built apps. Feedback from developers is needed in order to think through various pros and cons of all of this prior to making any such apps.
+</div>
+  <footer class="hive-post-embed__source">
+    <span class="hive-post-embed__source-label">Source:</span>
+    <a href="https://hive.blog/@peak.open/standalone-haf-apps-upgradeability">Standalone HAF Apps - Upgradeability</a>
+    by
+    <a href="https://hive.blog/@peak.open">@peak.open</a>
+  </footer>
+</div>
+
+
+  </div><a class="u-url" href="/news/projects/haf/2023/10/03/standalone-haf-apps-upgradeability.html" hidden></a>
+</article>
+
+        </div>
+
+        
+        <aside class="page-sidebar" aria-label="Search and browse">
+          <section class="sidebar-section sidebar-search">
+            <h2 class="sidebar-heading">Search posts</h2>
+            <p class="sidebar-copy">Search the locally indexed post archive.</p>
+            <input type="text" id="search-input" placeholder="Search posts" autocomplete="off" />
+            <ul id="results-container"></ul>
+          </section>
+
+          <section class="sidebar-section sidebar-topics">
+            <h2 class="sidebar-heading">Browse topics</h2>
+            <p class="sidebar-copy">Jump into curated topic landing pages.</p>
+            <ul class="topic-list topic-list-sidebar"><li><a class="page-link" href="/account-recovery/">Account Recovery</a></li><li><a class="page-link" href="/core-development/">Core Development</a></li><li><a class="page-link" href="/dapps/">Dapps</a></li><li><a class="page-link" href="/docker/">Docker</a></li><li><a class="page-link" href="/hardfork/">Hardfork</a></li><li><a class="page-link" href="/hivemind/">Hivemind</a></li><li><a class="page-link" href="/javascript/">Javascript</a></li><li><a class="page-link" href="/multisig/">Multisig</a></li><li><a class="page-link" href="/python/">Python</a></li><li><a class="page-link" href="/ruby/">Ruby</a></li><li><a class="page-link" href="/testnet/">Testnet</a></li><li><a class="page-link" href="/tools/">Tools</a></li><li><a class="page-link" href="/witness/">Witness</a></li></ul>
+          </section>
+        </aside>
+        
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading"><a rel="author" href="/">Hive Chain Documentation</a></h2>
+    
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">site curated by: @inertia</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>Your resource for various levels of Hive Documentation.</p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+<script src="/assets/javascript/search.js"></script>
+    <script>
+      (function () {
+        var input = document.getElementById('search-input');
+        var results = document.getElementById('results-container');
+        if (input && results && typeof SimpleJekyllSearch !== 'undefined') {
+          SimpleJekyllSearch({
+            searchInput: input,
+            resultsContainer: results,
+            json: '/search.json'
+          });
+        }
+
+        if (typeof SteemContentRenderer === 'undefined') return;
+
+        var targets = document.querySelectorAll('[data-hive-render-target="true"]');
+        if (!targets.length) return;
+
+        var renderer = new SteemContentRenderer.DefaultRenderer({
+          baseUrl: 'https://hive.blog/',
+          breaks: true,
+          skipSanitization: false,
+          allowInsecureScriptTags: false,
+          addNofollowToLinks: true,
+          doNotShowImages: false,
+          ipfsPrefix: '',
+          assetsWidth: 640,
+          assetsHeight: 480,
+          imageProxyFn: function (url) { return url; },
+          usertagUrlFn: function (account) { return '/@' + account; },
+          hashtagUrlFn: function (hashtag) { return '/tags/#' + hashtag; },
+          isLinkSafeFn: function () { return true; }
+        });
+
+        targets.forEach(function (target) {
+          try {
+            var inputHtml = target.innerHTML;
+            target.innerHTML = renderer.render(inputHtml);
+          } catch (e) {
+            console.log(e);
+          }
+        });
+      })();
+    </script>
+
+  </body>
+
+</html>

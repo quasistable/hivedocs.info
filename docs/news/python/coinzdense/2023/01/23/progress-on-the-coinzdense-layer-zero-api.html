@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta property="og:image" content="/assets/images/sticker.png" />
+  <meta name="apple-mobile-web-app-title" content="Hive Docs" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" /><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Progress on the CoinZdense Layer Zero API | Hive Chain Documentation</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Progress on the CoinZdense Layer Zero API" />
+<meta name="author" content="pibara" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Progress report on python-coinZdense: Level keys with the new stable API" />
+<meta property="og:description" content="Progress report on python-coinZdense: Level keys with the new stable API" />
+<link rel="canonical" href="https://hive.blog/hive-139531/@pibara/progress-on-the-coinzdense-layer-zero-api" />
+<meta property="og:url" content="https://hive.blog/hive-139531/@pibara/progress-on-the-coinzdense-layer-zero-api" />
+<meta property="og:site_name" content="Hive Chain Documentation" />
+<meta property="og:image" content="https://files.peakd.com/file/peakd-hive/pibara/244yEPKGakxv6f5T8rCydTdf49Lhm4HAMQmcNRMPzmAPFgDGVHJfrjq5MPTHSmwGVyM1s.png" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2023-01-23T10:23:21-08:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="https://files.peakd.com/file/peakd-hive/pibara/244yEPKGakxv6f5T8rCydTdf49Lhm4HAMQmcNRMPzmAPFgDGVHJfrjq5MPTHSmwGVyM1s.png" />
+<meta property="twitter:title" content="Progress on the CoinZdense Layer Zero API" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"pibara"},"dateModified":"2023-01-23T10:23:21-08:00","datePublished":"2023-01-23T10:23:21-08:00","description":"Progress report on python-coinZdense: Level keys with the new stable API","headline":"Progress on the CoinZdense Layer Zero API","image":"https://files.peakd.com/file/peakd-hive/pibara/244yEPKGakxv6f5T8rCydTdf49Lhm4HAMQmcNRMPzmAPFgDGVHJfrjq5MPTHSmwGVyM1s.png","mainEntityOfPage":{"@type":"WebPage","@id":"https://hive.blog/hive-139531/@pibara/progress-on-the-coinzdense-layer-zero-api"},"url":"https://hive.blog/hive-139531/@pibara/progress-on-the-coinzdense-layer-zero-api"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://hivedocs.info/feed.xml" title="Hive Chain Documentation" /><script>
+if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNotTrack === "yes" || navigator.msDoNotTrack === "1")) {
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-161692811-1', 'auto');
+  ga('send', 'pageview');
+}
+</script>
+  
+<script src='https://unpkg.com/steem-content-renderer'></script>
+  <script src="/assets/javascript/universal-bridge-against-phishing.js"></script>
+  <script src="/assets/javascript/lazysizes.min.js" async=""></script>
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet" />
+  <link rel="shortcut icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="152x152" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="167x167" href="/assets/images/favicon-80x80.png" />
+</head>
+<body><header class="site-header" role="banner">
+  <div class="wrapper site-header-inner">
+    <a class="site-title" rel="author" href="/">Hive Chain Documentation</a>
+
+    <nav class="site-nav" aria-label="Primary">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/news/">News</a><a class="page-link" href="/howto/">How To</a><a class="page-link" href="/links/">Useful Links</a><a class="page-link" href="/authors/">Authors</a><a class="page-link" href="/topics/">Topics</a><a class="page-link" href="/search/">Search</a></div>
+    </nav>
+  </div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper page-layout has-search-panel">
+        <div class="page-main">
+          <article class="post h-entry post-article" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header post-hero">
+    <div class="post-hero-main">
+      <p class="post-kicker">Archive post</p>
+      <h1 class="post-title p-name" itemprop="name headline">Progress on the CoinZdense Layer Zero API</h1>
+      <p class="post-meta">
+        <time class="dt-published" datetime="2023-01-23T10:23:21-08:00" itemprop="datePublished">Jan 23, 2023
+        </time>• <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">
+            <a href="/authors/#author-pibara">pibara</a>
+          </span></span></p><p class="post-summary">Progress report on python-coinZdense: Level keys with the new stable API</p></div><aside class="post-author-card">
+      <img src="https://images.hive.blog/u/pibara/avatar" width="128" height="128" class="lazyload post-author-avatar" alt="Avatar for @pibara" />
+      <div class="post-author-name">@pibara</div>
+    </aside></header>
+
+  <div class="post-content e-content post-body" itemprop="articleBody">
+    <div class="hive-post-embed" data-hive-author="pibara" data-hive-permlink="progress-on-the-coinzdense-layer-zero-api">
+  <div id="content-pibara-progress-on-the-coinzdense-layer-zero-api" class="hive-post-embed__content" data-hive-render-target="true">Work on the Python prototype for CoinZdense is proceeding slowly but steadily. I just pushed the 0.1.2 version to pypi for anyone interested to play with, although we aren't exactly at sufficient mass to have a practically usable library, beyond simple tools like the [HIVE CoinZdense disaster recovery tool](https://github.com/pibara/hive-coinzdense-disaster-recovery), a tool that I'll soon be patching to use this version of the library.
+
+If you with to play with this early version of the, run this command first:
+
+```
+python3 -m pip install coinzdense
+```
+
+In my [previous post](https://peakd.com/hive-139531/@pibara/first-work-on-coinzdense-this-year), we discussed the lowest level API of the coinZdense library: One-time siging keys, and the use of multi processing for the generation of one-time signing keys.
+
+When we get to the implementation of the Web 3.0 Entropy layer, this multi-processing based key generation will become really important as a way to have more constant user experience during level key replacement as level keys get exausted through usage.
+
+The latest addition to the stable part of the CoinZdense API is exactly this level key. 
+
+Compared to the last proof-of-concept iteration ot the project, the new and now stable API for **LevelKey** and  **LevelValidation** is twofold:
+
+* Like for one time signatures, asynchonous multi-process generation of keys is now integrated into the API.
+* State has been moved out of layer zero. 
+
+It is important to note that level key APIs arent complete. There will be more work on them. Just that the API that is made available for them will only get extended in a backward compatible way, so anything you write for the 0.1.2 version of the library should still work when in a while the 1.x.y versions get released.
+
+To demonstrate the usage of the level keys, first, like before, we need to import an executor from concurent.futures
+
+```python
+from concurrent.futures import ProcessPoolExecutor
+```
+
+Then, we import two classes and a function from CoinZdense
+
+```python
+from coinzdense.layerzero.wif import key_from_creds
+from coinzdense.layerzero.level import LevelKey, LevelValidation
+```
+
+Now we define a few constants for our little demo tool:
+
+```python
+MAX_WORKERS = 4   # Max number of concurent process workers
+HASH_LENGTH = 20  # Hash length used bu coinZdense
+OTS_BITS    = 7   # Number of bits to encode at once with one-time signing keys
+MT_HEIGHT   = 10  # The height of the level key merkle tree
+```
+
+Because the new stable coinZdense API is an async API, the structure of the main program needs to look something like this:
+
+```
+async def main():
+   ...
+
+if __name__ == '__main__':
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(main())
+```
+
+We look at the API and our little walk trhough from within the async main.
+
+First, like before, we use the **key_from_creds** function to get our seeding key, and we get an
+executor for our multi process gey generation.
+
+```
+    key = key_from_creds("coinzdense", "demodemo","secretpassword12345")
+    executor = ProcessPoolExecutor(max_workers=MAX_WORKERS)
+```
+
+Next thing we do is construct a **LevelKey**. It is important to note that level keys are created in a lazy way. That is, unless the key is restored from som earlier serialization (a feature yet to be implemented), after construction the key will have neither a pubkey available, nor the capacity to sign a transaction without synchonously calculating all one-time keys it might ever use, what can be a CPU intensive task that takes time.
+
+```python
+    levelkey = LevelKey(seedkey=key,
+                        wen3index=0,
+                        hashlen=HASH_LENGTH,
+                        otsbits=OTS_BITS,
+                        height=MT_HEIGHT)
+```
+
+The next thing we need to do in async mode is anounce the fact that we are at some point not to far in the future going to be needing the level key for signing operations. When we do this, we hand our LevelKey a reference to the executor. At this point the executor will start calculating one time signing keys in the background.
+
+```python
+    levelkey.announce(executor)
+```
+
+In a long running real application, the anounce and require would often be spaced in time so that the executor might complete generation before the key is actually needed. In our example code though, we invoke **require** in an **await** operation, waiting for the generation to complete.
+
+```python
+   await levelkey.require() 
+```
+
+It is important to note that a script that isn't a long running script and that doesn't want to make use of the benefits of multi-process key generation for whatever reason, it is possible to instead run only synchonous code with the stable API. In that case, you don't use either announce or require, but simply call the **get_pubkey** function without actually using the return value. 
+
+Now we get to the actual signing. We create a message and we sign it. Note that we need to supply an index for the one-time signing key we want to use. This requirement comes from the fact that in our design we have moved state for the level keys to the Web 3.0 Entropy layer.
+
+In our sample we sign the same message twice with consecutive indices:
+
+```python
+    message = b"hohohohoho"
+    sig1 = levelkey.sign_data(message, 644)
+    sig2 = levelkey.sign_data(message, 645)
+```
+
+So what does a signature look like? Well, it's a binary blob, and not a small one at that, at least not compared to ECDSA signatures we are used to, but let's print it as hex to get an idea.
+
+```python
+    print(sig1.hex())
+```
+
+```
+0284ea13aa20853f81589f15f24f0d34910b939c6a9a3b71d29af195bd91fffb239dac44ffc40644533931419d29725834881c25540b62b9d6c154317ac94ce108c50b37db385f2f5c23ee4f09b507775b6593ef87d745429d45d4a8bfc01859325bdaad5a7f943cecd3edc18dd5e70b14db6e3ca459f2b9690bc15094d041140e69920b6a029f84cfaad19deaf65e16aa24b825635c55afd0f8bb42a03dc232a9e8c092e1619f3ca7a281ce224ce195a08ed87bc7f3d265b91e5a1021fd2663958d3587e73efb132cb8ba7fbdba1eef5c15d0c2272a4d031f280cafaab09cee78f165c8190683b7932353c4cce8ded74838acf7738bfc7f1b87ecd3167d86c25e329183763e2262f4542e0b1ef6332484aa7fc9dc4d8d1cab9ca989cdbec041fb007abae3f0991598d011f00065012d28770dcdb318a3ebccd17c38fc44c1fc9f0ac83e7041a5b98ec05a0c5e8efa5a26aa42587f32d0557979a76ba32a3bbab18c3195d8a599615d61fea95a3b43ef635dd59003827742acc14f39f7bc2546522cd9682b7526e7c89ba65d17d553dbb475925f91f7e4d4616b7d67c613b3afc6c0cee88aee114bc9a98f1c54239880976655045a7ea58a235eea816196f5246e77aed5bd71f8e0b4c4e177d092366e1180c29428d38a79d62963c9ee3ebd661a999c702683ab0fe537a1452390150c79e69defa88cc9c3835e3233521d7b7ca737afc591f78ca0e938e08f4580b1617d69abb73eab49ca2f5877698bb77e2328ee54b6901d2266c167c971645f8e730d494174f6602f903c7550d7c5960586101016b3724cd84bde428ae915b24c73823ff4921aed1e4723bf0b16e550d795e8f0414b0709c49fdebdd3e88a4939a204aa75ff19d160cb7c7eca18b30f48ea074c20a883ffb6e6d816e43406c561dbac5ba7f114b4ea54521c6d92ce99b921addc07a97ce7b0bd0c2d4cb166fba95e98927eb033d63a991a08da22292ff13cf91dd98800173c29f469209650b77f4ea4b38acf4ff63ef1e28824bda9b3dd7496984ad8cc03047611eccd0cf0e436b88e33455d2a381227f714bf9e5f88c3b127b845e58cdcbbe107263bb76748f9091b788d28fdada8c12961dcaf1899e28b6284c4136683d6ef6a6d88026fb867c21233ba35a02fec28419245382dfb35c35daf3e607eac48c667ca10cd2fd348f399063dcd95bb7ced873a7d346e0dc368eece5cbe83003ac8c0103cd2dea2e9fb8eaba53873f5fc5f769cc190489b3ee0f41b513c8799f70f7c5b1eed4cec647f762d1469fcb3df99a9adbc654364a02bf33988fa59d162f1bb6ef9f03001055a0e4d94a543f6e678726e97aa9562ce1d2dfbffcebbf91fefa2c0886bf16ca5239770577b666e368488d9306dc5e086956b00ad9596697b42449c66957adca31fbf998f838035ae8a348f97a59be52b877ea2633ac431f2d7b1c0c6cb48976d7cd5b24b78271ceee445ba3bea5a04ec2ea3c67503db9d49caa4df5623a09cc2ddffb069db9141d9baa3e9840962caded7b6a4dedca5b1806ce35c39ec090e7164cc316a83df5b0d195312c380bbd9eeb4af111a834eefc5b359aab842cae31780f3f49e47a28e0644391d05005d0792da4ec6f40645bb032b27b5771ce06ab41cbd8c6b139ea558508345ab456b53
+```
+
+In this example we have a 1182 byte long signature, twice that in hex. The structure of this signature is a slight change to the [earlier design](/hive-139531/@pibara/coinzdense-deep-dive-signature-structure), partially because the new layer0/layer1/wen3 layered desing approach that we switched to, but also because we now use an extra per signature salt for signing that wasn't there in the previous version of the design. The new layer0 signature structure now looks like this:
+
+
+![image.png](https://files.peakd.com/file/peakd-hive/pibara/244yEPKGakxv6f5T8rCydTdf49Lhm4HAMQmcNRMPzmAPFgDGVHJfrjq5MPTHSmwGVyM1s.png)
+
+
+The new structure starts off with the index of the one time signing key used. Then a first salt that is used throughout the level key for all hashing operations except for the operation of hashing the actual transaction. What follows is a header with all the merkle tree nodes needed to come from the one-time-key pubkey to the merkle tree root. The header is closed with the merkle tree root needed for validation, that is also the public key of the level key.
+
+The body of the signature consists of another salt, thr transaction salt that is used when hashing the message or transaction. And finaly there is an array of up and down hashes from the one-time signing process.
+
+All these parts combine into the signature that we showed above.
+
+Now that we have the signature, at some point some other party will want to verify it.
+For this we have the **LevelValidation** object.
+
+```python
+   validate = LevelValidation(hashlen=HASH_LENGTH,
+                               otsbits=OTS_BITS,
+                               height=MT_HEIGHT)
+    for sig in [sig1, sig2]:
+        signature = validate.signature(level_signature=sig)
+        ok = signature.validate_data(message)
+        print(ok)
+``` 
+We instantiate one LevelValidation using the same dimensioning parameters that we used for our LevelKey, and then we use that to construct signature objects from our binary signatures.
+Finaly we invoke *validatw_data* to validate that our signature matches the transaction data.
+
+In the comming week, I hope to add some basic asserts back into the layerzero code, make the code more robust and fault tolerant, and add some hooks for serialisation and persistence. I'm hoping to complete the layerzero code in the comming two or three weeks before moving on to giving layer1 a stable API as well. 
+
+# Support the CoinZdense project
+
+As I mentioned in my [talk at HiveFest](https://peakd.com/coinzdense/@pibara/my-hivefest-coinzdense-slides-and-some-personal-shit), CoinZdense is a one-man and **unfunded** project. You can help support the project by buying project support tokens on hive-engine, by helping out looking at the [1995 style project website](https://github.com/pibara/coinzdense), [pull requests](https://github.com/pibara/coinzdense) are very welcome (as long as they don't mess with the tipping jar targets ofcource), or by advocating with the different target Web3 ecosystem communities.
+
+So far the project has received roughly **33 HBD** from sale of [project support tokens](https://hive-engine.com/trade/COINZDENSE) on hive-engine, from a tiny Paypal donation on the [tipping-jar page](https://pibara.github.io/coinzdense/qr.html), and from post upvotes.
+
+</div>
+  <footer class="hive-post-embed__source">
+    <span class="hive-post-embed__source-label">Source:</span>
+    <a href="https://hive.blog/@pibara/progress-on-the-coinzdense-layer-zero-api">Progress on the CoinZdense Layer Zero API</a>
+    by
+    <a href="https://hive.blog/@pibara">@pibara</a>
+  </footer>
+</div>
+
+
+  </div><a class="u-url" href="/news/python/coinzdense/2023/01/23/progress-on-the-coinzdense-layer-zero-api.html" hidden></a>
+</article>
+
+        </div>
+
+        
+        <aside class="page-sidebar" aria-label="Search and browse">
+          <section class="sidebar-section sidebar-search">
+            <h2 class="sidebar-heading">Search posts</h2>
+            <p class="sidebar-copy">Search the locally indexed post archive.</p>
+            <input type="text" id="search-input" placeholder="Search posts" autocomplete="off" />
+            <ul id="results-container"></ul>
+          </section>
+
+          <section class="sidebar-section sidebar-topics">
+            <h2 class="sidebar-heading">Browse topics</h2>
+            <p class="sidebar-copy">Jump into curated topic landing pages.</p>
+            <ul class="topic-list topic-list-sidebar"><li><a class="page-link" href="/account-recovery/">Account Recovery</a></li><li><a class="page-link" href="/core-development/">Core Development</a></li><li><a class="page-link" href="/dapps/">Dapps</a></li><li><a class="page-link" href="/docker/">Docker</a></li><li><a class="page-link" href="/hardfork/">Hardfork</a></li><li><a class="page-link" href="/hivemind/">Hivemind</a></li><li><a class="page-link" href="/javascript/">Javascript</a></li><li><a class="page-link" href="/multisig/">Multisig</a></li><li><a class="page-link" href="/python/">Python</a></li><li><a class="page-link" href="/ruby/">Ruby</a></li><li><a class="page-link" href="/testnet/">Testnet</a></li><li><a class="page-link" href="/tools/">Tools</a></li><li><a class="page-link" href="/witness/">Witness</a></li></ul>
+          </section>
+        </aside>
+        
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading"><a rel="author" href="/">Hive Chain Documentation</a></h2>
+    
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">site curated by: @inertia</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>Your resource for various levels of Hive Documentation.</p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+<script src="/assets/javascript/search.js"></script>
+    <script>
+      (function () {
+        var input = document.getElementById('search-input');
+        var results = document.getElementById('results-container');
+        if (input && results && typeof SimpleJekyllSearch !== 'undefined') {
+          SimpleJekyllSearch({
+            searchInput: input,
+            resultsContainer: results,
+            json: '/search.json'
+          });
+        }
+
+        if (typeof SteemContentRenderer === 'undefined') return;
+
+        var targets = document.querySelectorAll('[data-hive-render-target="true"]');
+        if (!targets.length) return;
+
+        var renderer = new SteemContentRenderer.DefaultRenderer({
+          baseUrl: 'https://hive.blog/',
+          breaks: true,
+          skipSanitization: false,
+          allowInsecureScriptTags: false,
+          addNofollowToLinks: true,
+          doNotShowImages: false,
+          ipfsPrefix: '',
+          assetsWidth: 640,
+          assetsHeight: 480,
+          imageProxyFn: function (url) { return url; },
+          usertagUrlFn: function (account) { return '/@' + account; },
+          hashtagUrlFn: function (hashtag) { return '/tags/#' + hashtag; },
+          isLinkSafeFn: function () { return true; }
+        });
+
+        targets.forEach(function (target) {
+          try {
+            var inputHtml = target.innerHTML;
+            target.innerHTML = renderer.render(inputHtml);
+          } catch (e) {
+            console.log(e);
+          }
+        });
+      })();
+    </script>
+
+  </body>
+
+</html>

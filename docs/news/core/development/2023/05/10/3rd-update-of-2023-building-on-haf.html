@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta property="og:image" content="/assets/images/sticker.png" />
+  <meta name="apple-mobile-web-app-title" content="Hive Docs" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" /><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>3rd update of 2023: Building on HAF | Hive Chain Documentation</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="3rd update of 2023: Building on HAF" />
+<meta name="author" content="blocktrades" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Below are a few highlights of the Hive-related programming issues worked on by the BlockTrades team since my last report" />
+<meta property="og:description" content="Below are a few highlights of the Hive-related programming issues worked on by the BlockTrades team since my last report" />
+<link rel="canonical" href="https://hive.blog/hive-139531/@blocktrades/3rd-update-of-2023-building-on-haf" />
+<meta property="og:url" content="https://hive.blog/hive-139531/@blocktrades/3rd-update-of-2023-building-on-haf" />
+<meta property="og:site_name" content="Hive Chain Documentation" />
+<meta property="og:image" content="https://images.hive.blog/DQmSihw8Kz4U7TuCQa98DDdCzqbqPFRumuVWAbareiYZW1Z/blocktrades%20update.png" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2023-05-10T07:07:12-07:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="https://images.hive.blog/DQmSihw8Kz4U7TuCQa98DDdCzqbqPFRumuVWAbareiYZW1Z/blocktrades%20update.png" />
+<meta property="twitter:title" content="3rd update of 2023: Building on HAF" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"blocktrades"},"dateModified":"2023-05-10T07:07:12-07:00","datePublished":"2023-05-10T07:07:12-07:00","description":"Below are a few highlights of the Hive-related programming issues worked on by the BlockTrades team since my last report","headline":"3rd update of 2023: Building on HAF","image":"https://images.hive.blog/DQmSihw8Kz4U7TuCQa98DDdCzqbqPFRumuVWAbareiYZW1Z/blocktrades%20update.png","mainEntityOfPage":{"@type":"WebPage","@id":"https://hive.blog/hive-139531/@blocktrades/3rd-update-of-2023-building-on-haf"},"url":"https://hive.blog/hive-139531/@blocktrades/3rd-update-of-2023-building-on-haf"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://hivedocs.info/feed.xml" title="Hive Chain Documentation" /><script>
+if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNotTrack === "yes" || navigator.msDoNotTrack === "1")) {
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-161692811-1', 'auto');
+  ga('send', 'pageview');
+}
+</script>
+  
+<script src='https://unpkg.com/steem-content-renderer'></script>
+  <script src="/assets/javascript/universal-bridge-against-phishing.js"></script>
+  <script src="/assets/javascript/lazysizes.min.js" async=""></script>
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet" />
+  <link rel="shortcut icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="152x152" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="167x167" href="/assets/images/favicon-80x80.png" />
+</head>
+<body><header class="site-header" role="banner">
+  <div class="wrapper site-header-inner">
+    <a class="site-title" rel="author" href="/">Hive Chain Documentation</a>
+
+    <nav class="site-nav" aria-label="Primary">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/news/">News</a><a class="page-link" href="/howto/">How To</a><a class="page-link" href="/links/">Useful Links</a><a class="page-link" href="/authors/">Authors</a><a class="page-link" href="/topics/">Topics</a><a class="page-link" href="/search/">Search</a></div>
+    </nav>
+  </div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper page-layout has-search-panel">
+        <div class="page-main">
+          <article class="post h-entry post-article" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header post-hero">
+    <div class="post-hero-main">
+      <p class="post-kicker">Archive post</p>
+      <h1 class="post-title p-name" itemprop="name headline">3rd update of 2023: Building on HAF</h1>
+      <p class="post-meta">
+        <time class="dt-published" datetime="2023-05-10T07:07:12-07:00" itemprop="datePublished">May 10, 2023
+        </time>• <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">
+            <a href="/authors/#author-blocktrades">blocktrades</a>
+          </span></span></p><p class="post-summary">Below are a few highlights of the Hive-related programming issues worked on by the BlockTrades team since my last report</p></div><aside class="post-author-card">
+      <img src="https://images.hive.blog/u/blocktrades/avatar" width="128" height="128" class="lazyload post-author-avatar" alt="Avatar for @blocktrades" />
+      <div class="post-author-name">@blocktrades</div>
+    </aside></header>
+
+  <div class="post-content e-content post-body" itemprop="articleBody">
+    <div class="hive-post-embed" data-hive-author="blocktrades" data-hive-permlink="3rd-update-of-2023-building-on-haf">
+  <div id="content-blocktrades-3rd-update-of-2023-building-on-haf" class="hive-post-embed__content" data-hive-render-target="true">![blocktrades update.png](https://images.hive.blog/DQmSihw8Kz4U7TuCQa98DDdCzqbqPFRumuVWAbareiYZW1Z/blocktrades%20update.png)
+
+Below are a few highlights of the Hive-related programming issues worked on by the BlockTrades team since my last report. It’s been a while since I last wrote, and a lot of work has been done since then, so a lot of work that was done isn’t covered here, but I’ve tried to capture some of the more important tasks that might affect or be useful to other Hive devs.
+
+# [Hived (blockchain node software)](https://gitlab.syncad.com/hive/hive)
+
+## RC code being refactored
+
+As a step towards eventually allowing the resource credit logic being part of blockchain consensus, we’ve been refactoring the code in the resource credit plugin and moving some of this code into the core code. None of this work will impact current consensus rules, however.
+
+## Versioning support for state files and snapshots
+
+One problem that sometimes comes up is running hived with a state file with wrong versioning. For example, after you upgrade to a newer version of hived, it may have a data structure with different fields than the previous version, in which case it is often no longer safe to use that state file and a new one must be created from scratch by running a replay of the block log file. But for minor version changes, it wasn’t really easy for a node operator to know if such a change had taken place or not.
+
+To overcome this issue, we’ve implemented an automatic versioning of state files that works as follows: each version of hived scans all data structures contained in statefiles that it uses and creates a long string that describes the types of these data structures. When it creates a statefile, it first writes this description string (and a shorter hash of it) into the statefile. This hash acts as a “version” of the statefile. Whenever a hived node is launched, a locally contained copy of its statefile version hash and compares it to the hash in the statefile it will be using (assuming there is one). If these hashes don’t match, the hived will not use the incompatible statefile. If the file is incompatible, it will also report how the statefile differs from the one expected, which can be useful to hived devs if they have inadvertently changed the structure of the statefile and need to know what the change was.
+
+This new feature also allowed us to eliminate the –force-open option which previously was needed to specify that you wanted hived to use an older statefile that wasn’t created by the current version of hived, but that was still compatible with the current version because there had been no statefile data structure changes between the version that created the statefile and the current version. This option, while useful in the past, could also cause a hived node to be started in an inconsistent state if the statefile really wasn’t compatible, because hived had to rely on the user to know the actual compatibility of the statefile. So eliminating this option is very beneficial in terms of ensuring nodes on the network are always started in a consistent state.
+
+Similar version functionality was also added for state snapshots. Snapshots are essentially platform-independent statefiles, so they suffered from the same potential incompatibility problems as statefiles.
+
+## Blockchain testing
+
+We created a bunch of low level unit tests to cover all account history operations. More details on this can be found here: https://gitlab.syncad.com/hive/hive/-/merge_requests/895 
+
+We also fixed some edge-case bugs in hafah code that were found during testing of account history API regression tests.
+
+We  created some new tests to test stopping and restarting a hived node. These tests were useful, for instance, in testing the new statefile and snapshot versioning code.
+
+## New ICEBerg technology
+
+In order to test hived and HAF apps, it is often necessary to perform a full replay of the blockchain in order to setup a robust testing environment. Unfortunately, this takes a lot of time and consumes a lot of computing resources (memory, disk space, etc).
+
+The idea behind ICEBerg is to create a testing environment using a smaller set of blocks (e.g. the last 5 million blocks), taking less time and consuming less resources, enabling it to be cheaper and easier for HAF developers to create useful testing environments. 
+
+Currently, we already do something similar in our regression tests, using the first 5 million blocks plus some “mock” blocks that contain interesting operations we need to have in our test environment. The difference with ICEBerg is that we will be able to use any existing arbitrary set of blocks, not just a set of sequential blocks starting at the first block.
+
+ICEBerg works by analyzing the blocks to be processed and determining the set of initial conditions that are required to enable the block transactions to be “valid” when processed without having to first process all the proceeding blocks. For example, it determines what accounts and balances need to exist in order for the transactions to be valid.
+
+ICEBerg is still a work-in-progress, but so far it’s able to create enough initial conditions to allow 80% of the last 5 million blocks to successfully validate.
+
+# [Clive (a new Hive wallet with a text-based user interface)](https://gitlab.syncad.com/hive/clive)
+
+Clive is a Hive wallet written in Python that runs on your own computer (it is not a web-based wallet where the code comes from a remote server) so it is inherently more secure than web-based wallets. Currently there are two such wallets available and supported in the Hive ecosystem: 1) a command-line interface wallet (aka the CLI wallet) written using C++ and 2) a graphical interface wallet called [Vessel (a JavaScript-based wallet)](https://gitlab.syncad.com/hive/vessel). 
+
+Clive is designed to be easier to use than the existing CLI wallet, but at the same time it doesn’t require a terminal that supports graphics like Vessel does. For most people, Clive should provide a more friendly interface for performing Hive operations in a high security environment compared to using the CLI wallet.
+
+Clive was also designed to be easier to maintain and enhanced compared to the existing CLI wallet, especially as future changes are made to the Hive protocol and ecosystem. Another of the impetuses for the creation of Clive was to simplify future testing efforts.
+
+Clive is still a work in progress, but we expect to release a “recommended for public use” version in the next couple of weeks.
+
+# Beekeeper (a new tool for managing encryption keys)
+
+Along with the creation of Clive, we created a new C++ program that can be used to store encryption keys and sign transactions with those keys. The purpose of this new program is to separate the high-security aspects of encryption key management from other wallet operations. For example, Clive doesn’t directly store keys or sign transactions. Instead it communicates with a separate beekeeper process and requests these operations to be performed. For those familiar with the EOS ecosystem, beekeeper is based on the ideas embodied in keosd. 
+
+The code for beekeeper is located in the [programs/beekeeper subdirectory of the hive repo](https://gitlab.syncad.com/hive/hive/-/tree/develop/programs/beekeeper).
+
+# [Hive Application Framework (HAF)](https://gitlab.syncad.com/hive/haf)
+
+HAF is a SQL-based framework for creating highly scalable and robust 2nd layer apps that operate using data from the Hive blockchain.
+
+## HAF query supervisor to prevent rogue queries consuming too many resources
+
+One of the more important tasks we’ve been working on for HAF recently is the creation of a “query supervisor”. This is a set of code that is used to monitor the queries executed on a SQL server and limit how many resources can be used by that query before the query will be terminated. 
+
+The query supervisor is necessary to prevent potential denial-of-service attacks that might be launched against a HAF server, especially a HAF server that allows the execution of semi-arbitrary SQL code (e.g. the code of SQL code that would likely be used for a smart contract system running on a HAF server). 
+
+In its current state, the query supervisor can terminate queries that run beyond a specified amount of time or that touch too many rows in the database.
+
+As an initial test of the query supervisor, we’re creating a HAF server configuration where the query supervisor is installed as part of the HAF deployment process, enabling someone to offer up a “public HAF server” where arbitrary “read-only” queries can be performed on the HAF server’s database (limited in query execution time by the query supervisor).
+
+## Standardized composite data types for Hive blockchain operations
+
+Another HAF task under way is the creation of SQL “composite data types” that correspond to Hive blockchain operations, and the associated code for creating such composite objects from raw operations data. Having a common SQL-based representation of such data should promote code re-use across HAF applications.
+
+# HAF-based block explorer
+
+We’ve been working for a while on new HAF-based block explorer for Hive. There were two main reasons for creating another block explorer for Hive: 1) we wanted an open-source block explorer than could easily be deployed by any of the existing API node operators without adding much overhead to their servers as a means of further decentralizing this critical functionality and 2) we wanted a “heavy-duty” HAF app that could help us identify and fix potential weaknesses and programming difficulties that might arise when developing a complex HAF-based app. So far, I feel we’re well on the way to achieving both goals with this task.
+
+
+
+In the past month we added a couple of new programmers to the task to solve some of the problems we’ve encountered along the way. New eyes added to the project quickly identified one improvement to the project: we’ve now split the [python-based backend code (the HAF block explorer app itself)](https://gitlab.syncad.com/hive/haf_block_explorer) into a separate repository from the [front-end web-based app written in javascript](https://gitlab.syncad.com/hive/block_explorer_ui) that communicates with the HAF app.
+
+We’ve also substantially increased the speed of some of the key SQL queries needed by the block explorer, and in the process we’ve seen some of the pitfalls that can lead to slow queries when processing block operations in the HAF database. We’re taking this knowledge and working on re-usable code that will help future HAF app developers avoid such mistakes.
+
+## Improving interoperability of HAF apps
+
+Another useful aspect of working on the block explorer was that it required us to create a HAF app that worked with data from another HAF app, the [balance_tracker](https://gitlab.syncad.com/hive/balance_tracker) that tracks the balances of Hive accounts on a block-by-block basis. In the future, we see this type of code re-use as very important to the rapid expansion of the HAF app ecosystem, so it was very important to test it out in practice and solve issues related to such code reuse. As it turns out, we did find and resolve several problems related to such code reuse.
+
+## Consensus State Providers (a work-in-progress)
+
+The block explorer app also sometimes needed state information that wasn’t previously stored in the HAF database. Some of this data is now stored in the database, but we also foresee that there might be future apps that need even more such data, but we don’t want to require it to be stored in every HAF server. 
+
+Early on, we developed a potential solution to such issues that we call a Consensus State Provider. Using a local Consensus State Provider of its own, each HAF app can automatically replicate the consensus logic used by hived to compute new hived state information on a block-by-block basis.
+
+Functionally, it is kind of like each HAF app is able to spawn its own copy of a hived node, then play blocks to that hived node in order to update a personally-owned statefile. This eliminates the need to replicate the algorithms used by hived inside a HAF app itself, unlike, for example, the balance_tracker HAF app, which essentially replicates the algorithm for updating account balances using its own SQL code.
+
+The work on Consensus State Providers is taking place in the [HAF repo](https://gitlab.syncad.com/hive/haf).
+
+# Generic devops tasks (primarily Continuous Integration tasks for Gitlab repositories)
+
+We made various improvements to the tasks used to build and create deployable docker images for various Hive repos. At this pint we have CI tasks to create docker images for hived, HAF, hafah, and hivemind. Improvements include making the dockers more configurable and solving intermittent problems associating with parallel testing during the creation of the images that could result in erroneous test failures. We also created a new CI task for deploying a mirrornet consensus node. We’ve also done work to allow re-use of existing docker images where possible to speedup overall time required by CI tasks.
+
+
+# Some upcoming tasks
+
+* Continue refactoring work on resource credit code (for eventual inclusion in consensus logic)
+* Continue work on query_supervisor (precursor to HAF-based smart contract processing)
+* Continue work on ICEBerg (for hived and HAF app testing)
+* Continue work on Consensus State Provider code (for more powerful HAF apps)
+* Continue work on HAF-based block explorer backend and GUI
+* Finish up work on Clive wallet
+* Collect benchmarks for a hafah app operating in “irreversible block mode” and compare to a hafah app operating in “normal” mode (low priority)
+* Create documentation for various new tools (beekeeper, Clive, consensus state providers) and separate HAF documentation into smaller, more easily digestible chunks.
+* Create docker compose scripts to ease deployment of API node infrastructure</div>
+  <footer class="hive-post-embed__source">
+    <span class="hive-post-embed__source-label">Source:</span>
+    <a href="https://hive.blog/@blocktrades/3rd-update-of-2023-building-on-haf">3rd update of 2023: Building on HAF</a>
+    by
+    <a href="https://hive.blog/@blocktrades">@blocktrades</a>
+  </footer>
+</div>
+
+
+  </div><a class="u-url" href="/news/core/development/2023/05/10/3rd-update-of-2023-building-on-haf.html" hidden></a>
+</article>
+
+        </div>
+
+        
+        <aside class="page-sidebar" aria-label="Search and browse">
+          <section class="sidebar-section sidebar-search">
+            <h2 class="sidebar-heading">Search posts</h2>
+            <p class="sidebar-copy">Search the locally indexed post archive.</p>
+            <input type="text" id="search-input" placeholder="Search posts" autocomplete="off" />
+            <ul id="results-container"></ul>
+          </section>
+
+          <section class="sidebar-section sidebar-topics">
+            <h2 class="sidebar-heading">Browse topics</h2>
+            <p class="sidebar-copy">Jump into curated topic landing pages.</p>
+            <ul class="topic-list topic-list-sidebar"><li><a class="page-link" href="/account-recovery/">Account Recovery</a></li><li><a class="page-link" href="/core-development/">Core Development</a></li><li><a class="page-link" href="/dapps/">Dapps</a></li><li><a class="page-link" href="/docker/">Docker</a></li><li><a class="page-link" href="/hardfork/">Hardfork</a></li><li><a class="page-link" href="/hivemind/">Hivemind</a></li><li><a class="page-link" href="/javascript/">Javascript</a></li><li><a class="page-link" href="/multisig/">Multisig</a></li><li><a class="page-link" href="/python/">Python</a></li><li><a class="page-link" href="/ruby/">Ruby</a></li><li><a class="page-link" href="/testnet/">Testnet</a></li><li><a class="page-link" href="/tools/">Tools</a></li><li><a class="page-link" href="/witness/">Witness</a></li></ul>
+          </section>
+        </aside>
+        
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading"><a rel="author" href="/">Hive Chain Documentation</a></h2>
+    
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">site curated by: @inertia</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>Your resource for various levels of Hive Documentation.</p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+<script src="/assets/javascript/search.js"></script>
+    <script>
+      (function () {
+        var input = document.getElementById('search-input');
+        var results = document.getElementById('results-container');
+        if (input && results && typeof SimpleJekyllSearch !== 'undefined') {
+          SimpleJekyllSearch({
+            searchInput: input,
+            resultsContainer: results,
+            json: '/search.json'
+          });
+        }
+
+        if (typeof SteemContentRenderer === 'undefined') return;
+
+        var targets = document.querySelectorAll('[data-hive-render-target="true"]');
+        if (!targets.length) return;
+
+        var renderer = new SteemContentRenderer.DefaultRenderer({
+          baseUrl: 'https://hive.blog/',
+          breaks: true,
+          skipSanitization: false,
+          allowInsecureScriptTags: false,
+          addNofollowToLinks: true,
+          doNotShowImages: false,
+          ipfsPrefix: '',
+          assetsWidth: 640,
+          assetsHeight: 480,
+          imageProxyFn: function (url) { return url; },
+          usertagUrlFn: function (account) { return '/@' + account; },
+          hashtagUrlFn: function (hashtag) { return '/tags/#' + hashtag; },
+          isLinkSafeFn: function () { return true; }
+        });
+
+        targets.forEach(function (target) {
+          try {
+            var inputHtml = target.innerHTML;
+            target.innerHTML = renderer.render(inputHtml);
+          } catch (e) {
+            console.log(e);
+          }
+        });
+      })();
+    </script>
+
+  </body>
+
+</html>

@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta property="og:image" content="/assets/images/sticker.png" />
+  <meta name="apple-mobile-web-app-title" content="Hive Docs" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" /><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>First work on CoinZdense this year. | Hive Chain Documentation</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="First work on CoinZdense this year." />
+<meta name="author" content="pibara" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Start at background key-generation code and stable API hooks for background key generation" />
+<meta property="og:description" content="Start at background key-generation code and stable API hooks for background key generation" />
+<link rel="canonical" href="https://hive.blog/hive-139531/@pibara/first-work-on-coinzdense-this-year" />
+<meta property="og:url" content="https://hive.blog/hive-139531/@pibara/first-work-on-coinzdense-this-year" />
+<meta property="og:site_name" content="Hive Chain Documentation" />
+<meta property="og:image" content="https://files.peakd.com/file/peakd-hive/pibara/Eo1vWZUfKyby77KnKFDFJHX2YAmymF8YZGNdHGdkCuYZjWScyED9ruv39rXY5TCzHSb.png" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2023-01-17T16:50:30-08:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="https://files.peakd.com/file/peakd-hive/pibara/Eo1vWZUfKyby77KnKFDFJHX2YAmymF8YZGNdHGdkCuYZjWScyED9ruv39rXY5TCzHSb.png" />
+<meta property="twitter:title" content="First work on CoinZdense this year." />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"pibara"},"dateModified":"2023-01-17T16:50:30-08:00","datePublished":"2023-01-17T16:50:30-08:00","description":"Start at background key-generation code and stable API hooks for background key generation","headline":"First work on CoinZdense this year.","image":"https://files.peakd.com/file/peakd-hive/pibara/Eo1vWZUfKyby77KnKFDFJHX2YAmymF8YZGNdHGdkCuYZjWScyED9ruv39rXY5TCzHSb.png","mainEntityOfPage":{"@type":"WebPage","@id":"https://hive.blog/hive-139531/@pibara/first-work-on-coinzdense-this-year"},"url":"https://hive.blog/hive-139531/@pibara/first-work-on-coinzdense-this-year"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://hivedocs.info/feed.xml" title="Hive Chain Documentation" /><script>
+if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNotTrack === "yes" || navigator.msDoNotTrack === "1")) {
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-161692811-1', 'auto');
+  ga('send', 'pageview');
+}
+</script>
+  
+<script src='https://unpkg.com/steem-content-renderer'></script>
+  <script src="/assets/javascript/universal-bridge-against-phishing.js"></script>
+  <script src="/assets/javascript/lazysizes.min.js" async=""></script>
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet" />
+  <link rel="shortcut icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="152x152" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="167x167" href="/assets/images/favicon-80x80.png" />
+</head>
+<body><header class="site-header" role="banner">
+  <div class="wrapper site-header-inner">
+    <a class="site-title" rel="author" href="/">Hive Chain Documentation</a>
+
+    <nav class="site-nav" aria-label="Primary">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/news/">News</a><a class="page-link" href="/howto/">How To</a><a class="page-link" href="/links/">Useful Links</a><a class="page-link" href="/authors/">Authors</a><a class="page-link" href="/topics/">Topics</a><a class="page-link" href="/search/">Search</a></div>
+    </nav>
+  </div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper page-layout has-search-panel">
+        <div class="page-main">
+          <article class="post h-entry post-article" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header post-hero">
+    <div class="post-hero-main">
+      <p class="post-kicker">Archive post</p>
+      <h1 class="post-title p-name" itemprop="name headline">First work on CoinZdense this year.</h1>
+      <p class="post-meta">
+        <time class="dt-published" datetime="2023-01-17T16:50:30-08:00" itemprop="datePublished">Jan 17, 2023
+        </time>• <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">
+            <a href="/authors/#author-pibara">pibara</a>
+          </span></span></p><p class="post-summary">Start at background key-generation code and stable API hooks for background key generation</p></div><aside class="post-author-card">
+      <img src="https://images.hive.blog/u/pibara/avatar" width="128" height="128" class="lazyload post-author-avatar" alt="Avatar for @pibara" />
+      <div class="post-author-name">@pibara</div>
+    </aside></header>
+
+  <div class="post-content e-content post-body" itemprop="articleBody">
+    <div class="hive-post-embed" data-hive-author="pibara" data-hive-permlink="first-work-on-coinzdense-this-year">
+  <div id="content-pibara-first-work-on-coinzdense-this-year" class="hive-post-embed__content" data-hive-render-target="true">It's been a while since I've worked on CoinZdense. More than two months because of personal circumstances. My mariage has been falling apart leading to a semi-homeless status for me in the last few months where I had to often crash at my mom's. At the same time, a new relationship that I put all of my heart into has turned rather complicated in a way that I've found emotionally even harder to handle than the colapse of my mariage and my living conditions.
+
+The last two days I've managed to regain some focus, and while it took me some effort to get back into it, I'm setting out to try and spent at least one whole work day on the project each week.
+
+In this post I want to talk a little bit about an interesting bit about some new code I was working on these last two days. 
+
+Before I was forced to pause my efforts on the project, two months ago and a bit, I was reworking the API for the [Python version of coinZdense](https://github.com/pibara/coinzdense-python). I've moved the old API to **unstable** because things overt there kept moving and I wanted to start buikding some tools on top of coinZdense-Python, like the [HIVE CoinZdense Disaster Recovery tools](https://github.com/pibara/hive-coinzdense-disaster-recovery) that I talked about in [this post](https://peakd.com/hive-139531/@pibara/what-if-coinzdense-comes-too-late-part-2--a-working-tool-for-preparing-for-quantum-disaster-recovery).
+
+The old API remains available for now, but with a difference in how things are imported. For example:
+
+```python
+from coinzdense.app import BlockChainEnv
+from coinzdense.fs import EtcEnv
+```
+
+becomes:
+
+```python
+from coinzdense.unstable.app import BlockChainEnv
+from coinzdense.unstable.fs import EtcEnv
+```
+
+Bit by bit I'm moving functionality from unstable to a part of the API that I intend to keep backward compatible stable. So far, everything in stable has been the layer zero stuff that I needed for building the HIVE CoinZdense Disaster Recovery tools.
+
+A coinZdense signing key consists of a small stack of level keys, where every level key consists of a tree of one-time signing keys. The one-time siging keys get used up with usage, and with them, at some point, so do some of the level keys. When a level key gets exausted, the generation of a new level key is quite CPU intensive, and as such, the time needed to sign a single transaction might go up, one signature in many, from significantly less than a second to multiple minutes, and that is something that from a user perspective isn't a consistent user experience. So the idea is that for user exerience, level-keys need to be generated in the background while the user isn't doing anything in particular.
+
+Yesterday and today I've been working on the API hooks for that at the lowest level, the one-time signing keys.
+
+Working on this subject, I ran into a well known problem with concurency in Python: The GIL or Global Interpreter lock. In short, in most other languages, to speed up the performance of one time signing key creation, the use of threaths would be the obvious choiche. In Python though, in CPU intensive operations not handled by truly GIL-aware libraries like numpy, chances are adding more threads will make CPU intensive tasks slower instead of faster. The coinZdense domain isn't exactly a great fit for numpy, so I started looking at multi process as a option.
+
+A really nice abstraction in Python is provided by the ProcessPoolExecutor in concurent.futures. There is also a ThreadPoolExecutor with the same interface, so I decided to use the Executor as a hook into my API.
+
+I wanted to test the new API extensions, but I also wanted to benchmark them a bit, so I wrote a tiny benchmark script. In this post I want to walk throug that script to show a bit of the API extension so far. 
+
+In the future the user won't be exposed to this part of the API at this level as the user normally would use higher level key abstractions that will get a slightly different API, that will abstract away most of the background work in the **Wen3** layer, the Web-3.0 Entropy layer that will implement entropy-as-a-resource management and sub-key management.
+
+But now for the low level API. In our script we start off with the imports.
+
+```python
+import asyncio
+import time
+from libnacl import crypto_kdf_derive_from_key as _nacl2_key_derive
+from coinzdense.layerzero.onetime import OneTimeSigningKey
+from coinzdense.layerzero.wif import key_from_creds
+from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
+```
+
+The important ones are the imports from **coinzdense** and from **concurrent**. We import the OneTimeSigningKey and the key_from_creds function from coinzdense. We import the two types of **Executor**, so we can show the GIL problem. And finaly we import a function from libnacl that in the future is going to be abstracted away by the level key.
+
+The rest of the code looks like this:
+
+```python
+print("reference, no executor")
+    key = key_from_creds("coinzdense", "demodemo","secretpassword12345")
+    otsk = []
+    start = time.time()
+    for index in range(0,1024):
+        salt = _nacl2_key_derive(20, index, "levelslt", key)
+        otsk.append(OneTimeSigningKey(20, 7, salt, key, 1000000*index))
+        otsk[-1].get_pubkey()
+    reference = time.time() - start
+    print("    done, reference =", int(reference),"sec")
+    for workers in [1,2,3,4]:
+        for usethreads in [False, True]:
+            print("workers =", workers, "use threads =", usethreads)
+            if usethreads:
+                executor = ThreadPoolExecutor(max_workers=workers)
+            else:
+                executor = ProcessPoolExecutor(max_workers=workers)
+            otsk = []
+            start = time.time()
+            for index in range(0,1024):
+                salt = _nacl2_key_derive(20, index, "levelslt", key)
+                otsk.append(OneTimeSigningKey(20, 7, salt, key, 1000000*index))
+                otsk[-1].announce(executor)
+            cnt = 0
+            for index in range(0,1024):
+                while not await otsk[index].available():
+                    cnt += 1
+                    await asyncio.sleep(0.1)
+            measurement = time.time() - start
+            print("    done", int(100*measurement/reference),"%")
+```
+
+The first thing the script does is create a master key using the **key_from_creds** function. Then that master key is used to create the equivalent of the level-key salt, after what both are used to create 1024 one time signing keys with 7 bit OTS chains and 20 byte long blake2 hashes.
+
+The first part of the script uses the synchonous **get_pubkey** method. OneTimeSigningKey is lazy. On construction the public key isn't calculated yet. But when the pubkey is requested and it hasn't been requested before, the CPU intensive operation is run at that moment. This was already part of the API before. As we see in the script, we use this first run to set ourselves a reference time to measure other outcomes against.
+
+Now we get to the core of the script. A double **for** loop that tries out each of the two Executor types with 1, 2, 3 and four workers.
+
+We notice the extensions to the API that allow us to use the Executor.
+
+```python
+            for index in range(0,1024):
+                salt = _nacl2_key_derive(20, index, "levelslt", key)
+                otsk.append(OneTimeSigningKey(20, 7, salt, key, 1000000*index))
+                otsk[-1].announce(executor)
+```
+
+The **announce** method will queue the calculation of the public key onto the executor. We basicly start calculation in the background. We do this for each of the 1024 one time signing keys.
+
+The next bit of code we wait for all of queued tasks to complete
+
+```python
+           for index in range(0,1024):
+                while not await otsk[index].available():
+                    cnt += 1
+                    await asyncio.sleep(0.1)
+```
+
+The async method **available** returns a boolean indicating that the one time key has completed calculating the public key. Available returns without delay with a True or a False.
+
+Alternatively, the async **require** method will resolve after the pubkey has been calculated.
+
+So now for the output of the script:
+
+  
+![image.png](https://files.peakd.com/file/peakd-hive/pibara/Eo1vWZUfKyby77KnKFDFJHX2YAmymF8YZGNdHGdkCuYZjWScyED9ruv39rXY5TCzHSb.png)
+ 
+Notice what happens? Let's put it into a table
+
+| workers | ProcessPoolExecutor | ThreadPoolExecutor |
+| --- | --- | --- |
+| 1 | 102%  | 130% |
+| 2 | 60% | 152% |
+| 3 | 44% | 187% |
+| 4 | 36% | 186% |
+
+There is a tiny for using a single process worker, and a moderate overhead for using a single tread worker. But look at what happens when we scale up. Multi processing makes things speed up, as intended  while multi thread makes things slow down. This demonstrates the problems withe Python and the GIL for CPU intensive tasks.
+
+When later on we continue with the C++ version of CoinZdense, the code will undoubtedly use threaths rather than processes, but ont so for Python. 
+
+The next step right now is to start working on integrating the use of this API into the level key code and migrating the resulting code to the stable API as soon as possible. But that is for next time.
+
+Getting back into the project again is taking some effort, but there is progress again and that is most important right now.
+
+ # Support the CoinZdense project
+
+As I mentioned in my [talk at HiveFest](https://peakd.com/coinzdense/@pibara/my-hivefest-coinzdense-slides-and-some-personal-shit), CoinZdense is a one-man and **unfunded** project. You can help support the project by buying project support tokens on hive-engine, by helping out looking at the [1995 style project website](https://github.com/pibara/coinzdense), or by advocating with the different target Web3 ecosystem communities.
+
+So far the project has received roughly **33 HBD** from sale of [project support tokens](https://hive-engine.com/trade/COINZDENSE) on hive-engine, from a tiny Paypal donation on the [tipping-jar page](https://pibara.github.io/coinzdense/qr.html), and from post upvotes.</div>
+  <footer class="hive-post-embed__source">
+    <span class="hive-post-embed__source-label">Source:</span>
+    <a href="https://hive.blog/@pibara/first-work-on-coinzdense-this-year">First work on CoinZdense this year.</a>
+    by
+    <a href="https://hive.blog/@pibara">@pibara</a>
+  </footer>
+</div>
+
+
+  </div><a class="u-url" href="/news/python/coinzdense/2023/01/17/first-work-on-coinzdense-this-year.html" hidden></a>
+</article>
+
+        </div>
+
+        
+        <aside class="page-sidebar" aria-label="Search and browse">
+          <section class="sidebar-section sidebar-search">
+            <h2 class="sidebar-heading">Search posts</h2>
+            <p class="sidebar-copy">Search the locally indexed post archive.</p>
+            <input type="text" id="search-input" placeholder="Search posts" autocomplete="off" />
+            <ul id="results-container"></ul>
+          </section>
+
+          <section class="sidebar-section sidebar-topics">
+            <h2 class="sidebar-heading">Browse topics</h2>
+            <p class="sidebar-copy">Jump into curated topic landing pages.</p>
+            <ul class="topic-list topic-list-sidebar"><li><a class="page-link" href="/account-recovery/">Account Recovery</a></li><li><a class="page-link" href="/core-development/">Core Development</a></li><li><a class="page-link" href="/dapps/">Dapps</a></li><li><a class="page-link" href="/docker/">Docker</a></li><li><a class="page-link" href="/hardfork/">Hardfork</a></li><li><a class="page-link" href="/hivemind/">Hivemind</a></li><li><a class="page-link" href="/javascript/">Javascript</a></li><li><a class="page-link" href="/multisig/">Multisig</a></li><li><a class="page-link" href="/python/">Python</a></li><li><a class="page-link" href="/ruby/">Ruby</a></li><li><a class="page-link" href="/testnet/">Testnet</a></li><li><a class="page-link" href="/tools/">Tools</a></li><li><a class="page-link" href="/witness/">Witness</a></li></ul>
+          </section>
+        </aside>
+        
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading"><a rel="author" href="/">Hive Chain Documentation</a></h2>
+    
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">site curated by: @inertia</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>Your resource for various levels of Hive Documentation.</p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+<script src="/assets/javascript/search.js"></script>
+    <script>
+      (function () {
+        var input = document.getElementById('search-input');
+        var results = document.getElementById('results-container');
+        if (input && results && typeof SimpleJekyllSearch !== 'undefined') {
+          SimpleJekyllSearch({
+            searchInput: input,
+            resultsContainer: results,
+            json: '/search.json'
+          });
+        }
+
+        if (typeof SteemContentRenderer === 'undefined') return;
+
+        var targets = document.querySelectorAll('[data-hive-render-target="true"]');
+        if (!targets.length) return;
+
+        var renderer = new SteemContentRenderer.DefaultRenderer({
+          baseUrl: 'https://hive.blog/',
+          breaks: true,
+          skipSanitization: false,
+          allowInsecureScriptTags: false,
+          addNofollowToLinks: true,
+          doNotShowImages: false,
+          ipfsPrefix: '',
+          assetsWidth: 640,
+          assetsHeight: 480,
+          imageProxyFn: function (url) { return url; },
+          usertagUrlFn: function (account) { return '/@' + account; },
+          hashtagUrlFn: function (hashtag) { return '/tags/#' + hashtag; },
+          isLinkSafeFn: function () { return true; }
+        });
+
+        targets.forEach(function (target) {
+          try {
+            var inputHtml = target.innerHTML;
+            target.innerHTML = renderer.render(inputHtml);
+          } catch (e) {
+            console.log(e);
+          }
+        });
+      })();
+    </script>
+
+  </body>
+
+</html>

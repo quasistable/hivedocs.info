@@ -88,7 +88,7 @@ if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNo
     <div class="hive-post-embed" data-hive-author="howo" data-hive-permlink="how-to-run-a-witness-node-on-the-hf25-testnet">
   <div id="content-howo-how-to-run-a-witness-node-on-the-hf25-testnet" class="hive-post-embed__content" data-hive-render-target="true">![image.png](https://files.peakd.com/file/peakd-hive/howo/23xe7eZsnrPcykgbjNqyAudjuQ8nfGfqRzVCpTShns5vRs2J9gcknbewso9v32YFhw54x.png)
 
-Hi ! the testnet phase for HF25 is now in full swing, here's some info on it from @gtg https://peakd.com/@gtg/hf25-public-testnet-reloaded-rc2
+Hi ! the testnet phase for HF25 is now in full swing, here's some infos on it from @gtg https://peakd.com/@gtg/hf25-public-testnet-reloaded-rc2
 
 One important thing to understand about the testnet is much more lightweight than the main net (because the chain is brand new) so you can actually get it running on a super small machine, to prove my point I'm going to write this tutorial using the 6$ a month doplet (1 core, 25gb storage) from digitalocean. I recommend ubuntu 18.04 LTS, 20.04 is also supported by hive but it can be more tricky depending on the versions of GCC+boost+cmake that are provided with it.
 
@@ -100,7 +100,7 @@ If you participated in the last testnet you will find this guide very similar to
 
 If you're on a low end hardware compiling may take a while, so it's faster to let someone compile the binaries for you so you can just run them instead.
 
-@gtg offers pre-built binaries at https://gtg.openhive.network/get/testnet/bin/ just download both hived and cli_wallet and you're good to go:
+@gtg offers pre-build binaries at https://gtg.openhive.network/get/testnet/bin/ just download both hived and cli_wallet and you're good to go:
 
 ```
 mkdir programs
@@ -156,12 +156,13 @@ git submodule update --init --recursive
 mkdir build
 cd build
 
-cmake -DENABLE_COVERAGE_TESTING=ON -DBUILD_HIVE_TESTNET=ON ..
+cmake -DENABLE_COVERAGE_TESTING=ON -DBUILD_HIVE_TESTNET=ON -DLOW_MEMORY_NODE=ON ..
 
 make -j$(nproc) hived cli_wallet
 ```
 
 Compiling may take a while if you are on low end hardware it could take up to a few hours if not more, I forgot to measure it when I did it myself so 🤷‍. On high end hardware you can expect 3-5 minutes.
+
  
 ## Run the node
 
@@ -233,7 +234,7 @@ market-history-buckets-per-size = 5760
 p2p-endpoint = 0.0.0.0:2001
 
 transaction-status-block-depth = 64000
-transaction-status-track-after-block = 100000
+transaction-status-track-after-block = 46000000
 
 webserver-thread-pool-size = 256
 ```
@@ -352,7 +353,7 @@ If you liked this writeup, please consider voting for @steempress it's the witne
   <footer class="hive-post-embed__source">
     <span class="hive-post-embed__source-label">Source:</span>
     <a href="https://peakd.com/guide/@howo/how-to-run-a-witness-node-on-the-hf25-testnet">How to run a witness node on the hf25 testnet</a>
-    <span>by</span>
+    by
     <a href="https://hive.blog/@howo">@howo</a>
   </footer>
 </div>
