@@ -90,6 +90,8 @@ The hard part is not rendering the site. The hard part is deciding what deserves
 
 New material may come from developers, communities, badges, and reference repos. Curation should favor signal over volume.
 
+The bar is durable value for people working on the Hive blockchain: tools, libraries, APIs, documentation, core development, and infrastructure. A post in a dev community or by a badge member doesn't qualify on that alone. Project announcements that aren't aimed at improving the ecosystem are usually left out, and so are recurring statistics posts and fitness reports.
+
 ### Places I look for new posts
 
 Not all developers use the same tags or communities, but many of them are tracked by the HiveDevs badge or use the HiveDevs community.
@@ -97,7 +99,7 @@ Not all developers use the same tags or communities, but many of them are tracke
 - https://peakd.com/c/hive-139531/created — Community: HiveDevs
 - https://peakd.com/c/hive-169321/created — Community: Programming/Dev Community
 - https://peakd.com/b/badge-424242 — Badge: HiveDevs (badge maintained by @asgarth)
-  - `curl -s --data '{"jsonrpc":"2.0", "method":"condenser_api.get_following", "params":{"account":"badge-424242","start":null,"type":"blog","limit":1000}, "id":1}' https://api.hive.blog | jq -r .result[].following`
+  - `curl -s --data '{"jsonrpc":"2.0", "method":"condenser_api.get_following", "params":["badge-424242",null,"blog",1000], "id":1}' https://api.hive.blog | jq -r .result[].following`
 
 ## Development
 

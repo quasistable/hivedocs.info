@@ -4,7 +4,6 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'rake/testtask'
 require 'json'
 require 'yaml'
-require 'hive'
 require 'open-uri'
 require 'time'
 require 'uri'
@@ -26,46 +25,40 @@ end
 desc 'Grab a post.'
 task :grab, :url do |t, args|
   url = args[:url] || abort('Url required.')
-  api = Hive::Api.new(url: 'https://api.openhive.network')
   author, permlink = url.split('@').last.split('/')
   
-  api.get_content(author, permlink) do |content|
-    abort("No content found.") if content.id == 0
+  curation.fetch_content(author, permlink).then do |content|
+    abort("No content found.") if content.nil?
     
-    canonical_url = "https://hive.blog/#{content.category}/@#{content.author}/#{content.permlink}"
+    canonical_url = "https://hive.blog/#{content['category']}/@#{content['author']}/#{content['permlink']}"
     
-    scrape = URI.open(canonical_url).read
-    
+    scrape = URI.open(canonical_url).read rescue '' # hive.blog may 403 scripted requests
+
     if scrape.include? 'rel="canonical"'
       canonical_url = scrape.split('rel="canonical"')[1].split('"')[1]
     end
     
-    metadata = JSON[content.json_metadata] rescue {}
+    metadata = JSON[content['json_metadata']] rescue {}
     tags = metadata.fetch('tags', [])
     description = metadata.fetch('description', nil)
     canonical_url = metadata.fetch('canonical_url', canonical_url)
     images = metadata.fetch('image', [])
-    created_at = Time.parse(content.created + 'Z')
-    curation = Hivedocs::Curation.new(
-      cursor_path: '.curation-cursors.yml',
-      api_url: ENV.fetch('HIVE_API_URL', Hivedocs::Curation::DEFAULT_API_URL),
-      hafbe_api_url: ENV.fetch('HAFBE_API_URL', Hivedocs::Curation::DEFAULT_HAFBE_API_URL)
-    )
-    categories = curation.categories_for(content.author, source_category: content.category, tags: tags)
+    created_at = Time.parse(content['created'] + 'Z')
+    categories = curation.categories_for(content['author'], source_category: content['category'], tags: tags)
     description = Hivedocs::Description.derive(
       metadata_description: description,
-      body: content.body,
-      author: content.author,
-      category: content.category,
+      body: content['body'],
+      author: content['author'],
+      category: content['category'],
       tags: tags
     )
     
     output = <<~DONE
       ---
       layout: post
-      author: #{content.author}
-      title: "#{content.title}"
-      description: "#{description}"
+      author: #{content['author']}
+      title: #{content['title'].to_s.to_json}
+      description: #{description.to_s.to_json}
       date: #{created_at.strftime('%Y-%m-%d %H:%M:%S')} UTC
       categories: #{categories.join(' ')}
       canonical_url: #{canonical_url}
@@ -171,6 +164,27 @@ namespace :curate do
     puts "Title: #{result[:title]}"
     puts "Date: #{result[:created]&.strftime('%Y-%m-%d %H:%M:%S UTC') || result[:raw]['created']}"
     puts "URL: #{result[:canonical_url]}"
+  end
+
+  desc 'Markdown review list of dev posts in a date range. Usage: rake curate:sweep[2023-01-01,2023-02-01] > review.md'
+  task :sweep, [:from, :to] do |_t, args|
+    abort('Usage: rake curate:sweep[from,to]') unless args[:from] && args[:to]
+
+    from = Time.parse(args[:from] + 'T00:00:00Z')
+    to = Time.parse(args[:to] + 'T00:00:00Z')
+    curated = Dir['_posts/*.md'].map { |f| File.basename(f, '.md')[11..] }
+    month = nil
+
+    curation.sweep(from: from, to: to).each do |found|
+      post = found[:post]
+      if month != found[:created].strftime('%Y-%m')
+        month = found[:created].strftime('%Y-%m')
+        puts "\n## #{month}\n\n"
+      end
+      check = curated.include?(post['permlink']) ? 'x' : ' '
+      puts "- [#{check}] #{found[:created].strftime('%F')} @#{post['author']} — #{post['title'].to_s.gsub(/\s+/, ' ').strip} — " \
+           "https://hive.blog/@#{post['author']}/#{post['permlink']} (#{found[:sources].join(', ')})"
+    end
   end
 end
 
