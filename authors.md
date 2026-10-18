@@ -39,6 +39,7 @@ permalink: /authors/
 <section class="authors-resources">
   <h3>Discovery and follow-up</h3>
   <ul>
+    <li>New posts by these authors: <a href="https://www.hyperion.zone/posts?utf8=√&author%5B%5D={{ authors | join: '&author%5B%5D=' }}">hyperion.zone</a></li>
     <li><a href="https://peakd.com/b/badge-424377">B/Hive Chain Documentation Authors</a></li>
     <li>Active developers on the Hive blockchain: <a href="https://peakd.com/b/badge-424242">B/Hive Devs</a></li>
     <li>Community: <a href="https://peakd.com/c/hive-139531/created">HiveDevs</a></li>
