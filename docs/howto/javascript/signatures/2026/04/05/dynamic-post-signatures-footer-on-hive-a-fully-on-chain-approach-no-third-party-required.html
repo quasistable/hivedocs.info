@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta property="og:image" content="/assets/images/sticker.png" />
+  <meta name="apple-mobile-web-app-title" content="Hive Docs" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" /><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Dynamic Post Signatures (Footer) on HIVE — A Fully On-Chain Approach (No Third-Party Required) | Hive Chain Documentation</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Dynamic Post Signatures (Footer) on HIVE — A Fully On-Chain Approach (No Third-Party Required)" />
+<meta name="author" content="louis88" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="TL;DR: What if you could update your post signature (footer ) once and have it automatically reflected across all your old posts — without any centralized service, without re-editing, and using nothing but native HIVE" />
+<meta property="og:description" content="TL;DR: What if you could update your post signature (footer ) once and have it automatically reflected across all your old posts — without any centralized service, without re-editing, and using nothing but native HIVE" />
+<link rel="canonical" href="https://hive.blog/hive-139531/@louis88/dynamic-post-signatures-footer-on-hive-a-fully-on-chain-approach-no-third-party-required" />
+<meta property="og:url" content="https://hive.blog/hive-139531/@louis88/dynamic-post-signatures-footer-on-hive-a-fully-on-chain-approach-no-third-party-required" />
+<meta property="og:site_name" content="Hive Chain Documentation" />
+<meta property="og:image" content="https://files.peakd.com/file/peakd-hive/louis88/23tkmzJn2rA4cnavekwP1GiqPavnpv1QChfWQ8vPde98f55nR8HtZqbQ9dsdvZXwzXyyf.png" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2026-04-05T14:31:30-07:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="https://files.peakd.com/file/peakd-hive/louis88/23tkmzJn2rA4cnavekwP1GiqPavnpv1QChfWQ8vPde98f55nR8HtZqbQ9dsdvZXwzXyyf.png" />
+<meta property="twitter:title" content="Dynamic Post Signatures (Footer) on HIVE — A Fully On-Chain Approach (No Third-Party Required)" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"louis88"},"dateModified":"2026-04-05T14:31:30-07:00","datePublished":"2026-04-05T14:31:30-07:00","description":"TL;DR: What if you could update your post signature (footer ) once and have it automatically reflected across all your old posts — without any centralized service, without re-editing, and using nothing but native HIVE","headline":"Dynamic Post Signatures (Footer) on HIVE — A Fully On-Chain Approach (No Third-Party Required)","image":"https://files.peakd.com/file/peakd-hive/louis88/23tkmzJn2rA4cnavekwP1GiqPavnpv1QChfWQ8vPde98f55nR8HtZqbQ9dsdvZXwzXyyf.png","mainEntityOfPage":{"@type":"WebPage","@id":"https://hive.blog/hive-139531/@louis88/dynamic-post-signatures-footer-on-hive-a-fully-on-chain-approach-no-third-party-required"},"url":"https://hive.blog/hive-139531/@louis88/dynamic-post-signatures-footer-on-hive-a-fully-on-chain-approach-no-third-party-required"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://hivedocs.info/feed.xml" title="Hive Chain Documentation" /><script>
+if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNotTrack === "yes" || navigator.msDoNotTrack === "1")) {
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-161692811-1', 'auto');
+  ga('send', 'pageview');
+}
+</script>
+  
+<script src='https://unpkg.com/steem-content-renderer'></script>
+  <script src="/assets/javascript/universal-bridge-against-phishing.js"></script>
+  <script src="/assets/javascript/lazysizes.min.js" async=""></script>
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet" />
+  <link rel="shortcut icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="152x152" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="167x167" href="/assets/images/favicon-80x80.png" />
+</head>
+<body><header class="site-header" role="banner">
+  <div class="wrapper site-header-inner">
+    <a class="site-title" rel="author" href="/">Hive Chain Documentation</a>
+
+    <nav class="site-nav" aria-label="Primary">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/news/">News</a><a class="page-link" href="/howto/">How To</a><a class="page-link" href="/links/">Useful Links</a><a class="page-link" href="/authors/">Authors</a><a class="page-link" href="/topics/">Topics</a><a class="page-link" href="/search/">Search</a></div>
+    </nav>
+  </div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper page-layout has-search-panel">
+        <div class="page-main">
+          <article class="post h-entry post-article" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header post-hero">
+    <div class="post-hero-main">
+      <p class="post-kicker">Archive post</p>
+      <h1 class="post-title p-name" itemprop="name headline">Dynamic Post Signatures (Footer) on HIVE — A Fully On-Chain Approach (No Third-Party Required)</h1>
+      <p class="post-meta">
+        <time class="dt-published" datetime="2026-04-05T14:31:30-07:00" itemprop="datePublished">Apr 5, 2026
+        </time>• <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">
+            <a href="/authors/#author-louis88">louis88</a>
+          </span></span></p><p class="post-summary">TL;DR: What if you could update your post signature (footer ) once and have it automatically reflected across all your old posts — without any centralized service, without re-editing, and using nothing but native HIVE</p></div><aside class="post-author-card">
+      <img src="https://images.hive.blog/u/louis88/avatar" width="128" height="128" class="lazyload post-author-avatar" alt="Avatar for @louis88" />
+      <div class="post-author-name">@louis88</div>
+    </aside></header>
+
+  <div class="post-content e-content post-body" itemprop="articleBody">
+    <div class="hive-post-embed" data-hive-author="louis88" data-hive-permlink="dynamic-post-signatures-footer-on-hive-a-fully-on-chain-approach-no-third-party-required">
+  <div id="content-louis88-dynamic-post-signatures-footer-on-hive-a-fully-on-chain-approach-no-third-party-required" class="hive-post-embed__content" data-hive-render-target="true">
+**TL;DR:** What if you could update your post signature (footer	) *once* and have it automatically reflected across *all* your old posts — without any centralized service, without re-editing, and using nothing but native HIVE infrastructure? Here's a concrete proposal to make that happen.
+
+---
+
+
+![image.png](https://files.peakd.com/file/peakd-hive/louis88/23tkmzJn2rA4cnavekwP1GiqPavnpv1QChfWQ8vPde98f55nR8HtZqbQ9dsdvZXwzXyyf.png)
+
+
+## The Problem
+
+Anyone who has been blogging on HIVE for a while knows this situation: you have a signature at the bottom of your posts — maybe a logo, some links to your socials, a tagline. Looks great. Now six months later, you've rebranded. Your Twitter handle changed. You started a new project. You want to update the signature.
+
+The result? Either you leave hundreds of old posts with an outdated signature, or you start a tedious editing marathon. Neither is great.
+
+The root cause is simple: **we're storing the signature content directly inside the post body.** That means it's immutable the moment the post is broadcast. The signature is a *copy*, not a *reference*.
+
+The fix is equally simple in principle — but requires a small ecosystem shift to pull off properly.
+
+---
+
+## The Core Idea: Reference, Don't Copy
+
+Instead of embedding the signature content directly into each post, we embed only a **lightweight marker** — a tiny placeholder that gets resolved to the *current* signature at render time by the frontend.
+
+```
+Old approach (bad):                New approach (good):
+┌──────────────────────┐           ┌──────────────────────┐
+│ Post Body            │           │ Post Body            │
+│ [content...]         │           │ [content...]         │
+│                      │           │                      │
+│ === SIGNATURE ===    │           │ [//]: # (hive-sig:v1:alice)│ 
+Logo | Links | Text  │           │               │◄── just a marker
+└──────────────────────┘           └──────────┬───────────┘
+         ▲ hardcoded,                         │ frontend resolves at render time
+           immutable                          ▼
+                               ┌──────────────────────────┐
+                               │ account.posting_         │
+                               │ json_metadata            │◄── change once,
+                               │ .hive_signature          │    update everywhere
+                               └──────────────────────────┘
+```
+
+The signature itself lives **on-chain in your account's `posting_json_metadata`**. Change it once → every old post that carries your marker immediately shows the updated signature on any supporting frontend.
+
+![image.png](https://files.peakd.com/file/peakd-hive/louis88/23t7BQQX3VndNbSo7x32gbN7hKHgKARGFu5BZdhPuJA153RzgV321Umu57q8PFhZaMRWH.png)
+
+---
+
+## Step 1 — Store Your Signature in `posting_json_metadata`
+
+HIVE accounts already have a native, writable metadata field: `posting_json_metadata`. It's updated via the `account_update2` operation and costs virtually zero RC. We'd simply define a reserved key inside it — `hive_signature` — with a standardized schema:
+
+```json
+{
+  "profile": {
+    "name": "Alice",
+    "...": "..."
+  },
+  "hive_signature": {
+    "version": 1,
+    "enabled": true,
+    "updated": "2024-11-01T12:00:00Z",
+    "content": {
+      "format": "markdown",
+      "body": "---\n![Logo](https://images.hive.blog/0x0/...)\n**[@alice](/@alice)** · [Twitter](https://twitter.com/alice) · [About](/about)\n*Posted with ❤️ on HIVE*\n---"
+    }
+  }
+}
+```
+
+Updating it is a standard broadcast with your posting key:
+
+```javascript
+import { Client, PrivateKey } from "@hiveio/dhive";
+
+const client = new Client(["https://api.hive.blog"]);
+
+const updatedMeta = {
+  profile: { /* existing profile data */ },
+  hive_signature: {
+    version: 1,
+    enabled: true,
+    updated: new Date().toISOString(),
+    content: {
+      format: "markdown",
+      body: "---\n![Logo](https://ipfs.io/ipfs/QmABC...)\n**My Blog** | [Twitter](...) | [Newsletter](...)\n---"
+    }
+  }
+};
+
+await client.broadcast.updateAccount({
+  account: "alice",
+  posting_json_metadata: JSON.stringify(updatedMeta),
+  extensions: []
+}, PrivateKey.fromString("5K..."));
+```
+
+No tokens spent. No smart contract. No database. Pure HIVE.
+
+
+#### For Example - this is my current Footer / Signature, i'll embed all the time
+
+```
+
+--- 
+
+<div class="pull-left"><div class="text-justify">
+
+[![image.png](https://files.peakd.com/file/peakd-hive/louis88/23v4Zbq5TQyn3aFGQ7YcUyQJQCHhh556WQfTgmeR6EtVe1RWUURNc89oCX25ZFnUHAXww.png)](https://vote.hive.uno/@louis.witness)
+
+##### Vote for my Hive Witness
+U can vote for my Witness using Hive Keychain here:  https://vote.hive.uno/@louis.witness
+
+</div></div>
+<div class="pull-right"><div class="text-justify">
+
+
+[![image.png](https://files.peakd.com/file/peakd-hive/louis88/24241zs2F4mEKWwVa9y2CkqHjUcR7Rh2EyRQEXZA5vfHdjEMnq8Ej8R4cWxT1jgAtXQHP.png)](https://primersion.com/he-witnesses)
+
+##### Vote for my Hive Engine Witness
+
+Vote for my Witness on Hive-Engine using Primersion Tool: https://primersion.com/he-witnesses <sup>Enter your Username and search for louis.witness</sup>
+</div></div>
+```
+
+
+--- 
+
+<div class="pull-left"><div class="text-justify">
+
+[![image.png](https://files.peakd.com/file/peakd-hive/louis88/23v4Zbq5TQyn3aFGQ7YcUyQJQCHhh556WQfTgmeR6EtVe1RWUURNc89oCX25ZFnUHAXww.png)](https://vote.hive.uno/@louis.witness)
+
+##### Vote for my Hive Witness
+U can vote for my Witness using Hive Keychain here:  https://vote.hive.uno/@louis.witness
+
+</div></div>
+<div class="pull-right"><div class="text-justify">
+
+
+[![image.png](https://files.peakd.com/file/peakd-hive/louis88/24241zs2F4mEKWwVa9y2CkqHjUcR7Rh2EyRQEXZA5vfHdjEMnq8Ej8R4cWxT1jgAtXQHP.png)](https://primersion.com/he-witnesses)
+
+##### Vote for my Hive Engine Witness
+
+Vote for my Witness on Hive-Engine using Primersion Tool: https://primersion.com/he-witnesses <sup>Enter your Username and search for louis.witness</sup>
+</div></div>
+
+
+---
+
+## Step 2 — Embed a Marker in Your Posts (Not the Signature Itself)
+
+When writing a post, you place a single standardized comment at the end of your body. It's invisible when rendered by a supporting frontend, and harmless when not:
+
+```markdown
+This is my amazing post about HIVE development...
+
+Lorem ipsum, great content, much value. much wow.
+
+[//]: # (hive-sig:v1:alice)
+```
+
+This Markdown comment syntax (`[//]: # (...)`) is already widely used as an "invisible comment" in Markdown. It renders as nothing in standard Markdown parsers. The post content on-chain never changes — only the resolution of the marker changes, because it's looked up live.
+
+---
+
+## Step 3 — Frontend Resolution Logic
+
+This is the only part that requires frontend changes. The logic is intentionally simple:
+
+```javascript
+async function renderPostWithDynamicSignature(postBody, client) {
+  const SIG_MARKER = /\[\/\/\]: # \(hive-sig:v1:([\w.\-]+)\)/;
+  const match = postBody.match(SIG_MARKER);
+
+  if (!match) return postBody; // no marker → render as-is
+
+  const sigAuthor = match[1]; // e.g. "alice"
+
+  // Fetch live from chain — this is already cached by most frontends
+  const [account] = await client.database.getAccounts([sigAuthor]);
+
+  let sigContent = "";
+  try {
+    const meta = JSON.parse(account.posting_json_metadata || "{}");
+    const sig = meta?.hive_signature;
+
+    if (sig?.enabled &amp;&amp; sig?.content?.body) {
+      sigContent = sig.content.body;
+    }
+  } catch {
+    // graceful fallback: render nothing
+  }
+
+  return postBody.replace(SIG_MARKER, sigContent);
+}
+```
+
+Every time a post is opened, the current signature is fetched from the author's account metadata and injected before rendering. The account data is typically already fetched for displaying the author profile anyway, so in most frontend implementations this adds **zero additional API calls**.
+
+&gt; Frontends can also implement this as a feature in their frontend without the markdown marker. whatever the better solutions should be.
+
+---
+
+## Images in Signatures — Decentralization Options
+
+Since the signature body is Markdown, images are just URLs. Here's a comparison of hosting strategies, from most centralized to most decentralized:
+
+| Method | Pros | Cons |
+|---|---|---|
+| `images.hive.blog` | Official, CDN-backed, fast | Centralized service |
+| IPFS (e.g. `ipfs.io/ipfs/Qm...`) | Decentralized, content-addressed | Requires pinning |
+| Base64 inline in JSON | 100% on-chain | Large, RC-intensive |
+
+For most users, `images.hive.blog` is perfectly fine in practice.
+
+---
+
+## Why This Is Better Than a Third-Party Service
+
+You might say: *"Can't I just host a signature snippet on my own server and embed an iframe or image tag?"*
+
+Technically yes and no — but that breaks several important things:
+
+- **Availability:** Your server goes down, your signature breaks on every post ever written.
+- **Decentralization:** You're now a centralized dependency for your own content.
+- **Trust:** Other users can't verify what you serve from your domain won't change to something malicious.
+- **Archival:** Long-term post archives (e.g. HiveArchive) would have a broken dependency forever.
+- Frontends won't allow you to implement an iframe from an external not whitelisted source.
+
+The `posting_json_metadata` approach avoids all of this. The data lives on the HIVE blockchain itself, is accessible from any node, is verifiable, and follows the same replication guarantees as every other piece of HIVE content.
+
+---
+
+## Proposed Specification (Draft HIP)
+
+To standardize this across frontends, a **HIVE Improvement Proposal** seems like the right path. Here's a rough draft of what that might look like:
+
+```
+Title:      Dynamic Post Signatures via posting_json_metadata
+Type:       Informational / Frontend Standard
+Status:     Draft (RFC)
+
+Summary:
+  Defines a standard for embedding dynamic, author-controlled
+  signature blocks in HIVE posts using a Markdown marker resolved
+  at render time from the author's posting_json_metadata.
+
+Marker syntax:
+  [//]: # (hive-sig:v1:{author_account})
+
+Metadata key:
+  posting_json_metadata.hive_signature
+
+Required fields:
+  version   (integer, currently 1)
+  enabled   (boolean)
+  content   (object)
+    format  ("markdown")
+    body    (string, max 2000 chars)
+
+Optional fields:
+  updated   (ISO8601 timestamp)
+  alt_text  (string, for accessibility)
+
+Security:
+  - Frontends MUST sanitize the body (no JS, no iframes, no tracking pixels)
+  - Frontends MUST treat this as untrusted Markdown input
+  - Max body length SHOULD be enforced at render time (suggested: 2000 chars)
+
+Backward compatibility:
+  - Frontends that don't support this spec render the marker as an
+    invisible Markdown comment — no visible breakage
+  - Posts without a marker are unaffected
+```
+
+---
+
+## What Needs to Happen Next
+
+For this to become a real, usable feature for everyday HIVE users, we need a few things:
+
+1. **Feedback on the spec** — Is `posting_json_metadata` the right place? Should there be a size limit? Any edge cases I'm missing?
+
+2. **Frontend adoption** — The three main frontends that would need to implement this are **PeakD**, **Ecency**, and **Hive.blog**. All three are open source. A well-written PR with a clean implementation would be the fastest path forward.
+
+3. **Tooling** — A simple UI in profile settings ("Edit Signature") that writes the `hive_signature` block would make this accessible to non-technical users. A browser extension could also serve as a bridge in the meantime.
+
+4. **Potential HIP submission** — If there's positive reception here, formalizing this as a HIP would help drive consistent implementation across the ecosystem.
+
+---
+
+## Summary
+
+| Property | Value |
+|---|---|
+| **On-chain storage** | `account.posting_json_metadata.hive_signature` |
+| **Post marker** | `[//]: # (hive-sig:v1:{author})` |
+| **Update mechanism** | `account_update2` broadcast |
+| **Cost** | ~0 RC |
+| **Third-party dependency** | None |
+| **Backward compatible** | ✅ Yes |
+| **Requires consensus/HF** | ❌ No — frontend-only change |
+
+This is a **zero-cost, fully on-chain, backwards-compatible** improvement that could realistically ship in any frontend within a few hours of development. The hard part isn't the code — it's alignment.
+
+---
+
+I'm posting this here to start the conversation and collect feedback before drafting a proper HIP. If you see technical issues with the approach, have a better alternative, or are a frontend dev who'd be interested in implementing this — please drop a comment below.
+
+Let's build it.
+
+---
+
+[//]: # (hive-sig:v1:louis88)</div>
+  <footer class="hive-post-embed__source">
+    <span class="hive-post-embed__source-label">Source:</span>
+    <a href="https://hive.blog/@louis88/dynamic-post-signatures-footer-on-hive-a-fully-on-chain-approach-no-third-party-required">Dynamic Post Signatures (Footer) on HIVE — A Fully On-Chain Approach (No Third-Party Required)</a>
+    by
+    <a href="https://hive.blog/@louis88">@louis88</a>
+  </footer>
+</div>
+
+
+  </div><a class="u-url" href="/howto/javascript/signatures/2026/04/05/dynamic-post-signatures-footer-on-hive-a-fully-on-chain-approach-no-third-party-required.html" hidden></a>
+</article>
+
+        </div>
+
+        
+        <aside class="page-sidebar" aria-label="Search and browse">
+          <section class="sidebar-section sidebar-search">
+            <h2 class="sidebar-heading">Search posts</h2>
+            <p class="sidebar-copy">Search the locally indexed post archive.</p>
+            <input type="text" id="search-input" placeholder="Search posts" autocomplete="off" />
+            <ul id="results-container"></ul>
+          </section>
+
+          <section class="sidebar-section sidebar-topics">
+            <h2 class="sidebar-heading">Browse topics</h2>
+            <p class="sidebar-copy">Jump into curated topic landing pages.</p>
+            <ul class="topic-list topic-list-sidebar"><li><a class="page-link" href="/account-recovery/">Account Recovery</a></li><li><a class="page-link" href="/core-development/">Core Development</a></li><li><a class="page-link" href="/dapps/">Dapps</a></li><li><a class="page-link" href="/docker/">Docker</a></li><li><a class="page-link" href="/hardfork/">Hardfork</a></li><li><a class="page-link" href="/hivemind/">Hivemind</a></li><li><a class="page-link" href="/javascript/">Javascript</a></li><li><a class="page-link" href="/multisig/">Multisig</a></li><li><a class="page-link" href="/python/">Python</a></li><li><a class="page-link" href="/ruby/">Ruby</a></li><li><a class="page-link" href="/testnet/">Testnet</a></li><li><a class="page-link" href="/tools/">Tools</a></li><li><a class="page-link" href="/witness/">Witness</a></li></ul>
+          </section>
+        </aside>
+        
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading"><a rel="author" href="/">Hive Chain Documentation</a></h2>
+    
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">site curated by: @inertia</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>Your resource for various levels of Hive Documentation.</p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+<script src="/assets/javascript/search.js"></script>
+    <script>
+      (function () {
+        var input = document.getElementById('search-input');
+        var results = document.getElementById('results-container');
+        if (input && results && typeof SimpleJekyllSearch !== 'undefined') {
+          SimpleJekyllSearch({
+            searchInput: input,
+            resultsContainer: results,
+            json: '/search.json'
+          });
+        }
+
+        if (typeof SteemContentRenderer === 'undefined') return;
+
+        var targets = document.querySelectorAll('[data-hive-render-target="true"]');
+        if (!targets.length) return;
+
+        var renderer = new SteemContentRenderer.DefaultRenderer({
+          baseUrl: 'https://hive.blog/',
+          breaks: true,
+          skipSanitization: false,
+          allowInsecureScriptTags: false,
+          addNofollowToLinks: true,
+          doNotShowImages: false,
+          ipfsPrefix: '',
+          assetsWidth: 640,
+          assetsHeight: 480,
+          imageProxyFn: function (url) { return url; },
+          usertagUrlFn: function (account) { return '/@' + account; },
+          hashtagUrlFn: function (hashtag) { return '/tags/#' + hashtag; },
+          isLinkSafeFn: function () { return true; }
+        });
+
+        targets.forEach(function (target) {
+          try {
+            var inputHtml = target.innerHTML;
+            target.innerHTML = renderer.render(inputHtml);
+          } catch (e) {
+            console.log(e);
+          }
+        });
+      })();
+    </script>
+
+  </body>
+
+</html>

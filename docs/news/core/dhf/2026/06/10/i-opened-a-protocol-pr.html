@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta property="og:image" content="/assets/images/sticker.png" />
+  <meta name="apple-mobile-web-app-title" content="Hive Docs" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" /><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>I opened a protocol PR: scale DHF payouts when HBD printing is suppressed | Hive Chain Documentation</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="I opened a protocol PR: scale DHF payouts when HBD printing is suppressed" />
+<meta name="author" content="igormuba" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="PR at protocol level making the hbd print rate apply to the DHF so that DHF payouts scale along with HBD print rate during near haircut periods of financial stress" />
+<meta property="og:description" content="PR at protocol level making the hbd print rate apply to the DHF so that DHF payouts scale along with HBD print rate during near haircut periods of financial stress" />
+<link rel="canonical" href="https://hive.blog/hive-139531/@igormuba/i-opened-a-protocol-pr" />
+<meta property="og:url" content="https://hive.blog/hive-139531/@igormuba/i-opened-a-protocol-pr" />
+<meta property="og:site_name" content="Hive Chain Documentation" />
+<meta property="og:image" content="https://hivedocs.info/assets/images/favicon.png" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2026-06-10T06:00:15-07:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="https://hivedocs.info/assets/images/favicon.png" />
+<meta property="twitter:title" content="I opened a protocol PR: scale DHF payouts when HBD printing is suppressed" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"igormuba"},"dateModified":"2026-06-10T06:00:15-07:00","datePublished":"2026-06-10T06:00:15-07:00","description":"PR at protocol level making the hbd print rate apply to the DHF so that DHF payouts scale along with HBD print rate during near haircut periods of financial stress","headline":"I opened a protocol PR: scale DHF payouts when HBD printing is suppressed","image":"https://hivedocs.info/assets/images/favicon.png","mainEntityOfPage":{"@type":"WebPage","@id":"https://hive.blog/hive-139531/@igormuba/i-opened-a-protocol-pr"},"url":"https://hive.blog/hive-139531/@igormuba/i-opened-a-protocol-pr"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://hivedocs.info/feed.xml" title="Hive Chain Documentation" /><script>
+if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNotTrack === "yes" || navigator.msDoNotTrack === "1")) {
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-161692811-1', 'auto');
+  ga('send', 'pageview');
+}
+</script>
+  
+<script src='https://unpkg.com/steem-content-renderer'></script>
+  <script src="/assets/javascript/universal-bridge-against-phishing.js"></script>
+  <script src="/assets/javascript/lazysizes.min.js" async=""></script>
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet" />
+  <link rel="shortcut icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="152x152" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="167x167" href="/assets/images/favicon-80x80.png" />
+</head>
+<body><header class="site-header" role="banner">
+  <div class="wrapper site-header-inner">
+    <a class="site-title" rel="author" href="/">Hive Chain Documentation</a>
+
+    <nav class="site-nav" aria-label="Primary">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/news/">News</a><a class="page-link" href="/howto/">How To</a><a class="page-link" href="/links/">Useful Links</a><a class="page-link" href="/authors/">Authors</a><a class="page-link" href="/topics/">Topics</a><a class="page-link" href="/search/">Search</a></div>
+    </nav>
+  </div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper page-layout has-search-panel">
+        <div class="page-main">
+          <article class="post h-entry post-article" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header post-hero">
+    <div class="post-hero-main">
+      <p class="post-kicker">Archive post</p>
+      <h1 class="post-title p-name" itemprop="name headline">I opened a protocol PR: scale DHF payouts when HBD printing is suppressed</h1>
+      <p class="post-meta">
+        <time class="dt-published" datetime="2026-06-10T06:00:15-07:00" itemprop="datePublished">Jun 10, 2026
+        </time>• <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">
+            <a href="/authors/#author-igormuba">igormuba</a>
+          </span></span></p><p class="post-summary">PR at protocol level making the hbd print rate apply to the DHF so that DHF payouts scale along with HBD print rate during near haircut periods of financial stress</p></div><aside class="post-author-card">
+      <img src="https://images.hive.blog/u/igormuba/avatar" width="128" height="128" class="lazyload post-author-avatar" alt="Avatar for @igormuba" />
+      <div class="post-author-name">@igormuba</div>
+    </aside></header>
+
+  <div class="post-content e-content post-body" itemprop="articleBody">
+    <div class="hive-post-embed" data-hive-author="igormuba" data-hive-permlink="i-opened-a-protocol-pr">
+  <div id="content-igormuba-i-opened-a-protocol-pr" class="hive-post-embed__content" data-hive-render-target="true"># I opened a protocol PR: scale DHF payouts when HBD printing is suppressed
+
+I opened a small protocol-level PR for Hive.
+
+PR: https://github.com/openhive-network/hive/pull/48
+
+The idea is simple:
+
+If Hive’s own protocol is already suppressing HBD printing because of debt stress, then DHF proposal payouts should not continue at full speed. The suppression should apply for everyone.
+
+Hive already has a consensus field called `hbd_print_rate`. When the chain gets closer to HBD debt stress, this field suppresses HBD printing. My PR applies that same signal to DHF proposal payouts.
+
+If `hbd_print_rate` is 100%, DHF proposal payouts behave normally.
+
+If `hbd_print_rate` is 50%, DHF proposal payouts are 50%.
+
+If `hbd_print_rate` is 0%, DHF proposal payouts are 0%.
+
+Unpaid HBD stays in the treasury.
+
+
+## Why I opened this PR
+
+
+It does not fix Hive. It does not pretend to fix Hive. It does not redesign governance. It does not punish named accounts. It does not touch user balances. It does not claw back money. It does not freeze anyone's wallet.
+
+It only says that discretionary DHF outflows should be tied to the same HBD stress signal the protocol already uses elsewhere to everyone else.
+
+If HBD printing is being suppressed, DHF proposal payouts should be suppressed too.
+
+## We can not have first class and second class citizens
+
+First, having two tokens minted separately add a vulnerability in the DPoS. Technically whoever has the most stake is incentivized to maintain the value of the stake. This is the basis of trust in  and PoS chain and should be the same on a DPoS chain.
+
+Because Hive has HBD those incentives are warped. Someone with a large enough stake on the governance token may not care for the value of the governance token because they can still have financial gains on the other token.
+
+The DHF introduces first and second class citizens. The first class citizens have contacts and large enough power to mint their own stablecoin. The second class citizens do not.
+
+That is deeply unfair. If the stablecoin emission is halted for the second class citizens it should be halted or scaled similarly for the first class citizens.
+
+This effectively reduces, but does not mitigate, the flaw in our dual currency economy. Now users with a large stake in the governance token do not have a back door to print a stablecoin while everyone else has their stablecoin yields halted.
+
+
+## This is not “cut everything forever”
+
+This PR does not abolish the DHF. It simply makes the DHF beneficiaries adhere to the rules everyone else adheres to.
+
+
+## Why use `hbd_print_rate`?
+
+Because it already exists.
+
+When Hive says HBD printing should be suppressed, with this change DHF proposal payouts are suppressed by the same factor.
+
+
+## What this PR does not have
+
+I am not a protocol developer. This PR is missing tests.
+
+I aimed for the smallest code change possible to make the intent clear. The code change is small, direct and simple, but it misses testing.
+
+Testing is valuable and probably the most difficult and important part of Hive core development. I myself do not have the computing resources to test it on a local devnet and apply it under stress and I am not a C++ dev, I could use AI to write tests but the code diff would be huge and the tests would possibly be flawed and/or redundant. 
+
+Still with tests written I would not have the resources to run and actually test because the software is heavy and running multiple machines and testing the consensus is computationally expensive.
+
+## Why this matters even if it is rejected
+
+This is a PR, a PR is a code proposal, if it is rejected I expect at least an explanation. I am posting about it to gauge public opinion and raise awareness.
+
+They should explain why discretionary DHF proposal payouts deserve to continue normally while the protocol is suppressing HBD printing. Why we should have two different class of citizens and why one of them deserves printing rights.
+
+They should explain why the burden of debt stress should fall on holders, buyers and HBD users, but not on proposal receivers.
+
+They should explain why the chain can be close to the haircut and still treat treasury outflows like public financing as usual, like a tax on the buyers distributing to the receivers.
+
+That is already a useful discussion.
+
+
+## My position
+
+Hive already has an HBD stress signal.
+
+I am asking whether DHF payouts should obey it.
+
+If the answer is no, then say no publicly and explain why.
+
+If the answer is yes, then review the PR and contribute to it, since I know it lacks testing.
+
+But do not pretend there is no protocol-level action possible.
+
+There is.
+
+I opened one.
+</div>
+  <footer class="hive-post-embed__source">
+    <span class="hive-post-embed__source-label">Source:</span>
+    <a href="https://hive.blog/@igormuba/i-opened-a-protocol-pr">I opened a protocol PR: scale DHF payouts when HBD printing is suppressed</a>
+    by
+    <a href="https://hive.blog/@igormuba">@igormuba</a>
+  </footer>
+</div>
+
+
+  </div><a class="u-url" href="/news/core/dhf/2026/06/10/i-opened-a-protocol-pr.html" hidden></a>
+</article>
+
+        </div>
+
+        
+        <aside class="page-sidebar" aria-label="Search and browse">
+          <section class="sidebar-section sidebar-search">
+            <h2 class="sidebar-heading">Search posts</h2>
+            <p class="sidebar-copy">Search the locally indexed post archive.</p>
+            <input type="text" id="search-input" placeholder="Search posts" autocomplete="off" />
+            <ul id="results-container"></ul>
+          </section>
+
+          <section class="sidebar-section sidebar-topics">
+            <h2 class="sidebar-heading">Browse topics</h2>
+            <p class="sidebar-copy">Jump into curated topic landing pages.</p>
+            <ul class="topic-list topic-list-sidebar"><li><a class="page-link" href="/account-recovery/">Account Recovery</a></li><li><a class="page-link" href="/core-development/">Core Development</a></li><li><a class="page-link" href="/dapps/">Dapps</a></li><li><a class="page-link" href="/docker/">Docker</a></li><li><a class="page-link" href="/hardfork/">Hardfork</a></li><li><a class="page-link" href="/hivemind/">Hivemind</a></li><li><a class="page-link" href="/javascript/">Javascript</a></li><li><a class="page-link" href="/multisig/">Multisig</a></li><li><a class="page-link" href="/python/">Python</a></li><li><a class="page-link" href="/ruby/">Ruby</a></li><li><a class="page-link" href="/testnet/">Testnet</a></li><li><a class="page-link" href="/tools/">Tools</a></li><li><a class="page-link" href="/witness/">Witness</a></li></ul>
+          </section>
+        </aside>
+        
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading"><a rel="author" href="/">Hive Chain Documentation</a></h2>
+    
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">site curated by: @inertia</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>Your resource for various levels of Hive Documentation.</p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+<script src="/assets/javascript/search.js"></script>
+    <script>
+      (function () {
+        var input = document.getElementById('search-input');
+        var results = document.getElementById('results-container');
+        if (input && results && typeof SimpleJekyllSearch !== 'undefined') {
+          SimpleJekyllSearch({
+            searchInput: input,
+            resultsContainer: results,
+            json: '/search.json'
+          });
+        }
+
+        if (typeof SteemContentRenderer === 'undefined') return;
+
+        var targets = document.querySelectorAll('[data-hive-render-target="true"]');
+        if (!targets.length) return;
+
+        var renderer = new SteemContentRenderer.DefaultRenderer({
+          baseUrl: 'https://hive.blog/',
+          breaks: true,
+          skipSanitization: false,
+          allowInsecureScriptTags: false,
+          addNofollowToLinks: true,
+          doNotShowImages: false,
+          ipfsPrefix: '',
+          assetsWidth: 640,
+          assetsHeight: 480,
+          imageProxyFn: function (url) { return url; },
+          usertagUrlFn: function (account) { return '/@' + account; },
+          hashtagUrlFn: function (hashtag) { return '/tags/#' + hashtag; },
+          isLinkSafeFn: function () { return true; }
+        });
+
+        targets.forEach(function (target) {
+          try {
+            var inputHtml = target.innerHTML;
+            target.innerHTML = renderer.render(inputHtml);
+          } catch (e) {
+            console.log(e);
+          }
+        });
+      })();
+    </script>
+
+  </body>
+
+</html>

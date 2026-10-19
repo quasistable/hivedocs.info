@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta property="og:image" content="/assets/images/sticker.png" />
+  <meta name="apple-mobile-web-app-title" content="Hive Docs" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" /><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>My First PR to the Hive Core Codebase: SMT Metadata, Delegated Spending and gap closing work | Hive Chain Documentation</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="My First PR to the Hive Core Codebase: SMT Metadata, Delegated Spending and gap closing work" />
+<meta name="author" content="beggars" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="I’ve been building on Hive for years now" />
+<meta property="og:description" content="I’ve been building on Hive for years now" />
+<link rel="canonical" href="https://hive.blog/hive-139531/@beggars/my-first-pr-to-the-hive-core-codebase-smt-metadata-delegated-spending-and-gap-closing-work" />
+<meta property="og:url" content="https://hive.blog/hive-139531/@beggars/my-first-pr-to-the-hive-core-codebase-smt-metadata-delegated-spending-and-gap-closing-work" />
+<meta property="og:site_name" content="Hive Chain Documentation" />
+<meta property="og:image" content="https://images.hive.blog/DQmQdjL9Y27Vrg6C7kX9avDUuwSQjUJ5Jt1JKpSYHsF5XPs/image.png" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2026-02-14T22:40:18-08:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="https://images.hive.blog/DQmQdjL9Y27Vrg6C7kX9avDUuwSQjUJ5Jt1JKpSYHsF5XPs/image.png" />
+<meta property="twitter:title" content="My First PR to the Hive Core Codebase: SMT Metadata, Delegated Spending and gap closing work" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"beggars"},"dateModified":"2026-02-14T22:40:18-08:00","datePublished":"2026-02-14T22:40:18-08:00","description":"I’ve been building on Hive for years now","headline":"My First PR to the Hive Core Codebase: SMT Metadata, Delegated Spending and gap closing work","image":"https://images.hive.blog/DQmQdjL9Y27Vrg6C7kX9avDUuwSQjUJ5Jt1JKpSYHsF5XPs/image.png","mainEntityOfPage":{"@type":"WebPage","@id":"https://hive.blog/hive-139531/@beggars/my-first-pr-to-the-hive-core-codebase-smt-metadata-delegated-spending-and-gap-closing-work"},"url":"https://hive.blog/hive-139531/@beggars/my-first-pr-to-the-hive-core-codebase-smt-metadata-delegated-spending-and-gap-closing-work"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://hivedocs.info/feed.xml" title="Hive Chain Documentation" /><script>
+if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNotTrack === "yes" || navigator.msDoNotTrack === "1")) {
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-161692811-1', 'auto');
+  ga('send', 'pageview');
+}
+</script>
+  
+<script src='https://unpkg.com/steem-content-renderer'></script>
+  <script src="/assets/javascript/universal-bridge-against-phishing.js"></script>
+  <script src="/assets/javascript/lazysizes.min.js" async=""></script>
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet" />
+  <link rel="shortcut icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="152x152" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="167x167" href="/assets/images/favicon-80x80.png" />
+</head>
+<body><header class="site-header" role="banner">
+  <div class="wrapper site-header-inner">
+    <a class="site-title" rel="author" href="/">Hive Chain Documentation</a>
+
+    <nav class="site-nav" aria-label="Primary">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/news/">News</a><a class="page-link" href="/howto/">How To</a><a class="page-link" href="/links/">Useful Links</a><a class="page-link" href="/authors/">Authors</a><a class="page-link" href="/topics/">Topics</a><a class="page-link" href="/search/">Search</a></div>
+    </nav>
+  </div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper page-layout has-search-panel">
+        <div class="page-main">
+          <article class="post h-entry post-article" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header post-hero">
+    <div class="post-hero-main">
+      <p class="post-kicker">Archive post</p>
+      <h1 class="post-title p-name" itemprop="name headline">My First PR to the Hive Core Codebase: SMT Metadata, Delegated Spending and gap closing work</h1>
+      <p class="post-meta">
+        <time class="dt-published" datetime="2026-02-14T22:40:18-08:00" itemprop="datePublished">Feb 14, 2026
+        </time>• <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">
+            <a href="/authors/#author-beggars">beggars</a>
+          </span></span></p><p class="post-summary">I've been building on Hive for years now</p></div><aside class="post-author-card">
+      <img src="https://images.hive.blog/u/beggars/avatar" width="128" height="128" class="lazyload post-author-avatar" alt="Avatar for @beggars" />
+      <div class="post-author-name">@beggars</div>
+    </aside></header>
+
+  <div class="post-content e-content post-body" itemprop="articleBody">
+    <div class="hive-post-embed" data-hive-author="beggars" data-hive-permlink="my-first-pr-to-the-hive-core-codebase-smt-metadata-delegated-spending-and-gap-closing-work">
+  <div id="content-beggars-my-first-pr-to-the-hive-core-codebase-smt-metadata-delegated-spending-and-gap-closing-work" class="hive-post-embed__content" data-hive-render-target="true">I've been building on Hive for years now. Prediction markets, card games, lotteries, invoicing tools, payment plugins. I've shipped a lot of stuff on this chain. But until now, all of that work has been at the application layer. dApps, frontends, layer 2 experiments. I've never actually contributed to the core blockchain codebase itself.
+
+That changed this week. I submitted my first pull request to the Hive blockchain repository, and it's a meaningful one. Twenty-three files changed across protocol, chain, API, resource credits, account history, tests, and documentation.
+
+https://github.com/openhive-network/hive/pull/47
+
+
+![image.png](https://images.hive.blog/DQmQdjL9Y27Vrg6C7kX9avDUuwSQjUJ5Jt1JKpSYHsF5XPs/image.png)
+
+
+I wanted to see where SMTs were at and I was surprised to see they were pretty much done. Some minor things, TODO comments and whatnot, but functionally completed.
+
+But as I dug into SMTs, I realised they were lacking some features that make blockchain tokens useful for devs to build with and Ethereum ERC-20 tokens are the benchmark in my opinion. There were also some runtime guardrails missing that any serious token system needs before you'd trust it with real value.
+
+## What the PR adds
+
+### 1. Token metadata on-chain
+
+There's currently no way to store an SMT's human-readable name, description, or branding on-chain. If you create a token today, clients have no protocol-level way to know what it's called or what it looks like. Everyone has to rely on off-chain sources to display token information, which is fragile and inconsistent across different frontends.
+
+The PR adds `smt_set_token_metadata_operation`, which lets a token's control account store a name (up to 32 characters), a description (up to 1,000 characters), an image URL (up to 256 characters), and a custom JSON metadata field directly on-chain. The JSON field uses the same relaxed validation path as core Hive JSON metadata fields, so it's flexible enough for whatever token-specific data you need to attach. It can be updated at any time after token creation, and it requires active authority of the control account so random users can't mess with your token's branding.
+
+Every token standard on every other chain has this. SMTs need it.
+
+### 2. Delegated spending (approve/transferFrom)
+
+This is a big one. Right now, there's no way for a third party to spend SMTs on behalf of a token holder. No approve/transferFrom pattern. If you've worked with ERC-20 tokens on Ethereum, you know this pattern is foundational. Without it, you can't build DEX integrations. You can't build payment processors. You can't build escrow workflows. You can't build any service that needs to move tokens on behalf of a user with their prior authorisation.
+
+The PR adds two new operations:
+
+`smt_approve_operation` lets a token holder grant a spending allowance to another account. You specify the spender, the token, and the maximum amount they're allowed to spend. Setting the amount to zero revokes the allowance. Setting a new amount overwrites the previous one.
+
+`smt_transfer_from_operation` lets an approved spender execute a transfer from the token holder's balance to a recipient. It checks that the allowance exists, that the amount doesn't exceed what's been approved, and deducts from the remaining allowance. When the allowance hits zero, the allowance object gets cleaned up automatically.
+
+There's also a new `smt_allowance_object` with proper indices for looking up allowances by owner/spender pairs and by spender for reverse lookups. And two new API endpoints, `find_smt_allowances` and `list_smt_allowances`, so frontends and services can actually query this data.
+
+### 3. Control transfer
+
+If you create an SMT, you're the control account forever. There's no way to hand off administrative control to another account. That's a problem for any long-lived token project. Teams change. Operators rotate. Projects get acquired. You need the ability to transfer control without rebuilding the entire token.
+
+The PR adds `smt_transfer_control_operation`, which lets the current control account transfer ownership to a new account. It requires active authority of the current control account, enforces that the new account actually exists on-chain, and prevents you from transferring control to yourself. Once transferred, all subsequent admin operations have to be signed by the new control account.
+
+### 4. Precision and supply guardrails
+
+These are the kind of things you don't think about until they bite you. The PR adds two runtime enforcement mechanisms that were missing:
+
+`smt_create_operation` now enforces a precision ceiling (`SMT_MAX_DECIMAL_PLACES`) during validation. Previously you could create tokens with precision values that weren't properly bounded.
+
+Supply adjustments now enforce `max_supply` at mint time. If your token has a configured max supply, minting operations that would push the current supply above that cap get rejected. And `smt_setup_operation` now rejects `max_supply` values that are lower than the already-issued current supply, so you can't accidentally create an impossible tokenomics state.
+
+These are basic safety rails. If you're going to run a token economy, the protocol itself needs to enforce the rules you set, not just trust that application-layer code will do the right thing.
+
+## The details
+
+I tried to do this properly. The PR includes resource credit calculations for all four new operations so they integrate cleanly with Hive's RC system. Account history tracking is wired up. And there are ten new test cases covering validation and application logic for each operation, including edge cases like revoking non-existent allowances, exceeding approved amounts, verifying that allowance objects get removed when fully spent, rejecting max supply below current supply, and enforcing the supply cap during minting.
+
+On the documentation side, I wrote a consolidated SMT developer guide covering the full feature set: operations, lifecycle objects, SMT-aware core operations, database API usage, and RC charging behavior and caveats. I also updated some stale docs that had outdated SMT references and TODO placeholders sitting around doing nothing.
+
+## Why this matters
+
+SMTs have been in limbo for a long time. The concept is genuinely powerful. User-created tokens at the protocol level without needing a sidechain or a third party layer. But the implementation has gaps, and those gaps prevent developers from building real things with them.
+
+You can't build a marketplace around tokens that don't have on-chain metadata. You can't build a DEX or any kind of automated trading without delegated spending. You can't run a serious token project if you can't hand off control or trust that supply caps are enforced. These aren't nice-to-haves. They're table stakes for any token standard in 2026.
+
+I've been on Hive since the Steemit days. I've watched features get announced, half built, and then left to collect dust. I've written about wanting more targeted, outcome-driven development on Hive. At some point you have to stop talking about what the chain needs and go do some of it yourself.
+
+## What's next
+
+This is my first core contribution, but I plan to keep working through the SMT codebase and submitting PRs where I find gaps. If you're a developer on Hive and you've been thinking about contributing to core but haven't taken the leap yet, come join in. The codebase is C++ but it's well structured, and there's plenty of work to do.
+
+Let's get SMTs over the line.</div>
+  <footer class="hive-post-embed__source">
+    <span class="hive-post-embed__source-label">Source:</span>
+    <a href="https://hive.blog/@beggars/my-first-pr-to-the-hive-core-codebase-smt-metadata-delegated-spending-and-gap-closing-work">My First PR to the Hive Core Codebase: SMT Metadata, Delegated Spending and gap closing work</a>
+    by
+    <a href="https://hive.blog/@beggars">@beggars</a>
+  </footer>
+</div>
+
+
+  </div><a class="u-url" href="/news/core/development/2026/02/14/my-first-pr-to-the-hive-core-codebase-smt-metadata-delegated-spending-and-gap-closing-work.html" hidden></a>
+</article>
+
+        </div>
+
+        
+        <aside class="page-sidebar" aria-label="Search and browse">
+          <section class="sidebar-section sidebar-search">
+            <h2 class="sidebar-heading">Search posts</h2>
+            <p class="sidebar-copy">Search the locally indexed post archive.</p>
+            <input type="text" id="search-input" placeholder="Search posts" autocomplete="off" />
+            <ul id="results-container"></ul>
+          </section>
+
+          <section class="sidebar-section sidebar-topics">
+            <h2 class="sidebar-heading">Browse topics</h2>
+            <p class="sidebar-copy">Jump into curated topic landing pages.</p>
+            <ul class="topic-list topic-list-sidebar"><li><a class="page-link" href="/account-recovery/">Account Recovery</a></li><li><a class="page-link" href="/core-development/">Core Development</a></li><li><a class="page-link" href="/dapps/">Dapps</a></li><li><a class="page-link" href="/docker/">Docker</a></li><li><a class="page-link" href="/hardfork/">Hardfork</a></li><li><a class="page-link" href="/hivemind/">Hivemind</a></li><li><a class="page-link" href="/javascript/">Javascript</a></li><li><a class="page-link" href="/multisig/">Multisig</a></li><li><a class="page-link" href="/python/">Python</a></li><li><a class="page-link" href="/ruby/">Ruby</a></li><li><a class="page-link" href="/testnet/">Testnet</a></li><li><a class="page-link" href="/tools/">Tools</a></li><li><a class="page-link" href="/witness/">Witness</a></li></ul>
+          </section>
+        </aside>
+        
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading"><a rel="author" href="/">Hive Chain Documentation</a></h2>
+    
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">site curated by: @inertia</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>Your resource for various levels of Hive Documentation.</p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+<script src="/assets/javascript/search.js"></script>
+    <script>
+      (function () {
+        var input = document.getElementById('search-input');
+        var results = document.getElementById('results-container');
+        if (input && results && typeof SimpleJekyllSearch !== 'undefined') {
+          SimpleJekyllSearch({
+            searchInput: input,
+            resultsContainer: results,
+            json: '/search.json'
+          });
+        }
+
+        if (typeof SteemContentRenderer === 'undefined') return;
+
+        var targets = document.querySelectorAll('[data-hive-render-target="true"]');
+        if (!targets.length) return;
+
+        var renderer = new SteemContentRenderer.DefaultRenderer({
+          baseUrl: 'https://hive.blog/',
+          breaks: true,
+          skipSanitization: false,
+          allowInsecureScriptTags: false,
+          addNofollowToLinks: true,
+          doNotShowImages: false,
+          ipfsPrefix: '',
+          assetsWidth: 640,
+          assetsHeight: 480,
+          imageProxyFn: function (url) { return url; },
+          usertagUrlFn: function (account) { return '/@' + account; },
+          hashtagUrlFn: function (hashtag) { return '/tags/#' + hashtag; },
+          isLinkSafeFn: function () { return true; }
+        });
+
+        targets.forEach(function (target) {
+          try {
+            var inputHtml = target.innerHTML;
+            target.innerHTML = renderer.render(inputHtml);
+          } catch (e) {
+            console.log(e);
+          }
+        });
+      })();
+    </script>
+
+  </body>
+
+</html>

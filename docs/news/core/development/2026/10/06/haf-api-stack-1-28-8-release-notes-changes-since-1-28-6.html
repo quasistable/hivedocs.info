@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta property="og:image" content="/assets/images/sticker.png" />
+  <meta name="apple-mobile-web-app-title" content="Hive Docs" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" /><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>HAF API stack 1.28.8 release notes: changes since 1.28.6 | Hive Chain Documentation</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="HAF API stack 1.28.8 release notes: changes since 1.28.6" />
+<meta name="author" content="blocktrades" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Hive stack 1.28.8 released: Changes to hived, HAF, HAF apps and the HAF API server stack in past 6 months" />
+<meta property="og:description" content="Hive stack 1.28.8 released: Changes to hived, HAF, HAF apps and the HAF API server stack in past 6 months" />
+<link rel="canonical" href="https://hive.blog/hive-139531/@blocktrades/haf-api-stack-1-28-8-release-notes-changes-since-1-28-6" />
+<meta property="og:url" content="https://hive.blog/hive-139531/@blocktrades/haf-api-stack-1-28-8-release-notes-changes-since-1-28-6" />
+<meta property="og:site_name" content="Hive Chain Documentation" />
+<meta property="og:image" content="https://images.hive.blog/DQmSihw8Kz4U7TuCQa98DDdCzqbqPFRumuVWAbareiYZW1Z/blocktrades%20update.png" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2026-10-06T15:50:54-07:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="https://images.hive.blog/DQmSihw8Kz4U7TuCQa98DDdCzqbqPFRumuVWAbareiYZW1Z/blocktrades%20update.png" />
+<meta property="twitter:title" content="HAF API stack 1.28.8 release notes: changes since 1.28.6" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"blocktrades"},"dateModified":"2026-10-06T15:50:54-07:00","datePublished":"2026-10-06T15:50:54-07:00","description":"Hive stack 1.28.8 released: Changes to hived, HAF, HAF apps and the HAF API server stack in past 6 months","headline":"HAF API stack 1.28.8 release notes: changes since 1.28.6","image":"https://images.hive.blog/DQmSihw8Kz4U7TuCQa98DDdCzqbqPFRumuVWAbareiYZW1Z/blocktrades%20update.png","mainEntityOfPage":{"@type":"WebPage","@id":"https://hive.blog/hive-139531/@blocktrades/haf-api-stack-1-28-8-release-notes-changes-since-1-28-6"},"url":"https://hive.blog/hive-139531/@blocktrades/haf-api-stack-1-28-8-release-notes-changes-since-1-28-6"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://hivedocs.info/feed.xml" title="Hive Chain Documentation" /><script>
+if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNotTrack === "yes" || navigator.msDoNotTrack === "1")) {
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-161692811-1', 'auto');
+  ga('send', 'pageview');
+}
+</script>
+  
+<script src='https://unpkg.com/steem-content-renderer'></script>
+  <script src="/assets/javascript/universal-bridge-against-phishing.js"></script>
+  <script src="/assets/javascript/lazysizes.min.js" async=""></script>
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet" />
+  <link rel="shortcut icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="152x152" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="167x167" href="/assets/images/favicon-80x80.png" />
+</head>
+<body><header class="site-header" role="banner">
+  <div class="wrapper site-header-inner">
+    <a class="site-title" rel="author" href="/">Hive Chain Documentation</a>
+
+    <nav class="site-nav" aria-label="Primary">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/news/">News</a><a class="page-link" href="/howto/">How To</a><a class="page-link" href="/links/">Useful Links</a><a class="page-link" href="/authors/">Authors</a><a class="page-link" href="/topics/">Topics</a><a class="page-link" href="/search/">Search</a></div>
+    </nav>
+  </div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper page-layout has-search-panel">
+        <div class="page-main">
+          <article class="post h-entry post-article" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header post-hero">
+    <div class="post-hero-main">
+      <p class="post-kicker">Archive post</p>
+      <h1 class="post-title p-name" itemprop="name headline">HAF API stack 1.28.8 release notes: changes since 1.28.6</h1>
+      <p class="post-meta">
+        <time class="dt-published" datetime="2026-10-06T15:50:54-07:00" itemprop="datePublished">Oct 6, 2026
+        </time>• <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">
+            <a href="/authors/#author-blocktrades">blocktrades</a>
+          </span></span></p><p class="post-summary">Hive stack 1.28.8 released: Changes to hived, HAF, HAF apps and the HAF API server stack in past 6 months</p></div><aside class="post-author-card">
+      <img src="https://images.hive.blog/u/blocktrades/avatar" width="128" height="128" class="lazyload post-author-avatar" alt="Avatar for @blocktrades" />
+      <div class="post-author-name">@blocktrades</div>
+    </aside></header>
+
+  <div class="post-content e-content post-body" itemprop="articleBody">
+    <div class="hive-post-embed" data-hive-author="blocktrades" data-hive-permlink="haf-api-stack-1-28-8-release-notes-changes-since-1-28-6">
+  <div id="content-blocktrades-haf-api-stack-1-28-8-release-notes-changes-since-1-28-6" class="hive-post-embed__content" data-hive-render-target="true">![blocktrades update.png](https://images.hive.blog/DQmSihw8Kz4U7TuCQa98DDdCzqbqPFRumuVWAbareiYZW1Z/blocktrades%20update.png)
+
+This report is written for several kinds of readers: people who use Hive apps and wallets, developers building on Hive, and API node operators. Most readers will only need some of it, so feel free to skip the sections that don't apply to you. 
+
+There were too many changes this time, so the initial version was written by scanning the commit history using AI, then reviewed and modified by the devs who worked on the changes. It includes most changes to hived, HAF, the HAF apps and the haf\_api\_node deployment stack between the 1.28.6 release (2026-05-04) and the 1.28.8 release (tagged yesterday, deployed today). hive and haf also had a small 1.28.7 hotfix tag (2026-07-10); its changes are included here and marked [1.28.7].
+
+## Scope
+
+| Repo | Role | Commits 1.28.6..1.28.8 |
+| --- | --- | --- |
+| hive | hived blockchain node, cli\_wallet | 224 |
+| haf | sql\_serializer plugin, hive\_fork\_manager extension, HAF image | 65 |
+| hivemind | Social / condenser API app | 37 |
+| HAfAH | Account history API app | 14 |
+| balance\_tracker | Balances, vesting, transfer stats app | 79 |
+| reputation\_tracker | Reputation app | 27 |
+| haf\_block\_explorer | Block explorer backend app | 82 |
+| nft\_tracker | NFT app | 18 |
+| hivesense | Semantic search (embeddings) app | 38 |
+| haf\_api\_node | Docker Compose stack for API nodes | 67 |
+
+## Read first: what an upgrade from 1.28.6 involves
+
+- **Replay:** Full replay required, or download a full 1.28.8 snapshot. hived's in-memory state layout changed, and HAF's schema changed (new `rc_cost` column, new app-registry tables). HAF's in-place extension update refuses to run on the schema-hash mismatch. Since HAF is replayed, every HAF app resyncs from scratch too.
+- **PostgreSQL:** HAF now runs on PostgreSQL 18. The replay builds the new database on 18.
+- **Ubuntu 26.04:** The hived and HAF Docker images moved from Ubuntu 24.04 to Ubuntu 26.04 (Boost 1.90, Python 3.14). The reference build environment is now Ubuntu 26.04 with GCC 15, Boost 1.90 and CMake 4, and hived requires C++20. The other HAF app images don't change OS.
+- **API:** `get_dynamic_global_properties` no longer returns `total_reward_fund_hive` or `total_reward_shares2`. balance\_tracker `/transfer-statistics` amounts are now `{nai, amount, precision}` objects, and stats `date` now labels the period start.
+- **Stack:** haf\_api\_node: create `${HAF_LOG_DIRECTORY}/apps` before `up`, and note that p2p port 2001 is now published by default.
+- No mainnet consensus changes. Mainnet still has 28 hardforks; HF29 work exists only on testnet and mirrornet.
+
+## 1. Features that affect users
+
+Changes visible to people using Hive frontends, wallets and the public APIs.
+
+#### Network reliability
+
+- Nodes are much more resilient to the kind of p2p disruption seen on 2026-07-09. They stop mass-disconnecting peers over slightly stale blocks, recover automatically when stuck behind, and keep dialing peers when DNS or routing is limited. Details are under bug fixes. ([b31dd12269](https://gitlab.syncad.com/hive/hive/-/commit/b31dd12269) [16a419df6a](https://gitlab.syncad.com/hive/hive/-/commit/16a419df6a) [9040b581c8](https://gitlab.syncad.com/hive/hive/-/commit/9040b581c8) [73b937e98f](https://gitlab.syncad.com/hive/hive/-/commit/73b937e98f))
+- IPv6 p2p connections now work end to end, and nodes prefer IPv6 peers when both are available. ([18e482508b](https://gitlab.syncad.com/hive/hive/-/commit/18e482508b) [9112cde237](https://gitlab.syncad.com/hive/hive/-/commit/9112cde237))
+
+#### Wallet
+
+- cli\_wallet refuses to save if another process changed the wallet file since it was loaded, and writes through a temp file plus atomic rename, so a second wallet instance can no longer silently overwrite keys. ([bfad335466](https://gitlab.syncad.com/hive/hive/-/commit/bfad335466))
+
+#### Social and rewards (hivemind)
+
+- New `GET /accounts/{name}/pending-author-rewards`: total pending author and beneficiary reward basis across an account's unpaid posts, with liquid / vesting / direct buckets. It respects `max_accepted_payout`, declined payouts and the 50/50 author/curator split. ([25d535b8c](https://gitlab.syncad.com/hive/hivemind/-/commit/25d535b8c) [fbf22d6be](https://gitlab.syncad.com/hive/hivemind/-/commit/fbf22d6be) [f156c8442](https://gitlab.syncad.com/hive/hivemind/-/commit/f156c8442))
+- New `GET /accounts/{name}/pending-curation-rewards`: curation reward basis from the account's votes in the last 8 days of chain time (under 30 ms on production). ([25d59ce02](https://gitlab.syncad.com/hive/hivemind/-/commit/25d59ce02))
+- Mention notifications read correctly ("X mentioned you" instead of "X mentioned you and 0 others"). ([1e6aaa3a1](https://gitlab.syncad.com/hive/hivemind/-/commit/1e6aaa3a1))
+- Vote notifications are no longer missing for blocks processed during short catch-ups. ([3620e01a9](https://gitlab.syncad.com/hive/hivemind/-/commit/3620e01a9))
+
+#### Block explorer data (haf\_block\_explorer)
+
+- Proposals: `/proposals` (status filter, sort, pagination, creator/ids/voter/search filters), `/proposals/votes`, and `/proposals/{id}/votes/history`. Votes include direct and proxied vests and the proxy. ([ae8e9e6](https://gitlab.syncad.com/hive/haf_block_explorer/-/commit/ae8e9e6) [a802768](https://gitlab.syncad.com/hive/haf_block_explorer/-/commit/a802768) [67ebaf1](https://gitlab.syncad.com/hive/haf_block_explorer/-/commit/67ebaf1) [2b740b3](https://gitlab.syncad.com/hive/haf_block_explorer/-/commit/2b740b3) [5238589](https://gitlab.syncad.com/hive/haf_block_explorer/-/commit/5238589))
+- `/operation-type-statistics` (daily/monthly/yearly operation counts by type). ([ed90198](https://gitlab.syncad.com/hive/haf_block_explorer/-/commit/ed90198) [7a3260a](https://gitlab.syncad.com/hive/haf_block_explorer/-/commit/7a3260a))
+- `/total_wallet_addresses`: new-wallet counts per period plus a running total. ([b918faf](https://gitlab.syncad.com/hive/haf_block_explorer/-/commit/b918faf) [891c3b6](https://gitlab.syncad.com/hive/haf_block_explorer/-/commit/891c3b6))
+- `/hbd/status`: HBD supply, virtual supply, debt ratio and interest rate over time. ([aa2ed83](https://gitlab.syncad.com/hive/haf_block_explorer/-/commit/aa2ed83) [7b9bc1b](https://gitlab.syncad.com/hive/haf_block_explorer/-/commit/7b9bc1b))
+- Account pages can show pending HBD savings interest: `get_account` adds `hbd_seconds`, `hbd_seconds_last_update`, `hbd_last_interest_payment`. ([c0e760a](https://gitlab.syncad.com/hive/haf_block_explorer/-/commit/c0e760a))
+- Proxy power lists can be sorted by account, proxy date or proxied vests. ([a4346ab](https://gitlab.syncad.com/hive/haf_block_explorer/-/commit/a4346ab))
+- Witness 24h vote-change figures now count lost votes as well as gained ones. ([d2ca604](https://gitlab.syncad.com/hive/haf_block_explorer/-/commit/d2ca604))
+
+#### Balances and vesting (balance\_tracker)
+
+- New vesting endpoints: `/vesting-stats` (global), `/accounts/{name}/vesting-history` (power up, power down start/fill, routed power-down received) and `/accounts/{name}/vesting-stats`. ([c81465d](https://gitlab.syncad.com/hive/balance_tracker/-/commit/c81465d) [a689543](https://gitlab.syncad.com/hive/balance_tracker/-/commit/a689543) [33979d0](https://gitlab.syncad.com/hive/balance_tracker/-/commit/33979d0))
+- `/top-holders` accepts `min-balance` / `max-balance`. Totals describe the filtered set while each holder keeps their global rank. ([8ebdca4](https://gitlab.syncad.com/hive/balance_tracker/-/commit/8ebdca4))
+- `/transfer-statistics` amounts are now proper asset objects (previously shown 1000× too large for HIVE/HBD). ([9d4a7e6](https://gitlab.syncad.com/hive/balance_tracker/-/commit/9d4a7e6))
+
+#### Search (hivesense)
+
+- Posts in Bengali, Hindi, Urdu and other non-Latin scripts are now split on their own sentence terminators instead of being hard-truncated, which improves semantic search over them (applies to newly embedded content). ([00429f6](https://gitlab.syncad.com/hive/hivesense/-/commit/00429f6))
+- Paged search in slice mode works (it previously failed with "integer out of range"). ([ada7de8](https://gitlab.syncad.com/hive/hivesense/-/commit/ada7de8))
+
+#### Public API nodes
+
+- Public nodes on the new stack return a fast 503 under overload instead of hanging, and no longer return truncated bodies with a 200 status when the Varnish cache is full. [haf\_api\_node]
+
+## 2. Changes for developers
+
+API contracts, schemas, libraries and tooling, by repo.
+
+### hive
+
+#### API and protocol
+
+- **Breaking:** `get_dynamic_global_properties` (database\_api and condenser\_api) drops `total_reward_fund_hive` and `total_reward_shares2`; the data lives in `reward_fund_object`. ([3d04c1c9b8](https://gitlab.syncad.com/hive/hive/-/commit/3d04c1c9b8) [1ce435e7bf](https://gitlab.syncad.com/hive/hive/-/commit/1ce435e7bf))
+- `author_reward_operation.curators_vesting_payout` now reports the amount actually paid instead of an estimate. This is not hardfork-gated, so a 1.28.8 replay produces values that differ by about one unit for some historical ops. HAF and account-history consumers will see this. ([2a7a25d33b](https://gitlab.syncad.com/hive/hive/-/commit/2a7a25d33b) [ec56dd560c](https://gitlab.syncad.com/hive/hive/-/commit/ec56dd560c))
+- Account-creation and claim\_account fee errors are classified as `HIVE_CHAIN_FEE_ASSERT` (wax maps to `WaxInvalidFeeError`) instead of a balance error. ([6e4dba59bc](https://gitlab.syncad.com/hive/hive/-/commit/6e4dba59bc))
+- `recurrent_transfer_operation::validate()` accepts `executions &gt;= 1`. The "at least 2 for a new transfer" rule moved into the evaluator, so client-side validation errors differ. ([f0b2974317](https://gitlab.syncad.com/hive/hive/-/commit/f0b2974317))
+- `network_node_api.get_connected_peers` adds `user_agent` and `core_protocol_version`. ([a75a572dcb](https://gitlab.syncad.com/hive/hive/-/commit/a75a572dcb))
+- The OpenAPI spec for hivemind-served bridge/condenser calls was corrected to match real responses (removed post/vote `id`, notification `id` is a string, beneficiaries schema, parameter names and order, optional fields). ([36aa68576d](https://gitlab.syncad.com/hive/hive/-/commit/36aa68576d) [fcfbba9226](https://gitlab.syncad.com/hive/hive/-/commit/fcfbba9226) [ef113c5729](https://gitlab.syncad.com/hive/hive/-/commit/ef113c5729))
+
+#### Testnet / mirrornet (HF29, not on mainnet)
+
+- HF29 is registered and these networks report 1.29.0. HF29 defaults to year 2100, so tests must schedule it. ([d38106508f](https://gitlab.syncad.com/hive/hive/-/commit/d38106508f) [83be294c8b](https://gitlab.syncad.com/hive/hive/-/commit/83be294c8b))
+- HF29 items: RC becomes consensus, oversized authority in account recovery requests is blocked, limit orders for nonexistent assets are rejected, `remove_proposal` validates all ids, and recurrent transfers can be edited down to `executions=1`. ([20d5495c63](https://gitlab.syncad.com/hive/hive/-/commit/20d5495c63) [713f8f470a](https://gitlab.syncad.com/hive/hive/-/commit/713f8f470a) [02c113d60e](https://gitlab.syncad.com/hive/hive/-/commit/02c113d60e) [a28676a201](https://gitlab.syncad.com/hive/hive/-/commit/a28676a201) [73d5bb9362](https://gitlab.syncad.com/hive/hive/-/commit/73d5bb9362))
+- Minimum account creation fee on testnet is now 1; the `allow_not_enough_rc` alternate-chain-spec key was removed. ([0e244645b6](https://gitlab.syncad.com/hive/hive/-/commit/0e244645b6) [e52c68166e](https://gitlab.syncad.com/hive/hive/-/commit/e52c68166e))
+- debug\_node: new `debug_push_pending_transaction`, and block generation can skip transaction reapplication. ([d6df5dc207](https://gitlab.syncad.com/hive/hive/-/commit/d6df5dc207) [6105c25d36](https://gitlab.syncad.com/hive/hive/-/commit/6105c25d36))
+
+#### Build and code layout
+
+- C++20 is required. Builds with GCC 15, Boost 1.90 and CMake 4. Runtime images moved to Ubuntu 26.04; binaries are still built on manylinux (glibc 2.28 floor). ([a92f155bd2](https://gitlab.syncad.com/hive/hive/-/commit/a92f155bd2) [38f4d63508](https://gitlab.syncad.com/hive/hive/-/commit/38f4d63508) [94b70fc3dd](https://gitlab.syncad.com/hive/hive/-/commit/94b70fc3dd))
+- Chain object headers moved to `hive/chain/detail/state/...` and pass-through headers were removed. `types.hpp` no longer pulls in `fc/io/raw.hpp` or boost multiprecision (about 1.6 s saved per translation unit). Code linking hived libraries (e.g. HAF) needs include updates. ([afbed8d181](https://gitlab.syncad.com/hive/hive/-/commit/afbed8d181) [10ac2d44e9](https://gitlab.syncad.com/hive/hive/-/commit/10ac2d44e9) [74f26eb093](https://gitlab.syncad.com/hive/hive/-/commit/74f26eb093))
+- Chain objects (account, dgpo, reward fund, escrow, orders, savings withdrawals, conversions, authorities) are encapsulated behind getters and balance classes. Balances can no longer go negative or be created from nothing. `adjust_supply` was replaced by issue/burn/convert, and there is a new `get_hbd_price()`. Plugin code must use the getters. ([b3978c7775](https://gitlab.syncad.com/hive/hive/-/commit/b3978c7775) [0ca4338423](https://gitlab.syncad.com/hive/hive/-/commit/0ca4338423) [9adcfacb08](https://gitlab.syncad.com/hive/hive/-/commit/9adcfacb08))
+- Python test tooling: stable hiveio-api model aliases, `WaxAssertionError`, exceptions via `test_tools.exceptions`. `setup_ubuntu.sh` no longer repoints system `python3` and repairs systems the old script broke. ([743ee5bbfd](https://gitlab.syncad.com/hive/hive/-/commit/743ee5bbfd) [30642fdcd9](https://gitlab.syncad.com/hive/hive/-/commit/30642fdcd9))
+- `block_log_util` returns a failing exit code on checksum mismatch. ([abad95595f](https://gitlab.syncad.com/hive/hive/-/commit/abad95595f))
+
+### haf
+
+- **Per-transaction RC cost:** new `rc_cost bigint` column on `hafd.transactions`, `transactions_reversible` and the transaction views (NULL before HF20). Apps doing `SELECT *` on these see an extra column. ([3634d91ad](https://gitlab.syncad.com/hive/haf/-/commit/3634d91ad) [137be5993](https://gitlab.syncad.com/hive/haf/-/commit/137be5993))
+- **Application registry:** new `hafd.applications` / `application_dependencies` tables and `hive.app_register`, `app_unregister`, `app_add_dependency`, `app_remove_dependency`, `app_pause`, `app_resume`, `app_is_paused`, `app_dependencies_block_limit`. An app is never handed a block its dependencies haven't committed. `app_register` takes an optional `_completed_block_function` and is a no-op for embedded apps. ([ca980dc4c](https://gitlab.syncad.com/hive/haf/-/commit/ca980dc4c) [11026fd5b](https://gitlab.syncad.com/hive/haf/-/commit/11026fd5b) [080338900](https://gitlab.syncad.com/hive/haf/-/commit/080338900))
+- **Client-driven app loops:** `hive.app_next_iteration(..., _wait =&gt; FALSE)` and `hive.app_next_block(_wait, _block_limit)` return immediately. Drivers that own their transaction must call the new `hive.app_perform_maintenance(_contexts)` after each commit. Existing `CALL main()` loops are unchanged. ([ca980dc4c](https://gitlab.syncad.com/hive/haf/-/commit/ca980dc4c) [9350e8ed0](https://gitlab.syncad.com/hive/haf/-/commit/9350e8ed0))
+- **LISTEN/NOTIFY:** HAF emits `haf_new_block` and `haf_new_irreversible`. The new C function `hive.wait_for_new_block(int)` replaces `pg_sleep(1.5)` polling (it releases its snapshot while waiting). ([91268c956](https://gitlab.syncad.com/hive/haf/-/commit/91268c956) [4545fab60](https://gitlab.syncad.com/hive/haf/-/commit/4545fab60))
+- Advisory-lock helpers for installers and block processors: `hive.try_acquire_app_install_lock(name)` and `hive.acquire_app_block_processor_locks(names[])`. ([6cd632172](https://gitlab.syncad.com/hive/haf/-/commit/6cd632172))
+- Also new: `hive.is_interrupted_massive_sync()`, and a warning from `hive.context_attach` when asked to jump forward. Shadow tables are now created `WITH NO DATA`. ([afb15416a](https://gitlab.syncad.com/hive/haf/-/commit/afb15416a) [9a97875c1](https://gitlab.syncad.com/hive/haf/-/commit/9a97875c1) [9ac4d4c2d](https://gitlab.syncad.com/hive/haf/-/commit/9ac4d4c2d))
+- Build: Ubuntu 26.04 builder (GCC 15.2, Boost 1.90, CMake 4.2, Python 3.14). CMake picks the `pg_config` matching `POSTGRES_VERSION`. `generate_extension_sql.sh` reads its file list from CMakeLists.txt. Sources adapted to hive's encapsulated objects. ([348e32dce](https://gitlab.syncad.com/hive/haf/-/commit/348e32dce) [c303359a1](https://gitlab.syncad.com/hive/haf/-/commit/c303359a1) [98309d2bf](https://gitlab.syncad.com/hive/haf/-/commit/98309d2bf) [8c666eb06](https://gitlab.syncad.com/hive/haf/-/commit/8c666eb06))
+- pg\_search 0.21.13 → 0.25.3, now preloaded. pg\_cron pinned to 1.6.7 [1.28.7]. ([6a35c1bd3](https://gitlab.syncad.com/hive/haf/-/commit/6a35c1bd3) [1c8e06a24](https://gitlab.syncad.com/hive/haf/-/commit/1c8e06a24) [c15c0e324](https://gitlab.syncad.com/hive/haf/-/commit/c15c0e324))
+
+### hivemind
+
+- New REST endpoints `/accounts/{name}/pending-author-rewards`, `/accounts/{name}/pending-curation-rewards`, with composite types `hivemind_endpoints.pending_author_rewards` / `pending_curation_rewards`, `hbd_asset` and `pending_reward_basis`. The pending-rewards response shape changed during development (fbf22d6be), but only the final shape ships. ([25d535b8c](https://gitlab.syncad.com/hive/hivemind/-/commit/25d535b8c) [25d59ce02](https://gitlab.syncad.com/hive/hivemind/-/commit/25d59ce02) [fbf22d6be](https://gitlab.syncad.com/hive/hivemind/-/commit/fbf22d6be))
+- Registers in HAF's app registry as `hivemind_app` with a `hivemind_app.completed_block_num()` function, so hivesense and others can depend on it. ([65a552b27](https://gitlab.syncad.com/hive/hivemind/-/commit/65a552b27))
+- OpenAPI regeneration works again (`reblog_status` schemas added). After running the regenerator, remove the auto-emitted `DROP TYPE ... reblog_status` block by hand. ([133755e6e](https://gitlab.syncad.com/hive/hivemind/-/commit/133755e6e) [9753ef749](https://gitlab.syncad.com/hive/hivemind/-/commit/9753ef749))
+- Python 3.14 target. Published wheels keep the &gt;=3.12 floor. ([036726200](https://gitlab.syncad.com/hive/hivemind/-/commit/036726200) [a49e9d45b](https://gitlab.syncad.com/hive/hivemind/-/commit/a49e9d45b))
+
+### HAfAH
+
+- No developer-facing changes.
+
+### balance\_tracker
+
+- OpenAPI: new `/vesting-stats`, `/accounts/{name}/vesting-history`, `/accounts/{name}/vesting-stats`, and `/top-holders` range parameters. ([c81465d](https://gitlab.syncad.com/hive/balance_tracker/-/commit/c81465d) [8ebdca4](https://gitlab.syncad.com/hive/balance_tracker/-/commit/8ebdca4))
+- **Breaking:** `/transfer-statistics` amount fields changed from string to `{nai, amount, precision}`. Stats `date` now means period start. ([9d4a7e6](https://gitlab.syncad.com/hive/balance_tracker/-/commit/9d4a7e6) [b05c5db](https://gitlab.syncad.com/hive/balance_tracker/-/commit/b05c5db))
+- New tables: `account_hbd_interest` (+ view), `vesting_stats_by_day/_month`, `account_vesting_history`, `account_vesting_by_day/_month` (stored tall, pivoted at read time). ([38b127c](https://gitlab.syncad.com/hive/balance_tracker/-/commit/38b127c) [a689543](https://gitlab.syncad.com/hive/balance_tracker/-/commit/a689543))
+- Impacted-balance calculation is now pure SQL (`btracker_backend.get_impacted_balances`) instead of the C `hive.get_impacted_balances`. ([8eecba6](https://gitlab.syncad.com/hive/balance_tracker/-/commit/8eecba6) [03f6c67](https://gitlab.syncad.com/hive/balance_tracker/-/commit/03f6c67))
+- New `process_blocks(hive.blocks_range)` entry point for the generic HAF driver. New `finalize_massive_sync_before_forking()`, which embedding apps (hafbe) should call before switching to forking mode. ([f0c65dc](https://gitlab.syncad.com/hive/balance_tracker/-/commit/f0c65dc) [a962718](https://gitlab.syncad.com/hive/balance_tracker/-/commit/a962718))
+- Backend SQL reorganized into `backend/shared/`, `endpoint_helpers/` and `operation_parsers/` (commits state behaviour is unchanged). NAI/precision helpers are constant functions checked against `asset_table` at install. ([8302858](https://gitlab.syncad.com/hive/balance_tracker/-/commit/8302858) [9df90e1](https://gitlab.syncad.com/hive/balance_tracker/-/commit/9df90e1))
+
+### reputation\_tracker
+
+- New `process_blocks(hive.blocks_range)` entry point and `hive.app_register` registration, skipped when an embedding app owns the context. ([d361925](https://gitlab.syncad.com/hive/reputation_tracker/-/commit/d361925) [8fece12](https://gitlab.syncad.com/hive/reputation_tracker/-/commit/8fece12))
+- No table schema changes.
+
+### haf\_block\_explorer
+
+- New endpoints: `/proposals`, `/proposals/votes`, `/proposals/{id}/votes/history`, `/operation-type-statistics`, `/total_wallet_addresses`, `/hbd/status`. New fields on `get_account`; new `sort`/`direction` on `get_account_proxies_power`. ([ae8e9e6](https://gitlab.syncad.com/hive/haf_block_explorer/-/commit/ae8e9e6) [ed90198](https://gitlab.syncad.com/hive/haf_block_explorer/-/commit/ed90198) [b918faf](https://gitlab.syncad.com/hive/haf_block_explorer/-/commit/b918faf) [aa2ed83](https://gitlab.syncad.com/hive/haf_block_explorer/-/commit/aa2ed83) [c0e760a](https://gitlab.syncad.com/hive/haf_block_explorer/-/commit/c0e760a) [a4346ab](https://gitlab.syncad.com/hive/haf_block_explorer/-/commit/a4346ab))
+- An explicit `null` for an optional parameter now falls back to the default on most endpoints. Shared limit validators reject NULL instead of treating it as "no limit". OpenAPI states page / page-size bounds. ([fc226e6](https://gitlab.syncad.com/hive/haf_block_explorer/-/commit/fc226e6))
+- `operation-type-statistics` and `transaction-statistics` still return bare arrays (pagination was added, then reverted). Daily op-type stats with no range default to the last year. ([fc226e6](https://gitlab.syncad.com/hive/haf_block_explorer/-/commit/fc226e6) [7a3260a](https://gitlab.syncad.com/hive/haf_block_explorer/-/commit/7a3260a))
+- New tables: `proposal_votes_history`, `current_proposals`, `current_proposal_votes`, `proposal_payments`, `proposal_vote_stats_cache`, `operation_type_stats_by_day/_month`. The cache refresh uses MERGE. ([4fdb621](https://gitlab.syncad.com/hive/haf_block_explorer/-/commit/4fdb621) [36de0e6](https://gitlab.syncad.com/hive/haf_block_explorer/-/commit/36de0e6))
+
+### nft\_tracker
+
+- `/version` now returns the deployed commit hash (`'unspecified'` if none was recorded) instead of always `'development'`. New `nfttracker_app.version` table and `set_version()`. ([d31c741](https://gitlab.syncad.com/hive/nft_tracker/-/commit/d31c741))
+- New `process_blocks(hive.blocks_range)` entry point. ([e9b452d](https://gitlab.syncad.com/hive/nft_tracker/-/commit/e9b452d))
+
+### hivesense
+
+- New `/version` and `/sync-chains` (embedding chains a server can supply; syncers fall back to `/sync-settings` on 404). `/sync-settings` adds `skipped_op_count`, and `/embedding-updates` sends `X-Skipped-Op-Count`. ([a662d2b](https://gitlab.syncad.com/hive/hivesense/-/commit/a662d2b) [fd65180](https://gitlab.syncad.com/hive/hivesense/-/commit/fd65180) [280b41f](https://gitlab.syncad.com/hive/hivesense/-/commit/280b41f))
+- New table `sync_chains`; new `hivesense_app_status` columns (`embedding_api`, `skipped_op_count`, `upstream_skipped_op_count`, `num_ctx`), added with `IF NOT EXISTS`. ([fd65180](https://gitlab.syncad.com/hive/hivesense/-/commit/fd65180) [e90fc38](https://gitlab.syncad.com/hive/hivesense/-/commit/e90fc38))
+- Install flag `--embedding-api=ollama|openai`. `db/legacy_rebase.sql` plus runbook `docs/sync_chain_rebase.md` for continuing an old sync chain after regenerating embeddings. ([e90fc38](https://gitlab.syncad.com/hive/hivesense/-/commit/e90fc38) [7fe0744](https://gitlab.syncad.com/hive/hivesense/-/commit/7fe0744))
+- Syncer and pca images on python 3.14-slim. ([d31a158](https://gitlab.syncad.com/hive/hivesense/-/commit/d31a158))
+
+### haf\_api\_node
+
+- No developer-facing changes.
+
+## 3. Changes for API node operators
+
+Configuration, images, upgrade steps and runtime behaviour, by repo. haf\_api\_node comes first because that is where most operators act.
+
+### haf\_api\_node
+
+#### Upgrade checklist
+
+1. Replay the whole stack, or download a full 1.28.8 snapshot (see Read first).
+2. Create `${HAF_LOG_DIRECTORY}/apps` owned by `HIVED_UID` before `up`. Seven services now bind-mount it, and the setup scripts only create it on fresh installs. ([efdcdf4](https://gitlab.syncad.com/hive/haf_api_node/-/commit/efdcdf4))
+3. Decide on p2p exposure: port 2001 is now published by default on `haf` and `hive` (IPv4 and IPv6). Use `P2P_PORT_MAPPING="127.0.0.1:2001:2001"` to keep it local. IPv6 on Docker Engine &lt; 27 needs `ip6tables: true` in `daemon.json`. ([c803fba](https://gitlab.syncad.com/hive/haf_api_node/-/commit/c803fba) [27e3035](https://gitlab.syncad.com/hive/haf_api_node/-/commit/27e3035))
+4. HafSQL now comes from Docker Hub (`mahdiyari/hafsql:2.6.1`) and no longer follows `HIVE_API_NODE_VERSION`. Remove any `HAFSQL_VERSION=${HIVE_API_NODE_VERSION}` override. ([ad4f4d2](https://gitlab.syncad.com/hive/haf_api_node/-/commit/ad4f4d2))
+5. With `PGBOUNCER_AUTH_TYPE=md5`, add a `stats:` user or set `POSTGRES_URL_PGBOUNCER` empty. ([be6c23b](https://gitlab.syncad.com/hive/haf_api_node/-/commit/be6c23b))
+6. Recommended: `HIVEMIND_POSTGREST_GHCRTS="--nonmoving-gc"` on busy nodes. `HIVESENSE_MISSING_POST_ACTION=exit` on nodes others sync from. ([8999eb3](https://gitlab.syncad.com/hive/haf_api_node/-/commit/8999eb3) [d27115e](https://gitlab.syncad.com/hive/haf_api_node/-/commit/d27115e))
+7. If you ran haf\_fyp from a private compose file, rename services to the new names. Old names won't authenticate under the new per-container pg\_hba rows. ([f63e1e3](https://gitlab.syncad.com/hive/haf_api_node/-/commit/f63e1e3))
+
+#### Component versions
+
+| Component | 1.28.6 | 1.28.8 |
+| --- | --- | --- |
+| HIVE\_API\_NODE\_VERSION | 1.28.6-rc14 | 1.28.8 |
+| hived / HAF image base OS | Ubuntu 24.04 | Ubuntu 26.04 |
+| HAF PostgreSQL | 17 | 18 |
+| PostgREST | v12.2.3 | v14.15 |
+| HAProxy | 2.9.7 | 3.2.21 LTS |
+| Caddy | 2.10.2 | 2.11.3 |
+| PgBouncer (Alpine base) | Alpine 3.22.1 | 1.25.1 (Alpine 3.23.5) |
+| HafSQL | 2.5.2 | 2.6.1 (Docker Hub) |
+
+&gt; HAProxy 3.2 still sends email alerts but logs a deprecation warning; 3.3 removes them. ([ec8242d](https://gitlab.syncad.com/hive/haf_api_node/-/commit/ec8242d))
+
+#### New services and profiles
+
+- `haf-stats` / `haf-stats-uninstall` (route `/haf-stats-api/`) and `haf-fyp` / `haf-fyp-uninstall` (routes `/haf-fyp-api/` and `/haf-fyp-admin/`, with Redis, a ranker and a FastAPI write API). Both are opt-in and not part of `apps`. Their images don't resolve on registry.hive.blog yet, so the image/version variables must be set by hand. ([4be2602](https://gitlab.syncad.com/hive/haf_api_node/-/commit/4be2602) [1b3c435](https://gitlab.syncad.com/hive/haf_api_node/-/commit/1b3c435) [f63e1e3](https://gitlab.syncad.com/hive/haf_api_node/-/commit/f63e1e3))
+- `hivesense-llama-cpu`: optional CPU embedding fallback (llama.cpp server), with `haproxy/35-ollama-remote.cfg.example` for routing. ([e0af9e9](https://gitlab.syncad.com/hive/haf_api_node/-/commit/e0af9e9))
+
+#### New and changed settings
+
+- **hived endpoints:** `P2P_ENDPOINT`, `WS_ENDPOINT`, `HTTP_ENDPOINT`, `P2P_PORT_MAPPING`. ([27e3035](https://gitlab.syncad.com/hive/haf_api_node/-/commit/27e3035) [c803fba](https://gitlab.syncad.com/hive/haf_api_node/-/commit/c803fba))
+- **Load shedding:** per-backend `*_SERVER_MAXCONN` caps (hivemind 64, hafah 48, others 32) with `API_QUEUE_TIMEOUT` (5 s) before a 503. Optional dynamic shedding with spillover to secondary stacks via `SHED_*` (log-only unless `SHED_ARMED=true`). HAProxy PostgREST backends use `balance first`. See `doc/load-shedding-and-spillover.md`. ([d299c4d](https://gitlab.syncad.com/hive/haf_api_node/-/commit/d299c4d) [be6c23b](https://gitlab.syncad.com/hive/haf_api_node/-/commit/be6c23b))
+- **pgbouncer:** new `PGBOUNCER_QUERY_TIMEOUT`, `CANCEL_WAIT_TIMEOUT`, `IDLE_TRANSACTION_TIMEOUT`, `TRANSACTION_TIMEOUT`, `SERVER_RESET_QUERY_ALWAYS`, `MAX_PACKET_SIZE`. The public HafSQL bouncer gets tighter `HAFSQL_PUBLIC_*` limits, and `HAFSQL_PUBLIC_TEMP_FILE_LIMIT` defaults to 256MB. ([194930a](https://gitlab.syncad.com/hive/haf_api_node/-/commit/194930a) [39af6c4](https://gitlab.syncad.com/hive/haf_api_node/-/commit/39af6c4) [b75d7d2](https://gitlab.syncad.com/hive/haf_api_node/-/commit/b75d7d2))
+- **hivesense:** `HIVESENSE_EMBEDDING_API` (ollama/openai), `HIVESENSE_OLLAMA_REPLICAS`, `HIVESENSE_LLAMA_CPU_*`, `HIVESENSE_SYNCER_VERSION`, `HIVESENSE_MISSING_POST_ACTION`/`_RETRIES`, `HIVESENSE_SYNC_LOG_LEVEL`. ([0cddf73](https://gitlab.syncad.com/hive/haf_api_node/-/commit/0cddf73) [e0af9e9](https://gitlab.syncad.com/hive/haf_api_node/-/commit/e0af9e9) [fc4c946](https://gitlab.syncad.com/hive/haf_api_node/-/commit/fc4c946) [d27115e](https://gitlab.syncad.com/hive/haf_api_node/-/commit/d27115e))
+- **Other:** `CADDY_PROXY_PROTOCOL_ALLOW` (PROXY protocol); `HIVEMIND_POSTGREST_GHCRTS`. ([bbec9e4](https://gitlab.syncad.com/hive/haf_api_node/-/commit/bbec9e4) [8999eb3](https://gitlab.syncad.com/hive/haf_api_node/-/commit/8999eb3))
+- **Changed defaults:** `haf` sets `PGUSER=haf_admin`; hafah `PGRST_DB_SCHEMA=hafah_endpoints` only; PostgREST `nofile` ulimit 65536; app block-processing logs go to `${HAF_LOG_DIRECTORY}/apps/*.log`, rotated daily with 30 kept; ollama logs now in UTC. ([317e298](https://gitlab.syncad.com/hive/haf_api_node/-/commit/317e298) [1242d07](https://gitlab.syncad.com/hive/haf_api_node/-/commit/1242d07) [8b61f3f](https://gitlab.syncad.com/hive/haf_api_node/-/commit/8b61f3f) [efdcdf4](https://gitlab.syncad.com/hive/haf_api_node/-/commit/efdcdf4) [b6e260c](https://gitlab.syncad.com/hive/haf_api_node/-/commit/b6e260c))
+
+#### Scripts and monitoring
+
+- New `scripts/spike_recorder.sh` for overload diagnosis. ([446b531](https://gitlab.syncad.com/hive/haf_api_node/-/commit/446b531))
+- ZFS scripts: `--swap-logs-with-dataset` for clone and rollback, `--public-snapshot` for rollback. ([7c1d248](https://gitlab.syncad.com/hive/haf_api_node/-/commit/7c1d248) [f60ecb4](https://gitlab.syncad.com/hive/haf_api_node/-/commit/f60ecb4))
+- `stack_status.sh` lists HAF Stats and HAF FYP. ([912fd22](https://gitlab.syncad.com/hive/haf_api_node/-/commit/912fd22) [de97256](https://gitlab.syncad.com/hive/haf_api_node/-/commit/de97256))
+- Loki retention now actually applies (30 days via the compactor). One node had grown to 493 GB. ([87adb75](https://gitlab.syncad.com/hive/haf_api_node/-/commit/87adb75))
+- Grafana panels for `drone_active_requests` and postgres commit rate. ([536786e](https://gitlab.syncad.com/hive/haf_api_node/-/commit/536786e))
+
+### hive
+
+- **Replay:** State file layout changed (dgpo fields removed, objects refactored), so a 1.28.6/1.28.7 `shared_memory.bin` can't be reused. Replay, or download a full 1.28.8 snapshot. The block log format is unchanged. ([3d04c1c9b8](https://gitlab.syncad.com/hive/hive/-/commit/3d04c1c9b8) [9f9d4a207d](https://gitlab.syncad.com/hive/hive/-/commit/9f9d4a207d)) *Inferred from layout changes; not tested against an old state file.*
+- **config.ini:** one new option, `flush-state-interval-live` (default 1, unchanged behaviour); none removed. The flush scheduler now honours N exactly (1 previously flushed every second block). `block-stats-report-output` / `rc-stats-report-output` accept `JSONL`. ([2b43686d19](https://gitlab.syncad.com/hive/hive/-/commit/2b43686d19) [0a56d5c1e8](https://gitlab.syncad.com/hive/hive/-/commit/0a56d5c1e8))
+- **RocksDB (account history, comments store):** `max_open_files` is now derived from the process FD soft limit, with a warning above 70% use. The RocksDB info LOG is capped at WARN / 8 MiB / 1 file [1.28.7]. ([2b43686d19](https://gitlab.syncad.com/hive/hive/-/commit/2b43686d19) [2f7b76b98a](https://gitlab.syncad.com/hive/hive/-/commit/2f7b76b98a))
+- **p2p:**
+  - Only the current chain id and protocol version ≥ 106 are accepted.
+  - Every hello is logged at info level.
+  - IPv6 peers are dialed first, and peers with no route are skipped.
+  - Unresolvable seeds are retried every 60 s.
+  - Rejected dials back off.
+  - A circuit breaker limits punitive disconnects to 5 per 60 s.([b95549e6db](https://gitlab.syncad.com/hive/hive/-/commit/b95549e6db) [3b3ec7af08](https://gitlab.syncad.com/hive/hive/-/commit/3b3ec7af08) [9112cde237](https://gitlab.syncad.com/hive/hive/-/commit/9112cde237) [a77c68c314](https://gitlab.syncad.com/hive/hive/-/commit/a77c68c314) [16ca3e50d8](https://gitlab.syncad.com/hive/hive/-/commit/16ca3e50d8) [15441d28bf](https://gitlab.syncad.com/hive/hive/-/commit/15441d28bf) [e9e3e193d9](https://gitlab.syncad.com/hive/hive/-/commit/e9e3e193d9))
+- Blocks arriving more than 1 s early (within the 5 s limit) are held until due, up to 4 at a time. ([f05f2e5837](https://gitlab.syncad.com/hive/hive/-/commit/f05f2e5837) [016dc54ec1](https://gitlab.syncad.com/hive/hive/-/commit/016dc54ec1))
+- **Docker entrypoint:** `BLOCK_LOG_URL` (resumable download), `SNAPSHOT_URL`, `HIVED_AUTO_REPLAY` (default 0), and endpoint variables. Multi-arch images (x86\_64 + aarch64). Runtime on Ubuntu 26.04. ([cc2556af7e](https://gitlab.syncad.com/hive/hive/-/commit/cc2556af7e) [7f908341e1](https://gitlab.syncad.com/hive/hive/-/commit/7f908341e1) [94b70fc3dd](https://gitlab.syncad.com/hive/hive/-/commit/94b70fc3dd))
+- New `docker/exchange` Compose deployment for exchanges. By default it bootstraps from a published state snapshot (about 6 GB download, under an hour) instead of a 550 GB replay. ([470cb04dae](https://gitlab.syncad.com/hive/hive/-/commit/470cb04dae) [4659161d08](https://gitlab.syncad.com/hive/hive/-/commit/4659161d08))
+- Compression dictionaries extended to blocks 105–109M. ([2078ce65f7](https://gitlab.syncad.com/hive/hive/-/commit/2078ce65f7))
+
+### haf
+
+- **Replay:** Schema hash changed (`rc_cost`, app registry tables). The update script deliberately refuses in-place migration. ([137be5993](https://gitlab.syncad.com/hive/haf/-/commit/137be5993) [ca980dc4c](https://gitlab.syncad.com/hive/haf/-/commit/ca980dc4c))
+- **PostgreSQL:** The `hive/haf` image (also testnet/mirrornet) now runs PostgreSQL 18. ([c4cbc7b89](https://gitlab.syncad.com/hive/haf/-/commit/c4cbc7b89))
+- Runtime base is Ubuntu 26.04 (Boost 1.90 libs, Python 3.14). ([348e32dce](https://gitlab.syncad.com/hive/haf/-/commit/348e32dce))
+- hived listens on `[::]` by default (falls back to `0.0.0.0` if IPv6 is disabled). Override with `P2P_ENDPOINT` / `WS_ENDPOINT` / `HTTP_ENDPOINT`. ([e42cfee3b](https://gitlab.syncad.com/hive/haf/-/commit/e42cfee3b) [9a21e68fa](https://gitlab.syncad.com/hive/haf/-/commit/9a21e68fa))
+- Custom `postgresql.conf` files must add `pg_search` to `shared_preload_libraries`, or `CREATE EXTENSION` fails with pg\_search 0.25+. ([1c8e06a24](https://gitlab.syncad.com/hive/haf/-/commit/1c8e06a24))
+- If a P2P massive sync was interrupted and can't resume contiguously, hived now logs the block numbers and exits instead of writing duplicate rows. Recover with a replay. ([afb15416a](https://gitlab.syncad.com/hive/haf/-/commit/afb15416a))
+
+### hivemind
+
+- Requires HAF 1.28.8: calls the lock helpers, `hive.get_app_current_block_age`, `hive.is_instance_ready` and `app_next_iteration(_wait =&gt; FALSE)` with no fallback. ([cb07dcfce](https://gitlab.syncad.com/hive/hivemind/-/commit/cb07dcfce) [b72f7fcf1](https://gitlab.syncad.com/hive/hivemind/-/commit/b72f7fcf1) [65a552b27](https://gitlab.syncad.com/hive/hivemind/-/commit/65a552b27))
+- Setup/upgrade exits cleanly (no-op) if a block processor holds the lock. Run upgrades with sync stopped. ([cb07dcfce](https://gitlab.syncad.com/hive/hivemind/-/commit/cb07dcfce) [96594fdb6](https://gitlab.syncad.com/hive/hivemind/-/commit/96594fdb6))
+- Massive-sync threshold raised from 201,600 to 2,000,000 blocks (applied to existing installs by `upgrade_runtime_migration.sql`). UNLOGGED tables, BM25 drop/rebuild and fsync-off are now only used on the very first sync. ([3c26424b5](https://gitlab.syncad.com/hive/hivemind/-/commit/3c26424b5))
+- Autovacuum is off on `hive_post_data` during massive sync, replaced by boundary VACUUMs. It is reset at finalization, even after a crash. ([295503d4f](https://gitlab.syncad.com/hive/hivemind/-/commit/295503d4f) [7cde3dc35](https://gitlab.syncad.com/hive/hivemind/-/commit/7cde3dc35))
+- Extensions are created with CASCADE so pg\_search 0.25 gets `vector`. Without it BM25 search silently degraded. ([e89681423](https://gitlab.syncad.com/hive/hivemind/-/commit/e89681423))
+- Live sync reconnects every 5 s after DB disconnects instead of exiting. SIGTERM during finalization stops cleanly and resumes later. On startup, live blocks skipped by older versions are detected and re-processed. ([1e1746678](https://gitlab.syncad.com/hive/hivemind/-/commit/1e1746678) [73cc89a7d](https://gitlab.syncad.com/hive/hivemind/-/commit/73cc89a7d) [074ff0fb9](https://gitlab.syncad.com/hive/hivemind/-/commit/074ff0fb9))
+
+### HAfAH
+
+- No new settings or migrations.
+
+### balance\_tracker
+
+- Block processing runs through the generic `haf_app_driver.py` as PID 1 (clean SIGTERM, idle between blocks), falling back to `CALL main()` with a warning if the driver is missing. Uses the new psql client base image. ([f0c65dc](https://gitlab.syncad.com/hive/balance_tracker/-/commit/f0c65dc) [5fcdd20](https://gitlab.syncad.com/hive/balance_tracker/-/commit/5fcdd20))
+- Advisory locks: install takes an exclusive lock (`balance_tracker`, or `haf_block_explorer` when embedded as `hafbe_bal`) and is skipped while block processing runs. ([30472ab](https://gitlab.syncad.com/hive/balance_tracker/-/commit/30472ab))
+- VACUUM FULL of history tables is only requested during initial sync, not on every catch-up. Per-block NOTICEs are now DEBUG. ([5feef04](https://gitlab.syncad.com/hive/balance_tracker/-/commit/5feef04) [6eab3ed](https://gitlab.syncad.com/hive/balance_tracker/-/commit/6eab3ed))
+- New tables are created only on fresh install. This doesn't matter for this upgrade because HAF's replay forces a resync. *Inference from install code.*
+
+### reputation\_tracker
+
+- Same driver, advisory-lock and psql-image changes as balance\_tracker (lock name `reputation_tracker`; hivemind also holds it shared). Per-block NOTICEs are now DEBUG. ([d361925](https://gitlab.syncad.com/hive/reputation_tracker/-/commit/d361925) [5c29229](https://gitlab.syncad.com/hive/reputation_tracker/-/commit/5c29229) [1b7295d](https://gitlab.syncad.com/hive/reputation_tracker/-/commit/1b7295d))
+
+### haf\_block\_explorer
+
+- Generic HAF driver with the `haf_block_explorer` lock, which writes its own log via `--log-file`. Registers the hafbe + btracker context group. Install is skipped while block processing runs. ([23ca60e](https://gitlab.syncad.com/hive/haf_block_explorer/-/commit/23ca60e) [dfd4de5](https://gitlab.syncad.com/hive/haf_block_explorer/-/commit/dfd4de5) [57d0745](https://gitlab.syncad.com/hive/haf_block_explorer/-/commit/57d0745))
+- `docker-bake.hcl` no longer overrides `PSQL_CLIENT_VERSION` with a stale `14-1`. That override had silently dropped the install lock in production images. ([a043302](https://gitlab.syncad.com/hive/haf_block_explorer/-/commit/a043302))
+- Calls btracker's `finalize_massive_sync_before_forking()` before enabling forking. Live-sync per-block logs are DEBUG. `current_*` VACUUM FULL only during initial sync. ([b30bf5c](https://gitlab.syncad.com/hive/haf_block_explorer/-/commit/b30bf5c) [dfd4de5](https://gitlab.syncad.com/hive/haf_block_explorer/-/commit/dfd4de5) [c819df5](https://gitlab.syncad.com/hive/haf_block_explorer/-/commit/c819df5))
+
+### nft\_tracker
+
+- Generic driver (`--lock=nft_tracker`), app registration, install lock, new psql base image. The idle "Waiting for next block" warning spam (which tripped alert rules) is now a notice after a 10 s stall. ([e9b452d](https://gitlab.syncad.com/hive/nft_tracker/-/commit/e9b452d) [842f25b](https://gitlab.syncad.com/hive/nft_tracker/-/commit/842f25b) [f5c6d2c](https://gitlab.syncad.com/hive/nft_tracker/-/commit/f5c6d2c))
+
+### hivesense
+
+- Block processing is rewritten as a client-side Python processor under `haf_app_driver.py --process-python`, so embedding HTTP calls no longer run inside PostgreSQL backends. The legacy scheduler is available via `HIVESENSE_USE_LEGACY_SCHEDULER=true`. Range size: `HIVESENSE_RANGE_BLOCKS` (1000). ([551d0a3](https://gitlab.syncad.com/hive/hivesense/-/commit/551d0a3))
+- Registers with a dependency on `hivemind_app`, so hivemind must be installed (and registered) first. ([4d16d53](https://gitlab.syncad.com/hive/hivesense/-/commit/4d16d53))
+- OpenAI-compatible embedding servers (e.g. llama-swap) supported via `embedding_api=openai`. Ollama remains the default. ([e90fc38](https://gitlab.syncad.com/hive/hivesense/-/commit/e90fc38) [a51d182](https://gitlab.syncad.com/hive/hivesense/-/commit/a51d182))
+- Syncer: `MISSING_POST_RETRIES` (30) and `MISSING_POST_ACTION` (skip/exit). A syncer with an existing `sync_uuid` stops if its chain is missing from the upstream's `/sync-chains`. ([ca86eb2](https://gitlab.syncad.com/hive/hivesense/-/commit/ca86eb2) [fd65180](https://gitlab.syncad.com/hive/hivesense/-/commit/fd65180))
+- The new sentence splitter changes chunking. Re-embedding is optional; if you regenerate, follow `docs/sync_chain_rebase.md` so downstream syncers keep working. ([7fe0744](https://gitlab.syncad.com/hive/hivesense/-/commit/7fe0744))
+
+## 4. Bug fixes
+
+Grouped by repo, most serious first within each.
+
+#### hive
+
+- **Account-history nodes froze (#869).** With account\_history\_rocksdb, the per-block flush added in 1.28.6 created about 3,600 RocksDB files a day until the node ran out of file descriptors. Last irreversible block and the block log then stalled while head looked healthy. ([2b43686d19](https://gitlab.syncad.com/hive/hive/-/commit/2b43686d19))
+- **2026-07-09 network disruption.** Slightly stale blocks were treated as invalid, causing mass peer disconnects [1.28.7]. Goodbye messages embedding a full block couldn't be decoded [1.28.7]. In 1.28.8, only the peer that delivered a bad block is punished, stale re-fetches are dropped, and old blocks are no longer advertised. ([b31dd12269](https://gitlab.syncad.com/hive/hive/-/commit/b31dd12269) [16a419df6a](https://gitlab.syncad.com/hive/hive/-/commit/16a419df6a) [9040b581c8](https://gitlab.syncad.com/hive/hive/-/commit/9040b581c8) [8f0be2a905](https://gitlab.syncad.com/hive/hive/-/commit/8f0be2a905) [37e65e9058](https://gitlab.syncad.com/hive/hive/-/commit/37e65e9058) [0d97544e15](https://gitlab.syncad.com/hive/hive/-/commit/0d97544e15))
+- **Stuck nodes (#881).** A node more than 20 blocks behind that kept its peers never resynced; it now restarts sync after a 60 s stall. ([73b937e98f](https://gitlab.syncad.com/hive/hive/-/commit/73b937e98f))
+- LAN-only/bogon-filtered nodes never dialed peers (#880). Nodes started without DNS stayed peerless (#882). ([e963fc35d6](https://gitlab.syncad.com/hive/hive/-/commit/e963fc35d6) [16ca3e50d8](https://gitlab.syncad.com/hive/hive/-/commit/16ca3e50d8))
+- IPv6: legacy hello threw (#860), outbound bind failed across address families, and the `unable_to_check` firewall reply was never sent. ([18e482508b](https://gitlab.syncad.com/hive/hive/-/commit/18e482508b) [ccb3f6a9f3](https://gitlab.syncad.com/hive/hive/-/commit/ccb3f6a9f3) [b3d3dd7c68](https://gitlab.syncad.com/hive/hive/-/commit/b3d3dd7c68))
+- RocksDB "WriteBatch has wrong count" corruption or deadlock at startup and shutdown. ([09129eedc5](https://gitlab.syncad.com/hive/hive/-/commit/09129eedc5))
+- RocksDB info LOG grew without limit and could fill tmpfs [1.28.7]. ([2f7b76b98a](https://gitlab.syncad.com/hive/hive/-/commit/2f7b76b98a))
+- Undefined-behaviour cleanups: nested `modify()` calls, misaligned block\_log access, an overflow in dead pre-HF12 code, a shared\_ptr race on storage close. ([9695df5a89](https://gitlab.syncad.com/hive/hive/-/commit/9695df5a89) [9f9d4a207d](https://gitlab.syncad.com/hive/hive/-/commit/9f9d4a207d) [341a61f24a](https://gitlab.syncad.com/hive/hive/-/commit/341a61f24a) [087e93ed00](https://gitlab.syncad.com/hive/hive/-/commit/087e93ed00))
+
+#### haf
+
+- **Fork crash-loop (#333)** [1.28.7]. Shared-fork blocks were deleted before being copied to irreversible tables, and the resulting FK violation repeated on every restart. This took down at least 5 mainnet nodes on 2026-07-09/10. ([fc27acabe](https://gitlab.syncad.com/hive/haf/-/commit/fc27acabe))
+- **App data loss or double-processing at the massive→live switch (#334).** Contexts were reattached at the irreversible block instead of their current block. ([90e6d09eb](https://gitlab.syncad.com/hive/haf/-/commit/90e6d09eb))
+- Interrupted massive sync left 16 duplicate block rows, discovered about 20 hours later when `restore_indexes` failed (#340). ([afb15416a](https://gitlab.syncad.com/hive/haf/-/commit/afb15416a))
+- Heap corruption ("corrupted double-linked list") on backend exit, from duplicate fc symbols in two postgres modules. ([ec621c738](https://gitlab.syncad.com/hive/haf/-/commit/ec621c738))
+- Busy-spinning app loops after the LISTEN/NOTIFY change. Shadow tables never vacuumed for drivers owning their transaction. Every block flagged SLOW\_PROCESSING. Embedded-app reinstall exiting with code 3. ([7ba2fe2cb](https://gitlab.syncad.com/hive/haf/-/commit/7ba2fe2cb) [9350e8ed0](https://gitlab.syncad.com/hive/haf/-/commit/9350e8ed0) [c728331b2](https://gitlab.syncad.com/hive/haf/-/commit/c728331b2) [080338900](https://gitlab.syncad.com/hive/haf/-/commit/080338900))
+
+#### hivemind
+
+- **Live blocks permanently skipped after a connection loss (#336).** The block pointer was committed before the block's data. Seen in production at blocks 106875673 and 108020368. ([074ff0fb9](https://gitlab.syncad.com/hive/hivemind/-/commit/074ff0fb9))
+- A crash mid-finalization left 10,143 root posts with `root_id = 0` and a startup crash loop (#337). ([73cc89a7d](https://gitlab.syncad.com/hive/hivemind/-/commit/73cc89a7d))
+- Vote notifications lost for every catch-up below the massive threshold (#338). ([3620e01a9](https://gitlab.syncad.com/hive/hivemind/-/commit/3620e01a9))
+- Process died at the massive→live handoff on stale connection stats (#343). Live sync died every 9–10 days after Postgres killed a swapped-out session. ([f50324cfd](https://gitlab.syncad.com/hive/hivemind/-/commit/f50324cfd) [1e1746678](https://gitlab.syncad.com/hive/hivemind/-/commit/1e1746678))
+- Pending-rewards overflow above 9,999,999.999 HBD. ([f156c8442](https://gitlab.syncad.com/hive/hivemind/-/commit/f156c8442))
+
+#### balance\_tracker / reputation\_tracker
+
+- Routed power-down fills credited full VESTS to both accounts. Savings pending amounts had the wrong sign. Transfer stats were 1000× too large. Stats were labelled with the next period. ([a689543](https://gitlab.syncad.com/hive/balance_tracker/-/commit/a689543) [1daa8b0](https://gitlab.syncad.com/hive/balance_tracker/-/commit/1daa8b0) [9d4a7e6](https://gitlab.syncad.com/hive/balance_tracker/-/commit/9d4a7e6) [b05c5db](https://gitlab.syncad.com/hive/balance_tracker/-/commit/b05c5db))
+- Repeated 7–15 minute VACUUM FULL of the 69 GB history table on every catch-up over 101 blocks. This blocked hafbe. ([5feef04](https://gitlab.syncad.com/hive/balance_tracker/-/commit/5feef04))
+- A PostgreSQL 17.11 Memoize plan made massive sync about 100× slower. ([1d277ca](https://gitlab.syncad.com/hive/balance_tracker/-/commit/1d277ca))
+- Reinstall failed when an embedding app (hafbe) owned the context. ([8cb046e](https://gitlab.syncad.com/hive/balance_tracker/-/commit/8cb046e))
+
+#### haf\_block\_explorer
+
+- Full replay crash-looped past block 52399763 on votes for proposals that didn't exist yet (pre-HF28 history). ([a70daf6](https://gitlab.syncad.com/hive/haf_block_explorer/-/commit/a70daf6))
+- Witness and proxy endpoints returned empty results between the end of massive sync and the first live block. ([148e7fa](https://gitlab.syncad.com/hive/haf_block_explorer/-/commit/148e7fa))
+- `proposal_pay` double-counted `paid_amount`. Undefined witness vote order within one block. A 6.7 GB stale shadow table cost 0.4–1.1 s per block. ([4fdb621](https://gitlab.syncad.com/hive/haf_block_explorer/-/commit/4fdb621) [5238589](https://gitlab.syncad.com/hive/haf_block_explorer/-/commit/5238589) [b30bf5c](https://gitlab.syncad.com/hive/haf_block_explorer/-/commit/b30bf5c))
+
+#### hivesense
+
+- Scheduler/worker deadlock about once a month in production (lost advisory-lock wakeups). ([dbc7ad7](https://gitlab.syncad.com/hive/hivesense/-/commit/dbc7ad7))
+- The syncer left `events_id=0`, which blocked HAF event-queue cleanup for every app on the node (hafbe took about 7 minutes per iteration) (#54). ([274b974](https://gitlab.syncad.com/hive/hivesense/-/commit/274b974))
+- A single missing hivemind post caused unbounded retries; one node stalled 17 hours, 114,904 blocks behind (#57). ([ca86eb2](https://gitlab.syncad.com/hive/hivesense/-/commit/ca86eb2))
+- Control characters crashed the sentence splitter. Null `sync_uuid` published. OpenAI pre-flight 404 loop. ([fabff2f](https://gitlab.syncad.com/hive/hivesense/-/commit/fabff2f) [066425d](https://gitlab.syncad.com/hive/hivesense/-/commit/066425d) [a51d182](https://gitlab.syncad.com/hive/hivesense/-/commit/a51d182))
+
+#### nft\_tracker
+
+- `/version` always returned `'development'`. Idle-warning log spam tripped alert rules. ([d31c741](https://gitlab.syncad.com/hive/nft_tracker/-/commit/d31c741) [f5c6d2c](https://gitlab.syncad.com/hive/nft_tracker/-/commit/f5c6d2c))
+
+#### haf\_api\_node
+
+- **Truncated 200 responses** (200–500 a day on one node) when Varnish hit `nuke_limit=50`. Raised to 5000. ([e304f92](https://gitlab.syncad.com/hive/haf_api_node/-/commit/e304f92))
+- hafah-postgrest stuck at 503 on PostgREST v14 (removed schemas are fatal). PostgREST silently stopped accepting connections at the 1024 FD default. pgbouncer failed to start without 1.25. ([1242d07](https://gitlab.syncad.com/hive/haf_api_node/-/commit/1242d07) [8b61f3f](https://gitlab.syncad.com/hive/haf_api_node/-/commit/8b61f3f) [b75d7d2](https://gitlab.syncad.com/hive/haf_api_node/-/commit/b75d7d2))
+- Broken shed parameter expansions meant per-app maxconn tiers never applied. ([d6797d3](https://gitlab.syncad.com/hive/haf_api_node/-/commit/d6797d3))
+- `take_snapshot.sh` checkpoint failed silently. ZFS rollback/clone failed on swapped-log snapshots. ([317e298](https://gitlab.syncad.com/hive/haf_api_node/-/commit/317e298) [7c1d248](https://gitlab.syncad.com/hive/haf_api_node/-/commit/7c1d248))
+
+## 5. Optimizations
+
+Figures are the ones reported in commit messages.
+
+| Repo | Change | Measured effect |
+| --- | --- | --- |
+| hive | RocksDB file creation follows data volume, not block rate | Ends about 3,600 new files/day |
+| hive | Back-off for rejected p2p dials; fewer duplicate fetches | One case: about 75 redials/min for 14+ hours eliminated |
+| hive | Header slimming | About 1.6 s compile time saved per translation unit |
+| hive | Exchange snapshot bootstrap | Snapshot load about 2 min, then about 1,250 blocks/s; state file pre-sized 8G (was 24G) |
+| haf | Truncate empty but oversized shadow tables (#346) | 0.4–1.1 s/block scan removed; one 6.7 GB table → 360 kB total |
+| haf | LISTEN/NOTIFY instead of polling | Replaces about 4.7 wakeups/s and about 750 ms average wake latency |
+| haf | Heartbeat commit and xmin release while waiting | Lets HOT pruning advance on `hafd.contexts` |
+| hivemind | Massive threshold 201,600 → 2M blocks | A one-week catch-up no longer spends about 3.4 h to save about 11 min |
+| hivemind | UNLOGGED and BM25 rebuild only on first sync | Avoids about 6,566 s + 1,860 s on catch-ups |
+| hivemind | Vacuum only `hive_post_data` at boundaries | Was 9.5% of wall time (563 s of stalls) |
+| hivemind | Skip mention parsing outside the 90-day window during massive sync | Not quantified |
+| balance\_tracker | Rewards account resolution (#53) | 1358 ms → 11.7 ms per claim block (was about 75% of live time) |
+| balance\_tracker | Orders account resolution | 588 ms → 1.1 ms |
+| balance\_tracker | SQL impacted balances | Removes a 15–30× live-processing regression |
+| balance\_tracker | Constant NAI helpers | hafbe `account_vest_stats` 92 → 64 ms per block |
+| balance\_tracker | Deferred day/month rollups in massive sync; ordered single-pass HBD interest; range guards on view joins | Savings batches had spiked to 4.1 s; vesting stats 0.95–1.44 s per batch |
+| haf\_block\_explorer | Explicit range in `process_block_operations` | 22,000 ms → 0.345 ms per live block |
+| haf\_block\_explorer | MERGE-based witness/proposal caches | Median 346 → 146 ms/block; WAL 4.9 MB → about 25 KB/block |
+| haf\_block\_explorer | Op-type stats from btracker prefetch | 1004 → 302 ms per 10k-block batch |
+| hivesense | Pipelined chunk prep and embedding | 15–17 s → about 10 s per 1000 blocks; GPU 44% → 71–76% |
+| haf\_api\_node | Varnish `nuke_limit` 50 → 5000; optional non-moving GC for hivemind PostgREST; maxconn caps with load shedding; Loki retention | Fewer truncations and GC latency spikes; disk reclaimed |</div>
+  <footer class="hive-post-embed__source">
+    <span class="hive-post-embed__source-label">Source:</span>
+    <a href="https://hive.blog/@blocktrades/haf-api-stack-1-28-8-release-notes-changes-since-1-28-6">HAF API stack 1.28.8 release notes: changes since 1.28.6</a>
+    by
+    <a href="https://hive.blog/@blocktrades">@blocktrades</a>
+  </footer>
+</div>
+
+
+  </div><a class="u-url" href="/news/core/development/2026/10/06/haf-api-stack-1-28-8-release-notes-changes-since-1-28-6.html" hidden></a>
+</article>
+
+        </div>
+
+        
+        <aside class="page-sidebar" aria-label="Search and browse">
+          <section class="sidebar-section sidebar-search">
+            <h2 class="sidebar-heading">Search posts</h2>
+            <p class="sidebar-copy">Search the locally indexed post archive.</p>
+            <input type="text" id="search-input" placeholder="Search posts" autocomplete="off" />
+            <ul id="results-container"></ul>
+          </section>
+
+          <section class="sidebar-section sidebar-topics">
+            <h2 class="sidebar-heading">Browse topics</h2>
+            <p class="sidebar-copy">Jump into curated topic landing pages.</p>
+            <ul class="topic-list topic-list-sidebar"><li><a class="page-link" href="/account-recovery/">Account Recovery</a></li><li><a class="page-link" href="/core-development/">Core Development</a></li><li><a class="page-link" href="/dapps/">Dapps</a></li><li><a class="page-link" href="/docker/">Docker</a></li><li><a class="page-link" href="/hardfork/">Hardfork</a></li><li><a class="page-link" href="/hivemind/">Hivemind</a></li><li><a class="page-link" href="/javascript/">Javascript</a></li><li><a class="page-link" href="/multisig/">Multisig</a></li><li><a class="page-link" href="/python/">Python</a></li><li><a class="page-link" href="/ruby/">Ruby</a></li><li><a class="page-link" href="/testnet/">Testnet</a></li><li><a class="page-link" href="/tools/">Tools</a></li><li><a class="page-link" href="/witness/">Witness</a></li></ul>
+          </section>
+        </aside>
+        
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading"><a rel="author" href="/">Hive Chain Documentation</a></h2>
+    
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">site curated by: @inertia</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>Your resource for various levels of Hive Documentation.</p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+<script src="/assets/javascript/search.js"></script>
+    <script>
+      (function () {
+        var input = document.getElementById('search-input');
+        var results = document.getElementById('results-container');
+        if (input && results && typeof SimpleJekyllSearch !== 'undefined') {
+          SimpleJekyllSearch({
+            searchInput: input,
+            resultsContainer: results,
+            json: '/search.json'
+          });
+        }
+
+        if (typeof SteemContentRenderer === 'undefined') return;
+
+        var targets = document.querySelectorAll('[data-hive-render-target="true"]');
+        if (!targets.length) return;
+
+        var renderer = new SteemContentRenderer.DefaultRenderer({
+          baseUrl: 'https://hive.blog/',
+          breaks: true,
+          skipSanitization: false,
+          allowInsecureScriptTags: false,
+          addNofollowToLinks: true,
+          doNotShowImages: false,
+          ipfsPrefix: '',
+          assetsWidth: 640,
+          assetsHeight: 480,
+          imageProxyFn: function (url) { return url; },
+          usertagUrlFn: function (account) { return '/@' + account; },
+          hashtagUrlFn: function (hashtag) { return '/tags/#' + hashtag; },
+          isLinkSafeFn: function () { return true; }
+        });
+
+        targets.forEach(function (target) {
+          try {
+            var inputHtml = target.innerHTML;
+            target.innerHTML = renderer.render(inputHtml);
+          } catch (e) {
+            console.log(e);
+          }
+        });
+      })();
+    </script>
+
+  </body>
+
+</html>

@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta property="og:image" content="/assets/images/sticker.png" />
+  <meta name="apple-mobile-web-app-title" content="Hive Docs" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" /><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Building Your First Magi Smart Contract: A Complete Guide! | Hive Chain Documentation</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Building Your First Magi Smart Contract: A Complete Guide!" />
+<meta name="author" content="tibfox" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="You asked for a Magi contract tutorial from start to finish?" />
+<meta property="og:description" content="You asked for a Magi contract tutorial from start to finish?" />
+<link rel="canonical" href="https://hive.blog/hive-139531/@tibfox/ff9c946a" />
+<meta property="og:url" content="https://hive.blog/hive-139531/@tibfox/ff9c946a" />
+<meta property="og:site_name" content="Hive Chain Documentation" />
+<meta property="og:image" content="https://ipfs-3speak.b-cdn.net/ipfs/QmW3XmJ1m2judoacBCd2SGRgtEBdAbAus64WsPisFz5mUh" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2026-01-20T08:25:06-08:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="https://ipfs-3speak.b-cdn.net/ipfs/QmW3XmJ1m2judoacBCd2SGRgtEBdAbAus64WsPisFz5mUh" />
+<meta property="twitter:title" content="Building Your First Magi Smart Contract: A Complete Guide!" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"tibfox"},"dateModified":"2026-01-20T08:25:06-08:00","datePublished":"2026-01-20T08:25:06-08:00","description":"You asked for a Magi contract tutorial from start to finish?","headline":"Building Your First Magi Smart Contract: A Complete Guide!","image":"https://ipfs-3speak.b-cdn.net/ipfs/QmW3XmJ1m2judoacBCd2SGRgtEBdAbAus64WsPisFz5mUh","mainEntityOfPage":{"@type":"WebPage","@id":"https://hive.blog/hive-139531/@tibfox/ff9c946a"},"url":"https://hive.blog/hive-139531/@tibfox/ff9c946a"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://hivedocs.info/feed.xml" title="Hive Chain Documentation" /><script>
+if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNotTrack === "yes" || navigator.msDoNotTrack === "1")) {
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-161692811-1', 'auto');
+  ga('send', 'pageview');
+}
+</script>
+  
+<script src='https://unpkg.com/steem-content-renderer'></script>
+  <script src="/assets/javascript/universal-bridge-against-phishing.js"></script>
+  <script src="/assets/javascript/lazysizes.min.js" async=""></script>
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet" />
+  <link rel="shortcut icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="152x152" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="167x167" href="/assets/images/favicon-80x80.png" />
+</head>
+<body><header class="site-header" role="banner">
+  <div class="wrapper site-header-inner">
+    <a class="site-title" rel="author" href="/">Hive Chain Documentation</a>
+
+    <nav class="site-nav" aria-label="Primary">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/news/">News</a><a class="page-link" href="/howto/">How To</a><a class="page-link" href="/links/">Useful Links</a><a class="page-link" href="/authors/">Authors</a><a class="page-link" href="/topics/">Topics</a><a class="page-link" href="/search/">Search</a></div>
+    </nav>
+  </div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper page-layout has-search-panel">
+        <div class="page-main">
+          <article class="post h-entry post-article" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header post-hero">
+    <div class="post-hero-main">
+      <p class="post-kicker">Archive post</p>
+      <h1 class="post-title p-name" itemprop="name headline">Building Your First Magi Smart Contract: A Complete Guide!</h1>
+      <p class="post-meta">
+        <time class="dt-published" datetime="2026-01-20T08:25:06-08:00" itemprop="datePublished">Jan 20, 2026
+        </time>• <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">
+            <a href="/authors/#author-tibfox">tibfox</a>
+          </span></span></p><p class="post-summary">You asked for a Magi contract tutorial from start to finish?</p></div><aside class="post-author-card">
+      <img src="https://images.hive.blog/u/tibfox/avatar" width="128" height="128" class="lazyload post-author-avatar" alt="Avatar for @tibfox" />
+      <div class="post-author-name">@tibfox</div>
+    </aside></header>
+
+  <div class="post-content e-content post-body" itemprop="articleBody">
+    <div class="hive-post-embed" data-hive-author="tibfox" data-hive-permlink="ff9c946a">
+  <div id="content-tibfox-ff9c946a" class="hive-post-embed__content" data-hive-render-target="true"><center>
+
+[![](https://ipfs-3speak.b-cdn.net/ipfs/QmW3XmJ1m2judoacBCd2SGRgtEBdAbAus64WsPisFz5mUh/)](https://3speak.tv/watch?v=tibfox/ff9c946a)
+
+▶️ [Watch on 3Speak](https://3speak.tv/watch?v=tibfox/ff9c946a)
+
+</center>
+
+---
+
+<div class="text-justify">
+
+You asked for a Magi contract tutorial from start to finish? **I got you!**
+
+This tutorial walks through building a smart contract for the Magi network. We'll create a simple "flip" contract that randomly shuffles a list of possible values - useful for things like random selection, lottery draws, or simple day-to-day decisions :D 
+
+<h1>Should I do the dishes? Ask your own contract!</h1>
+
+Before we jump right in I want to mention that the Magi chain is constantly in development and the tutorial could become outdated pretty soon. Make sure to check the official [contract-template repo](https://github.com/vsc-eco/go-contract-template) and the announcements of the Magi network for all the fresh SDK functions, news and possibilities. Also it is planned that there will be an SDK for other languages in near future so keep an eye out for that as well.
+
+Big thanks to @techcoderx for his work and all the help he offered me while creating my first few contracts. Now let us jump in!
+
+## Setup
+
+- [Go](https://go.dev/dl/) 1.24+ (Programing Language)
+- [TinyGo](https://tinygo.org/getting-started/install/) compiler (for WASM compilation)
+- [wasm tools](https://github.com/bytecodealliance/wasm-tools) or [wabt](https://github.com/WebAssembly/wabt) (For optimizing file size of your final contract wasm)
+- Basic understanding of Go programming (Don't be scared - it's simple)
+
+## Project Structure
+
+In the video I will cover the flip contract. You can clone it from: https://github.com/tibfox/magi_contract_tutorial_flip
+The video will not cover everything that is described here because this is a topic for another video.
+
+After cloning the tutorial repo, you will find this structure:
+
+```
+magi_contract_tutorial_flip/
+├── contract/
+│   ├── main.go          # Main contract logic and exported functions
+│   └── random.go        # Randomization utilities
+├── sdk/
+│   ├── sdk.go           # Core SDK functions (state, logging, etc.)
+│   ├── env.go           # Environment/context types
+│   ├── address.go       # Address handling (Hive, EVM, etc.)
+│   └── asset.go         # Asset types (HIVE, HBD)
+├── test/
+│   └── contract_test.go # Integration tests
+├── artifacts/
+│   └── main.wasm        # Compiled contract
+└── go.mod
+```
+
+## Flow of the contract
+
+Before we start to dive into the code I made this simple diagram to showcase the contract flow:
+
+![](https://images.ecency.com/DQmZskVEkDPn4k6aGC2Ryi2EHL7PG7deDw5JdDrJHDwd1f6/colorful_modern_cyber_monday_facebook_cover.png)
+
+1. User executes the flip function providing a collection of possible results (a|b|c)
+2. Contract randomizes the order using deterministic shuffling
+3. Contract stores the result in state under a unique key based on transaction data
+4. Contract emits the random order as an event log
+5. Contract returns the storage key and shuffled result
+
+---
+
+## Part 1: Cloning Contract Template
+
+The Magi network provides an up-to-date [contract template](https://github.com/vsc-eco/go-contract-template) you can clone for your starting point. In this tutorial I will not go into details about it here as I assume you clone my [tutorial repo instead](https://github.com/tibfox/magi_contract_tutorial_flip). 
+
+
+## Part 2: Understanding the SDK
+
+The SDK provides the interface between your contract and the Magi network. Make sure to always have the current sdk when developing a contract. Let's examine the key components of this folder.
+
+### Environment Context
+
+When your contract executes, it receives context about the transaction via `sdk.GetEnv()`:
+
+```go
+type Env struct {
+    ContractId    string   // This contract's ID
+    ContractOwner string   // Owner address
+
+    TxId          string   // Transaction ID
+    Index         uint64   // Transaction index in block
+    OpIndex       uint64   // Operation index in transaction
+
+    BlockId       string   // Current block ID
+    BlockHeight   uint64   // Current block height
+    Timestamp     string   // Block timestamp
+
+    Sender        Sender   // Who initiated this call
+    Caller        Address  // Direct caller (could be another contract)
+}
+```
+
+The `Sender` contains authentication details but usually `Sender.Address` is enough for verifying permissions in your contract.
+The `Caller` is who actually called the contract function. That can be a user but also another contract. There can be a chain of up to 20 contracts but the original environment is always persistent so checking permissions can be made on the initial sender of the transaction.
+
+
+```go
+type Sender struct {
+    Address              Address   // Sender's address
+    RequiredAuths        []Address // Active authority signers
+    RequiredPostingAuths []Address // Posting authority signers
+}
+```
+
+### Address Types
+
+The network supports multiple address formats:
+
+| Type | Prefix | Example |
+|------|--------|---------|
+| Hive | `hive:` | `hive:username` |
+| EVM | `did:pkh:eip155` | `did:pkh:eip155:1:0x...` |
+| Contract | `contract:` | `contract:abc123` |
+| System | `system:` | `system:rewards` |
+
+For now I personally only made contracts that work with hive addresses and I assume that this list will increase with time.
+
+### Core SDK Functions
+
+**State Management:**
+```go
+sdk.StateSetObject(key, value string)    // Store a value
+sdk.StateGetObject(key string) *string   // Retrieve a value
+sdk.StateDeleteObject(key string)        // Remove a value
+```
+
+It is important to mention here that `sdk.StateSetObject()` is the most expensive single-call of the current system. Be mindful of that and try to allocate contract state as early as possible if you know how the state value will look like. Updates will become cheaper this way. Also try to minimize state value length by implementing mappings of known values (states, types and this kind of stuff) so you only store integers instead of whole strings. There are many ways to improve state usage but this depends highly on your use-case. Keep an eye out for my upcoming videos/posts about that topic.
+
+**Logging:**
+```go
+sdk.Log(message string)  // Emit an log
+```
+
+This method can be used for simple logs but is also used to emit event logs for external indexers. More on that later.
+
+**Transaction Control:**
+```go
+sdk.Abort(msg string)           // Hard abort
+```
+This will revert the whole contract call, revert fund movements and state interactions. It is smart to abort as early as possible to minimize ressources when the call fails and add a reason for the abort in the `msg` of course.
+
+**Asset Operations:**
+```go
+sdk.GetBalance(address Address, asset Asset) int64 // read the balance of a Magi address
+sdk.HiveDraw(amount int64, asset Asset)           // Pull funds from the **caller**
+sdk.HiveTransfer(to Address, amount int64, asset Asset)  // Sends funds from the contract
+sdk.HiveWithdraw(to Address, amount int64, asset Asset)  // Unmap to Hive account 
+```
+`sdk.GetBalance()`, `sdk.HiveDraw()` and `sdk.HiveTransfer()` are all operating on Magi itself while `sdk.HiveWithdraw()` will send funds from the contract to the receiver on the Hive blockchain.
+
+**Cross-Contract Calls:**
+```go
+sdk.ContractStateGet(contractId, key string) *string
+sdk.ContractCall(contractId, method, payload string, options *ContractCallOptions) *string
+```
+
+These are super powerful tools where you can chain execute up to 20 contracts. For example you could create a task market platform/contract that calls my [escrow contract](https://ecency.com/hive-139531/@tibfox/kinoko-escrow-trust-made-simple) in order to create a secure trustless payment acknoledgement between two parties. No need to implement your own logic here. Also the contract we cover here can be used to find a random value out of multiple ones. You could just call this contract and save space/time for your own logic.
+
+---
+
+## Part 3: Writing the Contract
+
+### The Main Entry Point
+
+Every contract needs an empty `main()` function for WASM export to work:
+
+```go
+package main
+
+func main() {
+    // Required for wasm export - leave empty
+}
+```
+
+For super small contracts it is enough if you only have one main.go file but I try to split my contract in a reasonable structure of multiple files. It is up to you but at least 1the `main.go` with the `main()` needs to exist for your contract.
+
+### Exporting Functions
+
+Use the `//go:wasmexport` directive to expose functions to the network:
+
+```go
+//go:wasmexport flip
+func Flip(payload *string) *string {
+    // Contract logic here
+}
+```
+
+These functions are the ones the users of your contract will interact with. They receive and return only one string pointer each. No int or multiple arguments - just one string in and one string out. 
+
+For payloads, I find that csv (simple delimited strings) is the more gas efficient compared to the commonly known JSON format. JSON needs some overhead in characters, but also a lot of parsing logic in the WASM itself. I did not try the `sdk_tinyjson.go` implementation tho.
+
+### Implementing the Flip Function
+
+Let's break down the flip contract step by step:
+
+**Step 1: Validate Input**
+
+```go
+//go:wasmexport flip
+func Flip(payload *string) *string {
+    if payload == nil || *payload == "" {
+        sdk.Abort("payload is required")
+        return nil
+    }
+
+    possibilities := strings.Split(*payload, "|")
+    if len(possibilities) &lt; 2 {
+        sdk.Abort("at least 2 possibilities are required")
+        return nil
+    }
+```
+
+Always validate inputs early and use `sdk.Abort()` with a descriptive message.
+
+**Step 2: Get Execution Context**
+
+```go
+    env := sdk.GetEnv()
+    sender := env.Sender.Address.String()
+```
+
+As described aboe the `sdk.GetEnv()` will give you all values of the current execution environment. If you only need one value it is better gas wise if you use `sdk.getEnvKey()`.
+
+
+
+**Step 3: Generate Deterministic Randomness**
+
+```go
+    seed := generateSeed(env.BlockHeight, env.Index, env.OpIndex)
+    shuffled := shuffleWithSeed(possibilities, seed)
+```
+
+The seed combines block height, transaction index, and operation index. This ensures:
+- Same input in same transaction position = same output (deterministic)
+- Different call = different output (unique per call)
+
+These operations need to be determistic so every witness will receive the exact same result. This is important - otherwise the call will fail.
+
+**Step 4: Store the Result**
+
+```go
+    result := strings.Join(shuffled, "|")
+    storageKey := strconv.FormatUint(env.BlockHeight, 10) +
+        "-" + strconv.FormatUint(env.Index, 10) +
+        "-" + strconv.FormatUint(env.OpIndex, 10)
+
+    sdk.StateSetObject(storageKey, result)
+```
+
+In the current use-case a state write is not needed (and will cost gas without a reason) but I kept it in the code so you will have an example.
+
+
+**Step 5: Emit Event Log**
+
+```go
+    logMessage := "flip;sender:" + sender + ";result:" + result
+    sdk.Log(logMessage)
+```
+
+Logs are useful for off-chain indexers and debugging. There is no official magi indexer available yet but if you follow the same structure I can add your contract to my personal build and help you provide user friendly data for your own UI.
+
+This is especially useful if you want to query values just like: 
+- all flips of hive:tibfox
+- all flips that had only two results
+- all flips from the past 2 weeks
+- etc.
+
+This structure works the best with my build: 
+prefix;key1:value1;key2:value2;...
+
+The `;` is up to you and also if you want to add keys or not. Just get in contact with me and I can tell what is possible.
+
+**Step 6: Return Result**
+
+```go
+    returnValue := storageKey + " -&gt; " + result
+    return &amp;returnValue
+}
+```
+
+Here we send a result back to the sender - as described above we do this via string pointer.
+
+### The Randomization Logic
+
+The `random.go` file contains the shuffling implementation using the Fisher-Yates shuffle. I just copied it from somewhere and ported it to go. It is super simple and determistic.
+
+```go
+func generateSeed(blockHeight uint64, index uint64, opIndex uint64) uint64 {
+    // Prime multipliers reduce collision likelihood
+    return blockHeight*1000003 + index*1009 + opIndex
+}
+
+func shuffleWithSeed(items []string, seed uint64) []string {
+    n := len(items)
+    result := make([]string, n)
+    copy(result, items)
+
+    // Linear Congruential Generator (LCG)
+    a := uint64(1664525)
+    c := uint64(1013904223)
+    m := uint64(1 &lt;&lt; 32)
+    state := seed
+
+    // Fisher-Yates shuffle
+    for i := n - 1; i &gt; 0; i-- {
+        state = (a*state + c) % m
+        j := int(state % uint64(i+1))
+        result[i], result[j] = result[j], result[i]
+    }
+
+    return result
+}
+```
+
+There are other ways to find a determistic "random" result but that is the most simple in my opinion.
+
+---
+
+## Part 4: Testing
+
+### Compiling the Contract for Testing
+
+Contracts are compiled to WebAssembly using TinyGo:
+
+`tinygo build -gc=custom -scheduler=none -panic=trap -no-debug -target=wasm-unknown -o test/artifacts/main.wasm ./contract`
+
+This will place the compiled main.wasm file in the `test/artifacts` folder. 
+
+### Running Tests
+
+Tests use the `go-vsc-node` [test utilities](https://github.com/vsc-eco/go-vsc-node/tree/main/lib/test_utils) which provide a mock environment:
+
+```go
+package test
+
+import (
+    "encoding/json"
+    "os"
+    "testing"
+
+    "vsc-node/lib/test_utils"
+    "vsc-node/modules/db/vsc/contracts"
+    ledgerDb "vsc-node/modules/db/vsc/ledger"
+    stateEngine "vsc-node/modules/state-processing"
+
+    "github.com/stretchr/testify/assert"
+)
+
+func TestFlip(t *testing.T) {
+    // Load compiled contract
+    testCode, err := os.ReadFile("../artifacts/main.wasm")
+    assert.NoError(t, err)
+
+    // Create test environment
+    ct := test_utils.NewContractTest()
+    ct.Deposit("hive:flipuser", 5000, ledgerDb.AssetHive)
+    ct.RegisterContract("vsc_flip_contract", "hive:flipowner", testCode)
+
+    // Define transaction context
+    txSelf := stateEngine.TxSelf{
+        TxId:                 "2testtxid",
+        BlockId:              "blockid122",
+        Index:                0,
+        OpIndex:              0,
+        Timestamp:            "2025-09-03T12:00:00",
+        RequiredAuths:        []string{"hive:flipuser"},
+        RequiredPostingAuths: []string{},
+    }
+
+    // Call the contract
+    callResult, _, logsMap := ct.Call(stateEngine.TxVscCallContract{
+        Self:       txSelf,
+        ContractId: "vsc_flip_contract",
+        Action:     "flip",
+        Payload:    json.RawMessage([]byte(`"tibfox|stevenson7|meno|ph1102"`)),
+        RcLimit:    1000,
+        Intents:    []contracts.Intent{},
+    })
+
+    // Verify results
+    t.Logf("Return: %s", callResult.Ret)
+    t.Logf("RC: %.3f", float64(callResult.RcUsed)/1000)
+    t.Logf("Logs: %v", logsMap["vsc_flip_contract"])
+
+    assert.True(t, callResult.Success, "flip call should succeed")
+}
+```
+
+### Key Testing Concepts
+
+**ContractTest**: Creates an isolated test environment with its own state.
+
+**Deposit**: Funds test accounts. Required if your contract handles assets - here we do not need it.
+
+**RegisterContract**: Deploys your WASM code with a contract ID and owner.
+
+**TxSelf**: Simulates transaction metadata (block height, indices, signers).
+
+**Call**: Executes a contract function and returns:
+- `callResult`: Success status, return value, RC (resource credits) used
+- `logsMap`: Event logs emitted by the contract
+
+In the end we assert the test to be successful.
+
+### Running Tests
+
+```bash
+go test ./test -v
+```
+
+Example output:
+```
+=== RUN   TestFlip
+    contract_test.go:43: Return: 0-0-0 -&gt; meno|ph1102|tibfox|stevenson7
+    contract_test.go:44: RC: 0.847
+    contract_test.go:45: Logs: [flip;sender:hive:flipuser;result:meno|ph1102|tibfox|stevenson7]
+--- PASS: TestFlip (0.12s)
+```
+
+For bigger test files and continous testing it is better to run `go test ./test` as this only gives you "ok" or failure details back.
+
+---
+
+
+## Part 5: Compiling the Contract for Deployment
+
+The command is similar to the test build but we are going to use a **specific tinygo docker image** for reproducible builds and source code verification:
+
+```bash
+docker pull tinygo/tinygo:0.39.0
+docker run --rm -v $(pwd):/home/tinygo tinygo/tinygo:0.39.0 \
+  tinygo build -gc=custom -scheduler=none -panic=trap -no-debug \
+  -target=wasm-unknown -o artifacts/main.wasm ./contract
+```
+
+Key flags:
+- `-gc=custom`: Uses custom garbage collection for WASM
+- `-scheduler=none`: Disables the Go scheduler (not needed in contracts)
+- `-panic=trap`: Converts panics to WebAssembly traps
+- `-target=wasm-unknown`: Compiles to generic WebAssembly
+- `-no-debug`: Reduces binary size by stripping debug info
+
+The compiled `.wasm` file goes in the `artifacts/` directory.
+
+### Optimizing Binary Size
+
+Next we strip metadata to reduce file size even more before deployment (also mandatory for contract verification):
+
+```bash
+# Using Wabt
+wasm-strip -o artifacts/main-stripped.wasm artifacts/main.wasm
+
+# Or using Wasm Tools
+wasm-tools strip -o artifacts/main-stripped.wasm artifacts/main.wasm
+```
+
+---
+
+## Part 6: Deployment
+
+![](https://images.ecency.com/DQmNZ6REMeZJLPkzcMYWtHR82gGiUWE6KgS8st2wCn4NRWG/colorful_modern_cyber_monday_facebook_cover_3_.png)
+
+
+
+
+Once tested, we can finally deploy our contract to the network. For this we have some requirements: 
+
+### Prerequisites
+
+- A Hive account with at least **10 HBD** (deployment fee per contract)
+- Your Hive private active key
+- `vsc-contract-deploy` needs to be built by you:
+```
+git clone https://github.com/vsc-eco/go-vsc-node
+cd go-vsc-node
+go mod download
+go build -buildvcs=false -o vsc-contract-deploy vsc-node/cmd/contract-deployer
+```
+
+This will generate a program called `vsc-contract-deploy` in the root folder. For the upcoming commands I assume that you placed it in your PATH directory like /usr/bin on Linux for example.
+
+
+There is a deployment fee of **10 HBD** per contract, paid from your **Hive account** balance. This fee is needed to secure the system and let people think twice before deploying unfinished contracts. I learned that the hard way ;) 
+
+
+### Step 1: Initialize Configuration
+
+```bash
+vsc-contract-deploy -init
+```
+
+This creates `data/config/identityConfig.json`. Edit it with your Hive username and active key:
+
+```json
+{
+  "username": "your-hive-username",
+  "activeKey": "your-active-private-key"
+}
+```
+
+
+
+### Step 2: Deploy the Contract
+
+```bash
+vsc-contract-deploy -wasmPath artifacts/main-stripped.wasm -name "Flip Contract"
+```
+
+The CLI will:
+1. Upload your WASM binary to the network
+2. Register the contract on-chain
+3. Return your **contract ID** for future calls
+
+For my previous contracts techcoderx took the name for a display name in[Magi Blocks](https://vsc.techcoderx.com/contracts)
+
+
+---
+
+## Part 6: Calling Your Deployed Contract
+
+![](https://images.ecency.com/DQmdo22f5rCynR7nqWfUsD9tGy7pTSSYDRuSbvnGARR2LmX/colorful_modern_cyber_monday_facebook_cover_2_.png)
+
+
+Once deployed, you can interact with your contract using the contract page on [Magi Blocks](https://vsc.techcoderx.com/contracts). Select your newly deployed contract and open the tab "Call Contract". Enter the following parameters:
+
+Method: `flip`
+Payload: `a|b|c`
+RC limit: `1000`
+Key Type: `Active`
+
+
+Hit "Call Contract" and go back to "Transactions" - there you should see your sent transaction. Click on that, wait until it says "confirmed" and inspect the "Call Output" or the "Logs" to see the flipped results.
+
+**This is the moment you can be proud! Tell your freinds &amp; family about your big success ;)**
+
+
+---
+
+## Part 8: Verifying Your Contract
+
+To allow others to inspect your contract's source code, verify it on the [Magi Blocks](https://vsc.techcoderx.com).
+
+For this our code needs to be published as public github repository. Also the source code needs to be 100% the same as your deployed version. The contract verifier will download and build your contract. Then it will use the wasm tools you have selected to strip the wasm file too. It is **important** that you select the correct versions and tools for the verifier to succeed.
+
+Go on "Tools" -&gt; "Verify Contract" -&gt; read the explainer and hit "Next".
+
+Enter all the details in there and hit "submit". The contract should get verified if you met all the requirements. 
+If not @techcoderx can help you as he did help me multiple times. 
+
+---
+
+## We made it!
+
+Now you have all infos you need in order to build your own smart contracts on the Magi network! There is still plenty to learn for you from the Go language in general, optimization of gas consumption and much much more. It is a fun journey and I am excited about wht you are going to build! If you want your contracts to get featured on okinoko.io - please contact me!
+
+Also keep an eye out for upcoming videos about the Magi network!
+I am planning to make a deep dive into every single SDK function - let me know if you want to see that or if you have any other topic suggestions.
+
+</div>
+
+---
+
+▶️ [3Speak](https://3speak.tv/watch?v=tibfox/ff9c946a)
+</div>
+  <footer class="hive-post-embed__source">
+    <span class="hive-post-embed__source-label">Source:</span>
+    <a href="https://hive.blog/@tibfox/ff9c946a">Building Your First Magi Smart Contract: A Complete Guide!</a>
+    by
+    <a href="https://hive.blog/@tibfox">@tibfox</a>
+  </footer>
+</div>
+
+
+  </div><a class="u-url" href="/howto/smart-contracts/magi/2026/01/20/ff9c946a.html" hidden></a>
+</article>
+
+        </div>
+
+        
+        <aside class="page-sidebar" aria-label="Search and browse">
+          <section class="sidebar-section sidebar-search">
+            <h2 class="sidebar-heading">Search posts</h2>
+            <p class="sidebar-copy">Search the locally indexed post archive.</p>
+            <input type="text" id="search-input" placeholder="Search posts" autocomplete="off" />
+            <ul id="results-container"></ul>
+          </section>
+
+          <section class="sidebar-section sidebar-topics">
+            <h2 class="sidebar-heading">Browse topics</h2>
+            <p class="sidebar-copy">Jump into curated topic landing pages.</p>
+            <ul class="topic-list topic-list-sidebar"><li><a class="page-link" href="/account-recovery/">Account Recovery</a></li><li><a class="page-link" href="/core-development/">Core Development</a></li><li><a class="page-link" href="/dapps/">Dapps</a></li><li><a class="page-link" href="/docker/">Docker</a></li><li><a class="page-link" href="/hardfork/">Hardfork</a></li><li><a class="page-link" href="/hivemind/">Hivemind</a></li><li><a class="page-link" href="/javascript/">Javascript</a></li><li><a class="page-link" href="/multisig/">Multisig</a></li><li><a class="page-link" href="/python/">Python</a></li><li><a class="page-link" href="/ruby/">Ruby</a></li><li><a class="page-link" href="/testnet/">Testnet</a></li><li><a class="page-link" href="/tools/">Tools</a></li><li><a class="page-link" href="/witness/">Witness</a></li></ul>
+          </section>
+        </aside>
+        
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading"><a rel="author" href="/">Hive Chain Documentation</a></h2>
+    
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">site curated by: @inertia</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>Your resource for various levels of Hive Documentation.</p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+<script src="/assets/javascript/search.js"></script>
+    <script>
+      (function () {
+        var input = document.getElementById('search-input');
+        var results = document.getElementById('results-container');
+        if (input && results && typeof SimpleJekyllSearch !== 'undefined') {
+          SimpleJekyllSearch({
+            searchInput: input,
+            resultsContainer: results,
+            json: '/search.json'
+          });
+        }
+
+        if (typeof SteemContentRenderer === 'undefined') return;
+
+        var targets = document.querySelectorAll('[data-hive-render-target="true"]');
+        if (!targets.length) return;
+
+        var renderer = new SteemContentRenderer.DefaultRenderer({
+          baseUrl: 'https://hive.blog/',
+          breaks: true,
+          skipSanitization: false,
+          allowInsecureScriptTags: false,
+          addNofollowToLinks: true,
+          doNotShowImages: false,
+          ipfsPrefix: '',
+          assetsWidth: 640,
+          assetsHeight: 480,
+          imageProxyFn: function (url) { return url; },
+          usertagUrlFn: function (account) { return '/@' + account; },
+          hashtagUrlFn: function (hashtag) { return '/tags/#' + hashtag; },
+          isLinkSafeFn: function () { return true; }
+        });
+
+        targets.forEach(function (target) {
+          try {
+            var inputHtml = target.innerHTML;
+            target.innerHTML = renderer.render(inputHtml);
+          } catch (e) {
+            console.log(e);
+          }
+        });
+      })();
+    </script>
+
+  </body>
+
+</html>

@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta property="og:image" content="/assets/images/sticker.png" />
+  <meta name="apple-mobile-web-app-title" content="Hive Docs" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" /><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Imagehoster Upgrade: What Changed and Why It Matters | Hive Chain Documentation</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Imagehoster Upgrade: What Changed and Why It Matters" />
+<meta name="author" content="ecency" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="A comprehensive modernization of the Ecency image hosting and proxying service - from a 2017-era codebase to a production-hardened, performant system" />
+<meta property="og:description" content="A comprehensive modernization of the Ecency image hosting and proxying service - from a 2017-era codebase to a production-hardened, performant system" />
+<link rel="canonical" href="https://hive.blog/hive-139531/@ecency/imagehoster-upgrade-what-changed-and" />
+<meta property="og:url" content="https://hive.blog/hive-139531/@ecency/imagehoster-upgrade-what-changed-and" />
+<meta property="og:site_name" content="Hive Chain Documentation" />
+<meta property="og:image" content="https://images.ecency.com/DQmYxEnhiKdy1cyF4qa9ScdgsSzMyXfPfskRaZ6fcJbLaUE/ai_generated.webp" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2026-03-09T00:50:03-07:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="https://images.ecency.com/DQmYxEnhiKdy1cyF4qa9ScdgsSzMyXfPfskRaZ6fcJbLaUE/ai_generated.webp" />
+<meta property="twitter:title" content="Imagehoster Upgrade: What Changed and Why It Matters" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"ecency"},"dateModified":"2026-03-09T00:50:03-07:00","datePublished":"2026-03-09T00:50:03-07:00","description":"A comprehensive modernization of the Ecency image hosting and proxying service - from a 2017-era codebase to a production-hardened, performant system","headline":"Imagehoster Upgrade: What Changed and Why It Matters","image":"https://images.ecency.com/DQmYxEnhiKdy1cyF4qa9ScdgsSzMyXfPfskRaZ6fcJbLaUE/ai_generated.webp","mainEntityOfPage":{"@type":"WebPage","@id":"https://hive.blog/hive-139531/@ecency/imagehoster-upgrade-what-changed-and"},"url":"https://hive.blog/hive-139531/@ecency/imagehoster-upgrade-what-changed-and"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://hivedocs.info/feed.xml" title="Hive Chain Documentation" /><script>
+if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNotTrack === "yes" || navigator.msDoNotTrack === "1")) {
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-161692811-1', 'auto');
+  ga('send', 'pageview');
+}
+</script>
+  
+<script src='https://unpkg.com/steem-content-renderer'></script>
+  <script src="/assets/javascript/universal-bridge-against-phishing.js"></script>
+  <script src="/assets/javascript/lazysizes.min.js" async=""></script>
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet" />
+  <link rel="shortcut icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="152x152" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="167x167" href="/assets/images/favicon-80x80.png" />
+</head>
+<body><header class="site-header" role="banner">
+  <div class="wrapper site-header-inner">
+    <a class="site-title" rel="author" href="/">Hive Chain Documentation</a>
+
+    <nav class="site-nav" aria-label="Primary">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/news/">News</a><a class="page-link" href="/howto/">How To</a><a class="page-link" href="/links/">Useful Links</a><a class="page-link" href="/authors/">Authors</a><a class="page-link" href="/topics/">Topics</a><a class="page-link" href="/search/">Search</a></div>
+    </nav>
+  </div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper page-layout has-search-panel">
+        <div class="page-main">
+          <article class="post h-entry post-article" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header post-hero">
+    <div class="post-hero-main">
+      <p class="post-kicker">Archive post</p>
+      <h1 class="post-title p-name" itemprop="name headline">Imagehoster Upgrade: What Changed and Why It Matters</h1>
+      <p class="post-meta">
+        <time class="dt-published" datetime="2026-03-09T00:50:03-07:00" itemprop="datePublished">Mar 9, 2026
+        </time>• <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">
+            <a href="/authors/#author-ecency">ecency</a>
+          </span></span></p><p class="post-summary">A comprehensive modernization of the Ecency image hosting and proxying service - from a 2017-era codebase to a production-hardened, performant system</p></div><aside class="post-author-card">
+      <img src="https://images.hive.blog/u/ecency/avatar" width="128" height="128" class="lazyload post-author-avatar" alt="Avatar for @ecency" />
+      <div class="post-author-name">@ecency</div>
+    </aside></header>
+
+  <div class="post-content e-content post-body" itemprop="articleBody">
+    <div class="hive-post-embed" data-hive-author="ecency" data-hive-permlink="imagehoster-upgrade-what-changed-and">
+  <div id="content-ecency-imagehoster-upgrade-what-changed-and" class="hive-post-embed__content" data-hive-render-target="true">As many already know Ecency running our own instance of imagehoster for long time and we have made many improvements and iterations of software over the course of last few years. Our modifications become so messy and it was private repo until recently decided to push our changes into [https://github.com/ecency/imagehoster](https://github.com/ecency/imagehoster) so community can check our changes and improvements.
+
+<img src="https://images.ecency.com/DQmYxEnhiKdy1cyF4qa9ScdgsSzMyXfPfskRaZ6fcJbLaUE/ai_generated.webp" alt="" />
+
+A comprehensive modernization of the Ecency image hosting and proxying service - from a 2017-era codebase to a production-hardened, performant system. Over the years our changes and instances were focused around serving webp image format as priority. As it would help website and app become faster to load due to superior image compression and size, that has changed in last couple years as technology improved we saw switch to avif image compression. So our current instance prioritize avif image compression then fallback to webp and then serve original or legacy format.
+
+Codebase is much more modern and utilizing latest library versions. Below tables show differences from [old imagehoster codebase](https://gitlab.syncad.com/hive/imagehoster) to new one.
+
+At a Glance
+-----------
+
+<table style="min-width: 100px;"><tbody><tr><th colspan="1" rowspan="1"><p>Area</p></th><th colspan="1" rowspan="1"><p>Before</p></th><th colspan="1" rowspan="1"><p>After</p></th><th colspan="1" rowspan="1"><p>Impact</p></th></tr><tr><td colspan="1" rowspan="1"><p><strong>Node.js</strong></p></td><td colspan="1" rowspan="1"><p>8+ (Alpine)</p></td><td colspan="1" rowspan="1"><p>20 (Bookworm)</p></td><td colspan="1" rowspan="1"><p>Modern APIs, better performance</p></td></tr><tr><td colspan="1" rowspan="1"><p><strong>TypeScript</strong></p></td><td colspan="1" rowspan="1"><p>3.9</p></td><td colspan="1" rowspan="1"><p>5.7</p></td><td colspan="1" rowspan="1"><p>Stronger types, faster compilation</p></td></tr><tr><td colspan="1" rowspan="1"><p><strong>Linter</strong></p></td><td colspan="1" rowspan="1"><p>TSLint (deprecated)</p></td><td colspan="1" rowspan="1"><p>ESLint</p></td><td colspan="1" rowspan="1"><p>Maintained, better rules</p></td></tr><tr><td colspan="1" rowspan="1"><p><strong>Sharp</strong></p></td><td colspan="1" rowspan="1"><p>0.32</p></td><td colspan="1" rowspan="1"><p>0.33.5</p></td><td colspan="1" rowspan="1"><p>Bundled libvips, AVIF/HEIC support</p></td></tr><tr><td colspan="1" rowspan="1"><p><strong>AWS SDK</strong></p></td><td colspan="1" rowspan="1"><p>v2 (monolithic, 60MB+)</p></td><td colspan="1" rowspan="1"><p>v3 (modular, ~3MB)</p></td><td colspan="1" rowspan="1"><p>Smaller builds, tree-shakeable</p></td></tr><tr><td colspan="1" rowspan="1"><p><strong>Redis client</strong></p></td><td colspan="1" rowspan="1"><p>v2 (callbacks)</p></td><td colspan="1" rowspan="1"><p>v4 (async/await)</p></td><td colspan="1" rowspan="1"><p>Clean async code</p></td></tr><tr><td colspan="1" rowspan="1"><p><code><span class="border border-[--border-color] rounded-lg px-1 py-0.5 bg-gray-100 dark:bg-dark-default text-blue-dark-sky" data-type="mention" data-id="hiveio" data-mention-suggestion-char="@">@hiveio</span>/dhive</code></p></td><td colspan="1" rowspan="1"><p>0.14</p></td><td colspan="1" rowspan="1"><p>1.3.4</p></td><td colspan="1" rowspan="1"><p>Stable API, better types</p></td></tr><tr><td colspan="1" rowspan="1"><p><strong>Docker image</strong></p></td><td colspan="1" rowspan="1"><p>Alpine + manual vips build</p></td><td colspan="1" rowspan="1"><p>Debian slim, Sharp bundles vips</p></td><td colspan="1" rowspan="1"><p>Simpler, more reliable</p></td></tr></tbody></table>
+
+Key Improvements
+----------------
+
+### Storage: Custom S3 Store (replaces s3-blob-store)
+
+<table style="min-width: 75px;"><tbody><tr><th colspan="1" rowspan="1"><p>Feature</p></th><th colspan="1" rowspan="1"><p>Old (s3-blob-store + aws-sdk v2)</p></th><th colspan="1" rowspan="1"><p>New (custom S3BlobStore + SDK v3)</p></th></tr><tr><td colspan="1" rowspan="1"><p>Upload method</p></td><td colspan="1" rowspan="1"><p>Stream-only</p></td><td colspan="1" rowspan="1"><p>Direct <code>putBuffer()</code> - no stream overhead</p></td></tr><tr><td colspan="1" rowspan="1"><p>Write stream</p></td><td colspan="1" rowspan="1"><p>Double-buffered in memory</p></td><td colspan="1" rowspan="1"><p>Streams directly to S3</p></td></tr><tr><td colspan="1" rowspan="1"><p>Prefix deletion</p></td><td colspan="1" rowspan="1"><p>Not supported</p></td><td colspan="1" rowspan="1"><p>Native <code>ListObjectsV2</code> + batch <code>DeleteObjects</code></p></td></tr><tr><td colspan="1" rowspan="1"><p>Bundle size</p></td><td colspan="1" rowspan="1"><p>~60MB (full aws-sdk)</p></td><td colspan="1" rowspan="1"><p>~3MB (<code><span class="border border-[--border-color] rounded-lg px-1 py-0.5 bg-gray-100 dark:bg-dark-default text-blue-dark-sky" data-type="mention" data-id="aws-sdk" data-mention-suggestion-char="@">@aws-sdk</span>/client-s3</code> only)</p></td></tr><tr><td colspan="1" rowspan="1"><p>Error handling</p></td><td colspan="1" rowspan="1"><p>Generic errors</p></td><td colspan="1" rowspan="1"><p>Maps S3 404 → NotFound correctly</p></td></tr></tbody></table>
+
+### Image Format Support
+
+<table style="min-width: 75px;"><tbody><tr><th colspan="1" rowspan="1"><p>Format</p></th><th colspan="1" rowspan="1"><p>Before</p></th><th colspan="1" rowspan="1"><p>After</p></th></tr><tr><td colspan="1" rowspan="1"><p>JPEG, PNG, GIF, WebP</p></td><td colspan="1" rowspan="1"><p>Yes</p></td><td colspan="1" rowspan="1"><p>Yes</p></td></tr><tr><td colspan="1" rowspan="1"><p>SVG</p></td><td colspan="1" rowspan="1"><p>Yes</p></td><td colspan="1" rowspan="1"><p>Yes</p></td></tr><tr><td colspan="1" rowspan="1"><p><strong>AVIF</strong></p></td><td colspan="1" rowspan="1"><p>No</p></td><td colspan="1" rowspan="1"><p>Yes (encode + decode)</p></td></tr><tr><td colspan="1" rowspan="1"><p><strong>HEIC/HEIF</strong></p></td><td colspan="1" rowspan="1"><p>No</p></td><td colspan="1" rowspan="1"><p>Accepted (decode limited by Sharp)</p></td></tr><tr><td colspan="1" rowspan="1"><p><strong>APNG</strong></p></td><td colspan="1" rowspan="1"><p>No</p></td><td colspan="1" rowspan="1"><p>Yes (animation preserved)</p></td></tr><tr><td colspan="1" rowspan="1"><p><strong>BMP</strong></p></td><td colspan="1" rowspan="1"><p>No</p></td><td colspan="1" rowspan="1"><p>Yes</p></td></tr><tr><td colspan="1" rowspan="1"><p><strong>Content negotiation</strong></p></td><td colspan="1" rowspan="1"><p>Partial</p></td><td colspan="1" rowspan="1"><p>Auto via Accept header (AVIF &gt; WebP &gt; original)</p></td></tr></tbody></table>
+
+### Rate Limiting
+
+<table style="min-width: 75px;"><tbody><tr><th colspan="1" rowspan="1"><p>Aspect</p></th><th colspan="1" rowspan="1"><p>Before</p></th><th colspan="1" rowspan="1"><p>After</p></th></tr><tr><td colspan="1" rowspan="1"><p>Library</p></td><td colspan="1" rowspan="1"><p><code>ratelimiter</code> npm package</p></td><td colspan="1" rowspan="1"><p>Custom sliding-window (Redis sorted sets)</p></td></tr><tr><td colspan="1" rowspan="1"><p>API style</p></td><td colspan="1" rowspan="1"><p>Callbacks</p></td><td colspan="1" rowspan="1"><p>async/await</p></td></tr><tr><td colspan="1" rowspan="1"><p>Precision</p></td><td colspan="1" rowspan="1"><p>Second-level</p></td><td colspan="1" rowspan="1"><p>Microsecond-level</p></td></tr><tr><td colspan="1" rowspan="1"><p>Window type</p></td><td colspan="1" rowspan="1"><p>Fixed window</p></td><td colspan="1" rowspan="1"><p>Sliding window (fairer)</p></td></tr><tr><td colspan="1" rowspan="1"><p>Weekly limit</p></td><td colspan="1" rowspan="1"><p>300 uploads</p></td><td colspan="1" rowspan="1"><p>700 uploads</p></td></tr><tr><td colspan="1" rowspan="1"><p>Max upload size</p></td><td colspan="1" rowspan="1"><p>15MB</p></td><td colspan="1" rowspan="1"><p>30MB</p></td></tr></tbody></table>
+
+### RPC Failover
+
+<table style="min-width: 75px;"><tbody><tr><th colspan="1" rowspan="1"><p>Aspect</p></th><th colspan="1" rowspan="1"><p>Before</p></th><th colspan="1" rowspan="1"><p>After</p></th></tr><tr><td colspan="1" rowspan="1"><p>Endpoints</p></td><td colspan="1" rowspan="1"><p>1 (<code>api.hive.blog</code>)</p></td><td colspan="1" rowspan="1"><p>6 endpoints with auto-failover</p></td></tr><tr><td colspan="1" rowspan="1"><p>Timeout</p></td><td colspan="1" rowspan="1"><p>None configured</p></td><td colspan="1" rowspan="1"><p>2000ms per request</p></td></tr><tr><td colspan="1" rowspan="1"><p>Profile caching</p></td><td colspan="1" rowspan="1"><p>None</p></td><td colspan="1" rowspan="1"><p>30s TTL (node-cache)</p></td></tr><tr><td colspan="1" rowspan="1"><p>Profile API</p></td><td colspan="1" rowspan="1"><p><code>get_accounts</code> + JSON parse</p></td><td colspan="1" rowspan="1"><p><code>bridge.get_profile</code> (no parsing needed), valid reputation check</p></td></tr></tbody></table>
+
+### Cache Invalidation
+
+<table style="min-width: 75px;"><tbody><tr><th colspan="1" rowspan="1"><p>Aspect</p></th><th colspan="1" rowspan="1"><p>Before</p></th><th colspan="1" rowspan="1"><p>After</p></th></tr><tr><td colspan="1" rowspan="1"><p>Invalidation</p></td><td colspan="1" rowspan="1"><p>Not supported</p></td><td colspan="1" rowspan="1"><p><code>?invalidate=1</code> with token auth, DMCA requests quick cleanup</p></td></tr><tr><td colspan="1" rowspan="1"><p>Cache bypass</p></td><td colspan="1" rowspan="1"><p>Not supported</p></td><td colspan="1" rowspan="1"><p><code>?ignorecache=1</code></p></td></tr><tr><td colspan="1" rowspan="1"><p>CDN purge</p></td><td colspan="1" rowspan="1"><p>Not supported</p></td><td colspan="1" rowspan="1"><p>Cloudflare API integration</p></td></tr><tr><td colspan="1" rowspan="1"><p>Stale detection</p></td><td colspan="1" rowspan="1"><p>None</p></td><td colspan="1" rowspan="1"><p>Auto-detects corrupt/non-image cache entries</p></td></tr><tr><td colspan="1" rowspan="1"><p>File deletion</p></td><td colspan="1" rowspan="1"><p>N/A</p></td><td colspan="1" rowspan="1"><p>Direct key deletion (no directory scan)</p></td></tr><tr><td colspan="1" rowspan="1"><p>Avatar invalidation</p></td><td colspan="1" rowspan="1"><p>N/A</p></td><td colspan="1" rowspan="1"><p>Enumerates 12 known variants (4 sizes × 3 formats)</p></td></tr><tr><td colspan="1" rowspan="1"><p>Cover invalidation</p></td><td colspan="1" rowspan="1"><p>N/A</p></td><td colspan="1" rowspan="1"><p>Enumerates 3 known variants</p></td></tr></tbody></table>
+
+### Fallback System
+
+<table style="min-width: 75px;"><tbody><tr><th colspan="1" rowspan="1"><p>Aspect</p></th><th colspan="1" rowspan="1"><p>Before</p></th><th colspan="1" rowspan="1"><p>After</p></th></tr><tr><td colspan="1" rowspan="1"><p>Mirror sources</p></td><td colspan="1" rowspan="1"><p>1 (steemitimages.com)</p></td><td colspan="1" rowspan="1"><p>5 mirrors + default fallback</p></td></tr><tr><td colspan="1" rowspan="1"><p>Retry logic</p></td><td colspan="1" rowspan="1"><p>None</p></td><td colspan="1" rowspan="1"><p>Sequential with 5s timeout each</p></td></tr><tr><td colspan="1" rowspan="1"><p>Corrupt cache</p></td><td colspan="1" rowspan="1"><p>Served as-is</p></td><td colspan="1" rowspan="1"><p>Detected, purged, re-fetched</p></td></tr><tr><td colspan="1" rowspan="1"><p>Fallback caching</p></td><td colspan="1" rowspan="1"><p>None</p></td><td colspan="1" rowspan="1"><p>Cached under both fallback key and image key</p></td></tr><tr><td colspan="1" rowspan="1"><p>URL migrations</p></td><td colspan="1" rowspan="1"><p>None</p></td><td colspan="1" rowspan="1"><p>Automatic (3speak, InLeo, esteem.ws)</p></td></tr></tbody></table>
+
+### Security
+
+<table style="min-width: 75px;"><tbody><tr><th colspan="1" rowspan="1"><p>Feature</p></th><th colspan="1" rowspan="1"><p>Before</p></th><th colspan="1" rowspan="1"><p>After</p></th></tr><tr><td colspan="1" rowspan="1"><p>SSRF protection</p></td><td colspan="1" rowspan="1"><p>None</p></td><td colspan="1" rowspan="1"><p>Blocks private IPs, IPv6 loopback, link-local, ULA</p></td></tr><tr><td colspan="1" rowspan="1"><p>IPv4-mapped IPv6</p></td><td colspan="1" rowspan="1"><p>Not checked</p></td><td colspan="1" rowspan="1"><p>Detected and blocked (::ffff:127.0.0.1)</p></td></tr><tr><td colspan="1" rowspan="1"><p>Blacklists</p></td><td colspan="1" rowspan="1"><p>Static JSON arrays</p></td><td colspan="1" rowspan="1"><p>Dynamic remote fetch with TTL + local fallback</p></td></tr><tr><td colspan="1" rowspan="1"><p>URL validation</p></td><td colspan="1" rowspan="1"><p>Basic</p></td><td colspan="1" rowspan="1"><p>Protocol check (http/https only)</p></td></tr><tr><td colspan="1" rowspan="1"><p>Invalidation auth</p></td><td colspan="1" rowspan="1"><p>N/A</p></td><td colspan="1" rowspan="1"><p>Token-protected header</p></td></tr></tbody></table>
+
+### Docker
+
+<table style="min-width: 75px;"><tbody><tr><th colspan="1" rowspan="1"><p>Aspect</p></th><th colspan="1" rowspan="1"><p>Before</p></th><th colspan="1" rowspan="1"><p>After</p></th></tr><tr><td colspan="1" rowspan="1"><p>Base</p></td><td colspan="1" rowspan="1"><p>Alpine (manual vips build from edge repos)</p></td><td colspan="1" rowspan="1"><p>Debian Bookworm slim</p></td></tr><tr><td colspan="1" rowspan="1"><p>Sharp setup</p></td><td colspan="1" rowspan="1"><p>System libvips required</p></td><td colspan="1" rowspan="1"><p>Sharp bundles own libvips - zero system deps</p></td></tr><tr><td colspan="1" rowspan="1"><p>Runtime packages</p></td><td colspan="1" rowspan="1"><p>vips, heif, aom libraries</p></td><td colspan="1" rowspan="1"><p>wget only (for healthcheck)</p></td></tr><tr><td colspan="1" rowspan="1"><p>Healthcheck</p></td><td colspan="1" rowspan="1"><p>None</p></td><td colspan="1" rowspan="1"><p>Built-in, respects <code>$PORT</code> env</p></td></tr><tr><td colspan="1" rowspan="1"><p>Build reliability</p></td><td colspan="1" rowspan="1"><p>Fragile (Alpine edge repo dependencies)</p></td><td colspan="1" rowspan="1"><p>Stable (npm handles native modules)</p></td></tr></tbody></table>
+
+### Performance Optimizations
+
+<table style="min-width: 50px;"><tbody><tr><th colspan="1" rowspan="1"><p>Optimization</p></th><th colspan="1" rowspan="1"><p>Detail</p></th></tr><tr><td colspan="1" rowspan="1"><p><strong>Direct buffer upload</strong></p></td><td colspan="1" rowspan="1"><p><code>putBuffer()</code> skips stream overhead for S3 writes</p></td></tr><tr><td colspan="1" rowspan="1"><p><strong>No directory scanning</strong></p></td><td colspan="1" rowspan="1"><p>Invalidation deletes known keys directly instead of scanning millions of files</p></td></tr><tr><td colspan="1" rowspan="1"><p><strong>Background deletion</strong></p></td><td colspan="1" rowspan="1"><p>CDN purge fires immediately, file cleanup runs async</p></td></tr><tr><td colspan="1" rowspan="1"><p><strong>Streaming directory reads</strong></p></td><td colspan="1" rowspan="1"><p><code>opendir()</code> for O(1) memory when prefix scan is needed</p></td></tr><tr><td colspan="1" rowspan="1"><p><strong>ETag support</strong></p></td><td colspan="1" rowspan="1"><p>304 responses save bandwidth for repeat requests</p></td></tr><tr><td colspan="1" rowspan="1"><p><strong>Fallback caching</strong></p></td><td colspan="1" rowspan="1"><p>Failed images cache the fallback under the specific key, preventing repeated re-processing</p></td></tr><tr><td colspan="1" rowspan="1"><p><strong>Animation detection</strong></p></td><td colspan="1" rowspan="1"><p>Checks <code>metadata.pages</code> for APNG, not just GIF mime type</p></td></tr></tbody></table>
+
+### Code Quality
+
+<table style="min-width: 75px;"><tbody><tr><th colspan="1" rowspan="1"><p>Metric</p></th><th colspan="1" rowspan="1"><p>Before</p></th><th colspan="1" rowspan="1"><p>After</p></th></tr><tr><td colspan="1" rowspan="1"><p>Source files</p></td><td colspan="1" rowspan="1"><p>~15</p></td><td colspan="1" rowspan="1"><p>~22 (better separation)</p></td></tr><tr><td colspan="1" rowspan="1"><p>Test files</p></td><td colspan="1" rowspan="1"><p>~5</p></td><td colspan="1" rowspan="1"><p>~10 (expanded coverage)</p></td></tr><tr><td colspan="1" rowspan="1"><p>Type safety</p></td><td colspan="1" rowspan="1"><p>Minimal (noImplicitAny: false)</p></td><td colspan="1" rowspan="1"><p>Type guards, explicit interfaces</p></td></tr><tr><td colspan="1" rowspan="1"><p>Error handling</p></td><td colspan="1" rowspan="1"><p>Basic try/catch</p></td><td colspan="1" rowspan="1"><p>Structured errors with codes and metadata</p></td></tr><tr><td colspan="1" rowspan="1"><p>Logging</p></td><td colspan="1" rowspan="1"><p>Basic bunyan</p></td><td colspan="1" rowspan="1"><p>Structured with request tracking, context tags</p></td></tr><tr><td colspan="1" rowspan="1"><p>New modules</p></td><td colspan="1" rowspan="1"><p>—</p></td><td colspan="1" rowspan="1"><p>s3-store, fallback, fetch-image, constants, blacklist-service, image-resizer, cache</p></td></tr></tbody></table>
+
+Some of the changes are focused towards improving our maintenance. For example, DMCA requests that we receive are unified inside website codebase and served to imagehoster as json file so redeployment of imagehoster becomes unnecessary, simple change to website codebase handles DMCA requests. Local and cloudflare cache cleanup also easy, previous we used to run separate script [https://github.com/ecency/cf-cache](https://github.com/ecency/cf-cache) to clean up cache manually, now that's handled automatically.
+
+Overall codebase is much easier to maintain and uses best approach and improvements we added and polished over the years.
+
+<h3 style="text-align: left;" data-align="left">Support us</h3>
+
+[https://ecency.com/proposals?filter=team](https://ecency.com/proposals?filter=team)
+
+<h3 style="text-align: left;" data-align="left">Follow/support us on Web2 social networks</h3>
+
+Instagram: [https://www.instagram.com/ecency\_official/](https://www.instagram.com/ecency_official/)
+
+X/Twitter: [https://x.com/ecency\_official](https://x.com/ecency_official)
+
+Medium: [https://ecency.medium.com](https://ecency.medium.com)
+
+Telegram: [https://t.me/ecency](https://t.me/ecency)
+
+Discord: [https://discord.me/ecency](https://discord.me/ecency)</div>
+  <footer class="hive-post-embed__source">
+    <span class="hive-post-embed__source-label">Source:</span>
+    <a href="https://hive.blog/@ecency/imagehoster-upgrade-what-changed-and">Imagehoster Upgrade: What Changed and Why It Matters</a>
+    by
+    <a href="https://hive.blog/@ecency">@ecency</a>
+  </footer>
+</div>
+
+
+  </div><a class="u-url" href="/news/imagehoster/development/2026/03/09/imagehoster-upgrade-what-changed-and.html" hidden></a>
+</article>
+
+        </div>
+
+        
+        <aside class="page-sidebar" aria-label="Search and browse">
+          <section class="sidebar-section sidebar-search">
+            <h2 class="sidebar-heading">Search posts</h2>
+            <p class="sidebar-copy">Search the locally indexed post archive.</p>
+            <input type="text" id="search-input" placeholder="Search posts" autocomplete="off" />
+            <ul id="results-container"></ul>
+          </section>
+
+          <section class="sidebar-section sidebar-topics">
+            <h2 class="sidebar-heading">Browse topics</h2>
+            <p class="sidebar-copy">Jump into curated topic landing pages.</p>
+            <ul class="topic-list topic-list-sidebar"><li><a class="page-link" href="/account-recovery/">Account Recovery</a></li><li><a class="page-link" href="/core-development/">Core Development</a></li><li><a class="page-link" href="/dapps/">Dapps</a></li><li><a class="page-link" href="/docker/">Docker</a></li><li><a class="page-link" href="/hardfork/">Hardfork</a></li><li><a class="page-link" href="/hivemind/">Hivemind</a></li><li><a class="page-link" href="/javascript/">Javascript</a></li><li><a class="page-link" href="/multisig/">Multisig</a></li><li><a class="page-link" href="/python/">Python</a></li><li><a class="page-link" href="/ruby/">Ruby</a></li><li><a class="page-link" href="/testnet/">Testnet</a></li><li><a class="page-link" href="/tools/">Tools</a></li><li><a class="page-link" href="/witness/">Witness</a></li></ul>
+          </section>
+        </aside>
+        
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading"><a rel="author" href="/">Hive Chain Documentation</a></h2>
+    
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">site curated by: @inertia</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>Your resource for various levels of Hive Documentation.</p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+<script src="/assets/javascript/search.js"></script>
+    <script>
+      (function () {
+        var input = document.getElementById('search-input');
+        var results = document.getElementById('results-container');
+        if (input && results && typeof SimpleJekyllSearch !== 'undefined') {
+          SimpleJekyllSearch({
+            searchInput: input,
+            resultsContainer: results,
+            json: '/search.json'
+          });
+        }
+
+        if (typeof SteemContentRenderer === 'undefined') return;
+
+        var targets = document.querySelectorAll('[data-hive-render-target="true"]');
+        if (!targets.length) return;
+
+        var renderer = new SteemContentRenderer.DefaultRenderer({
+          baseUrl: 'https://hive.blog/',
+          breaks: true,
+          skipSanitization: false,
+          allowInsecureScriptTags: false,
+          addNofollowToLinks: true,
+          doNotShowImages: false,
+          ipfsPrefix: '',
+          assetsWidth: 640,
+          assetsHeight: 480,
+          imageProxyFn: function (url) { return url; },
+          usertagUrlFn: function (account) { return '/@' + account; },
+          hashtagUrlFn: function (hashtag) { return '/tags/#' + hashtag; },
+          isLinkSafeFn: function () { return true; }
+        });
+
+        targets.forEach(function (target) {
+          try {
+            var inputHtml = target.innerHTML;
+            target.innerHTML = renderer.render(inputHtml);
+          } catch (e) {
+            console.log(e);
+          }
+        });
+      })();
+    </script>
+
+  </body>
+
+</html>

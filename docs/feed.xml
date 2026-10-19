@@ -1,574 +1,1676 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="https://hivedocs.info/feed.xml" rel="self" type="application/atom+xml" /><link href="https://hivedocs.info/" rel="alternate" type="text/html" /><updated>2026-10-18T19:55:51-07:00</updated><id>https://hivedocs.info/feed.xml</id><title type="html">Hive Chain Documentation</title><subtitle>Your resource for various levels of Hive Documentation.</subtitle><author><name>site curated by: @inertia</name></author><entry><title type="html">Aioha Web Components</title><link href="https://hivedocs.info/tools/aioha/authentication/2025/12/31/aioha-web-components.html" rel="alternate" type="text/html" title="Aioha Web Components" /><published>2025-12-31T08:18:27-08:00</published><updated>2025-12-31T08:18:27-08:00</updated><id>https://hivedocs.info/tools/aioha/authentication/2025/12/31/aioha-web-components</id><content type="html" xml:base="https://hivedocs.info/tools/aioha/authentication/2025/12/31/aioha-web-components.html"><![CDATA[<div class="hive-post-embed" data-hive-author="aioha" data-hive-permlink="aioha-web-components">
-  <div id="content-aioha-aioha-web-components" class="hive-post-embed__content" data-hive-render-target="true"><center>![](https://files.peakd.com/file/peakd-hive/aioha/23tbMAXFrAgUGz6KiHpZTU5qc8MdzoLiQ51GQmfXvdXL7nG8BpCMUEkegTngbG6oZ5YT4.png)</center>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="https://hivedocs.info/feed.xml" rel="self" type="application/atom+xml" /><link href="https://hivedocs.info/" rel="alternate" type="text/html" /><updated>2026-10-19T07:00:40-07:00</updated><id>https://hivedocs.info/feed.xml</id><title type="html">Hive Chain Documentation</title><subtitle>Your resource for various levels of Hive Documentation.</subtitle><author><name>site curated by: @inertia</name></author><entry><title type="html">HafSQL v2.7.0</title><link href="https://hivedocs.info/tools/haf/sql/2026/10/18/hafsql-v270.html" rel="alternate" type="text/html" title="HafSQL v2.7.0" /><published>2026-10-18T13:52:33-07:00</published><updated>2026-10-18T13:52:33-07:00</updated><id>https://hivedocs.info/tools/haf/sql/2026/10/18/hafsql-v270</id><content type="html" xml:base="https://hivedocs.info/tools/haf/sql/2026/10/18/hafsql-v270.html"><![CDATA[<div class="hive-post-embed" data-hive-author="mahdiyari" data-hive-permlink="hafsql-v270">
+  <div id="content-mahdiyari-hafsql-v270" class="hive-post-embed__content" data-hive-render-target="true"># HafSQL v2.7.0: changes for public database users
 
-As promised in [our presentation](/hive-139531/@aioha/dnuboasdem), we announce the release of Aioha web components that can be used in vanilla HTML/JS or any web framework to easily integrate Hive logins with 6 authentication providers including all the UI components and logic required.
+## Removed tables
+- **`hafsql.rc_delegations_table`** is gone. Use the `hafsql.rc_delegations` view, which now reads from balance_tracker.
+- **`hafsql.proposal_approvals_table`** is gone. Use the `hafsql.proposal_approvals` view, which now reads from hafbe.
 
-Built using Lit and adapted from our [React UI](https://aioha.dev/docs/react/ui), the modal web component uses shadow DOM by default to ensure consistent styling regardless of how the rest of the application are styled.
+## Removed columns from `hafsql.accounts_table`
+`reward_hive_balance`, `reward_hbd_balance`, `reward_vests_balance`, `to_withdraw`, `vesting_withdraw_rate`, `withdrawn` and `proxy` are gone. The `hafsql.accounts` **view** still has all of them under the same names. They now come from balance_tracker / hafbe. If you queried `accounts_table` directly, switch to the view.
 
-This allows developers to quickly bootstrap an Aioha-powered Hive app using any framework in less than 5 minutes.
+## View columns that changed (same names, different values or types)
 
-# Installation
+| View.column | Before | Now |
+|---|---|---|
+| `delegations.vests` | raw ×1,000,000 | VESTS, `numeric(27,6)` |
+| `accounts.incoming_vests` / `outgoing_vests` | raw ×1,000,000 | VESTS. `*_hp` columns unchanged |
+| `accounts.to_withdraw` | remaining amount, dropped after each payout | total power-down amount (as in hived) |
+| `accounts.vesting_withdraw_rate` | to_withdraw / 13 | rounded up, as hived does since HF21 |
+| `accounts.next_vesting_withdrawal` | drifted 3s per weekly payout | exact. `NULL` when no power down is active |
+| `rc_delegations.rc` | `text` | numeric |
+| `rc_delegations.timestamp` | last sync time of the row | block time of the delegation op |
+| `comments.net_rshares` | sum of absolute rshares | signed sum (downvotes subtract) |
+| `comments.abs_rshares` | n/a | **new column**: sum of absolute rshares |
+| `comments.total_rshares` / `net_rshares` | changed votes counted twice | only each voter's latest vote counts |
+| `operation_account_update*_table.json_metadata` / `posting_json_metadata` | `{}` when the op left it empty | `NULL` (empty means "unchanged" on chain) |
 
-```sh
-pnpm i @aioha/lit-ui @aioha/aioha
-```
+## Behavior changes
+- **Comments deleted and then re-posted** at the same permlink are now a new row with a **new `id`**, the same as hivemind. Before, they stayed marked as deleted.
+- **Weekly market buckets** now run Monday to Sunday. Before, Sunday trades landed in the next week. Existing buckets are rebuilt.
+- **`hafsql.get_timestamp`, `hafsql.id_from_timestamp` and `comments.cashout_time` / `last_payout`** now give correct results when your session timezone isn't UTC.
+- **`hafsql.get_timestamp`** now also accepts a block number (`int4`).
+- **`hafd.operation_id_to_type_id`** was removed from the docs.
 
-Or import from the CDN:
+## Fixes (no query changes needed)
+- Reblog permlinks were wrong.
+- Account metadata was wiped by updates with empty metadata.
+- Comment titles were blanked by edits with an empty title.
+- `get_balance(account, block)` and `balances_history` were slow.
 
-```html
-<script type="importmap">
-  {
-    "imports": {
-      "@aioha/aioha": "https://unpkg.com/@aioha/aioha@latest/dist/bundle.js",
-      "@aioha/lit-ui": "https://unpkg.com/@aioha/lit-ui@latest/dist/bundle.min.js"
-    }
+</div>
+  <footer class="hive-post-embed__source">
+    <span class="hive-post-embed__source-label">Source:</span>
+    <a href="https://hive.blog/@mahdiyari/hafsql-v270">HafSQL v2.7.0</a>
+    by
+    <a href="https://hive.blog/@mahdiyari">@mahdiyari</a>
+  </footer>
+</div>]]></content><author><name>mahdiyari</name></author><category term="tools" /><category term="haf" /><category term="sql" /><summary type="html"><![CDATA[reward hive balance , reward hbd balance , reward vests balance , to withdraw , vesting withdraw rate , withdrawn and proxy are gone]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://hivedocs.info/assets/images/favicon.png" /><media:content medium="image" url="https://hivedocs.info/assets/images/favicon.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">PR #141: Letting Hive-Engine Lite Nodes Catch Up Before Cleaning House</title><link href="https://hivedocs.info/news/hiveengine/node/2026/10/17/pr-141-letting-hive-engine-lite-nodes-catch-up-before-cleaning-house.html" rel="alternate" type="text/html" title="PR #141: Letting Hive-Engine Lite Nodes Catch Up Before Cleaning House" /><published>2026-10-17T07:24:45-07:00</published><updated>2026-10-17T07:24:45-07:00</updated><id>https://hivedocs.info/news/hiveengine/node/2026/10/17/pr-141-letting-hive-engine-lite-nodes-catch-up-before-cleaning-house</id><content type="html" xml:base="https://hivedocs.info/news/hiveengine/node/2026/10/17/pr-141-letting-hive-engine-lite-nodes-catch-up-before-cleaning-house.html"><![CDATA[<div class="hive-post-embed" data-hive-author="thecrazygm" data-hive-permlink="pr-141-letting-hive-engine-lite-nodes-catch-up-before-cleaning-house">
+  <div id="content-thecrazygm-pr-141-letting-hive-engine-lite-nodes-catch-up-before-cleaning-house" class="hive-post-embed__content" data-hive-render-target="true">Hey everyone,
+
+In my last update, I broke down the Knobs A, B, and C changes and teased what was coming next. The latest piece of that puzzle, **Knobs D**, is now built, tested on live mainnet traffic, and submitted as [PR #141](https://github.com/hive-engine/hivesmartcontracts/pull/141) against the `qa` branch.
+
+This round focuses squarely on lite-node operations: specifically, teaching the node to hold off on pruning local database history when it has more urgent work to do.
+
+## The Problem: Housekeeping During a Fire
+
+Lite nodes stay small and efficient by periodically running cleanup jobs (`database.cleanupLightNode()`) to purge old blocks and transactions they no longer need. Under normal conditions, this background housekeeping runs quietly and everyone is happy.
+
+The trouble starts when a node falls behind. Whether it's scheduled server maintenance, an unexpected reboot, or an upstream network hiccup, a node that wakes up thousands of blocks behind the chain head needs all the CPU cycles and disk I/O it can get just to ingest and validate incoming blocks.
+
+Having MongoDB stop what it's doing every few minutes to execute heavy delete operations right in the middle of a catch-up sprint is the database equivalent of vacuuming the living room while the house is on fire. It causes unnecessary I/O contention and drags out the time it takes to get back to the head block.
+
+The fix is straightforward in concept: make cleanup lag-aware. If the node is struggling to catch up, let it defer cleanup for a bit and focus on block ingestion.
+
+Crucially, this doesn't touch block processing order, smart contracts, or consensus rules. It strictly changes _when_ local pruning takes place.
+
+## The New Configuration Knobs
+
+The adaptive cleanup behavior is completely opt-in and controlled under the `lightNode` configuration block:
+
+```json
+{
+  "lightNode": {
+    "enabled": true,
+    "adaptiveCleanup": true,
+    "cleanupLagThreshold": 1000,
+    "maxConsecutiveCleanupSkips": 3,
+    "lastVerifiedBlockCacheTTL": 900000
   }
-</script>
+}
 ```
 
-# Usage
+Here’s how these pieces work together:
 
-It takes no more than 5 lines of JavaScript code and one line of HTML to integrate the Aioha modal web components in your application. The full example usage may be found [here](https://github.com/aioha-hive/lit-ui/blob/main/examples/index.html).
+- **`adaptiveCleanup`**: Enables the lag-aware logic. If left `false` (the default), the node behaves exactly as it always has.
+- **`cleanupLagThreshold`**: How many blocks behind the node needs to be before it starts skipping cleanup passes. In this example, if the node is more than 1,000 blocks behind head, it postpones pruning.
+- **`maxConsecutiveCleanupSkips`**: The safety valve. We can't let a node defer cleanup indefinitely while syncing a massive backlog, or local disk usage would balloon. Setting this to `3` means the node will skip at most three consecutive cleanup cycles before forcing a cleanup pass anyway, regardless of lag.
+- **`lastVerifiedBlockCacheTTL`**: Caches the lookup for `lastVerifiedBlockNumber` in memory for 15 minutes (900,000 ms).
 
-```html
-<html>
-  <body>
-    <button id="connectButton" type="button">Connect Wallet</button>
-    <div id="loginModal"></div>
-  <body>
-  <script type="module">
-    import { initAioha, KeyTypes } from '@aioha/aioha'
-    import { initModal } from '@aioha/lit-ui'
+That last setting is a quiet efficiency win. Previously, every single cleanup pass did a full database lookup against `witnesses.params` to find the last verified block height. Since round verification only advances every ~40 minutes (~1,200 blocks), re-querying the database every cleanup cycle was pure waste.
 
-    // Initialize Aioha
-    const aioha = initAioha()
+Because verified block height only moves forward, a cached value is inherently safe: the absolute worst case is that the node retains an extra 15 minutes of old blocks before pruning them. It can never cause the node to delete data too aggressively.
 
-    // Initialize modal UI in a div
-    const modal = initModal(aioha, document.getElementById('loginModal'), {
-      loginOptions: {
-        // see available config here: https://aioha.dev/docs/core/usage#login
-      }
-    })
+## Live Testing on a 19,000-Block Catch-Up
 
-    // Show modal on button click
-    document.getElementById('connectButton').addEventListener('click', () => (modal.displayed = true))
-  </script>
-&lt;/html&gt;
-```
+Unit tests are good for checking logic, but I always prefer seeing how these changes behave under actual pressure. I've been running this branch on my live witness setup since October 5th.
 
-For more details on the web components, please refer to the [documentation](https://aioha.dev/docs/ui/web-components).
+As luck would have it, my test node ended up falling about **19,000 blocks behind**: giving me a far more realistic stress test than any tidy benchmark I could have staged.
 
-# Bundle size
+Watching `journalctl` during the catch-up confirmed the safety limits were working exactly as designed. The node fell into a predictable rhythm: three skipped cleanup passes followed by one forced cleanup pass, repeating continuously while it processed the backlog.
 
-|Bundle Name|Uncompressed Size|gzipped|
-|-|-|-|
-|bundle.min.js|193 KiB|61 KiB|
+![screenshot-20261017-092502.png](https://files.peakd.com/file/peakd-hive/thecrazygm/23tRtNZZJsvSoXvQgfUVR9YFxNKHz43w9G1WokygUnnPfGsWpSdKyDBTAY9Hu2HsGVrwt.png)
 
-# Links
+Over the course of the run, the logs recorded **90 skipped cleanups and 30 forced cleanups**. The lag steadily dropped from 19,000 blocks down past the 1,000-block threshold, at which point normal periodic cleanup resumed smoothly. The node is now sitting happily locked to the Hive head.
 
-Landing page and docs: https://aioha.dev
-Github: https://github.com/aioha-hive
-NPM: https://www.npmjs.com/package/@aioha/aioha
-Sting: https://chat.peakd.com/t/hive-169420/0&lt;/div&gt;
-  <footer class="hive-post-embed__source">
-    <span class="hive-post-embed__source-label">Source:</span>
-    <a href="https://hive.blog/@aioha/aioha-web-components">Aioha Web Components</a>
-    by
-    <a href="https://hive.blog/@aioha">@aioha</a>
-  </footer>
-&lt;/div&gt;
+## Designing for Failure: The Fallback Guardrail
 
-</body></body></html></div></div>]]></content><author><name>aioha</name></author><category term="tools" /><category term="aioha" /><category term="authentication" /><summary type="html"><![CDATA[Hive login modal UI on any web framework in under 5 lines of code]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://files.peakd.com/file/peakd-hive/aioha/23tbMAXFrAgUGz6KiHpZTU5qc8MdzoLiQ51GQmfXvdXL7nG8BpCMUEkegTngbG6oZ5YT4.png" /><media:content medium="image" url="https://files.peakd.com/file/peakd-hive/aioha/23tbMAXFrAgUGz6KiHpZTU5qc8MdzoLiQ51GQmfXvdXL7nG8BpCMUEkegTngbG6oZ5YT4.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">MongoBleed (CVE-2025-14847): A breakdown for Hive Engine Operators</title><link href="https://hivedocs.info/news/hiveengine/security/2025/12/29/mongobleed-cve-2025-14847-a-breakdown-for-hive-engine-operators.html" rel="alternate" type="text/html" title="MongoBleed (CVE-2025-14847): A breakdown for Hive Engine Operators" /><published>2025-12-29T10:45:09-08:00</published><updated>2025-12-29T10:45:09-08:00</updated><id>https://hivedocs.info/news/hiveengine/security/2025/12/29/mongobleed-cve-2025-14847-a-breakdown-for-hive-engine-operators</id><content type="html" xml:base="https://hivedocs.info/news/hiveengine/security/2025/12/29/mongobleed-cve-2025-14847-a-breakdown-for-hive-engine-operators.html"><![CDATA[<div class="hive-post-embed" data-hive-author="thecrazygm" data-hive-permlink="mongobleed-cve-2025-14847-a-breakdown-for-hive-engine-operators">
-  <div id="content-thecrazygm-mongobleed-cve-2025-14847-a-breakdown-for-hive-engine-operators" class="hive-post-embed__content" data-hive-render-target="true">Hey everyone,
+One detail I was very deliberate about: what happens if the streamer encounters an RPC blip and can't accurately report chain lag?
 
-A new Critical Vulnerability Exposure (CVE) is making the rounds in the database world. Dubbed **MongoBleed** (CVE-2025-14847), this exploit allows attackers to siphon data directly from a MongoDB server's memory.
-![Mongo Logos](https://images.contentstack.io/v3/assets/blt7151619cb9560896/bltac81c4aa3529ee37/65fd965e8f4444482dc3a079/la1a2b2h67gwwqnvs-mdb-logos.svg)
-[Github Repo with working Proof of Concept](https://github.com/joe-desimone/mongobleed)
+A naive implementation might assume zero lag and clean up constantly, or worse, assume infinite lag and stop cleaning up forever.
 
-While the name sounds terrifying, Hive Engine node operators can likely keep their blood pressure low. Let's break down exactly how this script works and why our specific architecture keeps us safe.
+Instead, if the streamer can't determine current lag, the node logs a clear warning and proceeds with the cleanup pass anyway. It’s always safer to fall back to the established default behavior when an input is uncertain.  A kind of defensive edge-case handling that prevents an optimization from turning into a late-night operational headache.
 
-## The "Layman's" Explanation
+## Status and Verification
 
-Imagine you hand a librarian a sealed envelope. You tell them, "This envelope contains a 500-page book. Please read the title of the first chapter."
+All of this work is wrapped up in **[PR #141](https://github.com/hive-engine/hivesmartcontracts/pull/141)**, open against the `qa` branch of `hive-engine/hivesmartcontracts`.
 
-In reality, the envelope only contains a sticky note.
+The PR includes full configuration docs alongside focused database unit tests covering both the cleanup skip decision tree and the cached verified-block lookup (all tests passing cleanly).
 
-A secure librarian would open the envelope, see the sticky note, and say, "You lied, this is too short."
+No complicated magic here: just giving the database a breather when it has higher-priority work on its plate, backed by firm guardrails so the garbage still gets taken out.
 
-A **MongoBleed** vulnerable librarian opens the envelope, reads the sticky note, and because they trust your claim about the "500 pages," they keep reading. They read the sticky note, then they read the mail on their desk, then they read the diary of the person standing next to them, until they reach the 500th "page."
+Give it a look on `qa`, and let me know your thoughts!
 
-Finally, confused by what they just read, they shout back at you: _"I cannot find a chapter title in this text: [READS OUT CONTENTS OF DIARY AND OTHER MAIL]!"_
-
-By listening to the error message, you effectively stole the secrets on the librarian's desk.
-
-## The Technical Breakdown
-
-Looking at the proof-of-concept code, specifically the `send_probe` and `extract_leaks` functions, we can see the attack relies on a specific chain of failures:
-
-1. **The Compressed Wrapper:** The script sends an `OP_COMPRESSED` message using `zlib`.
-2. **The Inflation Lie:** Inside the payload header, it declares an inflated `buffer_size` and a BSON document length that is much larger than the actual data provided.
-3. **The Memory Over-read:** When the MongoDB server decompresses and attempts to parse the BSON document, it trusts the length header. It reads past the end of the malicious packet into the server's adjacent RAM.
-4. **The Error Channel:** The server hits invalid data in that adjacent memory and generates an error message: `field name '[LEAKED_DATA]'`. The attacker simply parses these error logs to reconstruct the memory dump.
-
-## Why Hive Engine Nodes Are "Usually" Immune
-
-Despite the severity of this bug, the standard setup for a Hive Engine node mitigates this risk almost entirely.
-
-### 1. The Firewall is Your First Defense
-
-This exploit requires a direct socket connection to the MongoDB port (default 27017).
-Most competent node operators follow standard security practices:
-
-- Bind MongoDB to `127.0.0.1` (localhost).
-- Use a firewall (like `ufw` or cloud security groups) to block external traffic to database ports.
-  If the attacker cannot complete the TCP handshake, the packet never arrives, and the bleed never happens.
-
-### 2. We Don't Use Zlib
-
-The exploit explicitly relies on the `OP_COMPRESSED` opcode with the zlib designator (Byte `2` in the payload). Hive Engine nodes typically communicate locally or over high-speed connections where compression overhead is unnecessary. If your configuration disables zlib compression or the negotiation for it, the attack vector closes immediately.
-
-### 3. Public Data is... Public
-
-The "Bleed" allows attackers to read random chunks of server memory. In a corporate environment, this is catastrophic because that memory might contain user passwords, credit card numbers, or session tokens.
-In our environment, the MongoDB instance stores the Hive Engine sidechain state. This is public blockchain data. While leaking API keys or admin passwords for the server itself is theoretically possible if they happen to be in adjacent memory, the bulk of the "stolen" data would simply be public ledger information that is already available to everyone.
-
-## Summary
-
-MongoBleed is a clever use of buffer over-reads and error message side-channels. It serves as a great reminder to patch your software. However, for a Hive Engine operator running a standard, firewalled setup without compression, this is a non-event.
-
-Patch your systems, keep your firewalls tight, and carry on.
-
-As always,
-Michael Garcia a.k.a. TheCrazyGM
+As always,  
+**Michael Garcia a.k.a. TheCrazyGM**
 </div>
   <footer class="hive-post-embed__source">
     <span class="hive-post-embed__source-label">Source:</span>
-    <a href="https://hive.blog/@thecrazygm/mongobleed-cve-2025-14847-a-breakdown-for-hive-engine-operators">MongoBleed (CVE-2025-14847): A breakdown for Hive Engine Operators</a>
+    <a href="https://hive.blog/@thecrazygm/pr-141-letting-hive-engine-lite-nodes-catch-up-before-cleaning-house">PR #141: Letting Hive-Engine Lite Nodes Catch Up Before Cleaning House</a>
     by
     <a href="https://hive.blog/@thecrazygm">@thecrazygm</a>
   </footer>
-</div>]]></content><author><name>thecrazygm</name></author><category term="news" /><category term="hiveengine" /><category term="security" /><summary type="html"><![CDATA[A new Critical Vulnerability Exposure (CVE) is making the rounds in the database world]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://images.contentstack.io/v3/assets/blt7151619cb9560896/bltac81c4aa3529ee37/65fd965e8f4444482dc3a079/la1a2b2h67gwwqnvs-mdb-logos.svg" /><media:content medium="image" url="https://images.contentstack.io/v3/assets/blt7151619cb9560896/bltac81c4aa3529ee37/65fd965e8f4444482dc3a079/la1a2b2h67gwwqnvs-mdb-logos.svg" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Introducing Vest_Core - A Tool to See &amp;amp; Filter Hive Power Ups</title><link href="https://hivedocs.info/tools/analytics/hafsql/2025/12/28/introducing-vestcore-a-tool-to-see-and-filter-hive-power-ups.html" rel="alternate" type="text/html" title="Introducing Vest_Core - A Tool to See &amp;amp; Filter Hive Power Ups" /><published>2025-12-28T06:30:57-08:00</published><updated>2025-12-28T06:30:57-08:00</updated><id>https://hivedocs.info/tools/analytics/hafsql/2025/12/28/introducing-vestcore-a-tool-to-see-and-filter-hive-power-ups</id><content type="html" xml:base="https://hivedocs.info/tools/analytics/hafsql/2025/12/28/introducing-vestcore-a-tool-to-see-and-filter-hive-power-ups.html"><![CDATA[<div class="hive-post-embed" data-hive-author="louis88" data-hive-permlink="introducing-vestcore-a-tool-to-see-and-filter-hive-power-ups">
-  <div id="content-louis88-introducing-vestcore-a-tool-to-see-and-filter-hive-power-ups" class="hive-post-embed__content" data-hive-render-target="true">
-Yesterday, I saw a short message and immediately thought, “Wait a minute, this could definitely be implemented quite well with hafSQL from @mahdiyari.” So, the short message triggered me and prompted me to reopen Google Gemini AI Studio and build a small but nice front end that covers exactly this request from @acidyo.
+</div>]]></content><author><name>thecrazygm</name></author><category term="news" /><category term="hiveengine" /><category term="node" /><summary type="html"><![CDATA[In my last update, I broke down the Knobs A, B, and C changes and teased what was coming next]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://files.peakd.com/file/peakd-hive/thecrazygm/23tRtNZZJsvSoXvQgfUVR9YFxNKHz43w9G1WokygUnnPfGsWpSdKyDBTAY9Hu2HsGVrwt.png" /><media:content medium="image" url="https://files.peakd.com/file/peakd-hive/thecrazygm/23tRtNZZJsvSoXvQgfUVR9YFxNKHz43w9G1WokygUnnPfGsWpSdKyDBTAY9Hu2HsGVrwt.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Witness update - 2026 October 15</title><link href="https://hivedocs.info/news/witness/node/2026/10/15/witness-update-2026-october-15.html" rel="alternate" type="text/html" title="Witness update - 2026 October 15" /><published>2026-10-15T09:44:33-07:00</published><updated>2026-10-15T09:44:33-07:00</updated><id>https://hivedocs.info/news/witness/node/2026/10/15/witness-update-2026-october-15</id><content type="html" xml:base="https://hivedocs.info/news/witness/node/2026/10/15/witness-update-2026-october-15.html"><![CDATA[<div class="hive-post-embed" data-hive-author="mahdiyari" data-hive-permlink="witness-update-2026-october-15">
+  <div id="content-mahdiyari-witness-update-2026-october-15" class="hive-post-embed__content" data-hive-render-target="true">Recent events:
+- Updated my witness node and seed node to 1.28.8
+- Added a snapshot to https://get.mahdiyari.info/ with 110 million block logs
+- Updated one of my HAF nodes to 1.28.8 but then turns out I need `metadata` in config.ini and the config.ini I had from &lt; 1.28.6 wasn't replaced or updated by HAF so I removed the config.ini and replaying that HAF node again.
+- Working on improving HafSQL [!25](https://gitlab.com/mahdiyari/hafsql/-/merge_requests/25)
 
-![image.png](https://files.peakd.com/file/peakd-hive/louis88/23tRtg41WjrHBzPUiSsUCNRNQ3pkeiJCS9KYCoCY7B5pnq4BbsuogFzbi8k3Euzhpz8YX.png)
-
-
-The result of my work is a frontend that connects in the background to the hafSQL database. It fetches the latest power ups from Hive blockchain users and shows them in a clean and easy way. You can choose between different time ranges to load the information. At the moment there is a quick scan for the last 1 hour, a daily feed for an entire day, a weekly summary that shows all power ups from the last seven days, and a call that loads the last 30 days. I decided not to include a longer time range because the amount of data becomes very large. If I load more than thirty days the page becomes slow and too heavy for simple use.
-
-![52shots_so.png](https://files.peakd.com/file/peakd-hive/louis88/23xUkzJDRJtKgHVVhLQi1yo2Rhs2dkzbfy3npDyu8KmQ3JJmvAiLobAo9dd99YfVRsJEC.png)
-
-Once the transactions are loaded you can use several filters. For example, you can show only power ups over &gt; **100 HIVE**, &gt; **1,000 HIVE**, &gt; **10,000 HIVE**, or even &gt; **100,000 HIVE**. This helps to highlight big movements that do not happen every day. You can also search the list for specific usernames. If the power up came from staking rewards or from an external account, you can filter that as well. This means you can see if a power up was done to the own account or if someone decided to power up another Hive account.
-
-It's hosted on Vercel and you can access the Tool here:
-
-## https://power-up-tracker.vercel.app
-
-## 🚀 Features
-
-- **Real-Time Monitoring**: Monitor Power-Ups across various time intervals (1h, 24h, 7d, 30d).
-- **Interactive Data Analysis**: 
-    - **Account Drilling**: Click on any username to instantly filter all transactions associated with that account.
-    - **Volume Filters**: Predefined filters for significant stakes (&gt; 100, &gt; 1K, &gt; 10K, &gt; 100K HIVE).
-- **Performance Optimized**:
-    - **Paginated Output**: Smoothly browse through thousands of records.
-    - **Memory Purge**: "Clear Buffer" feature to release system memory when handling extremely large datasets.
-- **Visualizations**: Dynamic "Density Plot" (Oscilloscope-style) to identify Power-Up spikes.
-- **System Logs**: Live logging of all database queries and system events.
-
-
-![image.png](https://files.peakd.com/file/peakd-hive/louis88/23t72k89vUqUo5PnpKMpu12a3Q8iHMCHSsTaXQnDPbtwMoVCCXd3MNnJniprABV6jUcVi.png)
-
-
-## TOP_STAKERS
-
-For each view (selected period), the top 20 stakers are also calculated and displayed. These are the users who have powered up the most HIVE during the period.
-
-
-![image.png](https://files.peakd.com/file/peakd-hive/louis88/23swbZk1aVwF6CNtiwE9H8PDVhJP8gUPe2y8LWp4a5exuCuS3JAFdCBjaePThsSX8qWnk.png)
-
-
-
-Feedback is welcome... if you need improvements/adjustments, just write a comment. Thank you for your support.</div>
-  <footer class="hive-post-embed__source">
-    <span class="hive-post-embed__source-label">Source:</span>
-    <a href="https://hive.blog/@louis88/introducing-vestcore-a-tool-to-see-and-filter-hive-power-ups">Introducing Vest_Core - A Tool to See &amp; Filter Hive Power Ups</a>
-    by
-    <a href="https://hive.blog/@louis88">@louis88</a>
-  </footer>
-</div>]]></content><author><name>louis88</name></author><category term="tools" /><category term="analytics" /><category term="hafsql" /><summary type="html"><![CDATA[Yesterday, I saw a short message and immediately thought, “Wait a minute, this could definitely be implemented quite well with hafSQL from @mahdiyari.” So, the short message triggered me and prompted me to reopen Google]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://files.peakd.com/file/peakd-hive/louis88/23xUkzJDRJtKgHVVhLQi1yo2Rhs2dkzbfy3npDyu8KmQ3JJmvAiLobAo9dd99YfVRsJEC.png" /><media:content medium="image" url="https://files.peakd.com/file/peakd-hive/louis88/23xUkzJDRJtKgHVVhLQi1yo2Rhs2dkzbfy3npDyu8KmQ3JJmvAiLobAo9dd99YfVRsJEC.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Decentralized Google Login</title><link href="https://hivedocs.info/news/core/authentication/2025/12/26/decentralized-google-login.html" rel="alternate" type="text/html" title="Decentralized Google Login" /><published>2025-12-26T03:56:39-08:00</published><updated>2025-12-26T03:56:39-08:00</updated><id>https://hivedocs.info/news/core/authentication/2025/12/26/decentralized-google-login</id><content type="html" xml:base="https://hivedocs.info/news/core/authentication/2025/12/26/decentralized-google-login.html"><![CDATA[<div class="hive-post-embed" data-hive-author="thebeedevs" data-hive-permlink="decentralized-google-login">
-  <div id="content-thebeedevs-decentralized-google-login" class="hive-post-embed__content" data-hive-render-target="true">Decentralized Google Login
-==========================
-
-<img src="https://images.ecency.com/p/2FFvzA2zeqoVPgRCnRzbu6rj6tCWHWVCA9ZaKB4ZqAfdo82ug6V5U6RWb4s4zZGpoTiWwzcVPFUc8a1uvZaopA9LqhDazfX9qZq94wSfCv2mUidNXACLFrCjShWv1.png?format=match&amp;mode=fit" alt="Decentralized Google Login main features" />
-
-* * *
-
-Dear Hive Community ❗
-
-Over the past few months, we've been working to bring our ideas for improving authorization on the Hive platform to life.
-
-Our goal was simple: allow users to forget about keys and dedicated passwords, making their interactions with Hive tools as smooth and effortless as possible.
-
-### 🤔 Decentralized and Google — something doesn't add up here
-
-Most of us have a Google account and use it to sign in to various applications. So why not use it for Hive? Nothing new, you might say — several existing services already offer this option... But here's where we're different.
-
-Our approach keeps everything **client-side** and preserves your privacy. While we allow you to associate your Google and Hive accounts, this information is stored only on your end. Neither we nor Google will know which Hive account you're using when you authorize with Google.
-
-### 💡 How It Works
-
-The core idea is to store your Hive credentials in encrypted form (inaccessible to Google or anyone else) on Google Drive. This allows you to access your credentials automatically after signing in to your Google account on any device. No more storing keys in multiple places ❗❗
-
-Why can't Google read your data? Because during setup, we ask you to create a password that encrypts your data before it's sent to Google Drive. This password is used only by the client-side code — we never see it either. As always, we recommend saving this password in a secure location, as you'll need it once on each new device to decrypt the data stored on Google Drive.
-
-Once setup is complete on your device, our login component saves an encryption key derived from your password in your browser's local storage. After that, you won't need to enter your password again — Google authorization alone will be sufficient.
-
-### 🔐 What if someone accesses my wallet data on Google Drive?
-
-No one can — not even you. That's right: only our application can access the files it saves to your Google Drive.
-
-To achieve this additional layer of security, we've used a dedicated feature offered by the Google Drive API: [Storing Application-Specific Data](https://developers.google.com/workspace/drive/api/guides/appdata). This means our app can't access other parts of your Drive, and you can't directly access the file we store there. Why is this secure? Because our application must identify itself to Google (during your authentication) using a secret key known only to that specific application deployment. This variable exists only on the server side.
-
-To fully access your keys, the following steps are required:
-
-1.  **Authenticate with your Google Account** (client-side), using the standard Google OAuth redirect flow. You'll need to complete the setup process, authorize integration with our website, and grant Drive access.
-    
-2.  **Server-side token extension**: Once the initial Google authentication is complete, the application redirects to our server to extend the session token with support for the Google Drive API mentioned above.
-    
-3.  **Receive the final session token**: The token is sent back to the client side to access the file stored on Google Drive.
-    
-4.  **Decrypt your data**: If data already exists on Drive and you have the encryption key stored on your device, the file content will be decrypted automatically. Otherwise, you'll be prompted for your password.
-    
-5.  **Use your unlocked keys**: Now you can use them to sign transactions. As with all our tools, you cannot access private keys directly — this prevents leaks. You can only use them for operations like encrypting data or signing transactions.
-    
-
-You can try this wallet yourself — it's available on our Web Components testing playground: [Hive Bridge](https://auth.openhive.network). Choose **Connect your wallet** and select **Google Drive** based implementation:
-
-<img src="https://images.ecency.com/p/AmRc67RgYaWTxvDAy3kqUun3erBFGxjwNVAxLEdRsKYJuF9kJZXxQ8MjHQTcPoNWPNMXXZMKWHZDm6iETkUATqxgpW9YDtQLLCyWfZojxhZEf92WmVY2yeo6vYfj1Jwq69qkJKXM7RhytH4vDx82yrA6JmQ61Xgi.png?format=match&amp;mode=fit" alt="Hive Bridge wallet selection" />
-
-I hope it will be also available at our Denser deployment (together with all other login providers) soon, to make it available for regular blog users.
-
-Make sure you've already stored your keys in a safe place — our tool only allows you to use them securely.
-
-### ⚙️ For Developers
-
-This implementation is available as a reusable package that implements the Wax [ISignatureProvider](https://github.com/openhive-network/wax/blob/a5301bf86cbe2c992fd783bb107945ec80adb1a6/ts/wasm/lib/detailed/extensions/signatures/index.ts#L3) interface, so it can easily be used for signing if you've already adopted our earlier implementations like the MetaMask or Keychain signature providers.
-
-For an integration example, check out our testing implementation in the [Hive Bridge source code](https://gitlab.syncad.com/hive/wallet-dapp).
-
-We hope this solution represents a small innovation. It's also a step toward direct social login (our package is designed to support multiple cloud storage implementations, not just Google Drive), including Hive account creation.
-
-Thank you for reading. We look forward to your feedback and hope these tools prove useful.
-
-**thebeedevs Team**</div>
-  <footer class="hive-post-embed__source">
-    <span class="hive-post-embed__source-label">Source:</span>
-    <a href="https://hive.blog/@thebeedevs/decentralized-google-login">Decentralized Google Login</a>
-    by
-    <a href="https://hive.blog/@thebeedevs">@thebeedevs</a>
-  </footer>
-</div>]]></content><author><name>thebeedevs</name></author><category term="news" /><category term="core" /><category term="authentication" /><summary type="html"><![CDATA[Google Drive Social Login Privacy Encryption Safety Keys Authorization Hive]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://images.ecency.com/DQmXdefaKLkRfbbNFYSST1aedGay5RLzKwL5ee9HiTByhWV/title_diagram.gif" /><media:content medium="image" url="https://images.ecency.com/DQmXdefaKLkRfbbNFYSST1aedGay5RLzKwL5ee9HiTByhWV/title_diagram.gif" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Hive-Nectar &amp;amp; Nectarengine v0.2.x Released!</title><link href="https://hivedocs.info/tools/python/nectar/2025/12/19/hive-nectar-and-nectarengine-v02x-released.html" rel="alternate" type="text/html" title="Hive-Nectar &amp;amp; Nectarengine v0.2.x Released!" /><published>2025-12-19T06:54:09-08:00</published><updated>2025-12-19T06:54:09-08:00</updated><id>https://hivedocs.info/tools/python/nectar/2025/12/19/hive-nectar-and-nectarengine-v02x-released</id><content type="html" xml:base="https://hivedocs.info/tools/python/nectar/2025/12/19/hive-nectar-and-nectarengine-v02x-released.html"><![CDATA[<div class="hive-post-embed" data-hive-author="thecrazygm" data-hive-permlink="hive-nectar-and-nectarengine-v02x-released">
-  <div id="content-thecrazygm-hive-nectar-and-nectarengine-v02x-released" class="hive-post-embed__content" data-hive-render-target="true">Hey everyone,
-
-Today I want to officially announce that the v0.2.x series of `hive-nectar` and `nectarengine` are live!
-
-![AI got flashy for this one!](https://files.peakd.com/file/peakd-hive/thecrazygm/23xVGdhqsn7DtK8oh1HiWKCpD6WP95gsaYvQYTLzWHQrtAcn7tY687Mc4agcqtnsJb6AS.png)
-
-After much testing, crushing bugs, and modernization, I feel they are ready for the masses. We even had a successful prelaunch test with @steembasicincome, where the libraries are already purring along in production.
-
-They are up on GitHub and PyPI right now.
-
-### Get the Code
-
-**Hive-Nectar v0.2.3**
-
-- **GitHub:** [Release v0.2.3](https://github.com/TheCrazyGM/hive-nectar/releases/tag/v0.2.3)
-- **PyPI:** [hive-nectar](https://pypi.org/project/hive-nectar/)
-
-**Nectarengine v0.2.1**
-
-- **GitHub:** [Release v0.2.1](https://github.com/TheCrazyGM/nectarengine/releases/tag/v0.2.1)
-- **PyPI:** [nectarengine](https://pypi.org/project/nectarengine/)
-
-Please submit any issues you find to the GitHub trackers.
-
-As always,
-Michael Garcia a.k.a. TheCrazyGM
+The plan is to update my HAF nodes one by one to 1.28.8 and that probably is going to take at least a week.
 </div>
   <footer class="hive-post-embed__source">
     <span class="hive-post-embed__source-label">Source:</span>
-    <a href="https://hive.blog/@thecrazygm/hive-nectar-and-nectarengine-v02x-released">Hive-Nectar &amp; Nectarengine v0.2.x Released!</a>
+    <a href="https://hive.blog/@mahdiyari/witness-update-2026-october-15">Witness update - 2026 October 15</a>
     by
-    <a href="https://hive.blog/@thecrazygm">@thecrazygm</a>
+    <a href="https://hive.blog/@mahdiyari">@mahdiyari</a>
   </footer>
-</div>]]></content><author><name>thecrazygm</name></author><category term="tools" /><category term="python" /><category term="nectar" /><summary type="html"><![CDATA[Today I want to officially announce that the v0.2.x series of hive-nectar and nectarengine are live]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://files.peakd.com/file/peakd-hive/thecrazygm/23xVGdhqsn7DtK8oh1HiWKCpD6WP95gsaYvQYTLzWHQrtAcn7tY687Mc4agcqtnsJb6AS.png" /><media:content medium="image" url="https://files.peakd.com/file/peakd-hive/thecrazygm/23xVGdhqsn7DtK8oh1HiWKCpD6WP95gsaYvQYTLzWHQrtAcn7tY687Mc4agcqtnsJb6AS.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">November core dev update</title><link href="https://hivedocs.info/news/core/development/2025/12/16/november-core-dev-update.html" rel="alternate" type="text/html" title="November core dev update" /><published>2025-12-16T22:23:39-08:00</published><updated>2025-12-16T22:23:39-08:00</updated><id>https://hivedocs.info/news/core/development/2025/12/16/november-core-dev-update</id><content type="html" xml:base="https://hivedocs.info/news/core/development/2025/12/16/november-core-dev-update.html"><![CDATA[<div class="hive-post-embed" data-hive-author="howo" data-hive-permlink="november-core-dev-update">
-  <div id="content-howo-november-core-dev-update" class="hive-post-embed__content" data-hive-render-target="true">
-![image.png](https://files.peakd.com/file/peakd-hive/howo/AK82avdzA9e7oh3rayuxN4gJYXdwJgZAnV2KiMwyG9L21BU9k3hd5aZBtABZW1c.png)
+</div>]]></content><author><name>mahdiyari</name></author><category term="news" /><category term="witness" /><category term="node" /><summary type="html"><![CDATA[The plan is to update my HAF nodes one by one to 1.28.8 and that probably is going to take at least a week]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://hivedocs.info/assets/images/favicon.png" /><media:content medium="image" url="https://hivedocs.info/assets/images/favicon.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Hive Stream Builder: set up a hive-stream app in your browser and download the code</title><link href="https://hivedocs.info/tools/javascript/hive-stream/2026/10/12/hive-stream-builder-set-up-a-hive-stream-app-in-your-browser-and-download-the-code.html" rel="alternate" type="text/html" title="Hive Stream Builder: set up a hive-stream app in your browser and download the code" /><published>2026-10-12T04:06:15-07:00</published><updated>2026-10-12T04:06:15-07:00</updated><id>https://hivedocs.info/tools/javascript/hive-stream/2026/10/12/hive-stream-builder-set-up-a-hive-stream-app-in-your-browser-and-download-the-code</id><content type="html" xml:base="https://hivedocs.info/tools/javascript/hive-stream/2026/10/12/hive-stream-builder-set-up-a-hive-stream-app-in-your-browser-and-download-the-code.html"><![CDATA[<div class="hive-post-embed" data-hive-author="beggars" data-hive-permlink="hive-stream-builder-set-up-a-hive-stream-app-in-your-browser-and-download-the-code">
+  <div id="content-beggars-hive-stream-builder-set-up-a-hive-stream-app-in-your-browser-and-download-the-code" class="hive-post-embed__content" data-hive-render-target="true">If you haven't come across it, [hive-stream](https://github.com/Vheissu/hive-stream) is my Node.js library for building apps on Hive. It's designed to be the ultimate starter library for Hive apps. It streams blocks, runs your contract code when someone calls it with a transfer memo or custom_json, and gives you everything you need to respond, whether that's a payout, a refund or a vote. People use it for dice sites, game tournaments, tipping bots, token exchanges and custody bridges. It comes with 45 ready-made contracts, SQLite, MongoDB and PostgreSQL adapters, a CLI, and since the last update, an offline testing kit.
 
+The CLI (`npx hive-stream new`) gets you a starter project, but there's still a fair bit to do after that. You need to work out which built-in contracts you want and what their options are, write a zod schema for each of your actions, add guards to anything that takes money and set up your bot subscriptions. I built Hive Stream Builder to take care of that part.
 
-Hello! It's been a while since I've done one of these so I figured I'd share what I've been working on. As usual, I'm mostly on Hivemind these days, though I'm also working on getting HAF to work on Postgres 18 but I'm waiting on some dependencies (pg_search) to be updated to work with Postgres 18 before I can start testing this. There's also some groundwork needed on Blocktrades' team in setting up new Docker images that work with PG 18 etc.
+[Hive Stream Builder](https://vheissu.github.io/hive-stream-ui/) is a web app where you configure a hive-stream project and download it as a zip. Everything happens in your browser. There's no backend or account, and it never asks for your keys. You add those to `.env` after downloading.
 
-This month was focused on a major refactoring effort to move the community operations from Python to PostgreSQL, which was successfully completed. There was one performance optimization that didn't work out, but overall it was a productive month.
+![hive-stream-builder-project.jpg](https://files.peakd.com/file/peakd-hive/beggars/EqjadgB3D7iQprh3s8Ss2ThCfzQnzpaNSC1bauazVaZZjFetaNrfSkcZj23rEvSL3GW.jpg)
 
-# The bad: One optimization was attempted and merged but then reverted
+The settings are on the left and the generated project is on the right. The code updates as you go, so you can see what each option changes before you download anything.
 
-https://gitlab.syncad.com/hive/hivemind/-/merge_requests/939
+## Starting point and settings
 
-I attempted to optimize how we fetch user roles in communities by returning the role directly in process_hive_post_operation instead of fetching it in a separate query. This should have been a straightforward performance win by reducing database roundtrips. However, similar to past issues, this caused problems that only showed up during full sync testing. The optimization had to be reverted. These kinds of performance issues are tricky to catch because they require full sync testing, which is very time consuming. I'll get back to it later and make another attempt at making it work.
+First you pick a starting point. The options are the same templates the CLI has (Minimal, Game, Exchange, Social, Blog, Token &amp; NFT and Assets &amp; Tickets), and the download starts from the exact files the CLI would write. You also choose a database (SQLite, MongoDB or PostgreSQL), set your app's Hive account and decide whether to turn on the HTTP API, which serves contract state, events and a `/health` endpoint on port 5001.
 
+The Streamer page covers how your app follows the chain. You can process irreversible blocks only, which is the default and what you want for anything involving money, or follow the head block for lower latency. You can also set how often the block position gets saved, turn on duplicate protection so a replayed block never runs the same action twice, and choose what happens when an action fails: skip it, retry and then stop, or stop straight away. If you tick any hooks like `onError` or `onFork`, you get typed stubs for them in `src/hooks.ts`. Only settings that differ from the defaults are written out, so the config doesn't get bloated.
 
-# The good
+## Built-in contracts
 
-## SQLized all community operations
+![hive-stream-builder-catalog.jpg](https://files.peakd.com/file/peakd-hive/beggars/Epi1J4o6NWBR3UhY9pPP3u88k7VschKhmykURjySHPDETRhTzBL3FHTPWR5cYqfJfod.jpg)
 
-https://gitlab.syncad.com/hive/hivemind/-/merge_requests/940
+Every contract that ships with hive-stream is in the catalog, sorted into categories like gambling, games, finance, governance and tokens. The list is pulled from `hive-stream/catalog`, so new contracts show up in the builder as soon as they're added to the library.
 
-This was the big project for November. We've been slowly moving away from Python implementations into PgSQL in Hivemind, mostly for performance but also as PgSQL is a stricter language than Python (one is typed, the other isn't) so it leaves less room for error. It is harder to write though.
+Once you add a contract you can fill in its options and add guards. Guards let you choose which accounts are allowed or blocked, which assets it accepts, minimum and maximum amounts and a rate limit per account. You can also pause a contract while you do maintenance.
 
-Overall this took a lot of time and testing but we see a noticeable improvement across the board on operation processing speed ranging from 30% to 100% faster. This is good both for new nodes who will be able to sync faster but also API nodes in operation who will need less processing power to manage blocks as they arrive (in reality the processing power when operating live is relatively negligible but it also means you get to run more things in parallel!)
+## Custom contracts
 
-## Subscribe performance optimization
+![hive-stream-builder-custom-contract.jpg](https://files.peakd.com/file/peakd-hive/beggars/Epi1SFb7qWtTDaMjevU484qe2aGJgzG3d2tvSnNvMnKngZPuBKEWGzCg6vdmudZdjvk.jpg)
 
-https://gitlab.syncad.com/hive/hivemind/-/merge_requests/932
+For your own contracts, you add actions and choose how each one can be called. That can be custom_json, a transfer memo, a schedule, a recurring transfer or one of the escrow operations. You can require the active key for custom_json calls, and you define the payload fields, which become a zod schema so bad payloads get rejected before your code runs. You can also add SQL tables and scheduled jobs. Scheduled jobs run on block time, so they behave the same during a replay as they do live.
 
-Before the full SQLization work, I also pushed a standalone optimization that made subscribe/unsubscribe operations process twice as fast. This was a nice early win that will yield similar benefits.
+Each contract is written to `src/contracts/<name>.contract.ts` along with a call spec your frontend can import. It also gets a test that runs every action through `hive-stream/testing`, the offline testing kit I wrote about in my [last Hive Stream post](https://peakd.com/hive-139531/@beggars/hive-stream-grows-up-offline-testing-esm-docs-cli-and-production-plumbing). So the contract you download comes with tests already written.
 
-# Fixed BigINT overflow issue
+## Bots
 
-https://gitlab.syncad.com/hive/hivemind/-/merge_requests/926
+![hive-stream-builder-bots.jpg](https://files.peakd.com/file/peakd-hive/beggars/EqoqQxD96LwHtk4KiFA4iJFUc5FVh9nYqKLDziuE51nJSZraKawsMu2gF4tt4E9uucg.jpg)
 
-Some numeric values on Hive are really big, like really really big. So big that they can exceed the limit for some JSON implementations. This means either an overflow or undefined behavior. This realistically happens very rarely because it takes someone with a LOT of stake (e.g., [if someone were to vote with stake that wasn't meant to be used](https://peakd.com/eos/@ned/re-dan-ukoxz-eos-io-development-update-20180203t190236132z)). We chatted about what was the best way to tackle this on the core dev meeting and decided that it was best to switch the fields that may overflow to text so API users can cast to the appropriate variable type for their language.
+Bots are rules that react to things happening on chain. Each rule has a trigger, optional conditions and one or more actions. Triggers include transfers, custom_json, posts, comments, votes, Hive Engine actions, escrows and follows. Actions can send HIVE or HBD, refund the sender, send Hive Engine tokens, upvote or write to the log. Each trigger only lets you use the fields it actually has, which means the generated `src/bots.ts` always compiles.
 
-## Updated and refreshed communities doc:
+## Call builder
 
-https://gitlab.syncad.com/hive/hivemind/-/merge_requests/919
+![hive-stream-builder-call-builder.jpg](https://files.peakd.com/file/peakd-hive/beggars/EnqV25Kfw4zHVSdKySUepJsuiK8VxwUQghs49bqSFdrkAhd8wDcDPZMfqP5zhRQFvWH.jpg)
 
-Ever since @roadscape made the first design doc, the communities feature has changed a lot, mostly under my development. A lot of things in the doc that were written at the time are no longer true, or just incorrect due to how the project evolved. So it was high time to come back to it and update everything with up-to-date info for developers.
+Once your contracts are done you still need to call them from a frontend. In the call builder you pick a contract and an action and fill in the payload. It gives you the transfer memo or custom_json operation, the `hive-stream/client` code, and a Hive Keychain call you can paste into your site. It checks the payload the same way the contract will, and it never broadcasts anything.
 
-## Various bug fixes
+## Testing the generated code
 
-Then there's a ton of smaller things that aren't as worthy to mention. I figured I'd put a few here to give you an idea. Ever since we started using Claude Code there's a lot of velocity that goes towards smaller things that were not worth our time but that now are totally within reach (e.g., checking for typos or smaller errors/bugs).
+Generating code is only useful if the code actually works, so the repo has a script for checking it. `npm run verify:generated` generates a project for every template and database combination, a project that uses every feature on each database, and one that registers every built-in contract. It then runs `tsc --noEmit` and the Jest tests on each one against the hive-stream version it pins. It's meant to be run whenever a generator changes or hive-stream gets a new release, which stops the builder falling behind the library.
 
-- Removed all MySQL code: https://gitlab.syncad.com/hive/hivemind/-/merge_requests/934
-- Fixed forgotten hardcoded test string in validation (minor optimization): https://gitlab.syncad.com/hive/hivemind/-/merge_requests/927
-- Fixed a bunch of inaccuracies, bugs in code examples, renamed VSC to Magi + resize error in the devportal: https://gitlab.syncad.com/hive/devportal/-/merge_requests/153, https://gitlab.syncad.com/hive/devportal/-/merge_requests/152, https://gitlab.syncad.com/hive/devportal/-/merge_requests/151
-- Updated mesh API stack for 1.28.5 + added checksum validation and error checking: https://gitlab.syncad.com/hive/mesh-api/-/commit/9926ee47433f4781b0e55516005d92f13ce7abf6
+## Saving and sharing
 
-# Conclusion
+Your project is saved in your browser as you work. You can also copy a share link, which has the whole configuration in the URL, or export it as YAML and import it again later.
 
-I'm really happy with the results of SQLized communities. I've been wanting to do that forever and happy to see it bear fruit. I am currently working on more optimizations and features for Hivemind. I have a bunch of ideas on how a few features that would be nice to Hive for communities to incentivize their members to be more active (leaderboards and events), as well as make moderation more transparent than with just notifications. I'm still working on the HAF for Postgres 18 as well but that's on standby as I said in the intro. Finally, I am currently syncing a node for a small experiment to check how reputation would look like if we didn't have the (arbitrary) requirement that only someone with more reputation than you can remove your reputation.</div>
-  <footer class="hive-post-embed__source">
-    <span class="hive-post-embed__source-label">Source:</span>
-    <a href="https://hive.blog/@howo/november-core-dev-update">November core dev update</a>
-    by
-    <a href="https://hive.blog/@howo">@howo</a>
-  </footer>
-</div>]]></content><author><name>howo</name></author><category term="news" /><category term="core" /><category term="development" /><summary type="html"><![CDATA[It's been a while since I've done one of these so I figured I'd share what I've been working on]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://files.peakd.com/file/peakd-hive/howo/AK82avdzA9e7oh3rayuxN4gJYXdwJgZAnV2KiMwyG9L21BU9k3hd5aZBtABZW1c.png" /><media:content medium="image" url="https://files.peakd.com/file/peakd-hive/howo/AK82avdzA9e7oh3rayuxN4gJYXdwJgZAnV2KiMwyG9L21BU9k3hd5aZBtABZW1c.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Update! HiveKeywordsFetcher just got even better! Usernames, Timerange and Chunks!</title><link href="https://hivedocs.info/tools/search/analytics/2025/12/13/update-hivekeywordsfetcher-just-got-even-better-usernames-timerange-and-chunks.html" rel="alternate" type="text/html" title="Update! HiveKeywordsFetcher just got even better! Usernames, Timerange and Chunks!" /><published>2025-12-13T15:32:18-08:00</published><updated>2025-12-13T15:32:18-08:00</updated><id>https://hivedocs.info/tools/search/analytics/2025/12/13/update-hivekeywordsfetcher-just-got-even-better-usernames-timerange-and-chunks</id><content type="html" xml:base="https://hivedocs.info/tools/search/analytics/2025/12/13/update-hivekeywordsfetcher-just-got-even-better-usernames-timerange-and-chunks.html"><![CDATA[<div class="hive-post-embed" data-hive-author="louis88" data-hive-permlink="update-hivekeywordsfetcher-just-got-even-better-usernames-timerange-and-chunks">
-  <div id="content-louis88-update-hivekeywordsfetcher-just-got-even-better-usernames-timerange-and-chunks" class="hive-post-embed__content" data-hive-render-target="true">
-![595shots_so.png](https://files.peakd.com/file/peakd-hive/louis88/23tkhyPPFiLVhnc1Nkw9mCbTxcy8SRVd812ATCgUyJSAVRACFbdCNSqxLGiLYyPAgQDsw.png)
-
-Hey everyone!
-
-Some time ago, I created a small tool that lets you search for posts on the Hive blockchain using specific keywords. The idea was to help people quickly find posts that include certain words or phrases. Since the first version of the tool, I have spent more time working on it and adding more useful features.
-
-Today, I released some updates that were requested by the community. One of the most wanted features was the ability to search within a custom date range. This is now possible, but for performance reasons, it is currently only available when searching posts from a specific user. I also added more options for time range selection, including useful presets like the last 1,2,3,4,5 Months, and even the past year.
-
-To improve performance even more, I added something called "chunking." This means that if you search over a longer period of time, the tool will automatically split the search into smaller 30-day blocks. This helps avoid timeouts in the hafSQL database requests and keeps the tool stable and fast.
-
-These changes make the tool much more powerful and useful, especially for curators, moderators, or anyone looking to monitor specific topics or keywords on Hive.
-
-As always, you can find and use the tool for free at:
-### 👉 https://hive-keyword-search.onrender.com
-
-Feel free to test the new features, and let me know if you have more ideas. I really enjoy working on tools like this, especially when I see that the community finds value in it.
-
-![image.png](https://files.peakd.com/file/peakd-hive/louis88/23wBxxDJq7uJDEvSGh7VWYRZYjsUb7cxwdRk86fvVyDg4UGu34AhrPxA7iC2VbjtVHeof.png)
-
-
-### New Features &amp; Enhanced Flexibility
-- **Custom Date Range Search:** You can now search using specific start and end dates (e.g., January 1st to March 15th) instead of just the fixed "last X days."
-
-- **Search by Author (User Scope):** You can now filter search results to see posts only from a specific author.
-
-- **Smart Chunking for Long Searches:**
-  - Searches covering more than 90 days are automatically split into smaller, 30-day chunks.
-  - This prevents database timeouts, and all the results are automatically merged and sorted for you.
-
-### User Experience &amp; Stability
-- Smarter Date Selector: The custom date range option is now only visible when you are using the "Search by Author" filter, keeping the interface cleaner for general searches.
-
-- Keyword Limit: The maximum number of keywords has been adjusted to 3.
-
-### Improvements &amp; Debugging
-- **Improved API Error Handling:** The system now handles JSON errors more gracefully and provides more informative error messages.
-
-- **Enhanced Debugging:**
-  - The "Debug Information" panel now shows the SQL queries for all search chunks, clearly labeled.
-  - An Execution Log provides real-time updates on which chunk is currently being processed.
-  - Debug SQL is now extracted even if a specific search chunk fails, aiding troubleshooting.
-
-### Local Development Screenshots
-(This wont work on the small server i think...)
-
-![image.png](https://files.peakd.com/file/peakd-hive/louis88/23tbJmoxTrUoJbcH6YF71s9nBgQvnjtgv2ZHeXmACxKcdkDQbdN7rzNiUxmwYE1qgPFDZ.png)
-
-![image.png](https://files.peakd.com/file/peakd-hive/louis88/Eo6AogepHEEBhhhBsQxo39Qa85uAthaS7oqPWrtzL1JZ3bgCFiEZutQxeTGJa65uKQw.png)
-
-Thank you very much for your feedback so far! I look forward to receiving more and, of course, your support for my work.</div>
-  <footer class="hive-post-embed__source">
-    <span class="hive-post-embed__source-label">Source:</span>
-    <a href="https://hive.blog/@louis88/update-hivekeywordsfetcher-just-got-even-better-usernames-timerange-and-chunks">Update! HiveKeywordsFetcher just got even better! Usernames, Timerange and Chunks!</a>
-    by
-    <a href="https://hive.blog/@louis88">@louis88</a>
-  </footer>
-</div>]]></content><author><name>louis88</name></author><category term="tools" /><category term="search" /><category term="analytics" /><summary type="html"><![CDATA[Some time ago, I created a small tool that lets you search for posts on the Hive blockchain using specific keywords]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://files.peakd.com/file/peakd-hive/louis88/23tkhyPPFiLVhnc1Nkw9mCbTxcy8SRVd812ATCgUyJSAVRACFbdCNSqxLGiLYyPAgQDsw.png" /><media:content medium="image" url="https://files.peakd.com/file/peakd-hive/louis88/23tkhyPPFiLVhnc1Nkw9mCbTxcy8SRVd812ATCgUyJSAVRACFbdCNSqxLGiLYyPAgQDsw.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">24hr Sprint - hive-nectar v0.2.0 - still in the oven</title><link href="https://hivedocs.info/tools/python/nectar/2025/12/12/24hr-sprint-hive-nectar-v020-still-in-the-oven.html" rel="alternate" type="text/html" title="24hr Sprint - hive-nectar v0.2.0 - still in the oven" /><published>2025-12-12T04:40:09-08:00</published><updated>2025-12-12T04:40:09-08:00</updated><id>https://hivedocs.info/tools/python/nectar/2025/12/12/24hr-sprint-hive-nectar-v020-still-in-the-oven</id><content type="html" xml:base="https://hivedocs.info/tools/python/nectar/2025/12/12/24hr-sprint-hive-nectar-v020-still-in-the-oven.html"><![CDATA[<div class="hive-post-embed" data-hive-author="thecrazygm" data-hive-permlink="24hr-sprint-hive-nectar-v020-still-in-the-oven">
-  <div id="content-thecrazygm-24hr-sprint-hive-nectar-v020-still-in-the-oven" class="hive-post-embed__content" data-hive-render-target="true">Hey everyone,
-
-The last 24 hours have been a sprint. While working on a separate project, I implemented no less than four critical fixes to the `hive-nectar` v0.2.0 branch. This is exactly why I haven't merged it to main yet.
-
-Here is what I tackled:
-
-- **Comment Options Fix:** I corrected the `comment_options` transaction logic. It was previously generating invalid operations when setting beneficiaries.
-- **ImageUploader Modernization:** I updated `ImageUploader` to use `httpx`, bringing it in line with the rest of the project. I thought I had already done this, but now it is confirmed.
-- **Upload Reliability:** Photography files have grown significantly in size over the years, causing timeout issues. I added a 3x retry mechanism and extended the timeout for `ImageUploader` to handle larger files reliably.
-- **Filename Correction:** `ImageUploader` now correctly returns the filename (e.g., `<hash>/filename.jpg`) instead of the generic `<hash>/upload`.
-- **Profile Metadata Update:** I fixed `update_json_metadata` to use the new v2 profile data structure. The library hadn't been updated in a while, and front-ends were failing to pick up profiles set with Nectar.
-
-![Still so much more to be done...](https://files.peakd.com/file/peakd-hive/thecrazygm/23t7AyQJhK1eUPPSciUrGHuD8n88V3zEkbRiSb3NGzKgWEdgVqN3Eo9ud5bfZTz6gtb8F.png)
-
-All unit tests are passing, but these edge cases prove that v0.2.0 needs a bit more time in the oven before I merge it to main.
-
-As always,
-Michael Garcia a.k.a. TheCrazyGM
+You can try it at [vheissu.github.io/hive-stream-ui](https://vheissu.github.io/hive-stream-ui/) and the code is on [GitHub](https://github.com/Vheissu/hive-stream-ui). If it ever generates something that doesn't compile, open an issue with your share link and I'll be able to reproduce it.
 &lt;/div&gt;
   <footer class="hive-post-embed__source">
     <span class="hive-post-embed__source-label">Source:</span>
-    <a href="https://hive.blog/@thecrazygm/24hr-sprint-hive-nectar-v020-still-in-the-oven">24hr Sprint - hive-nectar v0.2.0 - still in the oven</a>
+    <a href="https://hive.blog/@beggars/hive-stream-builder-set-up-a-hive-stream-app-in-your-browser-and-download-the-code">Hive Stream Builder: set up a hive-stream app in your browser and download the code</a>
     by
-    <a href="https://hive.blog/@thecrazygm">@thecrazygm</a>
+    <a href="https://hive.blog/@beggars">@beggars</a>
   </footer>
 &lt;/div&gt;
 
-</hash></hash></div></div>]]></content><author><name>thecrazygm</name></author><category term="tools" /><category term="python" /><category term="nectar" /><summary type="html"><![CDATA[While working on a separate project, I implemented no less than four critical fixes to the hive-nectar v0.2.0 branch]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://files.peakd.com/file/peakd-hive/thecrazygm/23t7AyQJhK1eUPPSciUrGHuD8n88V3zEkbRiSb3NGzKgWEdgVqN3Eo9ud5bfZTz6gtb8F.png" /><media:content medium="image" url="https://files.peakd.com/file/peakd-hive/thecrazygm/23t7AyQJhK1eUPPSciUrGHuD8n88V3zEkbRiSb3NGzKgWEdgVqN3Eo9ud5bfZTz6gtb8F.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Nectarengine v0.2.0 release candidate</title><link href="https://hivedocs.info/tools/python/nectar/2025/12/10/nectarengine-v020-release-candidate.html" rel="alternate" type="text/html" title="Nectarengine v0.2.0 release candidate" /><published>2025-12-10T05:07:45-08:00</published><updated>2025-12-10T05:07:45-08:00</updated><id>https://hivedocs.info/tools/python/nectar/2025/12/10/nectarengine-v020-release-candidate</id><content type="html" xml:base="https://hivedocs.info/tools/python/nectar/2025/12/10/nectarengine-v020-release-candidate.html"><![CDATA[<div class="hive-post-embed" data-hive-author="thecrazygm" data-hive-permlink="nectarengine-v020-release-candidate">
-  <div id="content-thecrazygm-nectarengine-v020-release-candidate" class="hive-post-embed__content" data-hive-render-target="true">Hey everyone,
+</name></div></div>]]></content><author><name>beggars</name></author><category term="tools" /><category term="javascript" /><category term="hive-stream" /><summary type="html"><![CDATA[A web app for configuring a hive-stream project and downloading it, with contracts, bots and tests included]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://files.peakd.com/file/peakd-hive/beggars/EqjadgB3D7iQprh3s8Ss2ThCfzQnzpaNSC1bauazVaZZjFetaNrfSkcZj23rEvSL3GW.jpg" /><media:content medium="image" url="https://files.peakd.com/file/peakd-hive/beggars/EqjadgB3D7iQprh3s8Ss2ThCfzQnzpaNSC1bauazVaZZjFetaNrfSkcZj23rEvSL3GW.jpg" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">HAF API stack 1.28.8 release notes: changes since 1.28.6</title><link href="https://hivedocs.info/news/core/development/2026/10/06/haf-api-stack-1-28-8-release-notes-changes-since-1-28-6.html" rel="alternate" type="text/html" title="HAF API stack 1.28.8 release notes: changes since 1.28.6" /><published>2026-10-06T15:50:54-07:00</published><updated>2026-10-06T15:50:54-07:00</updated><id>https://hivedocs.info/news/core/development/2026/10/06/haf-api-stack-1-28-8-release-notes-changes-since-1-28-6</id><content type="html" xml:base="https://hivedocs.info/news/core/development/2026/10/06/haf-api-stack-1-28-8-release-notes-changes-since-1-28-6.html"><![CDATA[<div class="hive-post-embed" data-hive-author="blocktrades" data-hive-permlink="haf-api-stack-1-28-8-release-notes-changes-since-1-28-6">
+  <div id="content-blocktrades-haf-api-stack-1-28-8-release-notes-changes-since-1-28-6" class="hive-post-embed__content" data-hive-render-target="true">![blocktrades update.png](https://images.hive.blog/DQmSihw8Kz4U7TuCQa98DDdCzqbqPFRumuVWAbareiYZW1Z/blocktrades%20update.png)
 
-Following the `hive-nectar` update, I am also releasing a `nectarengine` v0.2.0 branch.
+This report is written for several kinds of readers: people who use Hive apps and wallets, developers building on Hive, and API node operators. Most readers will only need some of it, so feel free to skip the sections that don't apply to you. 
 
-![Tokens Script running v0.2.0!](https://files.peakd.com/file/peakd-hive/thecrazygm/23tGW1bef8ehgtTRmKjEA1CUkkzfXTB6RTpjEm4Pn9SCQQybqF9ym43WfKp3stkWRkDr5.png)
+There were too many changes this time, so the initial version was written by scanning the commit history using AI, then reviewed and modified by the devs who worked on the changes. It includes most changes to hived, HAF, the HAF apps and the haf\_api\_node deployment stack between the 1.28.6 release (2026-05-04) and the 1.28.8 release (tagged yesterday, deployed today). hive and haf also had a small 1.28.7 hotfix tag (2026-07-10); its changes are included here and marked [1.28.7].
 
-I modernized the codebase to use `httpx` instead of `requests` and ran strict type checks (`ty` is brutal) until I cleared every error. Like `hive-nectar`, this is a work in progress. I will merge it to main in about a week unless I get some issues that need fixed.
+## Scope
 
-## Recent Changes
+| Repo | Role | Commits 1.28.6..1.28.8 |
+| --- | --- | --- |
+| hive | hived blockchain node, cli\_wallet | 224 |
+| haf | sql\_serializer plugin, hive\_fork\_manager extension, HAF image | 65 |
+| hivemind | Social / condenser API app | 37 |
+| HAfAH | Account history API app | 14 |
+| balance\_tracker | Balances, vesting, transfer stats app | 79 |
+| reputation\_tracker | Reputation app | 27 |
+| haf\_block\_explorer | Block explorer backend app | 82 |
+| nft\_tracker | NFT app | 18 |
+| hivesense | Semantic search (embeddings) app | 38 |
+| haf\_api\_node | Docker Compose stack for API nodes | 67 |
 
-### 0.2.1
+## Read first: what an upgrade from 1.28.6 involves
 
-- Fixed type hinting errors in `cli.py`, `nfts.py`, and `tokenobject.py`.
-- Added defensive `None` checks for `nft.get_id()` in CLI to prevent runtime errors.
-- Cleaned up unused variables and imports identified by `ruff` and `ty`.
+- **Replay:** Full replay required, or download a full 1.28.8 snapshot. hived's in-memory state layout changed, and HAF's schema changed (new `rc_cost` column, new app-registry tables). HAF's in-place extension update refuses to run on the schema-hash mismatch. Since HAF is replayed, every HAF app resyncs from scratch too.
+- **PostgreSQL:** HAF now runs on PostgreSQL 18. The replay builds the new database on 18.
+- **Ubuntu 26.04:** The hived and HAF Docker images moved from Ubuntu 24.04 to Ubuntu 26.04 (Boost 1.90, Python 3.14). The reference build environment is now Ubuntu 26.04 with GCC 15, Boost 1.90 and CMake 4, and hived requires C++20. The other HAF app images don't change OS.
+- **API:** `get_dynamic_global_properties` no longer returns `total_reward_fund_hive` or `total_reward_shares2`. balance\_tracker `/transfer-statistics` amounts are now `{nai, amount, precision}` objects, and stats `date` now labels the period start.
+- **Stack:** haf\_api\_node: create `${HAF_LOG_DIRECTORY}/apps` before `up`, and note that p2p port 2001 is now published by default.
+- No mainnet consensus changes. Mainnet still has 28 hardforks; HF29 work exists only on testnet and mirrornet.
 
-### 0.2.0
+## 1. Features that affect users
 
-- Migrated network layer from `requests` to `httpx` for better performance.
-- Enhanced `find_all` pagination to use `last_id` based recursion.
-- Silenced noisy `httpx` logs by default.
+Changes visible to people using Hive frontends, wallets and the public APIs.
 
-## Shoutout
+#### Network reliability
 
-Special thanks to @themarkymark. His personal `hiveenginepy` inspired the `last_id` pagination logic, which handles tokens with more than 10k items.
+- Nodes are much more resilient to the kind of p2p disruption seen on 2026-07-09. They stop mass-disconnecting peers over slightly stale blocks, recover automatically when stuck behind, and keep dialing peers when DNS or routing is limited. Details are under bug fixes. ([b31dd12269](https://gitlab.syncad.com/hive/hive/-/commit/b31dd12269) [16a419df6a](https://gitlab.syncad.com/hive/hive/-/commit/16a419df6a) [9040b581c8](https://gitlab.syncad.com/hive/hive/-/commit/9040b581c8) [73b937e98f](https://gitlab.syncad.com/hive/hive/-/commit/73b937e98f))
+- IPv6 p2p connections now work end to end, and nodes prefer IPv6 peers when both are available. ([18e482508b](https://gitlab.syncad.com/hive/hive/-/commit/18e482508b) [9112cde237](https://gitlab.syncad.com/hive/hive/-/commit/9112cde237))
+
+#### Wallet
+
+- cli\_wallet refuses to save if another process changed the wallet file since it was loaded, and writes through a temp file plus atomic rename, so a second wallet instance can no longer silently overwrite keys. ([bfad335466](https://gitlab.syncad.com/hive/hive/-/commit/bfad335466))
+
+#### Social and rewards (hivemind)
+
+- New `GET /accounts/{name}/pending-author-rewards`: total pending author and beneficiary reward basis across an account's unpaid posts, with liquid / vesting / direct buckets. It respects `max_accepted_payout`, declined payouts and the 50/50 author/curator split. ([25d535b8c](https://gitlab.syncad.com/hive/hivemind/-/commit/25d535b8c) [fbf22d6be](https://gitlab.syncad.com/hive/hivemind/-/commit/fbf22d6be) [f156c8442](https://gitlab.syncad.com/hive/hivemind/-/commit/f156c8442))
+- New `GET /accounts/{name}/pending-curation-rewards`: curation reward basis from the account's votes in the last 8 days of chain time (under 30 ms on production). ([25d59ce02](https://gitlab.syncad.com/hive/hivemind/-/commit/25d59ce02))
+- Mention notifications read correctly ("X mentioned you" instead of "X mentioned you and 0 others"). ([1e6aaa3a1](https://gitlab.syncad.com/hive/hivemind/-/commit/1e6aaa3a1))
+- Vote notifications are no longer missing for blocks processed during short catch-ups. ([3620e01a9](https://gitlab.syncad.com/hive/hivemind/-/commit/3620e01a9))
+
+#### Block explorer data (haf\_block\_explorer)
+
+- Proposals: `/proposals` (status filter, sort, pagination, creator/ids/voter/search filters), `/proposals/votes`, and `/proposals/{id}/votes/history`. Votes include direct and proxied vests and the proxy. ([ae8e9e6](https://gitlab.syncad.com/hive/haf_block_explorer/-/commit/ae8e9e6) [a802768](https://gitlab.syncad.com/hive/haf_block_explorer/-/commit/a802768) [67ebaf1](https://gitlab.syncad.com/hive/haf_block_explorer/-/commit/67ebaf1) [2b740b3](https://gitlab.syncad.com/hive/haf_block_explorer/-/commit/2b740b3) [5238589](https://gitlab.syncad.com/hive/haf_block_explorer/-/commit/5238589))
+- `/operation-type-statistics` (daily/monthly/yearly operation counts by type). ([ed90198](https://gitlab.syncad.com/hive/haf_block_explorer/-/commit/ed90198) [7a3260a](https://gitlab.syncad.com/hive/haf_block_explorer/-/commit/7a3260a))
+- `/total_wallet_addresses`: new-wallet counts per period plus a running total. ([b918faf](https://gitlab.syncad.com/hive/haf_block_explorer/-/commit/b918faf) [891c3b6](https://gitlab.syncad.com/hive/haf_block_explorer/-/commit/891c3b6))
+- `/hbd/status`: HBD supply, virtual supply, debt ratio and interest rate over time. ([aa2ed83](https://gitlab.syncad.com/hive/haf_block_explorer/-/commit/aa2ed83) [7b9bc1b](https://gitlab.syncad.com/hive/haf_block_explorer/-/commit/7b9bc1b))
+- Account pages can show pending HBD savings interest: `get_account` adds `hbd_seconds`, `hbd_seconds_last_update`, `hbd_last_interest_payment`. ([c0e760a](https://gitlab.syncad.com/hive/haf_block_explorer/-/commit/c0e760a))
+- Proxy power lists can be sorted by account, proxy date or proxied vests. ([a4346ab](https://gitlab.syncad.com/hive/haf_block_explorer/-/commit/a4346ab))
+- Witness 24h vote-change figures now count lost votes as well as gained ones. ([d2ca604](https://gitlab.syncad.com/hive/haf_block_explorer/-/commit/d2ca604))
+
+#### Balances and vesting (balance\_tracker)
+
+- New vesting endpoints: `/vesting-stats` (global), `/accounts/{name}/vesting-history` (power up, power down start/fill, routed power-down received) and `/accounts/{name}/vesting-stats`. ([c81465d](https://gitlab.syncad.com/hive/balance_tracker/-/commit/c81465d) [a689543](https://gitlab.syncad.com/hive/balance_tracker/-/commit/a689543) [33979d0](https://gitlab.syncad.com/hive/balance_tracker/-/commit/33979d0))
+- `/top-holders` accepts `min-balance` / `max-balance`. Totals describe the filtered set while each holder keeps their global rank. ([8ebdca4](https://gitlab.syncad.com/hive/balance_tracker/-/commit/8ebdca4))
+- `/transfer-statistics` amounts are now proper asset objects (previously shown 1000× too large for HIVE/HBD). ([9d4a7e6](https://gitlab.syncad.com/hive/balance_tracker/-/commit/9d4a7e6))
+
+#### Search (hivesense)
+
+- Posts in Bengali, Hindi, Urdu and other non-Latin scripts are now split on their own sentence terminators instead of being hard-truncated, which improves semantic search over them (applies to newly embedded content). ([00429f6](https://gitlab.syncad.com/hive/hivesense/-/commit/00429f6))
+- Paged search in slice mode works (it previously failed with "integer out of range"). ([ada7de8](https://gitlab.syncad.com/hive/hivesense/-/commit/ada7de8))
+
+#### Public API nodes
+
+- Public nodes on the new stack return a fast 503 under overload instead of hanging, and no longer return truncated bodies with a 200 status when the Varnish cache is full. [haf\_api\_node]
+
+## 2. Changes for developers
+
+API contracts, schemas, libraries and tooling, by repo.
+
+### hive
+
+#### API and protocol
+
+- **Breaking:** `get_dynamic_global_properties` (database\_api and condenser\_api) drops `total_reward_fund_hive` and `total_reward_shares2`; the data lives in `reward_fund_object`. ([3d04c1c9b8](https://gitlab.syncad.com/hive/hive/-/commit/3d04c1c9b8) [1ce435e7bf](https://gitlab.syncad.com/hive/hive/-/commit/1ce435e7bf))
+- `author_reward_operation.curators_vesting_payout` now reports the amount actually paid instead of an estimate. This is not hardfork-gated, so a 1.28.8 replay produces values that differ by about one unit for some historical ops. HAF and account-history consumers will see this. ([2a7a25d33b](https://gitlab.syncad.com/hive/hive/-/commit/2a7a25d33b) [ec56dd560c](https://gitlab.syncad.com/hive/hive/-/commit/ec56dd560c))
+- Account-creation and claim\_account fee errors are classified as `HIVE_CHAIN_FEE_ASSERT` (wax maps to `WaxInvalidFeeError`) instead of a balance error. ([6e4dba59bc](https://gitlab.syncad.com/hive/hive/-/commit/6e4dba59bc))
+- `recurrent_transfer_operation::validate()` accepts `executions &gt;= 1`. The "at least 2 for a new transfer" rule moved into the evaluator, so client-side validation errors differ. ([f0b2974317](https://gitlab.syncad.com/hive/hive/-/commit/f0b2974317))
+- `network_node_api.get_connected_peers` adds `user_agent` and `core_protocol_version`. ([a75a572dcb](https://gitlab.syncad.com/hive/hive/-/commit/a75a572dcb))
+- The OpenAPI spec for hivemind-served bridge/condenser calls was corrected to match real responses (removed post/vote `id`, notification `id` is a string, beneficiaries schema, parameter names and order, optional fields). ([36aa68576d](https://gitlab.syncad.com/hive/hive/-/commit/36aa68576d) [fcfbba9226](https://gitlab.syncad.com/hive/hive/-/commit/fcfbba9226) [ef113c5729](https://gitlab.syncad.com/hive/hive/-/commit/ef113c5729))
+
+#### Testnet / mirrornet (HF29, not on mainnet)
+
+- HF29 is registered and these networks report 1.29.0. HF29 defaults to year 2100, so tests must schedule it. ([d38106508f](https://gitlab.syncad.com/hive/hive/-/commit/d38106508f) [83be294c8b](https://gitlab.syncad.com/hive/hive/-/commit/83be294c8b))
+- HF29 items: RC becomes consensus, oversized authority in account recovery requests is blocked, limit orders for nonexistent assets are rejected, `remove_proposal` validates all ids, and recurrent transfers can be edited down to `executions=1`. ([20d5495c63](https://gitlab.syncad.com/hive/hive/-/commit/20d5495c63) [713f8f470a](https://gitlab.syncad.com/hive/hive/-/commit/713f8f470a) [02c113d60e](https://gitlab.syncad.com/hive/hive/-/commit/02c113d60e) [a28676a201](https://gitlab.syncad.com/hive/hive/-/commit/a28676a201) [73d5bb9362](https://gitlab.syncad.com/hive/hive/-/commit/73d5bb9362))
+- Minimum account creation fee on testnet is now 1; the `allow_not_enough_rc` alternate-chain-spec key was removed. ([0e244645b6](https://gitlab.syncad.com/hive/hive/-/commit/0e244645b6) [e52c68166e](https://gitlab.syncad.com/hive/hive/-/commit/e52c68166e))
+- debug\_node: new `debug_push_pending_transaction`, and block generation can skip transaction reapplication. ([d6df5dc207](https://gitlab.syncad.com/hive/hive/-/commit/d6df5dc207) [6105c25d36](https://gitlab.syncad.com/hive/hive/-/commit/6105c25d36))
+
+#### Build and code layout
+
+- C++20 is required. Builds with GCC 15, Boost 1.90 and CMake 4. Runtime images moved to Ubuntu 26.04; binaries are still built on manylinux (glibc 2.28 floor). ([a92f155bd2](https://gitlab.syncad.com/hive/hive/-/commit/a92f155bd2) [38f4d63508](https://gitlab.syncad.com/hive/hive/-/commit/38f4d63508) [94b70fc3dd](https://gitlab.syncad.com/hive/hive/-/commit/94b70fc3dd))
+- Chain object headers moved to `hive/chain/detail/state/...` and pass-through headers were removed. `types.hpp` no longer pulls in `fc/io/raw.hpp` or boost multiprecision (about 1.6 s saved per translation unit). Code linking hived libraries (e.g. HAF) needs include updates. ([afbed8d181](https://gitlab.syncad.com/hive/hive/-/commit/afbed8d181) [10ac2d44e9](https://gitlab.syncad.com/hive/hive/-/commit/10ac2d44e9) [74f26eb093](https://gitlab.syncad.com/hive/hive/-/commit/74f26eb093))
+- Chain objects (account, dgpo, reward fund, escrow, orders, savings withdrawals, conversions, authorities) are encapsulated behind getters and balance classes. Balances can no longer go negative or be created from nothing. `adjust_supply` was replaced by issue/burn/convert, and there is a new `get_hbd_price()`. Plugin code must use the getters. ([b3978c7775](https://gitlab.syncad.com/hive/hive/-/commit/b3978c7775) [0ca4338423](https://gitlab.syncad.com/hive/hive/-/commit/0ca4338423) [9adcfacb08](https://gitlab.syncad.com/hive/hive/-/commit/9adcfacb08))
+- Python test tooling: stable hiveio-api model aliases, `WaxAssertionError`, exceptions via `test_tools.exceptions`. `setup_ubuntu.sh` no longer repoints system `python3` and repairs systems the old script broke. ([743ee5bbfd](https://gitlab.syncad.com/hive/hive/-/commit/743ee5bbfd) [30642fdcd9](https://gitlab.syncad.com/hive/hive/-/commit/30642fdcd9))
+- `block_log_util` returns a failing exit code on checksum mismatch. ([abad95595f](https://gitlab.syncad.com/hive/hive/-/commit/abad95595f))
+
+### haf
+
+- **Per-transaction RC cost:** new `rc_cost bigint` column on `hafd.transactions`, `transactions_reversible` and the transaction views (NULL before HF20). Apps doing `SELECT *` on these see an extra column. ([3634d91ad](https://gitlab.syncad.com/hive/haf/-/commit/3634d91ad) [137be5993](https://gitlab.syncad.com/hive/haf/-/commit/137be5993))
+- **Application registry:** new `hafd.applications` / `application_dependencies` tables and `hive.app_register`, `app_unregister`, `app_add_dependency`, `app_remove_dependency`, `app_pause`, `app_resume`, `app_is_paused`, `app_dependencies_block_limit`. An app is never handed a block its dependencies haven't committed. `app_register` takes an optional `_completed_block_function` and is a no-op for embedded apps. ([ca980dc4c](https://gitlab.syncad.com/hive/haf/-/commit/ca980dc4c) [11026fd5b](https://gitlab.syncad.com/hive/haf/-/commit/11026fd5b) [080338900](https://gitlab.syncad.com/hive/haf/-/commit/080338900))
+- **Client-driven app loops:** `hive.app_next_iteration(..., _wait =&gt; FALSE)` and `hive.app_next_block(_wait, _block_limit)` return immediately. Drivers that own their transaction must call the new `hive.app_perform_maintenance(_contexts)` after each commit. Existing `CALL main()` loops are unchanged. ([ca980dc4c](https://gitlab.syncad.com/hive/haf/-/commit/ca980dc4c) [9350e8ed0](https://gitlab.syncad.com/hive/haf/-/commit/9350e8ed0))
+- **LISTEN/NOTIFY:** HAF emits `haf_new_block` and `haf_new_irreversible`. The new C function `hive.wait_for_new_block(int)` replaces `pg_sleep(1.5)` polling (it releases its snapshot while waiting). ([91268c956](https://gitlab.syncad.com/hive/haf/-/commit/91268c956) [4545fab60](https://gitlab.syncad.com/hive/haf/-/commit/4545fab60))
+- Advisory-lock helpers for installers and block processors: `hive.try_acquire_app_install_lock(name)` and `hive.acquire_app_block_processor_locks(names[])`. ([6cd632172](https://gitlab.syncad.com/hive/haf/-/commit/6cd632172))
+- Also new: `hive.is_interrupted_massive_sync()`, and a warning from `hive.context_attach` when asked to jump forward. Shadow tables are now created `WITH NO DATA`. ([afb15416a](https://gitlab.syncad.com/hive/haf/-/commit/afb15416a) [9a97875c1](https://gitlab.syncad.com/hive/haf/-/commit/9a97875c1) [9ac4d4c2d](https://gitlab.syncad.com/hive/haf/-/commit/9ac4d4c2d))
+- Build: Ubuntu 26.04 builder (GCC 15.2, Boost 1.90, CMake 4.2, Python 3.14). CMake picks the `pg_config` matching `POSTGRES_VERSION`. `generate_extension_sql.sh` reads its file list from CMakeLists.txt. Sources adapted to hive's encapsulated objects. ([348e32dce](https://gitlab.syncad.com/hive/haf/-/commit/348e32dce) [c303359a1](https://gitlab.syncad.com/hive/haf/-/commit/c303359a1) [98309d2bf](https://gitlab.syncad.com/hive/haf/-/commit/98309d2bf) [8c666eb06](https://gitlab.syncad.com/hive/haf/-/commit/8c666eb06))
+- pg\_search 0.21.13 → 0.25.3, now preloaded. pg\_cron pinned to 1.6.7 [1.28.7]. ([6a35c1bd3](https://gitlab.syncad.com/hive/haf/-/commit/6a35c1bd3) [1c8e06a24](https://gitlab.syncad.com/hive/haf/-/commit/1c8e06a24) [c15c0e324](https://gitlab.syncad.com/hive/haf/-/commit/c15c0e324))
+
+### hivemind
+
+- New REST endpoints `/accounts/{name}/pending-author-rewards`, `/accounts/{name}/pending-curation-rewards`, with composite types `hivemind_endpoints.pending_author_rewards` / `pending_curation_rewards`, `hbd_asset` and `pending_reward_basis`. The pending-rewards response shape changed during development (fbf22d6be), but only the final shape ships. ([25d535b8c](https://gitlab.syncad.com/hive/hivemind/-/commit/25d535b8c) [25d59ce02](https://gitlab.syncad.com/hive/hivemind/-/commit/25d59ce02) [fbf22d6be](https://gitlab.syncad.com/hive/hivemind/-/commit/fbf22d6be))
+- Registers in HAF's app registry as `hivemind_app` with a `hivemind_app.completed_block_num()` function, so hivesense and others can depend on it. ([65a552b27](https://gitlab.syncad.com/hive/hivemind/-/commit/65a552b27))
+- OpenAPI regeneration works again (`reblog_status` schemas added). After running the regenerator, remove the auto-emitted `DROP TYPE ... reblog_status` block by hand. ([133755e6e](https://gitlab.syncad.com/hive/hivemind/-/commit/133755e6e) [9753ef749](https://gitlab.syncad.com/hive/hivemind/-/commit/9753ef749))
+- Python 3.14 target. Published wheels keep the &gt;=3.12 floor. ([036726200](https://gitlab.syncad.com/hive/hivemind/-/commit/036726200) [a49e9d45b](https://gitlab.syncad.com/hive/hivemind/-/commit/a49e9d45b))
+
+### HAfAH
+
+- No developer-facing changes.
+
+### balance\_tracker
+
+- OpenAPI: new `/vesting-stats`, `/accounts/{name}/vesting-history`, `/accounts/{name}/vesting-stats`, and `/top-holders` range parameters. ([c81465d](https://gitlab.syncad.com/hive/balance_tracker/-/commit/c81465d) [8ebdca4](https://gitlab.syncad.com/hive/balance_tracker/-/commit/8ebdca4))
+- **Breaking:** `/transfer-statistics` amount fields changed from string to `{nai, amount, precision}`. Stats `date` now means period start. ([9d4a7e6](https://gitlab.syncad.com/hive/balance_tracker/-/commit/9d4a7e6) [b05c5db](https://gitlab.syncad.com/hive/balance_tracker/-/commit/b05c5db))
+- New tables: `account_hbd_interest` (+ view), `vesting_stats_by_day/_month`, `account_vesting_history`, `account_vesting_by_day/_month` (stored tall, pivoted at read time). ([38b127c](https://gitlab.syncad.com/hive/balance_tracker/-/commit/38b127c) [a689543](https://gitlab.syncad.com/hive/balance_tracker/-/commit/a689543))
+- Impacted-balance calculation is now pure SQL (`btracker_backend.get_impacted_balances`) instead of the C `hive.get_impacted_balances`. ([8eecba6](https://gitlab.syncad.com/hive/balance_tracker/-/commit/8eecba6) [03f6c67](https://gitlab.syncad.com/hive/balance_tracker/-/commit/03f6c67))
+- New `process_blocks(hive.blocks_range)` entry point for the generic HAF driver. New `finalize_massive_sync_before_forking()`, which embedding apps (hafbe) should call before switching to forking mode. ([f0c65dc](https://gitlab.syncad.com/hive/balance_tracker/-/commit/f0c65dc) [a962718](https://gitlab.syncad.com/hive/balance_tracker/-/commit/a962718))
+- Backend SQL reorganized into `backend/shared/`, `endpoint_helpers/` and `operation_parsers/` (commits state behaviour is unchanged). NAI/precision helpers are constant functions checked against `asset_table` at install. ([8302858](https://gitlab.syncad.com/hive/balance_tracker/-/commit/8302858) [9df90e1](https://gitlab.syncad.com/hive/balance_tracker/-/commit/9df90e1))
+
+### reputation\_tracker
+
+- New `process_blocks(hive.blocks_range)` entry point and `hive.app_register` registration, skipped when an embedding app owns the context. ([d361925](https://gitlab.syncad.com/hive/reputation_tracker/-/commit/d361925) [8fece12](https://gitlab.syncad.com/hive/reputation_tracker/-/commit/8fece12))
+- No table schema changes.
+
+### haf\_block\_explorer
+
+- New endpoints: `/proposals`, `/proposals/votes`, `/proposals/{id}/votes/history`, `/operation-type-statistics`, `/total_wallet_addresses`, `/hbd/status`. New fields on `get_account`; new `sort`/`direction` on `get_account_proxies_power`. ([ae8e9e6](https://gitlab.syncad.com/hive/haf_block_explorer/-/commit/ae8e9e6) [ed90198](https://gitlab.syncad.com/hive/haf_block_explorer/-/commit/ed90198) [b918faf](https://gitlab.syncad.com/hive/haf_block_explorer/-/commit/b918faf) [aa2ed83](https://gitlab.syncad.com/hive/haf_block_explorer/-/commit/aa2ed83) [c0e760a](https://gitlab.syncad.com/hive/haf_block_explorer/-/commit/c0e760a) [a4346ab](https://gitlab.syncad.com/hive/haf_block_explorer/-/commit/a4346ab))
+- An explicit `null` for an optional parameter now falls back to the default on most endpoints. Shared limit validators reject NULL instead of treating it as "no limit". OpenAPI states page / page-size bounds. ([fc226e6](https://gitlab.syncad.com/hive/haf_block_explorer/-/commit/fc226e6))
+- `operation-type-statistics` and `transaction-statistics` still return bare arrays (pagination was added, then reverted). Daily op-type stats with no range default to the last year. ([fc226e6](https://gitlab.syncad.com/hive/haf_block_explorer/-/commit/fc226e6) [7a3260a](https://gitlab.syncad.com/hive/haf_block_explorer/-/commit/7a3260a))
+- New tables: `proposal_votes_history`, `current_proposals`, `current_proposal_votes`, `proposal_payments`, `proposal_vote_stats_cache`, `operation_type_stats_by_day/_month`. The cache refresh uses MERGE. ([4fdb621](https://gitlab.syncad.com/hive/haf_block_explorer/-/commit/4fdb621) [36de0e6](https://gitlab.syncad.com/hive/haf_block_explorer/-/commit/36de0e6))
+
+### nft\_tracker
+
+- `/version` now returns the deployed commit hash (`'unspecified'` if none was recorded) instead of always `'development'`. New `nfttracker_app.version` table and `set_version()`. ([d31c741](https://gitlab.syncad.com/hive/nft_tracker/-/commit/d31c741))
+- New `process_blocks(hive.blocks_range)` entry point. ([e9b452d](https://gitlab.syncad.com/hive/nft_tracker/-/commit/e9b452d))
+
+### hivesense
+
+- New `/version` and `/sync-chains` (embedding chains a server can supply; syncers fall back to `/sync-settings` on 404). `/sync-settings` adds `skipped_op_count`, and `/embedding-updates` sends `X-Skipped-Op-Count`. ([a662d2b](https://gitlab.syncad.com/hive/hivesense/-/commit/a662d2b) [fd65180](https://gitlab.syncad.com/hive/hivesense/-/commit/fd65180) [280b41f](https://gitlab.syncad.com/hive/hivesense/-/commit/280b41f))
+- New table `sync_chains`; new `hivesense_app_status` columns (`embedding_api`, `skipped_op_count`, `upstream_skipped_op_count`, `num_ctx`), added with `IF NOT EXISTS`. ([fd65180](https://gitlab.syncad.com/hive/hivesense/-/commit/fd65180) [e90fc38](https://gitlab.syncad.com/hive/hivesense/-/commit/e90fc38))
+- Install flag `--embedding-api=ollama|openai`. `db/legacy_rebase.sql` plus runbook `docs/sync_chain_rebase.md` for continuing an old sync chain after regenerating embeddings. ([e90fc38](https://gitlab.syncad.com/hive/hivesense/-/commit/e90fc38) [7fe0744](https://gitlab.syncad.com/hive/hivesense/-/commit/7fe0744))
+- Syncer and pca images on python 3.14-slim. ([d31a158](https://gitlab.syncad.com/hive/hivesense/-/commit/d31a158))
+
+### haf\_api\_node
+
+- No developer-facing changes.
+
+## 3. Changes for API node operators
+
+Configuration, images, upgrade steps and runtime behaviour, by repo. haf\_api\_node comes first because that is where most operators act.
+
+### haf\_api\_node
+
+#### Upgrade checklist
+
+1. Replay the whole stack, or download a full 1.28.8 snapshot (see Read first).
+2. Create `${HAF_LOG_DIRECTORY}/apps` owned by `HIVED_UID` before `up`. Seven services now bind-mount it, and the setup scripts only create it on fresh installs. ([efdcdf4](https://gitlab.syncad.com/hive/haf_api_node/-/commit/efdcdf4))
+3. Decide on p2p exposure: port 2001 is now published by default on `haf` and `hive` (IPv4 and IPv6). Use `P2P_PORT_MAPPING="127.0.0.1:2001:2001"` to keep it local. IPv6 on Docker Engine &lt; 27 needs `ip6tables: true` in `daemon.json`. ([c803fba](https://gitlab.syncad.com/hive/haf_api_node/-/commit/c803fba) [27e3035](https://gitlab.syncad.com/hive/haf_api_node/-/commit/27e3035))
+4. HafSQL now comes from Docker Hub (`mahdiyari/hafsql:2.6.1`) and no longer follows `HIVE_API_NODE_VERSION`. Remove any `HAFSQL_VERSION=${HIVE_API_NODE_VERSION}` override. ([ad4f4d2](https://gitlab.syncad.com/hive/haf_api_node/-/commit/ad4f4d2))
+5. With `PGBOUNCER_AUTH_TYPE=md5`, add a `stats:` user or set `POSTGRES_URL_PGBOUNCER` empty. ([be6c23b](https://gitlab.syncad.com/hive/haf_api_node/-/commit/be6c23b))
+6. Recommended: `HIVEMIND_POSTGREST_GHCRTS="--nonmoving-gc"` on busy nodes. `HIVESENSE_MISSING_POST_ACTION=exit` on nodes others sync from. ([8999eb3](https://gitlab.syncad.com/hive/haf_api_node/-/commit/8999eb3) [d27115e](https://gitlab.syncad.com/hive/haf_api_node/-/commit/d27115e))
+7. If you ran haf\_fyp from a private compose file, rename services to the new names. Old names won't authenticate under the new per-container pg\_hba rows. ([f63e1e3](https://gitlab.syncad.com/hive/haf_api_node/-/commit/f63e1e3))
+
+#### Component versions
+
+| Component | 1.28.6 | 1.28.8 |
+| --- | --- | --- |
+| HIVE\_API\_NODE\_VERSION | 1.28.6-rc14 | 1.28.8 |
+| hived / HAF image base OS | Ubuntu 24.04 | Ubuntu 26.04 |
+| HAF PostgreSQL | 17 | 18 |
+| PostgREST | v12.2.3 | v14.15 |
+| HAProxy | 2.9.7 | 3.2.21 LTS |
+| Caddy | 2.10.2 | 2.11.3 |
+| PgBouncer (Alpine base) | Alpine 3.22.1 | 1.25.1 (Alpine 3.23.5) |
+| HafSQL | 2.5.2 | 2.6.1 (Docker Hub) |
+
+&gt; HAProxy 3.2 still sends email alerts but logs a deprecation warning; 3.3 removes them. ([ec8242d](https://gitlab.syncad.com/hive/haf_api_node/-/commit/ec8242d))
+
+#### New services and profiles
+
+- `haf-stats` / `haf-stats-uninstall` (route `/haf-stats-api/`) and `haf-fyp` / `haf-fyp-uninstall` (routes `/haf-fyp-api/` and `/haf-fyp-admin/`, with Redis, a ranker and a FastAPI write API). Both are opt-in and not part of `apps`. Their images don't resolve on registry.hive.blog yet, so the image/version variables must be set by hand. ([4be2602](https://gitlab.syncad.com/hive/haf_api_node/-/commit/4be2602) [1b3c435](https://gitlab.syncad.com/hive/haf_api_node/-/commit/1b3c435) [f63e1e3](https://gitlab.syncad.com/hive/haf_api_node/-/commit/f63e1e3))
+- `hivesense-llama-cpu`: optional CPU embedding fallback (llama.cpp server), with `haproxy/35-ollama-remote.cfg.example` for routing. ([e0af9e9](https://gitlab.syncad.com/hive/haf_api_node/-/commit/e0af9e9))
+
+#### New and changed settings
+
+- **hived endpoints:** `P2P_ENDPOINT`, `WS_ENDPOINT`, `HTTP_ENDPOINT`, `P2P_PORT_MAPPING`. ([27e3035](https://gitlab.syncad.com/hive/haf_api_node/-/commit/27e3035) [c803fba](https://gitlab.syncad.com/hive/haf_api_node/-/commit/c803fba))
+- **Load shedding:** per-backend `*_SERVER_MAXCONN` caps (hivemind 64, hafah 48, others 32) with `API_QUEUE_TIMEOUT` (5 s) before a 503. Optional dynamic shedding with spillover to secondary stacks via `SHED_*` (log-only unless `SHED_ARMED=true`). HAProxy PostgREST backends use `balance first`. See `doc/load-shedding-and-spillover.md`. ([d299c4d](https://gitlab.syncad.com/hive/haf_api_node/-/commit/d299c4d) [be6c23b](https://gitlab.syncad.com/hive/haf_api_node/-/commit/be6c23b))
+- **pgbouncer:** new `PGBOUNCER_QUERY_TIMEOUT`, `CANCEL_WAIT_TIMEOUT`, `IDLE_TRANSACTION_TIMEOUT`, `TRANSACTION_TIMEOUT`, `SERVER_RESET_QUERY_ALWAYS`, `MAX_PACKET_SIZE`. The public HafSQL bouncer gets tighter `HAFSQL_PUBLIC_*` limits, and `HAFSQL_PUBLIC_TEMP_FILE_LIMIT` defaults to 256MB. ([194930a](https://gitlab.syncad.com/hive/haf_api_node/-/commit/194930a) [39af6c4](https://gitlab.syncad.com/hive/haf_api_node/-/commit/39af6c4) [b75d7d2](https://gitlab.syncad.com/hive/haf_api_node/-/commit/b75d7d2))
+- **hivesense:** `HIVESENSE_EMBEDDING_API` (ollama/openai), `HIVESENSE_OLLAMA_REPLICAS`, `HIVESENSE_LLAMA_CPU_*`, `HIVESENSE_SYNCER_VERSION`, `HIVESENSE_MISSING_POST_ACTION`/`_RETRIES`, `HIVESENSE_SYNC_LOG_LEVEL`. ([0cddf73](https://gitlab.syncad.com/hive/haf_api_node/-/commit/0cddf73) [e0af9e9](https://gitlab.syncad.com/hive/haf_api_node/-/commit/e0af9e9) [fc4c946](https://gitlab.syncad.com/hive/haf_api_node/-/commit/fc4c946) [d27115e](https://gitlab.syncad.com/hive/haf_api_node/-/commit/d27115e))
+- **Other:** `CADDY_PROXY_PROTOCOL_ALLOW` (PROXY protocol); `HIVEMIND_POSTGREST_GHCRTS`. ([bbec9e4](https://gitlab.syncad.com/hive/haf_api_node/-/commit/bbec9e4) [8999eb3](https://gitlab.syncad.com/hive/haf_api_node/-/commit/8999eb3))
+- **Changed defaults:** `haf` sets `PGUSER=haf_admin`; hafah `PGRST_DB_SCHEMA=hafah_endpoints` only; PostgREST `nofile` ulimit 65536; app block-processing logs go to `${HAF_LOG_DIRECTORY}/apps/*.log`, rotated daily with 30 kept; ollama logs now in UTC. ([317e298](https://gitlab.syncad.com/hive/haf_api_node/-/commit/317e298) [1242d07](https://gitlab.syncad.com/hive/haf_api_node/-/commit/1242d07) [8b61f3f](https://gitlab.syncad.com/hive/haf_api_node/-/commit/8b61f3f) [efdcdf4](https://gitlab.syncad.com/hive/haf_api_node/-/commit/efdcdf4) [b6e260c](https://gitlab.syncad.com/hive/haf_api_node/-/commit/b6e260c))
+
+#### Scripts and monitoring
+
+- New `scripts/spike_recorder.sh` for overload diagnosis. ([446b531](https://gitlab.syncad.com/hive/haf_api_node/-/commit/446b531))
+- ZFS scripts: `--swap-logs-with-dataset` for clone and rollback, `--public-snapshot` for rollback. ([7c1d248](https://gitlab.syncad.com/hive/haf_api_node/-/commit/7c1d248) [f60ecb4](https://gitlab.syncad.com/hive/haf_api_node/-/commit/f60ecb4))
+- `stack_status.sh` lists HAF Stats and HAF FYP. ([912fd22](https://gitlab.syncad.com/hive/haf_api_node/-/commit/912fd22) [de97256](https://gitlab.syncad.com/hive/haf_api_node/-/commit/de97256))
+- Loki retention now actually applies (30 days via the compactor). One node had grown to 493 GB. ([87adb75](https://gitlab.syncad.com/hive/haf_api_node/-/commit/87adb75))
+- Grafana panels for `drone_active_requests` and postgres commit rate. ([536786e](https://gitlab.syncad.com/hive/haf_api_node/-/commit/536786e))
+
+### hive
+
+- **Replay:** State file layout changed (dgpo fields removed, objects refactored), so a 1.28.6/1.28.7 `shared_memory.bin` can't be reused. Replay, or download a full 1.28.8 snapshot. The block log format is unchanged. ([3d04c1c9b8](https://gitlab.syncad.com/hive/hive/-/commit/3d04c1c9b8) [9f9d4a207d](https://gitlab.syncad.com/hive/hive/-/commit/9f9d4a207d)) *Inferred from layout changes; not tested against an old state file.*
+- **config.ini:** one new option, `flush-state-interval-live` (default 1, unchanged behaviour); none removed. The flush scheduler now honours N exactly (1 previously flushed every second block). `block-stats-report-output` / `rc-stats-report-output` accept `JSONL`. ([2b43686d19](https://gitlab.syncad.com/hive/hive/-/commit/2b43686d19) [0a56d5c1e8](https://gitlab.syncad.com/hive/hive/-/commit/0a56d5c1e8))
+- **RocksDB (account history, comments store):** `max_open_files` is now derived from the process FD soft limit, with a warning above 70% use. The RocksDB info LOG is capped at WARN / 8 MiB / 1 file [1.28.7]. ([2b43686d19](https://gitlab.syncad.com/hive/hive/-/commit/2b43686d19) [2f7b76b98a](https://gitlab.syncad.com/hive/hive/-/commit/2f7b76b98a))
+- **p2p:**
+  - Only the current chain id and protocol version ≥ 106 are accepted.
+  - Every hello is logged at info level.
+  - IPv6 peers are dialed first, and peers with no route are skipped.
+  - Unresolvable seeds are retried every 60 s.
+  - Rejected dials back off.
+  - A circuit breaker limits punitive disconnects to 5 per 60 s.([b95549e6db](https://gitlab.syncad.com/hive/hive/-/commit/b95549e6db) [3b3ec7af08](https://gitlab.syncad.com/hive/hive/-/commit/3b3ec7af08) [9112cde237](https://gitlab.syncad.com/hive/hive/-/commit/9112cde237) [a77c68c314](https://gitlab.syncad.com/hive/hive/-/commit/a77c68c314) [16ca3e50d8](https://gitlab.syncad.com/hive/hive/-/commit/16ca3e50d8) [15441d28bf](https://gitlab.syncad.com/hive/hive/-/commit/15441d28bf) [e9e3e193d9](https://gitlab.syncad.com/hive/hive/-/commit/e9e3e193d9))
+- Blocks arriving more than 1 s early (within the 5 s limit) are held until due, up to 4 at a time. ([f05f2e5837](https://gitlab.syncad.com/hive/hive/-/commit/f05f2e5837) [016dc54ec1](https://gitlab.syncad.com/hive/hive/-/commit/016dc54ec1))
+- **Docker entrypoint:** `BLOCK_LOG_URL` (resumable download), `SNAPSHOT_URL`, `HIVED_AUTO_REPLAY` (default 0), and endpoint variables. Multi-arch images (x86\_64 + aarch64). Runtime on Ubuntu 26.04. ([cc2556af7e](https://gitlab.syncad.com/hive/hive/-/commit/cc2556af7e) [7f908341e1](https://gitlab.syncad.com/hive/hive/-/commit/7f908341e1) [94b70fc3dd](https://gitlab.syncad.com/hive/hive/-/commit/94b70fc3dd))
+- New `docker/exchange` Compose deployment for exchanges. By default it bootstraps from a published state snapshot (about 6 GB download, under an hour) instead of a 550 GB replay. ([470cb04dae](https://gitlab.syncad.com/hive/hive/-/commit/470cb04dae) [4659161d08](https://gitlab.syncad.com/hive/hive/-/commit/4659161d08))
+- Compression dictionaries extended to blocks 105–109M. ([2078ce65f7](https://gitlab.syncad.com/hive/hive/-/commit/2078ce65f7))
+
+### haf
+
+- **Replay:** Schema hash changed (`rc_cost`, app registry tables). The update script deliberately refuses in-place migration. ([137be5993](https://gitlab.syncad.com/hive/haf/-/commit/137be5993) [ca980dc4c](https://gitlab.syncad.com/hive/haf/-/commit/ca980dc4c))
+- **PostgreSQL:** The `hive/haf` image (also testnet/mirrornet) now runs PostgreSQL 18. ([c4cbc7b89](https://gitlab.syncad.com/hive/haf/-/commit/c4cbc7b89))
+- Runtime base is Ubuntu 26.04 (Boost 1.90 libs, Python 3.14). ([348e32dce](https://gitlab.syncad.com/hive/haf/-/commit/348e32dce))
+- hived listens on `[::]` by default (falls back to `0.0.0.0` if IPv6 is disabled). Override with `P2P_ENDPOINT` / `WS_ENDPOINT` / `HTTP_ENDPOINT`. ([e42cfee3b](https://gitlab.syncad.com/hive/haf/-/commit/e42cfee3b) [9a21e68fa](https://gitlab.syncad.com/hive/haf/-/commit/9a21e68fa))
+- Custom `postgresql.conf` files must add `pg_search` to `shared_preload_libraries`, or `CREATE EXTENSION` fails with pg\_search 0.25+. ([1c8e06a24](https://gitlab.syncad.com/hive/haf/-/commit/1c8e06a24))
+- If a P2P massive sync was interrupted and can't resume contiguously, hived now logs the block numbers and exits instead of writing duplicate rows. Recover with a replay. ([afb15416a](https://gitlab.syncad.com/hive/haf/-/commit/afb15416a))
+
+### hivemind
+
+- Requires HAF 1.28.8: calls the lock helpers, `hive.get_app_current_block_age`, `hive.is_instance_ready` and `app_next_iteration(_wait =&gt; FALSE)` with no fallback. ([cb07dcfce](https://gitlab.syncad.com/hive/hivemind/-/commit/cb07dcfce) [b72f7fcf1](https://gitlab.syncad.com/hive/hivemind/-/commit/b72f7fcf1) [65a552b27](https://gitlab.syncad.com/hive/hivemind/-/commit/65a552b27))
+- Setup/upgrade exits cleanly (no-op) if a block processor holds the lock. Run upgrades with sync stopped. ([cb07dcfce](https://gitlab.syncad.com/hive/hivemind/-/commit/cb07dcfce) [96594fdb6](https://gitlab.syncad.com/hive/hivemind/-/commit/96594fdb6))
+- Massive-sync threshold raised from 201,600 to 2,000,000 blocks (applied to existing installs by `upgrade_runtime_migration.sql`). UNLOGGED tables, BM25 drop/rebuild and fsync-off are now only used on the very first sync. ([3c26424b5](https://gitlab.syncad.com/hive/hivemind/-/commit/3c26424b5))
+- Autovacuum is off on `hive_post_data` during massive sync, replaced by boundary VACUUMs. It is reset at finalization, even after a crash. ([295503d4f](https://gitlab.syncad.com/hive/hivemind/-/commit/295503d4f) [7cde3dc35](https://gitlab.syncad.com/hive/hivemind/-/commit/7cde3dc35))
+- Extensions are created with CASCADE so pg\_search 0.25 gets `vector`. Without it BM25 search silently degraded. ([e89681423](https://gitlab.syncad.com/hive/hivemind/-/commit/e89681423))
+- Live sync reconnects every 5 s after DB disconnects instead of exiting. SIGTERM during finalization stops cleanly and resumes later. On startup, live blocks skipped by older versions are detected and re-processed. ([1e1746678](https://gitlab.syncad.com/hive/hivemind/-/commit/1e1746678) [73cc89a7d](https://gitlab.syncad.com/hive/hivemind/-/commit/73cc89a7d) [074ff0fb9](https://gitlab.syncad.com/hive/hivemind/-/commit/074ff0fb9))
+
+### HAfAH
+
+- No new settings or migrations.
+
+### balance\_tracker
+
+- Block processing runs through the generic `haf_app_driver.py` as PID 1 (clean SIGTERM, idle between blocks), falling back to `CALL main()` with a warning if the driver is missing. Uses the new psql client base image. ([f0c65dc](https://gitlab.syncad.com/hive/balance_tracker/-/commit/f0c65dc) [5fcdd20](https://gitlab.syncad.com/hive/balance_tracker/-/commit/5fcdd20))
+- Advisory locks: install takes an exclusive lock (`balance_tracker`, or `haf_block_explorer` when embedded as `hafbe_bal`) and is skipped while block processing runs. ([30472ab](https://gitlab.syncad.com/hive/balance_tracker/-/commit/30472ab))
+- VACUUM FULL of history tables is only requested during initial sync, not on every catch-up. Per-block NOTICEs are now DEBUG. ([5feef04](https://gitlab.syncad.com/hive/balance_tracker/-/commit/5feef04) [6eab3ed](https://gitlab.syncad.com/hive/balance_tracker/-/commit/6eab3ed))
+- New tables are created only on fresh install. This doesn't matter for this upgrade because HAF's replay forces a resync. *Inference from install code.*
+
+### reputation\_tracker
+
+- Same driver, advisory-lock and psql-image changes as balance\_tracker (lock name `reputation_tracker`; hivemind also holds it shared). Per-block NOTICEs are now DEBUG. ([d361925](https://gitlab.syncad.com/hive/reputation_tracker/-/commit/d361925) [5c29229](https://gitlab.syncad.com/hive/reputation_tracker/-/commit/5c29229) [1b7295d](https://gitlab.syncad.com/hive/reputation_tracker/-/commit/1b7295d))
+
+### haf\_block\_explorer
+
+- Generic HAF driver with the `haf_block_explorer` lock, which writes its own log via `--log-file`. Registers the hafbe + btracker context group. Install is skipped while block processing runs. ([23ca60e](https://gitlab.syncad.com/hive/haf_block_explorer/-/commit/23ca60e) [dfd4de5](https://gitlab.syncad.com/hive/haf_block_explorer/-/commit/dfd4de5) [57d0745](https://gitlab.syncad.com/hive/haf_block_explorer/-/commit/57d0745))
+- `docker-bake.hcl` no longer overrides `PSQL_CLIENT_VERSION` with a stale `14-1`. That override had silently dropped the install lock in production images. ([a043302](https://gitlab.syncad.com/hive/haf_block_explorer/-/commit/a043302))
+- Calls btracker's `finalize_massive_sync_before_forking()` before enabling forking. Live-sync per-block logs are DEBUG. `current_*` VACUUM FULL only during initial sync. ([b30bf5c](https://gitlab.syncad.com/hive/haf_block_explorer/-/commit/b30bf5c) [dfd4de5](https://gitlab.syncad.com/hive/haf_block_explorer/-/commit/dfd4de5) [c819df5](https://gitlab.syncad.com/hive/haf_block_explorer/-/commit/c819df5))
+
+### nft\_tracker
+
+- Generic driver (`--lock=nft_tracker`), app registration, install lock, new psql base image. The idle "Waiting for next block" warning spam (which tripped alert rules) is now a notice after a 10 s stall. ([e9b452d](https://gitlab.syncad.com/hive/nft_tracker/-/commit/e9b452d) [842f25b](https://gitlab.syncad.com/hive/nft_tracker/-/commit/842f25b) [f5c6d2c](https://gitlab.syncad.com/hive/nft_tracker/-/commit/f5c6d2c))
+
+### hivesense
+
+- Block processing is rewritten as a client-side Python processor under `haf_app_driver.py --process-python`, so embedding HTTP calls no longer run inside PostgreSQL backends. The legacy scheduler is available via `HIVESENSE_USE_LEGACY_SCHEDULER=true`. Range size: `HIVESENSE_RANGE_BLOCKS` (1000). ([551d0a3](https://gitlab.syncad.com/hive/hivesense/-/commit/551d0a3))
+- Registers with a dependency on `hivemind_app`, so hivemind must be installed (and registered) first. ([4d16d53](https://gitlab.syncad.com/hive/hivesense/-/commit/4d16d53))
+- OpenAI-compatible embedding servers (e.g. llama-swap) supported via `embedding_api=openai`. Ollama remains the default. ([e90fc38](https://gitlab.syncad.com/hive/hivesense/-/commit/e90fc38) [a51d182](https://gitlab.syncad.com/hive/hivesense/-/commit/a51d182))
+- Syncer: `MISSING_POST_RETRIES` (30) and `MISSING_POST_ACTION` (skip/exit). A syncer with an existing `sync_uuid` stops if its chain is missing from the upstream's `/sync-chains`. ([ca86eb2](https://gitlab.syncad.com/hive/hivesense/-/commit/ca86eb2) [fd65180](https://gitlab.syncad.com/hive/hivesense/-/commit/fd65180))
+- The new sentence splitter changes chunking. Re-embedding is optional; if you regenerate, follow `docs/sync_chain_rebase.md` so downstream syncers keep working. ([7fe0744](https://gitlab.syncad.com/hive/hivesense/-/commit/7fe0744))
+
+## 4. Bug fixes
+
+Grouped by repo, most serious first within each.
+
+#### hive
+
+- **Account-history nodes froze (#869).** With account\_history\_rocksdb, the per-block flush added in 1.28.6 created about 3,600 RocksDB files a day until the node ran out of file descriptors. Last irreversible block and the block log then stalled while head looked healthy. ([2b43686d19](https://gitlab.syncad.com/hive/hive/-/commit/2b43686d19))
+- **2026-07-09 network disruption.** Slightly stale blocks were treated as invalid, causing mass peer disconnects [1.28.7]. Goodbye messages embedding a full block couldn't be decoded [1.28.7]. In 1.28.8, only the peer that delivered a bad block is punished, stale re-fetches are dropped, and old blocks are no longer advertised. ([b31dd12269](https://gitlab.syncad.com/hive/hive/-/commit/b31dd12269) [16a419df6a](https://gitlab.syncad.com/hive/hive/-/commit/16a419df6a) [9040b581c8](https://gitlab.syncad.com/hive/hive/-/commit/9040b581c8) [8f0be2a905](https://gitlab.syncad.com/hive/hive/-/commit/8f0be2a905) [37e65e9058](https://gitlab.syncad.com/hive/hive/-/commit/37e65e9058) [0d97544e15](https://gitlab.syncad.com/hive/hive/-/commit/0d97544e15))
+- **Stuck nodes (#881).** A node more than 20 blocks behind that kept its peers never resynced; it now restarts sync after a 60 s stall. ([73b937e98f](https://gitlab.syncad.com/hive/hive/-/commit/73b937e98f))
+- LAN-only/bogon-filtered nodes never dialed peers (#880). Nodes started without DNS stayed peerless (#882). ([e963fc35d6](https://gitlab.syncad.com/hive/hive/-/commit/e963fc35d6) [16ca3e50d8](https://gitlab.syncad.com/hive/hive/-/commit/16ca3e50d8))
+- IPv6: legacy hello threw (#860), outbound bind failed across address families, and the `unable_to_check` firewall reply was never sent. ([18e482508b](https://gitlab.syncad.com/hive/hive/-/commit/18e482508b) [ccb3f6a9f3](https://gitlab.syncad.com/hive/hive/-/commit/ccb3f6a9f3) [b3d3dd7c68](https://gitlab.syncad.com/hive/hive/-/commit/b3d3dd7c68))
+- RocksDB "WriteBatch has wrong count" corruption or deadlock at startup and shutdown. ([09129eedc5](https://gitlab.syncad.com/hive/hive/-/commit/09129eedc5))
+- RocksDB info LOG grew without limit and could fill tmpfs [1.28.7]. ([2f7b76b98a](https://gitlab.syncad.com/hive/hive/-/commit/2f7b76b98a))
+- Undefined-behaviour cleanups: nested `modify()` calls, misaligned block\_log access, an overflow in dead pre-HF12 code, a shared\_ptr race on storage close. ([9695df5a89](https://gitlab.syncad.com/hive/hive/-/commit/9695df5a89) [9f9d4a207d](https://gitlab.syncad.com/hive/hive/-/commit/9f9d4a207d) [341a61f24a](https://gitlab.syncad.com/hive/hive/-/commit/341a61f24a) [087e93ed00](https://gitlab.syncad.com/hive/hive/-/commit/087e93ed00))
+
+#### haf
+
+- **Fork crash-loop (#333)** [1.28.7]. Shared-fork blocks were deleted before being copied to irreversible tables, and the resulting FK violation repeated on every restart. This took down at least 5 mainnet nodes on 2026-07-09/10. ([fc27acabe](https://gitlab.syncad.com/hive/haf/-/commit/fc27acabe))
+- **App data loss or double-processing at the massive→live switch (#334).** Contexts were reattached at the irreversible block instead of their current block. ([90e6d09eb](https://gitlab.syncad.com/hive/haf/-/commit/90e6d09eb))
+- Interrupted massive sync left 16 duplicate block rows, discovered about 20 hours later when `restore_indexes` failed (#340). ([afb15416a](https://gitlab.syncad.com/hive/haf/-/commit/afb15416a))
+- Heap corruption ("corrupted double-linked list") on backend exit, from duplicate fc symbols in two postgres modules. ([ec621c738](https://gitlab.syncad.com/hive/haf/-/commit/ec621c738))
+- Busy-spinning app loops after the LISTEN/NOTIFY change. Shadow tables never vacuumed for drivers owning their transaction. Every block flagged SLOW\_PROCESSING. Embedded-app reinstall exiting with code 3. ([7ba2fe2cb](https://gitlab.syncad.com/hive/haf/-/commit/7ba2fe2cb) [9350e8ed0](https://gitlab.syncad.com/hive/haf/-/commit/9350e8ed0) [c728331b2](https://gitlab.syncad.com/hive/haf/-/commit/c728331b2) [080338900](https://gitlab.syncad.com/hive/haf/-/commit/080338900))
+
+#### hivemind
+
+- **Live blocks permanently skipped after a connection loss (#336).** The block pointer was committed before the block's data. Seen in production at blocks 106875673 and 108020368. ([074ff0fb9](https://gitlab.syncad.com/hive/hivemind/-/commit/074ff0fb9))
+- A crash mid-finalization left 10,143 root posts with `root_id = 0` and a startup crash loop (#337). ([73cc89a7d](https://gitlab.syncad.com/hive/hivemind/-/commit/73cc89a7d))
+- Vote notifications lost for every catch-up below the massive threshold (#338). ([3620e01a9](https://gitlab.syncad.com/hive/hivemind/-/commit/3620e01a9))
+- Process died at the massive→live handoff on stale connection stats (#343). Live sync died every 9–10 days after Postgres killed a swapped-out session. ([f50324cfd](https://gitlab.syncad.com/hive/hivemind/-/commit/f50324cfd) [1e1746678](https://gitlab.syncad.com/hive/hivemind/-/commit/1e1746678))
+- Pending-rewards overflow above 9,999,999.999 HBD. ([f156c8442](https://gitlab.syncad.com/hive/hivemind/-/commit/f156c8442))
+
+#### balance\_tracker / reputation\_tracker
+
+- Routed power-down fills credited full VESTS to both accounts. Savings pending amounts had the wrong sign. Transfer stats were 1000× too large. Stats were labelled with the next period. ([a689543](https://gitlab.syncad.com/hive/balance_tracker/-/commit/a689543) [1daa8b0](https://gitlab.syncad.com/hive/balance_tracker/-/commit/1daa8b0) [9d4a7e6](https://gitlab.syncad.com/hive/balance_tracker/-/commit/9d4a7e6) [b05c5db](https://gitlab.syncad.com/hive/balance_tracker/-/commit/b05c5db))
+- Repeated 7–15 minute VACUUM FULL of the 69 GB history table on every catch-up over 101 blocks. This blocked hafbe. ([5feef04](https://gitlab.syncad.com/hive/balance_tracker/-/commit/5feef04))
+- A PostgreSQL 17.11 Memoize plan made massive sync about 100× slower. ([1d277ca](https://gitlab.syncad.com/hive/balance_tracker/-/commit/1d277ca))
+- Reinstall failed when an embedding app (hafbe) owned the context. ([8cb046e](https://gitlab.syncad.com/hive/balance_tracker/-/commit/8cb046e))
+
+#### haf\_block\_explorer
+
+- Full replay crash-looped past block 52399763 on votes for proposals that didn't exist yet (pre-HF28 history). ([a70daf6](https://gitlab.syncad.com/hive/haf_block_explorer/-/commit/a70daf6))
+- Witness and proxy endpoints returned empty results between the end of massive sync and the first live block. ([148e7fa](https://gitlab.syncad.com/hive/haf_block_explorer/-/commit/148e7fa))
+- `proposal_pay` double-counted `paid_amount`. Undefined witness vote order within one block. A 6.7 GB stale shadow table cost 0.4–1.1 s per block. ([4fdb621](https://gitlab.syncad.com/hive/haf_block_explorer/-/commit/4fdb621) [5238589](https://gitlab.syncad.com/hive/haf_block_explorer/-/commit/5238589) [b30bf5c](https://gitlab.syncad.com/hive/haf_block_explorer/-/commit/b30bf5c))
+
+#### hivesense
+
+- Scheduler/worker deadlock about once a month in production (lost advisory-lock wakeups). ([dbc7ad7](https://gitlab.syncad.com/hive/hivesense/-/commit/dbc7ad7))
+- The syncer left `events_id=0`, which blocked HAF event-queue cleanup for every app on the node (hafbe took about 7 minutes per iteration) (#54). ([274b974](https://gitlab.syncad.com/hive/hivesense/-/commit/274b974))
+- A single missing hivemind post caused unbounded retries; one node stalled 17 hours, 114,904 blocks behind (#57). ([ca86eb2](https://gitlab.syncad.com/hive/hivesense/-/commit/ca86eb2))
+- Control characters crashed the sentence splitter. Null `sync_uuid` published. OpenAI pre-flight 404 loop. ([fabff2f](https://gitlab.syncad.com/hive/hivesense/-/commit/fabff2f) [066425d](https://gitlab.syncad.com/hive/hivesense/-/commit/066425d) [a51d182](https://gitlab.syncad.com/hive/hivesense/-/commit/a51d182))
+
+#### nft\_tracker
+
+- `/version` always returned `'development'`. Idle-warning log spam tripped alert rules. ([d31c741](https://gitlab.syncad.com/hive/nft_tracker/-/commit/d31c741) [f5c6d2c](https://gitlab.syncad.com/hive/nft_tracker/-/commit/f5c6d2c))
+
+#### haf\_api\_node
+
+- **Truncated 200 responses** (200–500 a day on one node) when Varnish hit `nuke_limit=50`. Raised to 5000. ([e304f92](https://gitlab.syncad.com/hive/haf_api_node/-/commit/e304f92))
+- hafah-postgrest stuck at 503 on PostgREST v14 (removed schemas are fatal). PostgREST silently stopped accepting connections at the 1024 FD default. pgbouncer failed to start without 1.25. ([1242d07](https://gitlab.syncad.com/hive/haf_api_node/-/commit/1242d07) [8b61f3f](https://gitlab.syncad.com/hive/haf_api_node/-/commit/8b61f3f) [b75d7d2](https://gitlab.syncad.com/hive/haf_api_node/-/commit/b75d7d2))
+- Broken shed parameter expansions meant per-app maxconn tiers never applied. ([d6797d3](https://gitlab.syncad.com/hive/haf_api_node/-/commit/d6797d3))
+- `take_snapshot.sh` checkpoint failed silently. ZFS rollback/clone failed on swapped-log snapshots. ([317e298](https://gitlab.syncad.com/hive/haf_api_node/-/commit/317e298) [7c1d248](https://gitlab.syncad.com/hive/haf_api_node/-/commit/7c1d248))
+
+## 5. Optimizations
+
+Figures are the ones reported in commit messages.
+
+| Repo | Change | Measured effect |
+| --- | --- | --- |
+| hive | RocksDB file creation follows data volume, not block rate | Ends about 3,600 new files/day |
+| hive | Back-off for rejected p2p dials; fewer duplicate fetches | One case: about 75 redials/min for 14+ hours eliminated |
+| hive | Header slimming | About 1.6 s compile time saved per translation unit |
+| hive | Exchange snapshot bootstrap | Snapshot load about 2 min, then about 1,250 blocks/s; state file pre-sized 8G (was 24G) |
+| haf | Truncate empty but oversized shadow tables (#346) | 0.4–1.1 s/block scan removed; one 6.7 GB table → 360 kB total |
+| haf | LISTEN/NOTIFY instead of polling | Replaces about 4.7 wakeups/s and about 750 ms average wake latency |
+| haf | Heartbeat commit and xmin release while waiting | Lets HOT pruning advance on `hafd.contexts` |
+| hivemind | Massive threshold 201,600 → 2M blocks | A one-week catch-up no longer spends about 3.4 h to save about 11 min |
+| hivemind | UNLOGGED and BM25 rebuild only on first sync | Avoids about 6,566 s + 1,860 s on catch-ups |
+| hivemind | Vacuum only `hive_post_data` at boundaries | Was 9.5% of wall time (563 s of stalls) |
+| hivemind | Skip mention parsing outside the 90-day window during massive sync | Not quantified |
+| balance\_tracker | Rewards account resolution (#53) | 1358 ms → 11.7 ms per claim block (was about 75% of live time) |
+| balance\_tracker | Orders account resolution | 588 ms → 1.1 ms |
+| balance\_tracker | SQL impacted balances | Removes a 15–30× live-processing regression |
+| balance\_tracker | Constant NAI helpers | hafbe `account_vest_stats` 92 → 64 ms per block |
+| balance\_tracker | Deferred day/month rollups in massive sync; ordered single-pass HBD interest; range guards on view joins | Savings batches had spiked to 4.1 s; vesting stats 0.95–1.44 s per batch |
+| haf\_block\_explorer | Explicit range in `process_block_operations` | 22,000 ms → 0.345 ms per live block |
+| haf\_block\_explorer | MERGE-based witness/proposal caches | Median 346 → 146 ms/block; WAL 4.9 MB → about 25 KB/block |
+| haf\_block\_explorer | Op-type stats from btracker prefetch | 1004 → 302 ms per 10k-block batch |
+| hivesense | Pipelined chunk prep and embedding | 15–17 s → about 10 s per 1000 blocks; GPU 44% → 71–76% |
+| haf\_api\_node | Varnish `nuke_limit` 50 → 5000; optional non-moving GC for hivemind PostgREST; maxconn caps with load shedding; Loki retention | Fewer truncations and GC latency spikes; disk reclaimed |</div>
+  <footer class="hive-post-embed__source">
+    <span class="hive-post-embed__source-label">Source:</span>
+    <a href="https://hive.blog/@blocktrades/haf-api-stack-1-28-8-release-notes-changes-since-1-28-6">HAF API stack 1.28.8 release notes: changes since 1.28.6</a>
+    by
+    <a href="https://hive.blog/@blocktrades">@blocktrades</a>
+  </footer>
+</div>]]></content><author><name>blocktrades</name></author><category term="news" /><category term="core" /><category term="development" /><summary type="html"><![CDATA[Hive stack 1.28.8 released: Changes to hived, HAF, HAF apps and the HAF API server stack in past 6 months]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://images.hive.blog/DQmSihw8Kz4U7TuCQa98DDdCzqbqPFRumuVWAbareiYZW1Z/blocktrades%20update.png" /><media:content medium="image" url="https://images.hive.blog/DQmSihw8Kz4U7TuCQa98DDdCzqbqPFRumuVWAbareiYZW1Z/blocktrades%20update.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">hivetop :: a cli hive monitor</title><link href="https://hivedocs.info/tools/devops/monitoring/2026/10/06/hivetop-a-cli-hive-monitor.html" rel="alternate" type="text/html" title="hivetop :: a cli hive monitor" /><published>2026-10-06T14:33:57-07:00</published><updated>2026-10-06T14:33:57-07:00</updated><id>https://hivedocs.info/tools/devops/monitoring/2026/10/06/hivetop--a-cli-hive-monitor</id><content type="html" xml:base="https://hivedocs.info/tools/devops/monitoring/2026/10/06/hivetop-a-cli-hive-monitor.html"><![CDATA[<div class="hive-post-embed" data-hive-author="inertia" data-hive-permlink="hivetop--a-cli-hive-monitor">
+  <div id="content-inertia-hivetop--a-cli-hive-monitor" class="hive-post-embed__content" data-hive-render-target="true"># hivetop
+
+<div class="pull-right">
+<img src="https://files.peakd.com/file/peakd-hive/inertia/AJphrrNpFbBKGgbydeztWX2SBoLgfBYvJUArrYqwGPKsRDq1dYLx74iF8hsqFET.png" />
+</div>
+
+`hivetop` is an htop-like terminal monitor for the Hive blockchain.
+
+It follows blocks through Hive JSON-RPC, aggregates recent block/transaction/operation rates, and renders a live terminal dashboard.
 
 ## Installation
 
-Test it via pip or uv:
+Requires **Node 24 or newer**. With nvm, run `nvm install 24`.
+
+Install the command from [npm](https://www.npmjs.com/package/hivetop):
 
 ```bash
-pip install -U git+https://github.com/thecrazygm/nectarengine@v0.2.0
-# or
-uv add "nectarengine @ git+https://github.com/thecrazygm/nectarengine@v0.2.0"
+npm install --global hivetop
+hivetop
 ```
 
-As always,
-Michael Garcia a.k.a. TheCrazyGM
+Or run it without a global install:
+
+```bash
+npx hivetop
+```
+
+## Usage
+
+Run `hivetop --help` for command-line options.
+Run `hivetop` from any directory. Examples:
+
+```bash
+hivetop --view round
+hivetop --view sizes
+hivetop --view txstatus --compact --ascii
+hivetop --node https://api.hive.blog
+hivetop --start 98765432
+hivetop --window 120 --poll-ms 1000
+hivetop --follow --node https://api.hive.blog --limit 42
+NO_COLOR=1 hivetop
+```
+
+The four views are blocks, the witness schedule (`round`), transaction
+status (`txstatus`, the defrag view), and block-size history (`sizes`).
+`--view` chooses the starting view.
+
+
+![Screenshot 2026-10-06 at 2.30.41 PM.png](https://files.peakd.com/file/peakd-hive/inertia/23uQNa9RmbnK7ENio9KMHMX4yyPPukinboMpMjvYeHERrD3daXx9ayoxjBADk7DAfNFJP.png)
+
+![Screenshot 2026-10-06 at 2.30.58 PM.png](https://files.peakd.com/file/peakd-hive/inertia/23uEz3vXzyuMiVpjq84FmPNWFSfNvrPBEjJt1zdq2zJFVkhECGXcPv76vcrG14ba2aceL.png)
+
+![Screenshot 2026-10-06 at 2.31.05 PM.png](https://files.peakd.com/file/peakd-hive/inertia/23y8miukvPqM3Axyvo2dm6JyTtwuygns14q1NMCvXVqMTmxfB2sQeEs26RN6NhMWS8gXb.png)
+
+![Screenshot 2026-10-06 at 2.32.04 PM.png](https://files.peakd.com/file/peakd-hive/inertia/23vsDhWHVC3RCsi6tBXohM92UoQR8Va3nhmx5NfzwaibStsTpSmHPu7CE6HB6Mjtvv4m7.png)
+
+
+The witness view previews the announced next round and marks the current round
+with `&gt;`, its block range, and progress. Its live position keeps the latest
+produced block visible alongside predictions.
+
+The `sizes` view plots uncompressed serialized block bytes over the rolling
+`--window` (120 seconds by default), oldest on the left and newest on the right.
+It shows the latest measured size, mean, minimum, and peak. The vertical scale
+adapts to the peak in the window; axes use KiB (1024 bytes) and UTC time.
+Blocks sharing a chart column use their peak size. Empty or unmeasured slots
+stay blank. `--ascii` uses `#` for the filled chart.
+Light bar faces and darker right edges give each block a shadow, including
+adjacent blocks of equal size. `--no-color` keeps the chart monochrome.
+
+Size measurements run in the background only while this view is visible.
+Each block needs an extra block fetch and one `get_transaction_hex` call;
+operations are serialized together, with the original transaction headers,
+signatures, signed block header, and transaction count included in the total.
+Backfilling is limited to at most one measurement per second.
+The measured/total block count shows progress while recent history fills in.
+Failures appear in the view and event history, retry after 30 seconds, and
+leave block tracking running. Measured sizes remain available in block details.
+
+`--compact` hides the sidebar and reduces the number of columns. Narrow terminals
+adapt automatically. `--ascii` replaces graphical status cells with distinct
+letters. `--no-color` or a nonempty `NO_COLOR` disables colors and also uses
+status letters, so the transaction map remains readable.
+
+By default, `hivetop` asks [PeakD Beacon](https://beacon.peakd.com/api/nodes)
+for available Hive API nodes. It follows `api.hive.blog` while its Beacon score
+is at least `90`; below that threshold, it switches to the highest-scored node
+that advertises `get_rc_stats`. During runtime it uses the same Beacon-ordered
+node list for basic failover when RPC calls fail. Pass `--node` to pin a
+specific endpoint and disable Beacon failover.
+
+Each RPC request, including its response body, has a 10-second deadline;
+override it with `--rpc-timeout-ms MS`. The header shows the age of the latest
+received block and the most recent RPC response time. `STALE` means the node's
+head or the last data update is over 15 seconds old; `RECONNECTING` means the
+block RPC failed and is being retried. Cached rates describe the last received
+block window. While catching up, the block age refers to the followed block.
+
+RC stats, hardfork info, and witness ranks refresh independently of block
+tracking. Failed metadata requests retain last-known values, display an
+unavailable/stale notice, and retry after 30 seconds. The schedule is fetched
+with the block context; if unavailable, blocks still advance and the last-known
+schedule remains subject to its normal prediction expiry.
+
+The dashboard uses the terminal's alternate screen and restores the cursor and
+normal input mode when you quit, press Ctrl-C, or send SIGTERM. Redirected output
+requires `--follow`.
+
+Use `--follow` for investigation: it prints one JSON diagnostic record per
+block instead of opening the terminal UI. Pair it with `--limit NUM` to stop
+after a bounded number of produced block records.
+
+JSON diagnostics use the same accepted schedule, absolute slot, and shuffle
+boundary logic as the display. `future_block` and `future_scheduled` identify
+the first predicted block in the next round. `reported_schedule_sig` and
+`reported_next_shuffle_block_num` preserve what the node reported when it differs
+from the accepted schedule. `--limit` counts produced blocks and terminal gaps;
+an unavailable block is skipped after three retries in diagnostic mode.
+
+Keyboard controls:
+
+- `q` or `Ctrl-C`: quit
+- `p`: pause/resume rendering and block fetching
+- `r`: reset the follower to the current head block
+- `v`: cycle blocks, witness round, transaction status, and block sizes
+- Arrow keys / `j` / `k`: select a row (`*` marks the selection)
+- PageUp / PageDown: move by a page; Home / `g`: return to live rows
+- Enter: inspect the selected produced block, its transactions, and operation counts
+- `/`: filter by witness name; Enter applies the filter
+- `?`: help and legends
+- `e`: scrollable event history, newest first
+- Esc: close help/details/history, cancel input, or clear the witness filter
+
+Block details use data already received from the node. Future blocks become
+inspectable after production. The local event history retains the latest 100
+entries for this session: missed blocks, node changes, connection states, RPC
+errors, metadata failures, and schedule discrepancies. It is not written to disk.
+
+ASCII transaction legend: `*` checking, `I` irreversible, `R` reversible,
+`.` pending, `?` unknown, `M` mempool, `E` expired, `T` old, `!` block mismatch.
+Stretched cells share one transaction's status. In the witness view, `√` (ASCII
+`+`) means the expected witness produced, `x` means a miss backed by chain
+evidence, and `?` means the schedule is unverified.
+The VERSION cell is highlighted yellow when it differs from the majority
+witness version. The FEED cell is highlighted yellow after 6 hours and red
+at 24 hours, so the reason for a witness's different appearance is visible.
+
+## Troubleshooting
+
+### The `hivetop` command is not found
+
+With nvm, global commands belong to the selected Node installation. Run
+`nvm use 24`, then `npm install --global hivetop`. For a local checkout, run
+`npm link` from the repository instead.
+
+### Colors or status cells look wrong
+
+Try `hivetop --ascii --no-color`. For cramped layouts, add `--compact`.
+When reporting display problems, include your terminal app, font, and a
+screenshot, since rendering can differ between terminals.
+
+### The dashboard shows `STALE` or `RECONNECTING`
+
+Press `e` to inspect recent RPC errors and node changes. Automatic node
+selection retries requests and fails over when needed; an explicit `--node`
+pins the endpoint. Restart without `--node` to restore automatic selection.
+
+For a short diagnostic capture:
+
+```bash
+hivetop --follow --limit 5
+```
+
+## Development
+
+The runtime is dependency-free and checked into `dist/` so it can run without installing packages. TypeScript source lives in `src/`; after installing dependencies, `npm run build` regenerates `dist/`.
+
+To install the command from this checkout:
+
+```bash
+nvm use
+npm ci
+npm link
+```
+
+The command links to this checkout, so pulling updates also updates the command.
+With nvm, the link belongs to the selected Node installation; use `nvm use 24`
+in new shells if needed. `npm start` also runs the app directly from the checkout.
+
+```bash
+npm test
+npm run build
+```
+
+GitHub Actions runs the tests on Node 24 and verifies that rebuilding does not
+change the checked-in `dist/` files. Run `npm ci` after cloning to install the
+development tools. Runtime dependencies are provided by Node itself.
+
+## Contributing
+
+Bug reports, feature requests, and pull requests are welcome on
+[GitHub](https://github.com/inertia186/hivetop). When
+[opening an issue](https://github.com/inertia186/hivetop/issues), include the
+command you ran, your Node version (`node --version`), and steps to reproduce
+the problem.
+
+Before submitting a pull request, run `npm test`. It rebuilds `dist/` before
+running the tests; include any regenerated runtime files with source changes.
+
+## Publishing
+
+From this repository with Node 24 or newer:
+
+```bash
+npm ci
+npm login
+npm publish --access public
+```
+
+Publishing builds the runtime and runs the tests first. The package includes
+only `dist/`, `package.json`, this README, the logo, and the license. Use
+`npm pack --dry-run` to review the file list before publishing.
+
+## Get in touch!
+
+If you're using hivetop, I'd love to hear from you. Drop me a line and tell me
+what you think! I'm [@inertia](https://hive.blog/@inertia) on Hive.
+
+## License
+
+I don't believe in intellectual "property". If you do, consider hivetop as
+licensed under [Creative Commons CC0 1.0 Universal](LICENSE).
 </div>
   <footer class="hive-post-embed__source">
     <span class="hive-post-embed__source-label">Source:</span>
-    <a href="https://hive.blog/@thecrazygm/nectarengine-v020-release-candidate">Nectarengine v0.2.0 release candidate</a>
+    <a href="https://hive.blog/@inertia/hivetop--a-cli-hive-monitor">hivetop :: a cli hive monitor</a>
+    by
+    <a href="https://hive.blog/@inertia">@inertia</a>
+  </footer>
+</div>]]></content><author><name>inertia</name></author><category term="tools" /><category term="devops" /><category term="monitoring" /><summary type="html"><![CDATA[Look at them blocks]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://files.peakd.com/file/peakd-hive/inertia/AJphrrNpFbBKGgbydeztWX2SBoLgfBYvJUArrYqwGPKsRDq1dYLx74iF8hsqFET.png" /><media:content medium="image" url="https://files.peakd.com/file/peakd-hive/inertia/AJphrrNpFbBKGgbydeztWX2SBoLgfBYvJUArrYqwGPKsRDq1dYLx74iF8hsqFET.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Upgrading MongoDB 8 to 9: Why Systemd Refused to Start and How to Bridge the FCV Gap</title><link href="https://hivedocs.info/howto/hiveengine/mongodb/2026/10/05/upgrading-mongodb-8-to-9-why-systemd-refused-to-start-and-how-to-bridge-the-fcv-gap.html" rel="alternate" type="text/html" title="Upgrading MongoDB 8 to 9: Why Systemd Refused to Start and How to Bridge the FCV Gap" /><published>2026-10-05T08:40:51-07:00</published><updated>2026-10-05T08:40:51-07:00</updated><id>https://hivedocs.info/howto/hiveengine/mongodb/2026/10/05/upgrading-mongodb-8-to-9-why-systemd-refused-to-start-and-how-to-bridge-the-fcv-gap</id><content type="html" xml:base="https://hivedocs.info/howto/hiveengine/mongodb/2026/10/05/upgrading-mongodb-8-to-9-why-systemd-refused-to-start-and-how-to-bridge-the-fcv-gap.html"><![CDATA[<div class="hive-post-embed" data-hive-author="thecrazygm" data-hive-permlink="upgrading-mongodb-8-to-9-why-systemd-refused-to-start-and-how-to-bridge-the-fcv-gap">
+  <div id="content-thecrazygm-upgrading-mongodb-8-to-9-why-systemd-refused-to-start-and-how-to-bridge-the-fcv-gap" class="hive-post-embed__content" data-hive-render-target="true">Hey everyone,
+
+If you run a Hive-Engine node (or manage a self-hosted MongoDB instance on Linux), you might run into a nasty surprise after bumping your apt repositories for MongoDB 9.0.
+
+You configure the official repository, run `sudo apt update &amp;&amp; sudo apt dist-upgrade`, let the package manager do its thing, and wait for `mongod` to spin back up.
+
+Except it doesn't.
+
+`systemctl status mongod` shows the service failed immediately on boot with exit code `62`, leaving you staring at an offline database and wondering whether your node's 400+ GB dataset just got toasted.
+
+The good news: your data is completely fine.
+
+The catch: you've stepped right into MongoDB's rapid release compatibility trap.
+
+Here is what went wrong, why MongoDB 9.0 flat-out refused to boot, and the step-by-step process to safely bridge the gap (including the replica set details that Hive-Engine strictly enforces) so you can get your node back online with zero data loss.
+
+---
+
+## The Symptoms: Exit Code 62 on Startup
+
+Immediately after upgrading packages from MongoDB 8.2 to 9.0, `systemctl status mongod` reported:
+
+```text
+× mongod.service - MongoDB Database Server
+     Loaded: loaded (/usr/lib/systemd/system/mongod.service; enabled; preset: enabled)
+     Active: failed (Result: exit-code)
+    Process: 3053614 ExecStart=/usr/bin/mongod --config /etc/mongod.conf (code=exited, status=62)
+   Main PID: 3053614 (code=exited, status=62)
+```
+
+Exit code `62` in MongoDB means server initialization failed during startup checks before opening network listeners.
+
+To see the real reason, checking `/var/log/mongodb/mongod.log` (or `journalctl -u mongod`) revealed this fatal log entry:
+
+```json
+{
+  "s": "F",
+  "c": "CONTROL",
+  "id": 20573,
+  "ctx": "initandlisten",
+  "msg": "Wrong mongod version",
+  "attr": {
+    "error": "UPGRADE PROBLEM: Found an invalid featureCompatibilityVersion document (ERROR: Location4926900: Invalid featureCompatibilityVersion document in admin.system.version: { _id: \"featureCompatibilityVersion\", version: \"8.2\" }. See https://docs.mongodb.com/master/release-notes/8.0-compatibility/#feature-compatibility. :: caused by :: Invalid feature compatibility version value '8.2'. Expected one of the following versions: '9.0', '8.3', '8.0'.)"
+  }
+}
+```
+
+Notice the crucial detail:
+
+&gt; **`Invalid feature compatibility version value '8.2'. Expected one of the following versions: '9.0', '8.3', '8.0'.`**
+
+Immediately after emitting this error, `mongod` initiated an orderly rollback checkpoint and shut itself down cleanly without touching or modifying any user collections.
+
+---
+
+## Why Did This Happen? The Rapid Release Trap
+
+MongoDB follows two release tracks:
+
+1. **Major / LTS Releases:** (e.g., 7.0, 8.0, 9.0)
+2. **Rapid Releases:** quarterly minor feature releases between major versions (e.g., 8.1, 8.2, 8.3)
+
+Every MongoDB database contains an internal setting called `featureCompatibilityVersion` (FCV) stored in the `admin.system.version` collection. FCV controls which on-disk features, file structures, and internal behaviors the engine is permitted to use.
+
+MongoDB enforces strict rules when upgrading:
+
+- You cannot skip versions.
+- A major release binary only knows how to handle datasets from the **previous LTS release** (e.g., FCV `8.0`) or the **final rapid release** immediately preceding the new major version (e.g., FCV `8.3`).
+
+Because my machine was previously tracking the rapid release channel on **MongoDB 8.2** (`8.2.12`), its internal FCV was set to `"8.2"`.
+
+When the MongoDB 9.0 binary checked the metadata at startup, it saw an FCV of `"8.2"`. But 9.0 only knows about `'8.0'`, `'8.3'`, and `'9.0'`. It does not support jumping directly from 8.2 to 9.0.
+
+Furthermore, you cannot simply tell 8.2 to downgrade its FCV to 8.0. MongoDB only allows setting FCV to its current minor version or the immediately prior one (8.2 or 8.1).
+
+The only supported bridge to 9.0 is **MongoDB 8.3**.
+
+---
+
+## The Hive-Engine Factor: Replica Sets Are Mandatory
+
+There is another crucial detail every node operator must know: **Hive-Engine strictly forces MongoDB to run as a replica set** (typically `replSetName: "rs0"` in `/etc/mongod.conf`), even when running on a single local server.
+
+Hive-Engine relies heavily on multi-document ACID transactions and change stream / oplog tailing to process smart contracts deterministically. A standalone MongoDB instance simply will not run Hive-Engine.
+
+This requirement introduces three essential rules during this upgrade process:
+
+1. **Startup is not instantaneous:** Every time `mongod` starts, it must initialize its replication coordinator, replay the oplog, and run an election to become `PRIMARY`.
+2. **FCV commands require PRIMARY state:** You cannot execute `db.adminCommand({ setFeatureCompatibilityVersion: ... })` while the node is in `STARTUP`, `STARTUP2`, or `SECONDARY`. Running it too quickly after starting systemd will fail with an error like `node is not primary` or `not master and slaveOk=false`.
+3. **Always verify replication health:** Before shutting down 8.3 (and after bringing up 9.0), you must check `rs.status()` to ensure the replica set is fully caught up and healthy.
+
+---
+
+## The Solution: The 8.3 Stepping Stone
+
+The fix is a sequential upgrade:
+
+1. Temporarily install **MongoDB 8.3**.
+2. Boot the 8.3 service (which understands FCV `8.2`).
+3. Raise `featureCompatibilityVersion` to `"8.3"`.
+4. Shut down 8.3.
+5. Upgrade to **MongoDB 9.0**.
+6. Boot 9.0 (which accepts FCV `"8.3"`).
+7. Finalize `featureCompatibilityVersion` to `"9.0"`.
+
+Here is the exact playbook to execute this safely on Debian/Ubuntu systems.
+
+---
+
+### Step 1: Temporarily Add the MongoDB 8.3 Repository
+
+Create a temporary APT sources file for MongoDB 8.3. MongoDB 8.3 uses the 8.0 signing key:
+
+```bash
+sudo tee /etc/apt/sources.list.d/mongodb-org-8.3.sources &lt;&lt; 'EOF'
+Types: deb
+URIs: https://repo.mongodb.org/apt/debian/
+Suites: bookworm/mongodb-org/8.3
+Components: main
+Architectures: amd64
+Signed-By: /usr/share/keyrings/mongodb-server-8.0.gpg
+EOF
+```
+
+&gt; (Note: Adjust the suite name if using Ubuntu or another Debian distribution codename.)
+
+Update your package index:
+
+```bash
+sudo apt update
+```
+
+---
+
+### Step 2: Downgrade Packages to MongoDB 8.3
+
+Before downgrading, back up your MongoDB configuration just in case:
+
+```bash
+sudo cp -p /etc/mongod.conf /etc/mongod.conf.bak
+```
+
+Now install the MongoDB 8.3 packages (specifying version `8.3.11` or the latest available 8.3 build) and pass `--allow-downgrades`:
+
+```bash
+sudo apt install -y --allow-downgrades -o Dpkg::Options::="--force-confold" \
+  mongodb-org=8.3.11 \
+  mongodb-org-server=8.3.11 \
+  mongodb-org-database=8.3.11 \
+  mongodb-org-database-tools-extra=8.3.11 \
+  mongodb-org-mongos=8.3.11 \
+  mongodb-org-shell=8.3.11 \
+  mongodb-org-tools=8.3.11
+```
+
+Confirm that the binary is now on 8.3:
+
+```bash
+mongod --version
+```
+
+You should see:
+
+```text
+db version v8.3.11
+```
+
+---
+
+### Step 3: Start MongoDB 8.3 and Advance FCV to 8.3
+
+Start the systemd service:
+
+```bash
+sudo systemctl start mongod
+sudo systemctl status mongod
+```
+
+Because MongoDB 8.3 supports datasets with FCV `8.2`, it will start up cleanly.
+
+#### Wait for Replica Set Election (Mandatory for Hive-Engine)
+
+Because Hive-Engine enforces running as a replica set, give `mongod` a few seconds after startup to initialize the replication coordinator and elect itself `PRIMARY`. If you attempt to update the feature compatibility version while the node is still in `STARTUP2` or `SECONDARY`, the command will be rejected.
+
+Confirm that your node has finished election and is `PRIMARY`:
+
+```bash
+mongosh --quiet --eval "rs.status().members[0].stateStr"
+```
+
+You should see:
+```text
+PRIMARY
+```
+
+Once confirmed `PRIMARY`, inspect the current FCV:
+
+```bash
+mongosh --quiet --eval "db.adminCommand({ getParameter: 1, featureCompatibilityVersion: 1 })"
+```
+
+Output:
+
+```json
+{
+  "featureCompatibilityVersion": { "version": "8.2" },
+  "ok": 1
+}
+```
+
+Now upgrade the feature compatibility version to 8.3:
+
+```bash
+mongosh --quiet --eval "db.adminCommand({ setFeatureCompatibilityVersion: '8.3', confirm: true })"
+```
+
+Verify that the transition succeeded:
+
+```bash
+mongosh --quiet --eval "db.adminCommand({ getParameter: 1, featureCompatibilityVersion: 1 })"
+```
+
+It should now display:
+
+```json
+{
+  "featureCompatibilityVersion": { "version": "8.3" },
+  "ok": 1
+}
+```
+
+Confirm replica set health and write availability one more time before stopping the daemon:
+
+```bash
+mongosh --quiet --eval "rs.status().ok"
+```
+
+---
+
+### Step 4: Stop 8.3 and Clean Up the Temporary Repo
+
+Stop the service cleanly:
+
+```bash
+sudo systemctl stop mongod
+```
+
+Remove the temporary 8.3 repository so APT doesn't get confused:
+
+```bash
+sudo rm -f /etc/apt/sources.list.d/mongodb-org-8.3.sources
+sudo apt update
+```
+
+---
+
+### Step 5: Upgrade Back to MongoDB 9.0
+
+Ensure your 9.0 repository file (e.g. `/etc/apt/sources.list.d/mongodb-org-9.0.sources`) is active:
+
+```bash
+cat /etc/apt/sources.list.d/mongodb-org-9.0.sources
+```
+
+```text
+Types: deb
+URIs: https://repo.mongodb.org/apt/debian/
+Suites: trixie/mongodb-org/9.0
+Components: main
+Architectures: amd64
+Signed-By: /usr/share/keyrings/mongodb-server-9.gpg
+```
+
+Run the upgrade back to MongoDB 9.0:
+
+```bash
+sudo apt upgrade -y -o Dpkg::Options::="--force-confold" \
+  mongodb-org \
+  mongodb-org-server \
+  mongodb-org-database \
+  mongodb-org-database-tools-extra \
+  mongodb-org-mongos \
+  mongodb-org-shell \
+  mongodb-org-tools
+```
+
+Verify the binary is back on version 9.0:
+
+```bash
+mongod --version
+```
+
+![screenshot-20261005-113234.png](https://files.peakd.com/file/peakd-hive/thecrazygm/23t72p136b8msyb9C4vyKZMMefbe3xRux7CSZdSCi7DviGGu7PjuBpnUMH2FuKCjbVQir.png)
+
+```text
+db version v9.0.2
+```
+
+---
+
+### Step 6: Start MongoDB 9.0 and Finalize FCV to 9.0
+
+Start `mongod.service`:
+
+```bash
+sudo systemctl start mongod
+sudo systemctl status mongod
+```
+
+Check the status: the service should now report `active (running)`.
+
+#### Confirm Replica Set Primary State
+
+Once again, give the daemon a moment to finish its replica set election. Before attempting to update the FCV to 9.0, make sure the node is in `PRIMARY` state:
+
+```bash
+mongosh --quiet --eval "rs.status().members[0].stateStr"
+```
+
+Output:
+```text
+PRIMARY
+```
+
+Next, connect with `mongosh` and inspect the current FCV:
+
+```bash
+mongosh --quiet --eval "db.adminCommand({ getParameter: 1, featureCompatibilityVersion: 1 })"
+```
+
+It will show that 9.0 is currently running in backward-compatibility mode with FCV `8.3`.
+
+Finally, lock in the 9.0 features by advancing the compatibility version:
+
+```bash
+mongosh --quiet --eval "db.adminCommand({ setFeatureCompatibilityVersion: '9.0', confirm: true })"
+```
+
+Verify the final status:
+
+```bash
+mongosh --quiet --eval "db.adminCommand({ getParameter: 1, featureCompatibilityVersion: 1 })"
+```
+
+Output:
+```json
+{
+  "featureCompatibilityVersion": { "version": "9.0" },
+  "ok": 1
+}
+```
+
+Lastly, verify that your replica set and Hive-Engine databases (`hsc`, `hsc_history`, etc.) are healthy and reporting correctly:
+
+```bash
+mongosh --quiet --eval "rs.status().ok"
+mongosh --quiet --eval "db.adminCommand({ listDatabases: 1 })"
+```
+
+Everything is now fully migrated, running MongoDB 9.0 natively, and all your databases and collections remain intact.
+
+---
+
+## Summary of Key Takeaways
+
+1. **Never skip MongoDB intermediate rapid releases when targeting a new LTS major.** MongoDB 9.0 only supports incoming datasets with FCV `8.0` (from the prior LTS) or `8.3` (from the final rapid release).
+2. **Exit Code 62 with `Wrong mongod version` is non-destructive.** MongoDB refuses to touch database files when an FCV mismatch is encountered. Do not panic and do not run `mongod --repair` blindly.
+3. **Hive-Engine forces replica sets:** Because Hive-Engine requires a replica set for multi-document transactions and oplog processing, MongoDB nodes must complete election and achieve `PRIMARY` status on every restart before FCV commands can be executed. Running FCV updates during `STARTUP2` will fail.
+4. **The bridge technique works smoothly with APT:** By temporarily pulling in the missing intermediate release (8.3), you can boot the daemon, advance the internal FCV document, and then proceed with the target major release upgrade cleanly.
+
+As always,  
+**Michael Garcia** a.k.a. **TheCrazyGM**
+</div>
+  <footer class="hive-post-embed__source">
+    <span class="hive-post-embed__source-label">Source:</span>
+    <a href="https://hive.blog/@thecrazygm/upgrading-mongodb-8-to-9-why-systemd-refused-to-start-and-how-to-bridge-the-fcv-gap">Upgrading MongoDB 8 to 9: Why Systemd Refused to Start and How to Bridge the FCV Gap</a>
     by
     <a href="https://hive.blog/@thecrazygm">@thecrazygm</a>
   </footer>
-</div>]]></content><author><name>thecrazygm</name></author><category term="tools" /><category term="python" /><category term="nectar" /><summary type="html"><![CDATA[Following the hive-nectar update, I am also releasing a nectarengine v0.2.0 branch]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://files.peakd.com/file/peakd-hive/thecrazygm/23tGW1bef8ehgtTRmKjEA1CUkkzfXTB6RTpjEm4Pn9SCQQybqF9ym43WfKp3stkWRkDr5.png" /><media:content medium="image" url="https://files.peakd.com/file/peakd-hive/thecrazygm/23tGW1bef8ehgtTRmKjEA1CUkkzfXTB6RTpjEm4Pn9SCQQybqF9ym43WfKp3stkWRkDr5.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Updated! HiveKeyword(s)Fetcher just got better! Feedback welcome!</title><link href="https://hivedocs.info/tools/search/analytics/2025/12/08/updated-hivekeywordsfetcher-just-got-better-feedback-welcome.html" rel="alternate" type="text/html" title="Updated! HiveKeyword(s)Fetcher just got better! Feedback welcome!" /><published>2025-12-08T06:37:15-08:00</published><updated>2025-12-08T06:37:15-08:00</updated><id>https://hivedocs.info/tools/search/analytics/2025/12/08/updated-hivekeywordsfetcher-just-got-better-feedback-welcome</id><content type="html" xml:base="https://hivedocs.info/tools/search/analytics/2025/12/08/updated-hivekeywordsfetcher-just-got-better-feedback-welcome.html"><![CDATA[<div class="hive-post-embed" data-hive-author="louis88" data-hive-permlink="updated-hivekeywordsfetcher-just-got-better-feedback-welcome">
-  <div id="content-louis88-updated-hivekeywordsfetcher-just-got-better-feedback-welcome" class="hive-post-embed__content" data-hive-render-target="true">Hey everyone!
+</div>]]></content><author><name>thecrazygm</name></author><category term="howto" /><category term="hiveengine" /><category term="mongodb" /><summary type="html"><![CDATA[If you run a Hive-Engine node (or manage a self-hosted MongoDB instance on Linux), you might run into a nasty surprise after bumping your apt repositories for MongoDB 9.0]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://files.peakd.com/file/peakd-hive/thecrazygm/23t72p136b8msyb9C4vyKZMMefbe3xRux7CSZdSCi7DviGGu7PjuBpnUMH2FuKCjbVQir.png" /><media:content medium="image" url="https://files.peakd.com/file/peakd-hive/thecrazygm/23t72p136b8msyb9C4vyKZMMefbe3xRux7CSZdSCi7DviGGu7PjuBpnUMH2FuKCjbVQir.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Tin Toy - Hive 1.29.0 on a Local Testnet</title><link href="https://hivedocs.info/howto/testnet/tintoy/2026/10/04/tin-toy-hive-1290-on-a-local-testnet.html" rel="alternate" type="text/html" title="Tin Toy - Hive 1.29.0 on a Local Testnet" /><published>2026-10-04T10:21:06-07:00</published><updated>2026-10-04T10:21:06-07:00</updated><id>https://hivedocs.info/howto/testnet/tintoy/2026/10/04/tin-toy-hive-1290-on-a-local-testnet</id><content type="html" xml:base="https://hivedocs.info/howto/testnet/tintoy/2026/10/04/tin-toy-hive-1290-on-a-local-testnet.html"><![CDATA[<div class="hive-post-embed" data-hive-author="inertia" data-hive-permlink="tin-toy-hive-1290-on-a-local-testnet">
+  <div id="content-inertia-tin-toy-hive-1290-on-a-local-testnet" class="hive-post-embed__content" data-hive-render-target="true">Tin Toy has a new core release for Hive 1.29.0. The idea is still the same: a small local testnet for working on Hive applications without broadcasting your experiments to mainnet.
 
-I just released a new version of the Hive Keywords Fetcher Tool. This is a small project I have been working on to make it easier to search for content on the Hive blockchain. It is especially useful for curators or people who are trying to find posts about specific topics.
+There are a couple of changes worth calling out before you copy a command from an older tintoy post.
 
-In this new version, I made a few important changes. One of the biggest updates is that you can now choose a time range for your search. Right now, you can select between 3, 5, 7, or 30 days. There is also an option to search through the past full year. I think this is a good range for most use cases.
+#### The core image
 
-I decided not to include an “All Time” search because it is just too heavy on resources. I tested it a few times, but every time the connection broke after a while. It simply takes too much time and memory to search through all Hive posts ever created. So I left that option out for now to keep the tool fast and stable.
+The current image starts hived, applies the sample snapshot through Tinman, and sets up 21 deterministic witnesses. RPC is now on port 8092; p2p is on 2001.
 
-**You can use it and play around with it here**
+The old Jussi, nginx, Postgres, Hivemind, condenser, and Tinman-server files are still in the gist as reference material, but those services aren't started or exposed by this image. If your app depends on Hivemind's content APIs, that part of the old stack isn't included in the current core release.
 
-### https://hive-keyword-search.onrender.com
+#### Try it out
 
+With Docker running Linux containers, the README's quick start is:
 
-![571shots_so.png](https://files.peakd.com/file/peakd-hive/louis88/23vhVs3UZN6wrT3dtGVn6Ywi6joDprQqKC9LJj5JZQNZpvonY778yFJoF1xZ6V7Dzj29X.png)
+```bash
+docker run --rm --platform linux/amd64 --name tintoy \
+  -p 8092:8092 \
+  -p 2001:2001 \
+  inertia/tintoy:1.29.0
+```
 
-Another cool feature I added is a better filtering system for the search results. Now, when the results are shown, you can browse through all of them easily. On top of that, there is now a small input box where you can add a second keyword or phrase to filter the results even more. This additional filter works in real time. So as you type, the list updates immediately. I think this makes it much easier to find exactly what you are looking for, even if there are many posts in the results.
+Python, Tinman, and Hive are included. The command assumes a Bash-compatible shell, so use WSL or Git Bash on Windows. ARM hosts, including Apple Silicon, need AMD64 emulation.
 
+This is a disposable testnet with deterministic keys. Keep it off untrusted networks. For a Docker daemon on your own machine, use `-p 127.0.0.1:8092:8092` and `-p 127.0.0.1:2001:2001` to bind the published ports to localhost.
 
-### New Features
+Allow several minutes for bootstrap. Look for this message:
 
-- **Customizable Time Range**:
-Scan blockchain activity for the last **3, 5, 7, 30 days**, or even the **last year**. *(Sorry, All Time just takes to long for hafSQL Query!)*
-- **Advanced Results Management**:
-  - **Pagination**: Easily navigate through large sets of search results.
-  - **Instant Filtering**: Filter loaded results by Title, Author, or Content text in real-time.
+```
+tintoy: snapshot applied and seed node is producing
+```
 
+Then, from another terminal, check the RPC endpoint. This command uses curl and jq on your host:
 
+```bash
+curl -sS http://127.0.0.1:8092 \
+  --data '{"jsonrpc":"2.0","method":"database_api.get_dynamic_global_properties","params":{},"id":1}' \
+  | jq
+```
 
-![20251208-1403-19.3746340-ezgif.com-video-to-gif-converter.gif](https://files.peakd.com/file/peakd-hive/louis88/Eo8LZPFL8MsffA2NhkBFiZk4Ro4TUtBW69EEVuEHUfEmjUHZm4Hv6CuY3yfHqZGDQU8.gif)
+Run it twice, a few seconds apart. `head_block_number` should increase.
 
-![image.png](https://files.peakd.com/file/peakd-hive/louis88/23t79CBxVo9Auz3krzQ7FYW4Wm7w14gxaF5Di4ykKGcxro1maYsTecZhY7jeE4v4ntSFY.png)
+#### Which tag?
 
+- `1.29.0`: the current Hive 1.29.0 core testnet
+- `latest`: currently the same 1.29.0 release
+- `1.28.7`: the Hive 1.28.7 release built for testnet
+- `core-2026.10.03`: the original dated core release, also using Hive 1.29.0
+- `legacy-2021`: the previous May 2021 image, with its historical services and ports
 
-**Thank you all so much for your support!**
+One detail about `1.28.7`: its testnet binary reports blockchain version `1.28.6`. That's how the upstream release is defined. The image includes the release's peer-handling fixes; the image tag and the reported blockchain version describe different things.
 
-It really means a lot to me when I see people using the tools and small projects I build. If you have any questions about the software, or if something is not working the way you expect, feel free to leave a comment. I will try my best to help you as quickly as possible.
+Also, `latest` now points to the core release. An old port-8090 command won't give you the same stack it did in 2021.
 
-Also, if you have ideas or wishes for new features, please do not hesitate to share them. I am always open to feedback. If you feel that something is missing in the Hive ecosystem, some kind of tool or application that could make life easier for users, then let me know in the comments too. Sometimes it only takes a small idea to start something useful for many people.
+#### Building from source
 
-Many Hive tools have been created by community members who simply wanted to solve a small problem or improve something they were using every day. That is one of the great things about Hive... it is open, it is flexible, and it invites people to build together.
+The current Dockerfile uses pinned Tinman and Hive images. From a checkout of [the gist](https://gist.github.com/inertia186/b88e7bfff8862858e54c59392e2bce20), build with:
 
-So, I am looking forward to your ideas, your feedback, and your support. Let us build things together that help make Hive better, step by step.
+```bash
+docker build --platform linux/amd64 -t tintoy:local .
+```
 
-Thanks!
-louis
+The [README](https://gist.github.com/inertia186/b88e7bfff8862858e54c59392e2bce20#file-readme-md) has the build arguments for trying other image combinations. Use immutable image digests when you need a reproducible result.
 
-Initial Release Post: https://peakd.com/hive-139531/@louis88/hivekeywordsfetcher-search-posts-on-hive-by-mentioned-words
+The documented checks cover the 2,000-account sample, registration and scheduling of all 21 replacement witnesses, and advancing blocks. The current Tinman pin has passed fresh Docker Desktop AMD64-emulation bootstraps with both Hive 1.29.0 and 1.28.7.
 
---- 
+If you need a little chain to develop against, that's the starting point: bring it up, check that blocks are moving, and point your app at the local RPC endpoint.
 
-<div class="pull-left"><div class="text-justify">
+[Docker image](https://hub.docker.com/r/inertia/tintoy) · [Source and README](https://gist.github.com/inertia186/b88e7bfff8862858e54c59392e2bce20)
 
-[![image.png](https://files.peakd.com/file/peakd-hive/louis88/23v4Zbq5TQyn3aFGQ7YcUyQJQCHhh556WQfTgmeR6EtVe1RWUURNc89oCX25ZFnUHAXww.png)](https://vote.hive.uno/@louis.witness)
+<center>
+  <img src="https://i.imgur.com/FkZIVUu.jpg" />
+</center></div>
+  <footer class="hive-post-embed__source">
+    <span class="hive-post-embed__source-label">Source:</span>
+    <a href="https://hive.blog/@inertia/tin-toy-hive-1290-on-a-local-testnet">Tin Toy - Hive 1.29.0 on a Local Testnet</a>
+    by
+    <a href="https://hive.blog/@inertia">@inertia</a>
+  </footer>
+</div>]]></content><author><name>inertia</name></author><category term="howto" /><category term="testnet" /><category term="tintoy" /><summary type="html"><![CDATA[Your own local testnet]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://i.imgur.com/FkZIVUu.jpg" /><media:content medium="image" url="https://i.imgur.com/FkZIVUu.jpg" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Hive Fest 2026 Workshops - Real Hive client. On a battery 🔋🐝</title><link href="https://hivedocs.info/howto/javascript/workshop/2026/09/25/hive-fest-2026-workshops-real-hive-client-on-a-battery.html" rel="alternate" type="text/html" title="Hive Fest 2026 Workshops - Real Hive client. On a battery 🔋🐝" /><published>2026-09-25T07:50:15-07:00</published><updated>2026-09-25T07:50:15-07:00</updated><id>https://hivedocs.info/howto/javascript/workshop/2026/09/25/hive-fest-2026-workshops-real-hive-client-on-a-battery</id><content type="html" xml:base="https://hivedocs.info/howto/javascript/workshop/2026/09/25/hive-fest-2026-workshops-real-hive-client-on-a-battery.html"><![CDATA[<div class="hive-post-embed" data-hive-author="mtyszczak" data-hive-permlink="hive-fest-2026-workshops-real-hive-client-on-a-battery">
+  <div id="content-mtyszczak-hive-fest-2026-workshops-real-hive-client-on-a-battery" class="hive-post-embed__content" data-hive-render-target="true"># Hive Fest 2026 Workshops - Real Hive client. On a battery 🔋🐝
 
-##### Vote for my Hive Witness
-U can vote for my Witness using Hive Keychain here:  https://vote.hive.uno/@louis.witness
+Hello again, dear Hive community! 👋
 
-</div></div>
-<div class="pull-right"><div class="text-justify">
+Remember when I said I was learning some new stuff and "might drop something soon"? Well... this is not Rust 🦀 and it is not Solidity 👾. This time I went **deeper**. Like, *hardware* deeper 🪛
 
+<center>
 
-[![image.png](https://files.peakd.com/file/peakd-hive/louis88/24241zs2F4mEKWwVa9y2CkqHjUcR7Rh2EyRQEXZA5vfHdjEMnq8Ej8R4cWxT1jgAtXQHP.png)](https://primersion.com/he-witnesses)
+ ![esp32c6](https://images.hive.blog/DQmVLkQupS7pJF1mD46yiMssTunM5cVVsJNnK8qwtgQL6ii/image.png) 
 
-##### Vote for my Hive Engine Witness
+</center>
 
-Vote for my Witness on Hive-Engine using Primersion Tool: https://primersion.com/he-witnesses <sup>Enter your Username and search for louis.witness</sup>
-</div></div>
+Some of you might have already seen it live - we showed this device during our workshops at this year's HiveFest 26! 🍻
+
+## 🤏 What is it?
+
+It's a Hive blockchain client written in C++, running on the [Seeed Studio XIAO ESP32C6](https://wiki.seeedstudio.com/xiao_esp32c6_getting_started/) - a board smaller than your thumb (21 × 17.5 mm!). It builds and signs transactions **on-device**, using a private key stored on the chip, then broadcasts them straight to the Hive mainnet.
+
+No PC. No phone. No backend server.
+
+Here's what we're working with:
+
+| Spec | Value |
+| --- | --- |
+| CPU | RISC-V @ 160 MHz |
+| RAM | 512 KB |
+| Flash | 4 MB |
+| Connectivity | WiFi 6 📶 |
+| Size | 21 × 17.5 mm |
+
+Yes, 512 **KB**. Not MB, not GB. Kilobytes. Your browser tab is probably eating a few hundred times more than that right now 😅
+
+<center>
+
+ ![flyer](https://images.hive.blog/DQmd97N3oPMr997bPTN9JkhtxFmVBtAyHLUBcoX6ngEkKSL/Screenshot%20from%202026-09-25%2009-35-04.png) 
+
+</center>
+
+[Here](https://explore.openhive.network/@guest4test) you can explore transacations made during the live demo at HiveFest Workshops!
+
+## 🔁 How does it work?
+
+The whole lifecycle is dead simple:
+
+1. **Wake** ⏰ - the BIG RED BUTTON wakes the chip up
+2. **WiFi 6** 📶 - connect and talk to `api.hive.blog`
+3. **Build** 🏗️ - fetch the reference block and build the transaction
+4. **Sign** ✍️ - secp256k1 signature using the on-chip key
+5. **Broadcast** 📡 - send it to the network... and go back to deep sleep 😴
+
+And that "go back to sleep" part is the real magic here.
+
+## 🔋 One year on a single battery?!
+
+Yup. Let's do the math (I promise it's short):
+
+* Active mode: **~100 mA**
+* Deep sleep: **~15 µA** (micro! 🔬)
+* Scenario: **10 transactions per day, ~10 s awake each**
+
+Awake time per day: 10 × 10 s = 100 s → 100 mA × 100 s ≈ **2.78 mAh / day**
+
+Sleep time per day: ~86 300 s × 0.015 mA ≈ **0.36 mAh / day**
+
+Total: ≈ **3.14 mAh / day** (hey, π! 🥧)
+
+On a single **1200 mAh** cell that gives us 1200 / 3.14 ≈ **382 days** 🤯
+
+&gt; Power consumption values are based on the [Seeed Studio wiki](https://wiki.seeedstudio.com). Real life (WiFi quality, API node response time, battery self-discharge, cold winter nights in Poland 🥶) will of course bite off a piece of that, but the order of magnitude stands!
+
+## 🔐 Crypto on a diet
+
+For all the heavy cryptographic lifting (secp256k1, SHA-256, RIPEMD-160 &amp; friends) I used the battle-tested [Trezor crypto library](https://github.com/trezor/trezor-firmware/tree/main/crypto) - written in plain C, tiny, and designed exactly for devices like this one. If it's good enough for hardware wallets, it's good enough for my little bee 🐝
+
+The protocol part, however, was a different story. Serialization, transaction layout, the signing digest - I had to rewrite all of it **byte by byte** by hand 🥲, because the C++ Hive Protocol core simply doesn't fit into 512 KB of RAM together with WiFi and everything else.
+
+And that's actually one of the most important lessons from this project: we really need a **separate, lightweight C layer** for the basic Hive protocol functions (serialization, digests, signing). One small, portable core that can be reused everywhere - from microcontrollers, through native apps, up to wax itself (for size optimization) - instead of everyone reimplementing the same bytes over and over again (and making the same mistakes... more on that below 👇). @small.minion what do you think?
+
+## 🐛 The bug hunt (a.k.a. "AI blamed wax for its magic compiled WASM code")
+
+Okay, now for my favorite part. Grab some popcorn 🍿
+
+The first version of the firmware generated **bad signatures**. Every broadcast was rejected by the node - the signature was mathematically valid, but it recovered a public key that had absolutely nothing to do with my account 🙃
+
+So I did what every modern developer does - I asked AI for help 🤖
+
+The LLM spent **a few hours** on this. It wrote Python scripts using [beem](https://github.com/holgern/beem), compared outputs, generated hypotheses, reproduced my signatures with beem... and couldn't reproduce them with [wax](https://gitlab.syncad.com/hive/wax). The verdict? Delivered with full confidence:
+
+&gt; *"The wax library appears to be bugged - it produces different signatures than beem for the same input."*
+
+Wait... what? 🤨
+
+I've been working on wax for a long time now. I know how it's built, I know the C++ Hive Protocol core it runs on, and I know how many tests it goes through. So instead of trusting the verdict, I opened [Transaction Inspector](https://tx.openhive.network) and did a good old byte-by-byte analysis of my serialized transaction 🔍
+
+It took **5 minutes**.
+
+### 🕵️ So what was it?
+
+Quick reminder on how Hive signing works: the signature is created over the digest of `chain_id` + the serialized transaction **without** the signatures. Something like this:
+
+```
+beeab0de00000000...   &lt;- chain id (yes, "bee ab0de" 🐝)
+xxxx                  &lt;- ref_block_num
+xxxxxxxx              &lt;- ref_block_prefix
+xxxxxxxx              &lt;- expiration
+01 ...                &lt;- operations
+00                    &lt;- extensions
+00                    &lt;- signatures (empty array)   &lt;-- 🚨 THIS ONE!
+```
+
+Yup. **One single zero byte.** I appended an empty signatures array to the buffer being signed, where it simply should not be. The signed payload was 1 byte longer than the one the node was verifying, so the digests didn't match, and the recovered key was garbage 🗑️
+
+### 🤔 But why did beem "confirm" it?
+
+And here's the actual lesson.
+
+**beem reproduced my signatures** because it happily lets you sign whatever buffer you give it - including a malformed one. So from the AI's perspective, "beem agrees with the device" = "the device is correct".
+
+**wax couldn't reproduce them** because wax does not allow generating signatures over such malformed data. It builds the signing digest from a properly defined transaction using the same C++ protocol code as `hived`, so you simply *can't* produce that broken signature with it. The AI took this safety feature and labeled it a bug 🤦
+
+So it wasn't wax being broken. It was wax doing **exactly** its job.
+
+## 💡 Takeaways
+
+This is, in my opinion, a primary example of two things:
+
+1. **Why wax is so badly needed** 🛡️ - a library that shares the protocol core with the blockchain itself and doesn't let you shoot yourself in the foot is worth more than a dozen libraries that "just work" until they silently don't.
+2. **Why we still need the watchful eye of core developers** 👁️ - AI is a great tool, I use it every day, but hours of confident LLM output lost against 5 minutes of someone who actually knows how a Hive transaction looks inside. Don't blindly stare at whatever the model spits out. Check the bytes. Always check the bytes.
+
+## 🚀 What's next?
+
+The client works, signs, broadcasts and sleeps like a baby 👶.
+
+If you have ideas for what a tiny, battery-powered Hive device could do - drop them in the comments! I'm genuinely curious what you'll come up with 🤩
+
+Thebeedev, @mtyszczak out \*drops ~~mic~~ microcontroller\* 🎤
+
+<center>
+
+ ![how it works](https://images.hive.blog/DQmUb51ukpSJeEheUGo8EvvixhEXzJyjD13YZizQhB4GuFQ/ezgif-6e3ebd1208ab6f51.gif) 
+
+</center>
+
+---
+
+Images from private archive
 </div>
   <footer class="hive-post-embed__source">
     <span class="hive-post-embed__source-label">Source:</span>
-    <a href="https://hive.blog/@louis88/updated-hivekeywordsfetcher-just-got-better-feedback-welcome">Updated! HiveKeyword(s)Fetcher just got better! Feedback welcome!</a>
+    <a href="https://hive.blog/@mtyszczak/hive-fest-2026-workshops-real-hive-client-on-a-battery">Hive Fest 2026 Workshops - Real Hive client. On a battery 🔋🐝</a>
     by
-    <a href="https://hive.blog/@louis88">@louis88</a>
+    <a href="https://hive.blog/@mtyszczak">@mtyszczak</a>
   </footer>
-</div>]]></content><author><name>louis88</name></author><category term="tools" /><category term="search" /><category term="analytics" /><summary type="html"><![CDATA[I just released a new version of the Hive Keywords Fetcher Tool]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://files.peakd.com/file/peakd-hive/louis88/23vhVs3UZN6wrT3dtGVn6Ywi6joDprQqKC9LJj5JZQNZpvonY778yFJoF1xZ6V7Dzj29X.png" /><media:content medium="image" url="https://files.peakd.com/file/peakd-hive/louis88/23vhVs3UZN6wrT3dtGVn6Ywi6joDprQqKC9LJj5JZQNZpvonY778yFJoF1xZ6V7Dzj29X.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>
+</div>]]></content><author><name>mtyszczak</name></author><category term="howto" /><category term="javascript" /><category term="workshop" /><summary type="html"><![CDATA[Remember when I said I was learning some new stuff and "might drop something soon"?]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://images.hive.blog/DQmVLkQupS7pJF1mD46yiMssTunM5cVVsJNnK8qwtgQL6ii/image.png" /><media:content medium="image" url="https://images.hive.blog/DQmVLkQupS7pJF1mD46yiMssTunM5cVVsJNnK8qwtgQL6ii/image.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Recap of the Useful Knobs for Hive-Engine Nodes</title><link href="https://hivedocs.info/news/hiveengine/node/2026/09/24/recap-of-the-useful-knobs-for-hive-engine-nodes.html" rel="alternate" type="text/html" title="Recap of the Useful Knobs for Hive-Engine Nodes" /><published>2026-09-24T06:48:06-07:00</published><updated>2026-09-24T06:48:06-07:00</updated><id>https://hivedocs.info/news/hiveengine/node/2026/09/24/recap-of-the-useful-knobs-for-hive-engine-nodes</id><content type="html" xml:base="https://hivedocs.info/news/hiveengine/node/2026/09/24/recap-of-the-useful-knobs-for-hive-engine-nodes.html"><![CDATA[<div class="hive-post-embed" data-hive-author="thecrazygm" data-hive-permlink="recap-of-the-useful-knobs-for-hive-engine-nodes">
+  <div id="content-thecrazygm-recap-of-the-useful-knobs-for-hive-engine-nodes" class="hive-post-embed__content" data-hive-render-target="true">Hey everyone,
+
+![hive-engine-node-knobs-a-b-c-header.png](https://files.peakd.com/file/peakd-hive/thecrazygm/23tGVdrVUAykaWngvJRk2sETosExnoX37KBWtgCPLhobhhbKWJBvhvJcjyyD8knBPDjKj.png)
+
+Over the past few weeks, I’ve been chipping away at a series of performance tweaks and operator controls for the Hive-Engine node. What started as a sprawling wish list of potential optimizations quickly became a deliberate exercise in restraint. Instead of dropping one massive, high-risk pull request on the maintainers, I broke the work down into three smaller, easily reviewable bundles, all of which should currently be available in the `qa` branch of `hive-engine/hivesmartcontracts` (at least for now, as they get broader testing before hitting a main release):
+
+- **Knobs A:** Expose a few critical runtime settings that were previously hardcoded.
+- **Knobs B:** Cut out avoidable waiting in the core block-processing path.
+- **Knobs C:** Make block fetching adapt intelligently when a node falls behind.
+
+In plain English: operators can now tune the JavaScript VM pool, customize MongoDB connection pooling, and let the streamer catch up faster after maintenance—all without touching the source code. Under the hood, transaction index writes are now cleanly batched, and the VM pool warms up predictably on first use.
+
+Most importantly, none of this touches consensus, smart contract execution rules, or block processing order. Here’s a breakdown of what changed, why it matters, and how it held up in live testing on my witness node.
+
+## Knobs A: Un-hardcoding Useful Runtime Settings
+
+The first bundle focused on exposing two settings that were either hardcoded or awkward to adjust without maintaining custom forks.
+
+### JavaScript VM Pool Count
+
+Hive-Engine executes smart contracts inside isolated JavaScript VMs. Previously, the engine locked this down to a hardcoded ceiling of five VM instances. You can now configure this directly in `config.json`:
+
+```json
+{
+  "maxJSVMs": 5
+}
+```
+
+Five remains the default fallback if the setting is omitted or misconfigured.
+
+Raising this isn't a magic button that makes your node twice as fast. It’s an operator tradeoff: bumping the VM count gives a heavily loaded node more execution headroom for concurrent tasks, but it also increases your memory footprint once that pool is spun up. If you're on a memory-constrained box, you'll want to leave this alone or even tune it down; if you have plenty of RAM and run a busy node, you now have the freedom to adjust it.
+
+### MongoDB Connection Pool
+
+The node now also lets you define explicit connection pool settings for MongoDB:
+
+```json
+{
+  "databasePool": {
+    "maxPoolSize": 20,
+    "minPoolSize": 2,
+    "maxIdleTimeMS": 30000,
+    "waitQueueTimeoutMS": 10000
+  }
+}
+```
+
+Here is what these control:
+
+- `maxPoolSize`: The maximum number of concurrent MongoDB connections in the pool.
+- `minPoolSize`: The minimum baseline of connections to keep open.
+- `maxIdleTimeMS`: How long an idle connection can sit before being closed.
+- `waitQueueTimeoutMS`: How long an operation will wait for an available connection before timing out.
+
+If you don't specify `databasePool`, the MongoDB driver falls back to its standard defaults.
+
+This flexibility matters because different node roles have completely different workloads. A dedicated witness node usually wants a lean, conservative pool with minimal overhead. On the other hand, a public RPC node fielding dozens of queries alongside block processing can easily starve for database connections if it's stuck with default limits.
+
+## Knobs B: Cutting Out Pipeline Latency
+
+Where Knobs A was about configuration, Knobs B tackled two internal bottlenecks in the block-processing path that were quietly wasting time.
+
+### Batching Transaction-Index Writes
+
+Every time the node commits a sidechain block, it generates transaction-index records so historical lookups and explorer queries can find them later. Historically, the code iterated through the block and inserted these records one by one:
+
+```text
+insertOne()
+insertOne()
+insertOne()
+...
+```
+
+Each insert meant another round-trip through the MongoDB driver. For blocks with lots of transactions, that back-and-forth adds noticeable latency.
+
+Now, the node collects all index records for the block and flushes them in a single `insertMany()` call. I kept the insert explicitly ordered (`ordered: true`) because transaction indexes encode positions within the block, and keeping that guarantee crystal clear in the code makes life much easier for reviewers. Also, if a block happens to have zero transactions, it skips the call entirely rather than firing off an empty array.
+
+### Pre-warming the VM Pool on First Execution
+
+With `maxJSVMs` now configurable, we also revisited how and when those VMs get initialized.
+
+Previously, isolates were created lazily one at a time as smart contracts trickled in. That meant early contract calls suffered allocation jitter while spinning up new VMs on demand.
+
+Now, the lifecycle is much cleaner:
+
+- If a node never executes contracts (e.g., pure streaming or specific side tasks), it allocates zero VMs and wastes zero RAM.
+- The moment the first contract runs, it warms up the configured pool in one eager pass.
+- All subsequent transactions simply reuse the existing, warmed isolates.
+- Total VM count remains capped at `maxJSVMs`.
+
+By paying the initialization cost once up front, we smooth out execution time and eliminate staggered allocation stalls during block processing.
+
+## Knobs C: Adaptive Catch-Up for the Block Streamer
+
+The third bundle tackles the block streamer—the component responsible for pulling layer-1 Hive blocks from upstream RPC nodes.
+
+By default, the streamer operates with static, fixed parameters:
+
+- A fixed limit on concurrent requests per RPC endpoint (confusingly named `maxQps` in the original config).
+- A static ring buffer for prefetched blocks (`lookaheadBufferSize`).
+
+Static limits are safe and predictable when your node is happily humming along at the head of the chain. But if your node went down for OS updates, hardware maintenance, or a restart and finds itself 500 or 5,000 blocks behind, those conservative throttles make catch-up needlessly sluggish.
+
+Knobs C introduces two opt-in controls to let the streamer shift gears when catching up, without being reckless.
+
+### Adaptive Fetch Concurrency
+
+You can enable dynamic request scaling with:
+
+```json
+{
+  "maxQps": 2,
+  "adaptiveQps": true,
+  "adaptiveQpsMax": 4
+}
+```
+
+When `adaptiveQps` is enabled, the streamer monitors RPC health metrics that were already being tracked:
+
+- When upstream endpoints are responsive and error-free, it can scale in-flight fetches up to `adaptiveQpsMax`.
+- If an RPC node errors or times out, concurrency immediately dials back to your baseline `maxQps`.
+- If multiple endpoints struggle, it throttles down even further to avoid compounding the problem.
+
+_(Quick naming clarification: it's called `maxQps` in Hive-Engine config history, but under the hood it's actually controlling in-flight concurrent requests per node, not a strict queries-per-second token bucket.)_
+
+Having an explicit ceiling (`adaptiveQpsMax`) is vital here. Just because a public RPC node is fast right now doesn't give our nodes a license to hammer it into the ground.
+
+### Dynamic Lookahead Buffering
+
+Along with concurrency, we can also let the lookahead buffer scale based on how far behind the node is:
+
+```json
+{
+  "lookaheadBufferSize": 15,
+  "dynamicLookaheadBuffer": true,
+  "dynamicLookaheadBufferMaxSize": 50
+}
+```
+
+When enabled, the streamer adjusts its prefetch window automatically:
+
+- **Near the head block (within 100 blocks):** Keeps a tight 5-block buffer to stay lean and avoid stale data.
+- **Moderately behind (100 to 10,000 blocks):** Expands to a 20-block buffer to keep the pipeline fed.
+- **Deep catch-up (&gt; 10,000 blocks):** Opens up to `dynamicLookaheadBufferMaxSize` (e.g., 50 blocks).
+
+When the buffer resizes, pending block entries are safely preserved and ring indexes are cleanly reset. If dynamic lookahead is off, the streamer behaves exactly as it always has.
+
+## Putting It All Together: Sample Configuration
+
+Here’s an example showing all of the new knobs configured together in `config.json`:
+
+```json
+{
+  "maxJSVMs": 5,
+  "databasePool": {
+    "maxPoolSize": 20,
+    "minPoolSize": 2,
+    "maxIdleTimeMS": 30000,
+    "waitQueueTimeoutMS": 10000
+  },
+  "streamerConfig": {
+    "maxQps": 2,
+    "lookaheadBufferSize": 15,
+    "adaptiveQps": true,
+    "adaptiveQpsMax": 4,
+    "dynamicLookaheadBuffer": true,
+    "dynamicLookaheadBufferMaxSize": 50
+  }
+}
+```
+
+Treat this snippet as an illustrative baseline, not gospel.
+
+Every node environment is different. A production witness running on dedicated hardware with a local Hive RPC node has totally different constraints than a public API node running on shared cloud infrastructure. If you're running a witness, my recommendation is to start conservative, change one variable at a time, and monitor your RAM usage, Mongo cache, and RPC error rates before cranking up concurrency.
+
+## Live Testing on a Witness Node
+
+Unit tests and local testnets are great, but nothing replaces letting code chew on live mainnet traffic. With all three bundles merged into the `qa` branch, I deployed that branch directly to my live witness setup to see how it behaved in the wild.
+
+To test Knobs C specifically, I stopped the service, let the node fall about 300 Hive blocks behind head, and kicked it back on.
+
+With the QPS transitions logged at `WARN` level (so they show up cleanly in `journalctl` without having to turn on noisy debug logs), I watched the adaptive logic kick in right away. The streamer detected healthy RPC responses, bumped concurrency to the max limit, and steadily chewed through the backlog. Throughout the catch-up, the block hashes matched the main network identically at every sampled checkpoint until it locked right back onto the head block.
+
+I did encounter one transient MongoDB `NoSuchTransaction` error during an initial restart, which cleared up cleanly on a second restart. While it almost certainly stems from MongoDB replica set transaction session cleanup rather than anything in the streamer, I’d rather document every weird blip openly than pretend software development is frictionless.
+
+The node has been humming along steadily since, but remember: this is real-world validation, not an absolute benchmark. Your mileage will vary depending on your disk I/O, MongoDB version, upstream Hive RPC endpoints, and server resources.
+
+## What Stays Strictly Untouched
+
+When you're touching a blockchain node that witnesses rely on for consensus, rule number one is: _don't break state._
+
+To be 100% clear, these updates do not touch:
+
+- Smart contract execution logic or consensus rules
+- Transaction order or execution outcomes
+- Generated block hashes and database state transitions
+- Witness signing or round consensus
+
+All we're touching is the plumbing around the edges: resource limits, batching database roundtrips, warming VMs up front, and scheduling block fetches more intelligently. The node processes the exact same data in the exact same sequence—it just spends less time sitting idle between steps.
+
+## What’s Next: Knobs D, E, and F
+
+I’m already outlining the next series of experiments, keeping the same incremental mindset:
+
+- **Knobs D:** Lite-node ergonomics and catch-up efficiency. We want lite nodes to prune data without bogging down sync, and avoid running heavy cleanup queries during critical catch-up windows.
+- **Knobs E:** P2P and round resilience. Tweaking retry backoffs and fetching round-hash data concurrently, without altering how or when blocks are hashed.
+- **Knobs F:** Read-side caching. Exploring a bounded, short-lived cache strictly for high-frequency RPC read queries, completely separated from the state-writing block pipeline.
+
+None of these are set in stone; each will need its own isolated testing, safety review, and PR. The core philosophy won't change: backward-compatible defaults, small reviewable diffs, and never sacrificing consensus correctness for speed.
+
+## Wrap Up
+
+To recap what we have so far:
+
+- **Knobs A** freed up previously hardcoded VM and database pool settings for operator tuning.
+- **Knobs B** eliminated MongoDB round-trip chatter on block writes and smoothed out contract VM initialization.
+- **Knobs C** gave the streamer a safe, adaptive gas pedal to catch up after downtime without hammering upstream RPCs.
+
+None of this is meant to be a silver bullet that magically solves every node performance headache. But by giving operators sensible knobs, reducing obvious bottlenecks, and verifying everything on a live witness, we get a node that’s noticeably more responsive, predictable, and easier to run.
+
+Give the new settings a spin on your test nodes, and let me know how they perform for you! If you want to check out the code or test it in your own setup, most of the changes are currently live on the `qa` branch of [hive-engine/hivesmartcontracts](https://github.com/hive-engine/hivesmartcontracts).
+
+As always,  
+**Michael Garcia a.k.a. TheCrazyGM**
+</div>
+  <footer class="hive-post-embed__source">
+    <span class="hive-post-embed__source-label">Source:</span>
+    <a href="https://hive.blog/@thecrazygm/recap-of-the-useful-knobs-for-hive-engine-nodes">Recap of the Useful Knobs for Hive-Engine Nodes</a>
+    by
+    <a href="https://hive.blog/@thecrazygm">@thecrazygm</a>
+  </footer>
+</div>]]></content><author><name>thecrazygm</name></author><category term="news" /><category term="hiveengine" /><category term="node" /><summary type="html"><![CDATA[Over the past few weeks, I’ve been chipping away at a series of performance tweaks and operator controls for the Hive-Engine node]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://files.peakd.com/file/peakd-hive/thecrazygm/23tGVdrVUAykaWngvJRk2sETosExnoX37KBWtgCPLhobhhbKWJBvhvJcjyyD8knBPDjKj.png" /><media:content medium="image" url="https://files.peakd.com/file/peakd-hive/thecrazygm/23tGVdrVUAykaWngvJRk2sETosExnoX37KBWtgCPLhobhhbKWJBvhvJcjyyD8knBPDjKj.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>

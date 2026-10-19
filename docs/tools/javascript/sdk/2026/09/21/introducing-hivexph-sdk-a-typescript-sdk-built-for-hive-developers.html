@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta property="og:image" content="/assets/images/sticker.png" />
+  <meta name="apple-mobile-web-app-title" content="Hive Docs" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" /><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Introducing hivexph-sdk — A TypeScript SDK Built for Hive Developers | Hive Chain Documentation</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Introducing hivexph-sdk — A TypeScript SDK Built for Hive Developers" />
+<meta name="author" content="rhiaji" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Introducing hivexph-sdk — A TypeScript SDK Built for Hive Developers" />
+<meta property="og:description" content="Introducing hivexph-sdk — A TypeScript SDK Built for Hive Developers" />
+<link rel="canonical" href="https://hive.blog/hive/@rhiaji/introducing-hivexph-sdk-a-typescript-sdk-built-for-hive-developers" />
+<meta property="og:url" content="https://hive.blog/hive/@rhiaji/introducing-hivexph-sdk-a-typescript-sdk-built-for-hive-developers" />
+<meta property="og:site_name" content="Hive Chain Documentation" />
+<meta property="og:image" content="https://files.peakd.com/file/peakd-hive/rhiaji/AKRDjCwUSpZVptJEJnx9hDKs9k7xbahDm7YHse5zKhAWjJ6tbvhsZwcikTnidGu.png" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2026-09-21T16:33:09-07:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="https://files.peakd.com/file/peakd-hive/rhiaji/AKRDjCwUSpZVptJEJnx9hDKs9k7xbahDm7YHse5zKhAWjJ6tbvhsZwcikTnidGu.png" />
+<meta property="twitter:title" content="Introducing hivexph-sdk — A TypeScript SDK Built for Hive Developers" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"rhiaji"},"dateModified":"2026-09-21T16:33:09-07:00","datePublished":"2026-09-21T16:33:09-07:00","description":"Introducing hivexph-sdk — A TypeScript SDK Built for Hive Developers","headline":"Introducing hivexph-sdk — A TypeScript SDK Built for Hive Developers","image":"https://files.peakd.com/file/peakd-hive/rhiaji/AKRDjCwUSpZVptJEJnx9hDKs9k7xbahDm7YHse5zKhAWjJ6tbvhsZwcikTnidGu.png","mainEntityOfPage":{"@type":"WebPage","@id":"https://hive.blog/hive/@rhiaji/introducing-hivexph-sdk-a-typescript-sdk-built-for-hive-developers"},"url":"https://hive.blog/hive/@rhiaji/introducing-hivexph-sdk-a-typescript-sdk-built-for-hive-developers"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://hivedocs.info/feed.xml" title="Hive Chain Documentation" /><script>
+if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNotTrack === "yes" || navigator.msDoNotTrack === "1")) {
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-161692811-1', 'auto');
+  ga('send', 'pageview');
+}
+</script>
+  
+<script src='https://unpkg.com/steem-content-renderer'></script>
+  <script src="/assets/javascript/universal-bridge-against-phishing.js"></script>
+  <script src="/assets/javascript/lazysizes.min.js" async=""></script>
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet" />
+  <link rel="shortcut icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="152x152" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="167x167" href="/assets/images/favicon-80x80.png" />
+</head>
+<body><header class="site-header" role="banner">
+  <div class="wrapper site-header-inner">
+    <a class="site-title" rel="author" href="/">Hive Chain Documentation</a>
+
+    <nav class="site-nav" aria-label="Primary">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/news/">News</a><a class="page-link" href="/howto/">How To</a><a class="page-link" href="/links/">Useful Links</a><a class="page-link" href="/authors/">Authors</a><a class="page-link" href="/topics/">Topics</a><a class="page-link" href="/search/">Search</a></div>
+    </nav>
+  </div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper page-layout has-search-panel">
+        <div class="page-main">
+          <article class="post h-entry post-article" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header post-hero">
+    <div class="post-hero-main">
+      <p class="post-kicker">Archive post</p>
+      <h1 class="post-title p-name" itemprop="name headline">Introducing hivexph-sdk — A TypeScript SDK Built for Hive Developers</h1>
+      <p class="post-meta">
+        <time class="dt-published" datetime="2026-09-21T16:33:09-07:00" itemprop="datePublished">Sep 21, 2026
+        </time>• <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">
+            <a href="/authors/#author-rhiaji">rhiaji</a>
+          </span></span></p><p class="post-summary">Introducing hivexph-sdk — A TypeScript SDK Built for Hive Developers</p></div><aside class="post-author-card">
+      <img src="https://images.hive.blog/u/rhiaji/avatar" width="128" height="128" class="lazyload post-author-avatar" alt="Avatar for @rhiaji" />
+      <div class="post-author-name">@rhiaji</div>
+    </aside></header>
+
+  <div class="post-content e-content post-body" itemprop="articleBody">
+    <div class="hive-post-embed" data-hive-author="rhiaji" data-hive-permlink="introducing-hivexph-sdk-a-typescript-sdk-built-for-hive-developers">
+  <div id="content-rhiaji-introducing-hivexph-sdk-a-typescript-sdk-built-for-hive-developers" class="hive-post-embed__content" data-hive-render-target="true">
+
+
+
+Hello Guys! 👋
+
+Welcome to my newly created AI slop SDK — **hivexph-sdk**, a reusable TypeScript SDK for the Hive blockchain.
+
+&gt; 📝 *This post was generated with the help of AI to summarize the full feature set of the SDK from the README, API reference, and changelog.*
+
+I built this slop to stop rewriting the same Hive plumbing in every project: connecting to RPC nodes, watching blocks, parsing `custom_json`, sending and validating payments, issuing tokens, and creating NFT collections. It was a lot of repetitive wiring before I could ever get to the actual product, so I packaged it all into one typed SDK with a single, predictable API.
+
+**hivexph-sdk is that plumbing, packaged up and typed.**
+
+Version **1.2.0** is out now, and it adds the three pieces I kept needing in real projects: **Keychain sign-in**, **token creation**, and **NFT collection creation** — each with preflight checks that catch missing balances, duplicate symbols, or bad inputs before anything is broadcast.
+
+If you want to test it, the docs site is live at **https://hivexph-sdk-frontend.vercel.app/** — feel free to play around, find bugs, suggest improvements, or help beautify this AI slop into something even better.
+
+```bash
+npm install hivexph-sdk
+```
+
+- 📦 Package: `hivexph-sdk` (ESM only, fully typed)
+- 🏠 Docs / playground: https://hivexph-sdk-frontend.vercel.app/
+- 💻 Source: https://github.com/rhiaji/hivex-sdk
+- 📜 License: MIT
+
+---
+
+## Why I built this
+
+I built this SDK **for myself first**.
+
+I kept starting new Hive projects and rewriting the same code:
+
+- Connect to an RPC node and fall back when it’s slow.
+- Watch blocks without skipping them or opening five polling loops.
+- Parse `custom_json` payloads safely and ignore malformed ones.
+- Send HIVE/HBD payments and confirm them.
+- Issue Hive Engine tokens from a backend.
+- Let users sign things in the browser with Hive Keychain.
+
+Every project reinvented the wheel slightly differently. After the third or fourth time, I realized it made more sense to pull it all into one SDK with a single, predictable API — and then open source it so other builders on Hive don’t have to start from scratch.
+
+This SDK was made to power my own apps first, especially the upcoming rebuild of **hivexph**, but I hope it ends up useful for anyone building on Hive. The goal is simple: **one package, one import, one mental model for reading from and writing to Hive.**
+
+---
+
+## What is hivexph-sdk?
+
+It is a single-entry-point TypeScript SDK for Hive.
+
+It runs almost everywhere: **Node 18+, Bun, Deno, browsers, and edge/Worker runtimes**. It has **no React dependency**, no DOM access at module scope, and **zero side effects on import** — importing it does not open a connection or start a stream.
+
+Everything lives behind one class:
+
+```ts
+import { HiveClient } from "hivexph-sdk";
+
+const hive = new HiveClient({
+  endpoint: "https://api.hive.blog", // optional; Beacon discovery otherwise
+  accounts: {
+    treasury: { accountEnv: "TREASURY_ACCOUNT", keyEnv: "TREASURY_ACTIVE_KEY" },
+  },
+});
+```
+
+From that one object you get:
+
+```
+hive
+ ├── configs         // named configurations, account aliases, env references
+ ├── accounts        // key-free account references
+ ├── rpc             // blockchain communication
+ ├── beacon          // healthy node discovery
+ ├── builder         // custom_json payload construction
+ ├── parser          // safe custom_json parsing
+ ├── blocks.watch()  // the single canonical block stream
+ ├── reader          // transaction reading + unified stream engine
+ ├── customJson      // build / broadcast / watch standardized payloads
+ ├── payments        // native HIVE/HBD + Layer 2 payments
+ ├── issuer          // backend token + NFT operations
+ ├── keychain        // browser sign-in and signing via Hive Keychain
+ └── keychainIssuer  // browser token + NFT operations via Hive Keychain
+```
+
+No deep imports. No secondary entry points. If you can do it with the SDK, you can reach it from `hivexph-sdk`.
+
+---
+
+## Who is this for?
+
+- **Game developers** who want players to buy items with HIVE, HBD, or Hive Engine tokens.
+- **Marketplace builders** who need to verify payments before shipping digital goods.
+- **Bot and service operators** who watch `custom_json` for app-specific actions.
+- **Token creators** who want to launch a Hive Engine token from a script or a UI.
+- **NFT project founders** who want to create collections without doing everything manually in TribalDex.
+- **Anyone** who just wants typed, tested helpers instead of raw RPC and string memos.
+
+If you write TypeScript or JavaScript, this is for you.
+
+---
+
+## The one streaming engine
+
+A lot of SDKs open a new polling loop for every feature. That gets expensive and messy.
+
+`hive.blocks.watch()`, `hive.customJson.watch()`, `hive.payments.watch()`, and `hive.reader.stream()` are all **filtered views over the same block reader**. The engine handles head tracking, sequential ordering, historical backfill, the transition from history to live blocks, retries, and `AbortSignal` cancellation.
+
+```ts
+for await (const block of hive.blocks.watch({ fromBlock: 90_000_000 })) {
+  for (const tx of block.transactions) {
+    for (const op of tx.operations) {
+      console.log(block.blockNumber, tx.transactionId, op.operationType);
+    }
+  }
+}
+```
+
+Blocks are normalized once, so every consumer sees the same shape regardless of how a node represents operations.
+
+For app-specific events, `customJson.watch()` gives you clean, validated events:
+
+```ts
+for await (const event of hive.customJson.watch({ id: "my-app" })) {
+  console.log(event.account, event.action, event.metadata);
+}
+```
+
+No manual parsing. No noise. Just your app’s events.
+
+---
+
+## One payload shape everywhere
+
+Every transport — `custom_json`, native transfer memos, Hive Engine memos — uses the same normalized payload:
+
+```json
+{ "action": "purchase_item", "metadata": { "itemId": "sword_01" } }
+```
+
+- `action` is a required non-empty string.
+- `metadata` is always present after normalization (it may be `null`).
+- **Block time is the clock.** There are no payload timestamps, so you never have to trust a client clock.
+
+That means your frontend, backend, bot, and indexer can all speak the same language.
+
+---
+
+## Payments that are easy to verify
+
+Send and validate native HIVE/HBD or Layer 2 payments with the same API:
+
+```ts
+await hive.payments.hive.transfer({
+  from: hive.accounts.treasury,
+  account: "bob",
+  amount: "10.000",
+  symbol: "HIVE",
+  action: "purchase_item",
+  metadata: { itemId: "sword_01" },
+});
+
+const result = await hive.payments.validate({
+  transactionId, // the network is detected automatically
+  expected: {
+    account: "bob",
+    symbol: "HIVE",
+    quantity: "10.000",
+    action: "purchase_item",
+  },
+});
+// result.status: "pending" | "success" | "failed" | "invalid" | "not_found"
+```
+
+This matters for any app that delivers something after payment. You get a clear status, and for Layer 2 transfers the SDK reminds you that reaching Hive is not the same as sidechain execution — always validate before crediting.
+
+---
+
+## Backend vs. browser: one SDK, two safe paths
+
+### Backend
+
+Backend issuers resolve an account alias, lazily load the signing key from an environment variable, sign, and broadcast. Quantities are always decimal strings, never floats.
+
+```ts
+await hive.issuer.token.issue({
+  from: hive.accounts.treasury,
+  symbol: "MYTOKEN",
+  account: "alice",
+  quantity: "10.000",
+});
+```
+
+You can also preview a payload offline without touching a key:
+
+```ts
+const preview = hive.issuer.token.buildIssue({
+  from: hive.accounts.treasury,
+  symbol: "MYTOKEN",
+  account: "alice",
+  quantity: "10.000",
+});
+
+preview.alias;     // "treasury"
+preview.id;        // resolved application id
+preview.json;      // serialized contract action
+preview.operation; // ["custom_json", { ... }]
+```
+
+### Browser
+
+In the browser, use Hive Keychain. No private keys in source code. No configuration with secrets.
+
+```ts
+if (!hive.keychain.isAvailable()) {
+  throw new Error("Please install Hive Keychain");
+}
+
+const signIn = await hive.keychain.requestSignIn({
+  username: "alice",
+  message: "Sign in to my-app: nonce-123456",
+});
+// Verify signIn.signature server-side to prove account ownership.
+```
+
+And for token transfers:
+
+```ts
+await hive.keychainIssuer.token.transfer({
+  username: "alice",
+  symbol: "MYTOKEN",
+  account: "bob",
+  quantity: "1.000",
+});
+```
+
+### Security rules baked in
+
+- Private keys never live in frontend code or committed configuration — use `keyEnv`.
+- Keys are resolved lazily at signing time and never cached.
+- Account references passed around the API are key-free.
+- Config summaries and logs never contain secrets.
+
+---
+
+# 🆕 What’s new in v1.2.0
+
+This release focuses on **creation flows**: signing in with Keychain, creating Hive Engine tokens, and creating NFT collections — from both backend scripts and browser UIs — with BEE balance and symbol availability checks before you broadcast.
+
+## Keychain sign-in
+
+- `hive.keychain.requestSignIn()` for Hive Keychain account sign-in.
+- Typed `KeychainSignInInput` and `KeychainSignInResult` exports.
+- A Keychain playground sign-in tab for signing an app challenge message.
+
+## Token creation (`tokens.create`)
+
+- `hive.keychainIssuer.token.create()` and `hive.issuer.token.create()` handle the Hive Engine `tokens.create` action.
+- **Mandatory creation preflight:** the signing account must hold at least the sidechain token creation fee in BEE, and the token symbol must not already exist. Either failure throws (`INSUFFICIENT_BEE`, `TOKEN_ALREADY_EXISTS`) *before* Keychain opens or a key is resolved.
+- `checkCreate()` on both issuers, plus the exported `TokenCreationChecker`, for read-only fee, BEE balance, and symbol availability lookups.
+- `buildCreate()` for offline payload previews.
+- New exports: `TokenCreateInput`, `TokenCreateActionInput`, `TokenCreationCheck`, `TokenCreationCheckInput`, `EngineTokenRow`, `KeychainTokenCreateInput`, the `BEE_SYMBOL` and token limit constants, and the `INSUFFICIENT_BEE` / `TOKEN_ALREADY_EXISTS` error codes.
+- A token creation panel in the playground covering both the Keychain and server paths.
+- Server-side token creation tests for payload parity, validation, preflight enforcement, and the `skipChecks` opt-out.
+
+```ts
+// Browser (Keychain)
+await hive.keychainIssuer.token.create({
+  username: "alice",
+  symbol: "MYTOKEN",
+  name: "My Token",
+  precision: 3,
+  maxSupply: "1000000",
+});
+
+// Backend (alias + env key)
+await hive.issuer.token.create({
+  from: hive.accounts.treasury,
+  symbol: "MYTOKEN",
+  name: "My Token",
+  precision: 3,
+  maxSupply: "1000000",
+});
+```
+
+## NFT collection creation (`nft.create`)
+
+- `hive.keychainIssuer.nft.create()` and `hive.issuer.nft.create()` handle the Hive Engine `nft.create` action.
+- Required: `name` and `symbol`. Optional: `orgName`, `productName`, `maxSupply`, `website`, `authorizedIssuingAccounts`, `authorizedIssuingContracts`.
+- **NFT creation preflight:** the signing account must hold the NFT creation fee in BEE (100 BEE by default, read from `nft.params`) and the NFT symbol must not already exist. Either failure throws (`INSUFFICIENT_BEE`, `NFT_ALREADY_EXISTS`) before Keychain opens or a key is resolved.
+- `checkCreate()` and `buildCreate()` on both NFT issuers, plus the exported `NftCreationChecker`.
+- New exports: `NftCreateInput`, `NftCreateActionInput`, `NftCreationCheck`, `NftCreationCheckInput`, `EngineNftRow`, `KeychainNftCreateInput`, the NFT creation fee and field limit constants, and the `NFT_ALREADY_EXISTS` error code.
+- An NFT creation panel in the playground.
+- NFT creation tests for payload shape, field validation, preflight failures, and the `skipChecks` opt-out.
+
+```ts
+await hive.keychainIssuer.nft.create({
+  username: "alice",
+  name: "My Collection",
+  symbol: "MYNFT",
+  orgName: "My Org",              // optional
+  productName: "My Product",      // optional
+  maxSupply: "1000",              // optional, unlimited when omitted
+  website: "https://example.com", // optional
+});
+
+// Read-only preflight, or an offline payload preview:
+const check = await hive.keychainIssuer.nft.checkCreate({ username: "alice", symbol: "MYNFT" });
+const payload = hive.keychainIssuer.nft.buildCreate({ name: "My Collection", symbol: "MYNFT" });
+```
+
+For both tokens and NFTs, pass `skipChecks: true` to broadcast without the preflight when you know what you’re doing.
+
+## Documentation
+
+The sign-in, token creation, and NFT creation flows are documented in the README, API reference, and release notes at the docs site.
+
+---
+
+# Full changelog
+
+## 1.2.0
+
+### Added
+
+- `hive.keychain.requestSignIn()` for Hive Keychain account sign-in, with typed `KeychainSignInInput` / `KeychainSignInResult` exports and a playground sign-in tab.
+- Token creation: `hive.keychainIssuer.token.create()` and `hive.issuer.token.create()` with a mandatory BEE fee + symbol preflight (`INSUFFICIENT_BEE`, `TOKEN_ALREADY_EXISTS`), `checkCreate()`, `buildCreate()`, `TokenCreationChecker`, related types/constants, a playground panel, and full tests.
+- NFT creation: `hive.keychainIssuer.nft.create()` and `hive.issuer.nft.create()` with the same preflight pattern (`INSUFFICIENT_BEE`, `NFT_ALREADY_EXISTS`), `checkCreate()`, `buildCreate()`, `NftCreationChecker`, related types/constants, a playground panel, and full tests.
+
+### Changed
+
+- Documented the sign-in, token creation, and NFT creation flows in the README, API reference, and release notes.
+
+## 1.0.0
+
+First stable release. The public API is frozen under semver.
+
+- **One canonical block engine** — `blocks.watch()`, `customJson.watch()`, `payments.watch()`, and `reader.stream()` are filtered views over a single polling loop.
+- **One transaction reader** — payment parsing, Custom JSON parsing, and Layer 2 verification share one normalized operation model.
+- **One write path per environment** — backend issuance through `hive.issuer`, browser issuance through `hive.keychainIssuer`, both emitting byte-identical contract actions from shared builders and validators.
+- Pre-1.0 cleanup: removed the `Signer` system, executors, dry-run mode, legacy streams/builders, and all compatibility shims; `mint` naming is now `issue`.
+- ESM build with generated type declarations; zero runtime Node built-ins and no DOM access at module scope.
+
+---
+
+## What’s next: v1.3.0 and the hivexph platform
+
+v1.2.0 is the foundation. **v1.3.0** will add the pieces needed for real marketplaces:
+
+- **Token market trade** operations
+- **NFT marketplace** functions
+
+These are being built so I can upgrade my existing **hivexph** platform — which already has token trading, an NFT marketplace, and other Hive tools — using a single, well-tested SDK instead of scattering the same logic across multiple projects. The SDK is meant to power hivexph and any future Hive apps I build, so every feature is generic, reusable, and safe to drop into a browser or backend.
+
+If you’re building something similar, following along will let you reuse the same primitives in your own app.
+
+---
+
+## Try it out
+
+```bash
+npm install hivexph-sdk
+```
+
+The docs site with the full API reference and live playground is at **https://hivexph-sdk-frontend.vercel.app/**, and the source is on GitHub at **https://github.com/rhiaji/hivex-sdk**.
+
+This SDK started as tooling for my own Hive projects, and I’m sharing it in case it saves you some time too. If you try it, let me know what works, what breaks, and what’s missing — feedback, issues, and ideas are very welcome. Drop a comment below or open an issue on GitHub. Thanks for reading, and see you on future updates! 🐝
+
+<center>![logo.png](https://files.peakd.com/file/peakd-hive/rhiaji/AKRDjCwUSpZVptJEJnx9hDKs9k7xbahDm7YHse5zKhAWjJ6tbvhsZwcikTnidGu.png)</center></div>
+  <footer class="hive-post-embed__source">
+    <span class="hive-post-embed__source-label">Source:</span>
+    <a href="https://hive.blog/@rhiaji/introducing-hivexph-sdk-a-typescript-sdk-built-for-hive-developers">Introducing hivexph-sdk — A TypeScript SDK Built for Hive Developers</a>
+    by
+    <a href="https://hive.blog/@rhiaji">@rhiaji</a>
+  </footer>
+</div>
+
+
+  </div><a class="u-url" href="/tools/javascript/sdk/2026/09/21/introducing-hivexph-sdk-a-typescript-sdk-built-for-hive-developers.html" hidden></a>
+</article>
+
+        </div>
+
+        
+        <aside class="page-sidebar" aria-label="Search and browse">
+          <section class="sidebar-section sidebar-search">
+            <h2 class="sidebar-heading">Search posts</h2>
+            <p class="sidebar-copy">Search the locally indexed post archive.</p>
+            <input type="text" id="search-input" placeholder="Search posts" autocomplete="off" />
+            <ul id="results-container"></ul>
+          </section>
+
+          <section class="sidebar-section sidebar-topics">
+            <h2 class="sidebar-heading">Browse topics</h2>
+            <p class="sidebar-copy">Jump into curated topic landing pages.</p>
+            <ul class="topic-list topic-list-sidebar"><li><a class="page-link" href="/account-recovery/">Account Recovery</a></li><li><a class="page-link" href="/core-development/">Core Development</a></li><li><a class="page-link" href="/dapps/">Dapps</a></li><li><a class="page-link" href="/docker/">Docker</a></li><li><a class="page-link" href="/hardfork/">Hardfork</a></li><li><a class="page-link" href="/hivemind/">Hivemind</a></li><li><a class="page-link" href="/javascript/">Javascript</a></li><li><a class="page-link" href="/multisig/">Multisig</a></li><li><a class="page-link" href="/python/">Python</a></li><li><a class="page-link" href="/ruby/">Ruby</a></li><li><a class="page-link" href="/testnet/">Testnet</a></li><li><a class="page-link" href="/tools/">Tools</a></li><li><a class="page-link" href="/witness/">Witness</a></li></ul>
+          </section>
+        </aside>
+        
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading"><a rel="author" href="/">Hive Chain Documentation</a></h2>
+    
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">site curated by: @inertia</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>Your resource for various levels of Hive Documentation.</p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+<script src="/assets/javascript/search.js"></script>
+    <script>
+      (function () {
+        var input = document.getElementById('search-input');
+        var results = document.getElementById('results-container');
+        if (input && results && typeof SimpleJekyllSearch !== 'undefined') {
+          SimpleJekyllSearch({
+            searchInput: input,
+            resultsContainer: results,
+            json: '/search.json'
+          });
+        }
+
+        if (typeof SteemContentRenderer === 'undefined') return;
+
+        var targets = document.querySelectorAll('[data-hive-render-target="true"]');
+        if (!targets.length) return;
+
+        var renderer = new SteemContentRenderer.DefaultRenderer({
+          baseUrl: 'https://hive.blog/',
+          breaks: true,
+          skipSanitization: false,
+          allowInsecureScriptTags: false,
+          addNofollowToLinks: true,
+          doNotShowImages: false,
+          ipfsPrefix: '',
+          assetsWidth: 640,
+          assetsHeight: 480,
+          imageProxyFn: function (url) { return url; },
+          usertagUrlFn: function (account) { return '/@' + account; },
+          hashtagUrlFn: function (hashtag) { return '/tags/#' + hashtag; },
+          isLinkSafeFn: function () { return true; }
+        });
+
+        targets.forEach(function (target) {
+          try {
+            var inputHtml = target.innerHTML;
+            target.innerHTML = renderer.render(inputHtml);
+          } catch (e) {
+            console.log(e);
+          }
+        });
+      })();
+    </script>
+
+  </body>
+
+</html>

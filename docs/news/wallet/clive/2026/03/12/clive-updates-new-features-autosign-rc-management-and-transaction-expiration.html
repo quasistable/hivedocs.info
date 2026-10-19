@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta property="og:image" content="/assets/images/sticker.png" />
+  <meta name="apple-mobile-web-app-title" content="Hive Docs" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" /><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Clive Updates – New Features: AutoSign, RC Management, and Transaction Expiration | Hive Chain Documentation</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Clive Updates – New Features: AutoSign, RC Management, and Transaction Expiration" />
+<meta name="author" content="thebeedevs" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="In this release, we introduced AutoSign, RC management, and support for configurable transaction expiration" />
+<meta property="og:description" content="In this release, we introduced AutoSign, RC management, and support for configurable transaction expiration" />
+<link rel="canonical" href="https://hive.blog/hive/@thebeedevs/clive-updates-new-features-autosign-rc-management-and-transaction-expiration" />
+<meta property="og:url" content="https://hive.blog/hive/@thebeedevs/clive-updates-new-features-autosign-rc-management-and-transaction-expiration" />
+<meta property="og:site_name" content="Hive Chain Documentation" />
+<meta property="og:image" content="https://images.hive.blog/DQmcu9Kux3SaSBiuKkHwpjSH6opLqG1n37NxinDcHDEe3Fx/image3.png" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2026-03-12T04:59:57-07:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="https://images.hive.blog/DQmcu9Kux3SaSBiuKkHwpjSH6opLqG1n37NxinDcHDEe3Fx/image3.png" />
+<meta property="twitter:title" content="Clive Updates – New Features: AutoSign, RC Management, and Transaction Expiration" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"thebeedevs"},"dateModified":"2026-03-12T04:59:57-07:00","datePublished":"2026-03-12T04:59:57-07:00","description":"In this release, we introduced AutoSign, RC management, and support for configurable transaction expiration","headline":"Clive Updates – New Features: AutoSign, RC Management, and Transaction Expiration","image":"https://images.hive.blog/DQmcu9Kux3SaSBiuKkHwpjSH6opLqG1n37NxinDcHDEe3Fx/image3.png","mainEntityOfPage":{"@type":"WebPage","@id":"https://hive.blog/hive/@thebeedevs/clive-updates-new-features-autosign-rc-management-and-transaction-expiration"},"url":"https://hive.blog/hive/@thebeedevs/clive-updates-new-features-autosign-rc-management-and-transaction-expiration"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://hivedocs.info/feed.xml" title="Hive Chain Documentation" /><script>
+if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNotTrack === "yes" || navigator.msDoNotTrack === "1")) {
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-161692811-1', 'auto');
+  ga('send', 'pageview');
+}
+</script>
+  
+<script src='https://unpkg.com/steem-content-renderer'></script>
+  <script src="/assets/javascript/universal-bridge-against-phishing.js"></script>
+  <script src="/assets/javascript/lazysizes.min.js" async=""></script>
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet" />
+  <link rel="shortcut icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="152x152" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="167x167" href="/assets/images/favicon-80x80.png" />
+</head>
+<body><header class="site-header" role="banner">
+  <div class="wrapper site-header-inner">
+    <a class="site-title" rel="author" href="/">Hive Chain Documentation</a>
+
+    <nav class="site-nav" aria-label="Primary">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/news/">News</a><a class="page-link" href="/howto/">How To</a><a class="page-link" href="/links/">Useful Links</a><a class="page-link" href="/authors/">Authors</a><a class="page-link" href="/topics/">Topics</a><a class="page-link" href="/search/">Search</a></div>
+    </nav>
+  </div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper page-layout has-search-panel">
+        <div class="page-main">
+          <article class="post h-entry post-article" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header post-hero">
+    <div class="post-hero-main">
+      <p class="post-kicker">Archive post</p>
+      <h1 class="post-title p-name" itemprop="name headline">Clive Updates – New Features: AutoSign, RC Management, and Transaction Expiration</h1>
+      <p class="post-meta">
+        <time class="dt-published" datetime="2026-03-12T04:59:57-07:00" itemprop="datePublished">Mar 12, 2026
+        </time>• <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">
+            <a href="/authors/#author-thebeedevs">thebeedevs</a>
+          </span></span></p><p class="post-summary">In this release, we introduced AutoSign, RC management, and support for configurable transaction expiration</p></div><aside class="post-author-card">
+      <img src="https://images.hive.blog/u/thebeedevs/avatar" width="128" height="128" class="lazyload post-author-avatar" alt="Avatar for @thebeedevs" />
+      <div class="post-author-name">@thebeedevs</div>
+    </aside></header>
+
+  <div class="post-content e-content post-body" itemprop="articleBody">
+    <div class="hive-post-embed" data-hive-author="thebeedevs" data-hive-permlink="clive-updates-new-features-autosign-rc-management-and-transaction-expiration">
+  <div id="content-thebeedevs-clive-updates-new-features-autosign-rc-management-and-transaction-expiration" class="hive-post-embed__content" data-hive-render-target="true">In this release, we introduced AutoSign, RC management, and support for configurable transaction expiration.
+
+### AutoSign
+We believe this is a very useful feature if you have more than one key imported in Clive. AutoSign feature automatically selects the appropriate keys and signs the transaction for you — no manual key selection is required. Clive uses a transaction-signing algorithm implemented in Wax. It follows the same logic as the signing algorithm used in the CLI wallet. This feature is available in both the CLI (Command Line Interface) and the TUI (Text-based User Interface).
+
+##### AutoSign in TUI
+On the transaction summary screen, the default value for `Sign with key` is Autosign. When selected, the signing algorithm automatically signs the transaction using your imported keys. Manual key selection is still available if needed.
+
+ ![Transaction summary -autosign](https://images.hive.blog/DQmcu9Kux3SaSBiuKkHwpjSH6opLqG1n37NxinDcHDEe3Fx/image3.png) 
+
+##### AutoSign in CLI
+Before AutoSign was implemented, if you had more than one key imported in your profile, you had to use the `--sign-with` option to specify the correct key manually.
+Now, the AutoSign algorithm works by default, making it easier.
+
+Example:
+Command:
+`clive process transfer --to bob --amount "10 HIVE" --memo "test"`
+
+ ![Autosign in CLI](https://images.hive.blog/DQmc6GTZzmrQmZmbARfqJpq873kBFSi93hsHqjF7UQYU7Pu/image5.png) 
+
+If you want to broadcast a transaction from a file (unsigned or partially signed), the AutoSign algorithm automatically adds the required signature, allowing the transaction to be broadcast easily.
+
+ ![Autosign in CLI (transacion)](https://images.hive.blog/DQmUdct3CiieyCJpkZZiaWHg3AqLMw9sAcvJb3p5jscbofF/image7.png) 
+
+To align with the new implementation, we have changed the default behavior of the `--already-signed-mode` option. It is now set to `multisign` by default.
+
+### Recourse Credit (RC) delegation in CLI
+RC (Resource Credits) delegation lets users delegate Resource Credits to other Hive accounts. This allows accounts with little or no Hive Power to perform blockchain operations. 
+The RC-delegation is the custom JSON operation and requires the posting authority.
+In one of the earlier releases, we introduced HP delegation, which delegates Hive Power (vesting shares). The delegatee receives both voting power and Resource Credits. This operation requires the active key.
+In this release, we added a new group of commands under:
+`clive process rc-delegation`
+To maintain consistency, we renamed the previous delegation command to hp-delegation.
+
+Using rc-delegation commands, you can:
+- set - delegate a specified amount of RC to another account
+- remove - revoke an existing RC delegation
+- show resource-credits - view RC balance, mana, and outgoing delegations.
+
+##### Example - set  rc-delegation
+Alice delegates 250 HP to bob.
+Command:
+`clive process rc-delegations set --delegatee bob --amount "250 HP"`
+
+ ![set  rc-delegation](https://images.hive.blog/DQmZo7LHv3SucCtMZDfN6nEqqHmXCnuGioW7vWtrytMzuBE/image10.png) 
+
+##### Example - show resource credits
+Command: 
+`clive show resource-credits`
+
+ ![show resource credits](https://images.hive.blog/DQmWzhD2JRHRc3vgG8Zm4BNPA4gYGnx6UkNYonAXZiDVvLm/image1.png) 
+
+##### Example - remove rc-delegation
+Alice removes rc-delegation.
+Command: 
+`clive process rc-delegations remove --delegatee bob`
+
+![remove rc-delegation](https://images.hive.blog/DQmXKGUhFXZyYX1GkAEwDked1tPTFoJiRaiKH7tRXZLg2UB/image4.png) 
+
+### Transaction Expiration
+On the Hive blockchain, every transaction has an expiration time. If it's not confirmed by the network before that time, it is rejected and never executed. The new feature allows you to modify this limit (30 minutes by default). For example, you can set a shorter time for better security, or a longer one if the transaction needs to be signed offline and broadcast later. 
+You can change the global setting expiration time using either the TUI or the CLI. Additionally, you can override an expiration time only for the single transaction. The expiration is computed as an offset from the current head block time and is updated whenever the transaction metadata is refreshed (e.g., when opening the Transaction Summary screen in the TUI or refreshing metadata manually).
+This is a new profile setting, so it requires a storage migration. The migration is performed  automatically when a new version is used and doesn't require any additional steps from the user. 
+
+##### Transaction Expiration in TUI
+You can change the global setting by navigating to  Settings -&gt; Transaction expiration.
+The expiration time can be specified in s [seconds], m [minutes] or h [hours] or 1d [day] (max is 1d (24h)).
+
+ ![Transaction Expiration in TUI](https://images.hive.blog/DQmUrhQ6hyBhVAi2aAnrSG7Yvz27krzRHQn6v25a5n1NXBj/image6.png) 
+
+When you are on the Transaction Summary view, you can set the expiration time for the current transaction by pressing the `Modify this transaction expiration` button. This feature is available only in TUI.
+
+![Modify this transaction expiration](https://images.hive.blog/DQme2zFEPSw4V4Ce4m2iTrQe6mi6q78UfNG7jrTqLx1ZQW4/image11.png) 
+
+After selecting it, the dialog window appears, allowing you to set either a relative or absolute time for this transaction. 
+Changing the expiration time of a signed transaction invalidates its signatures (a warning dialog will be displayed).
+
+ ![Modify this transaction expiration -dialog](https://images.hive.blog/DQmW6Tz3idHTBL2hyRKX7VCgpTxVdZ6Gzf9tWpkq7RckVNS/image9.png) 
+
+ ##### Transaction Expiration in CLI
+You can check the global expiration time using a command:
+`clive show profile`
+
+ ![Transaction Expiration in CLI](https://images.hive.blog/DQmSdz9iTXA7oqQhF6rXryDT95TnLJiaSerHCnomncactjx/image8.png) 
+
+
+You can change the transaction expiration time using a command:
+`clive configure transaction-expiration set`
+Example:
+`clive configure transaction-expiration set "20m"`
+
+ ![transaction-expiration set](https://images.hive.blog/DQmPZNusZHX41WCkAbNC8mjagHXemetxH2V8sHZVy5GjbLc/image2.png) 
+
+To restore the default setting (30 minutes): 
+`clive configure transaction-expiration reset`
+
+[Complete list of corrected issues](https://gitlab.syncad.com/hive/clive/-/releases/v1.28.8.1)
+
+
+The scripts that allow you to run Clive are here:
+https://gtg.openhive.network/get/clive/
+
+
+### Your feedback is invaluable and always welcome. 
+
+
+
+</div>
+  <footer class="hive-post-embed__source">
+    <span class="hive-post-embed__source-label">Source:</span>
+    <a href="https://hive.blog/@thebeedevs/clive-updates-new-features-autosign-rc-management-and-transaction-expiration">Clive Updates – New Features: AutoSign, RC Management, and Transaction Expiration</a>
+    by
+    <a href="https://hive.blog/@thebeedevs">@thebeedevs</a>
+  </footer>
+</div>
+
+
+  </div><a class="u-url" href="/news/wallet/clive/2026/03/12/clive-updates-new-features-autosign-rc-management-and-transaction-expiration.html" hidden></a>
+</article>
+
+        </div>
+
+        
+        <aside class="page-sidebar" aria-label="Search and browse">
+          <section class="sidebar-section sidebar-search">
+            <h2 class="sidebar-heading">Search posts</h2>
+            <p class="sidebar-copy">Search the locally indexed post archive.</p>
+            <input type="text" id="search-input" placeholder="Search posts" autocomplete="off" />
+            <ul id="results-container"></ul>
+          </section>
+
+          <section class="sidebar-section sidebar-topics">
+            <h2 class="sidebar-heading">Browse topics</h2>
+            <p class="sidebar-copy">Jump into curated topic landing pages.</p>
+            <ul class="topic-list topic-list-sidebar"><li><a class="page-link" href="/account-recovery/">Account Recovery</a></li><li><a class="page-link" href="/core-development/">Core Development</a></li><li><a class="page-link" href="/dapps/">Dapps</a></li><li><a class="page-link" href="/docker/">Docker</a></li><li><a class="page-link" href="/hardfork/">Hardfork</a></li><li><a class="page-link" href="/hivemind/">Hivemind</a></li><li><a class="page-link" href="/javascript/">Javascript</a></li><li><a class="page-link" href="/multisig/">Multisig</a></li><li><a class="page-link" href="/python/">Python</a></li><li><a class="page-link" href="/ruby/">Ruby</a></li><li><a class="page-link" href="/testnet/">Testnet</a></li><li><a class="page-link" href="/tools/">Tools</a></li><li><a class="page-link" href="/witness/">Witness</a></li></ul>
+          </section>
+        </aside>
+        
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading"><a rel="author" href="/">Hive Chain Documentation</a></h2>
+    
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">site curated by: @inertia</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>Your resource for various levels of Hive Documentation.</p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+<script src="/assets/javascript/search.js"></script>
+    <script>
+      (function () {
+        var input = document.getElementById('search-input');
+        var results = document.getElementById('results-container');
+        if (input && results && typeof SimpleJekyllSearch !== 'undefined') {
+          SimpleJekyllSearch({
+            searchInput: input,
+            resultsContainer: results,
+            json: '/search.json'
+          });
+        }
+
+        if (typeof SteemContentRenderer === 'undefined') return;
+
+        var targets = document.querySelectorAll('[data-hive-render-target="true"]');
+        if (!targets.length) return;
+
+        var renderer = new SteemContentRenderer.DefaultRenderer({
+          baseUrl: 'https://hive.blog/',
+          breaks: true,
+          skipSanitization: false,
+          allowInsecureScriptTags: false,
+          addNofollowToLinks: true,
+          doNotShowImages: false,
+          ipfsPrefix: '',
+          assetsWidth: 640,
+          assetsHeight: 480,
+          imageProxyFn: function (url) { return url; },
+          usertagUrlFn: function (account) { return '/@' + account; },
+          hashtagUrlFn: function (hashtag) { return '/tags/#' + hashtag; },
+          isLinkSafeFn: function () { return true; }
+        });
+
+        targets.forEach(function (target) {
+          try {
+            var inputHtml = target.innerHTML;
+            target.innerHTML = renderer.render(inputHtml);
+          } catch (e) {
+            console.log(e);
+          }
+        });
+      })();
+    </script>
+
+  </body>
+
+</html>

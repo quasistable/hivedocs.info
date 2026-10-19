@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta property="og:image" content="/assets/images/sticker.png" />
+  <meta name="apple-mobile-web-app-title" content="Hive Docs" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" /><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Upgrading MongoDB 8 to 9: Why Systemd Refused to Start and How to Bridge the FCV Gap | Hive Chain Documentation</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Upgrading MongoDB 8 to 9: Why Systemd Refused to Start and How to Bridge the FCV Gap" />
+<meta name="author" content="thecrazygm" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="If you run a Hive-Engine node (or manage a self-hosted MongoDB instance on Linux), you might run into a nasty surprise after bumping your apt repositories for MongoDB 9.0" />
+<meta property="og:description" content="If you run a Hive-Engine node (or manage a self-hosted MongoDB instance on Linux), you might run into a nasty surprise after bumping your apt repositories for MongoDB 9.0" />
+<link rel="canonical" href="https://hive.blog/hive-186392/@thecrazygm/upgrading-mongodb-8-to-9-why-systemd-refused-to-start-and-how-to-bridge-the-fcv-gap" />
+<meta property="og:url" content="https://hive.blog/hive-186392/@thecrazygm/upgrading-mongodb-8-to-9-why-systemd-refused-to-start-and-how-to-bridge-the-fcv-gap" />
+<meta property="og:site_name" content="Hive Chain Documentation" />
+<meta property="og:image" content="https://files.peakd.com/file/peakd-hive/thecrazygm/23t72p136b8msyb9C4vyKZMMefbe3xRux7CSZdSCi7DviGGu7PjuBpnUMH2FuKCjbVQir.png" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2026-10-05T08:40:51-07:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="https://files.peakd.com/file/peakd-hive/thecrazygm/23t72p136b8msyb9C4vyKZMMefbe3xRux7CSZdSCi7DviGGu7PjuBpnUMH2FuKCjbVQir.png" />
+<meta property="twitter:title" content="Upgrading MongoDB 8 to 9: Why Systemd Refused to Start and How to Bridge the FCV Gap" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"thecrazygm"},"dateModified":"2026-10-05T08:40:51-07:00","datePublished":"2026-10-05T08:40:51-07:00","description":"If you run a Hive-Engine node (or manage a self-hosted MongoDB instance on Linux), you might run into a nasty surprise after bumping your apt repositories for MongoDB 9.0","headline":"Upgrading MongoDB 8 to 9: Why Systemd Refused to Start and How to Bridge the FCV Gap","image":"https://files.peakd.com/file/peakd-hive/thecrazygm/23t72p136b8msyb9C4vyKZMMefbe3xRux7CSZdSCi7DviGGu7PjuBpnUMH2FuKCjbVQir.png","mainEntityOfPage":{"@type":"WebPage","@id":"https://hive.blog/hive-186392/@thecrazygm/upgrading-mongodb-8-to-9-why-systemd-refused-to-start-and-how-to-bridge-the-fcv-gap"},"url":"https://hive.blog/hive-186392/@thecrazygm/upgrading-mongodb-8-to-9-why-systemd-refused-to-start-and-how-to-bridge-the-fcv-gap"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://hivedocs.info/feed.xml" title="Hive Chain Documentation" /><script>
+if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNotTrack === "yes" || navigator.msDoNotTrack === "1")) {
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-161692811-1', 'auto');
+  ga('send', 'pageview');
+}
+</script>
+  
+<script src='https://unpkg.com/steem-content-renderer'></script>
+  <script src="/assets/javascript/universal-bridge-against-phishing.js"></script>
+  <script src="/assets/javascript/lazysizes.min.js" async=""></script>
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet" />
+  <link rel="shortcut icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="152x152" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="167x167" href="/assets/images/favicon-80x80.png" />
+</head>
+<body><header class="site-header" role="banner">
+  <div class="wrapper site-header-inner">
+    <a class="site-title" rel="author" href="/">Hive Chain Documentation</a>
+
+    <nav class="site-nav" aria-label="Primary">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/news/">News</a><a class="page-link" href="/howto/">How To</a><a class="page-link" href="/links/">Useful Links</a><a class="page-link" href="/authors/">Authors</a><a class="page-link" href="/topics/">Topics</a><a class="page-link" href="/search/">Search</a></div>
+    </nav>
+  </div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper page-layout has-search-panel">
+        <div class="page-main">
+          <article class="post h-entry post-article" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header post-hero">
+    <div class="post-hero-main">
+      <p class="post-kicker">Archive post</p>
+      <h1 class="post-title p-name" itemprop="name headline">Upgrading MongoDB 8 to 9: Why Systemd Refused to Start and How to Bridge the FCV Gap</h1>
+      <p class="post-meta">
+        <time class="dt-published" datetime="2026-10-05T08:40:51-07:00" itemprop="datePublished">Oct 5, 2026
+        </time>• <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">
+            <a href="/authors/#author-thecrazygm">thecrazygm</a>
+          </span></span></p><p class="post-summary">If you run a Hive-Engine node (or manage a self-hosted MongoDB instance on Linux), you might run into a nasty surprise after bumping your apt repositories for MongoDB 9.0</p></div><aside class="post-author-card">
+      <img src="https://images.hive.blog/u/thecrazygm/avatar" width="128" height="128" class="lazyload post-author-avatar" alt="Avatar for @thecrazygm" />
+      <div class="post-author-name">@thecrazygm</div>
+    </aside></header>
+
+  <div class="post-content e-content post-body" itemprop="articleBody">
+    <div class="hive-post-embed" data-hive-author="thecrazygm" data-hive-permlink="upgrading-mongodb-8-to-9-why-systemd-refused-to-start-and-how-to-bridge-the-fcv-gap">
+  <div id="content-thecrazygm-upgrading-mongodb-8-to-9-why-systemd-refused-to-start-and-how-to-bridge-the-fcv-gap" class="hive-post-embed__content" data-hive-render-target="true">Hey everyone,
+
+If you run a Hive-Engine node (or manage a self-hosted MongoDB instance on Linux), you might run into a nasty surprise after bumping your apt repositories for MongoDB 9.0.
+
+You configure the official repository, run `sudo apt update &amp;&amp; sudo apt dist-upgrade`, let the package manager do its thing, and wait for `mongod` to spin back up.
+
+Except it doesn't.
+
+`systemctl status mongod` shows the service failed immediately on boot with exit code `62`, leaving you staring at an offline database and wondering whether your node's 400+ GB dataset just got toasted.
+
+The good news: your data is completely fine.
+
+The catch: you've stepped right into MongoDB's rapid release compatibility trap.
+
+Here is what went wrong, why MongoDB 9.0 flat-out refused to boot, and the step-by-step process to safely bridge the gap (including the replica set details that Hive-Engine strictly enforces) so you can get your node back online with zero data loss.
+
+---
+
+## The Symptoms: Exit Code 62 on Startup
+
+Immediately after upgrading packages from MongoDB 8.2 to 9.0, `systemctl status mongod` reported:
+
+```text
+× mongod.service - MongoDB Database Server
+     Loaded: loaded (/usr/lib/systemd/system/mongod.service; enabled; preset: enabled)
+     Active: failed (Result: exit-code)
+    Process: 3053614 ExecStart=/usr/bin/mongod --config /etc/mongod.conf (code=exited, status=62)
+   Main PID: 3053614 (code=exited, status=62)
+```
+
+Exit code `62` in MongoDB means server initialization failed during startup checks before opening network listeners.
+
+To see the real reason, checking `/var/log/mongodb/mongod.log` (or `journalctl -u mongod`) revealed this fatal log entry:
+
+```json
+{
+  "s": "F",
+  "c": "CONTROL",
+  "id": 20573,
+  "ctx": "initandlisten",
+  "msg": "Wrong mongod version",
+  "attr": {
+    "error": "UPGRADE PROBLEM: Found an invalid featureCompatibilityVersion document (ERROR: Location4926900: Invalid featureCompatibilityVersion document in admin.system.version: { _id: \"featureCompatibilityVersion\", version: \"8.2\" }. See https://docs.mongodb.com/master/release-notes/8.0-compatibility/#feature-compatibility. :: caused by :: Invalid feature compatibility version value '8.2'. Expected one of the following versions: '9.0', '8.3', '8.0'.)"
+  }
+}
+```
+
+Notice the crucial detail:
+
+&gt; **`Invalid feature compatibility version value '8.2'. Expected one of the following versions: '9.0', '8.3', '8.0'.`**
+
+Immediately after emitting this error, `mongod` initiated an orderly rollback checkpoint and shut itself down cleanly without touching or modifying any user collections.
+
+---
+
+## Why Did This Happen? The Rapid Release Trap
+
+MongoDB follows two release tracks:
+
+1. **Major / LTS Releases:** (e.g., 7.0, 8.0, 9.0)
+2. **Rapid Releases:** quarterly minor feature releases between major versions (e.g., 8.1, 8.2, 8.3)
+
+Every MongoDB database contains an internal setting called `featureCompatibilityVersion` (FCV) stored in the `admin.system.version` collection. FCV controls which on-disk features, file structures, and internal behaviors the engine is permitted to use.
+
+MongoDB enforces strict rules when upgrading:
+
+- You cannot skip versions.
+- A major release binary only knows how to handle datasets from the **previous LTS release** (e.g., FCV `8.0`) or the **final rapid release** immediately preceding the new major version (e.g., FCV `8.3`).
+
+Because my machine was previously tracking the rapid release channel on **MongoDB 8.2** (`8.2.12`), its internal FCV was set to `"8.2"`.
+
+When the MongoDB 9.0 binary checked the metadata at startup, it saw an FCV of `"8.2"`. But 9.0 only knows about `'8.0'`, `'8.3'`, and `'9.0'`. It does not support jumping directly from 8.2 to 9.0.
+
+Furthermore, you cannot simply tell 8.2 to downgrade its FCV to 8.0. MongoDB only allows setting FCV to its current minor version or the immediately prior one (8.2 or 8.1).
+
+The only supported bridge to 9.0 is **MongoDB 8.3**.
+
+---
+
+## The Hive-Engine Factor: Replica Sets Are Mandatory
+
+There is another crucial detail every node operator must know: **Hive-Engine strictly forces MongoDB to run as a replica set** (typically `replSetName: "rs0"` in `/etc/mongod.conf`), even when running on a single local server.
+
+Hive-Engine relies heavily on multi-document ACID transactions and change stream / oplog tailing to process smart contracts deterministically. A standalone MongoDB instance simply will not run Hive-Engine.
+
+This requirement introduces three essential rules during this upgrade process:
+
+1. **Startup is not instantaneous:** Every time `mongod` starts, it must initialize its replication coordinator, replay the oplog, and run an election to become `PRIMARY`.
+2. **FCV commands require PRIMARY state:** You cannot execute `db.adminCommand({ setFeatureCompatibilityVersion: ... })` while the node is in `STARTUP`, `STARTUP2`, or `SECONDARY`. Running it too quickly after starting systemd will fail with an error like `node is not primary` or `not master and slaveOk=false`.
+3. **Always verify replication health:** Before shutting down 8.3 (and after bringing up 9.0), you must check `rs.status()` to ensure the replica set is fully caught up and healthy.
+
+---
+
+## The Solution: The 8.3 Stepping Stone
+
+The fix is a sequential upgrade:
+
+1. Temporarily install **MongoDB 8.3**.
+2. Boot the 8.3 service (which understands FCV `8.2`).
+3. Raise `featureCompatibilityVersion` to `"8.3"`.
+4. Shut down 8.3.
+5. Upgrade to **MongoDB 9.0**.
+6. Boot 9.0 (which accepts FCV `"8.3"`).
+7. Finalize `featureCompatibilityVersion` to `"9.0"`.
+
+Here is the exact playbook to execute this safely on Debian/Ubuntu systems.
+
+---
+
+### Step 1: Temporarily Add the MongoDB 8.3 Repository
+
+Create a temporary APT sources file for MongoDB 8.3. MongoDB 8.3 uses the 8.0 signing key:
+
+```bash
+sudo tee /etc/apt/sources.list.d/mongodb-org-8.3.sources &lt;&lt; 'EOF'
+Types: deb
+URIs: https://repo.mongodb.org/apt/debian/
+Suites: bookworm/mongodb-org/8.3
+Components: main
+Architectures: amd64
+Signed-By: /usr/share/keyrings/mongodb-server-8.0.gpg
+EOF
+```
+
+&gt; (Note: Adjust the suite name if using Ubuntu or another Debian distribution codename.)
+
+Update your package index:
+
+```bash
+sudo apt update
+```
+
+---
+
+### Step 2: Downgrade Packages to MongoDB 8.3
+
+Before downgrading, back up your MongoDB configuration just in case:
+
+```bash
+sudo cp -p /etc/mongod.conf /etc/mongod.conf.bak
+```
+
+Now install the MongoDB 8.3 packages (specifying version `8.3.11` or the latest available 8.3 build) and pass `--allow-downgrades`:
+
+```bash
+sudo apt install -y --allow-downgrades -o Dpkg::Options::="--force-confold" \
+  mongodb-org=8.3.11 \
+  mongodb-org-server=8.3.11 \
+  mongodb-org-database=8.3.11 \
+  mongodb-org-database-tools-extra=8.3.11 \
+  mongodb-org-mongos=8.3.11 \
+  mongodb-org-shell=8.3.11 \
+  mongodb-org-tools=8.3.11
+```
+
+Confirm that the binary is now on 8.3:
+
+```bash
+mongod --version
+```
+
+You should see:
+
+```text
+db version v8.3.11
+```
+
+---
+
+### Step 3: Start MongoDB 8.3 and Advance FCV to 8.3
+
+Start the systemd service:
+
+```bash
+sudo systemctl start mongod
+sudo systemctl status mongod
+```
+
+Because MongoDB 8.3 supports datasets with FCV `8.2`, it will start up cleanly.
+
+#### Wait for Replica Set Election (Mandatory for Hive-Engine)
+
+Because Hive-Engine enforces running as a replica set, give `mongod` a few seconds after startup to initialize the replication coordinator and elect itself `PRIMARY`. If you attempt to update the feature compatibility version while the node is still in `STARTUP2` or `SECONDARY`, the command will be rejected.
+
+Confirm that your node has finished election and is `PRIMARY`:
+
+```bash
+mongosh --quiet --eval "rs.status().members[0].stateStr"
+```
+
+You should see:
+```text
+PRIMARY
+```
+
+Once confirmed `PRIMARY`, inspect the current FCV:
+
+```bash
+mongosh --quiet --eval "db.adminCommand({ getParameter: 1, featureCompatibilityVersion: 1 })"
+```
+
+Output:
+
+```json
+{
+  "featureCompatibilityVersion": { "version": "8.2" },
+  "ok": 1
+}
+```
+
+Now upgrade the feature compatibility version to 8.3:
+
+```bash
+mongosh --quiet --eval "db.adminCommand({ setFeatureCompatibilityVersion: '8.3', confirm: true })"
+```
+
+Verify that the transition succeeded:
+
+```bash
+mongosh --quiet --eval "db.adminCommand({ getParameter: 1, featureCompatibilityVersion: 1 })"
+```
+
+It should now display:
+
+```json
+{
+  "featureCompatibilityVersion": { "version": "8.3" },
+  "ok": 1
+}
+```
+
+Confirm replica set health and write availability one more time before stopping the daemon:
+
+```bash
+mongosh --quiet --eval "rs.status().ok"
+```
+
+---
+
+### Step 4: Stop 8.3 and Clean Up the Temporary Repo
+
+Stop the service cleanly:
+
+```bash
+sudo systemctl stop mongod
+```
+
+Remove the temporary 8.3 repository so APT doesn't get confused:
+
+```bash
+sudo rm -f /etc/apt/sources.list.d/mongodb-org-8.3.sources
+sudo apt update
+```
+
+---
+
+### Step 5: Upgrade Back to MongoDB 9.0
+
+Ensure your 9.0 repository file (e.g. `/etc/apt/sources.list.d/mongodb-org-9.0.sources`) is active:
+
+```bash
+cat /etc/apt/sources.list.d/mongodb-org-9.0.sources
+```
+
+```text
+Types: deb
+URIs: https://repo.mongodb.org/apt/debian/
+Suites: trixie/mongodb-org/9.0
+Components: main
+Architectures: amd64
+Signed-By: /usr/share/keyrings/mongodb-server-9.gpg
+```
+
+Run the upgrade back to MongoDB 9.0:
+
+```bash
+sudo apt upgrade -y -o Dpkg::Options::="--force-confold" \
+  mongodb-org \
+  mongodb-org-server \
+  mongodb-org-database \
+  mongodb-org-database-tools-extra \
+  mongodb-org-mongos \
+  mongodb-org-shell \
+  mongodb-org-tools
+```
+
+Verify the binary is back on version 9.0:
+
+```bash
+mongod --version
+```
+
+![screenshot-20261005-113234.png](https://files.peakd.com/file/peakd-hive/thecrazygm/23t72p136b8msyb9C4vyKZMMefbe3xRux7CSZdSCi7DviGGu7PjuBpnUMH2FuKCjbVQir.png)
+
+```text
+db version v9.0.2
+```
+
+---
+
+### Step 6: Start MongoDB 9.0 and Finalize FCV to 9.0
+
+Start `mongod.service`:
+
+```bash
+sudo systemctl start mongod
+sudo systemctl status mongod
+```
+
+Check the status: the service should now report `active (running)`.
+
+#### Confirm Replica Set Primary State
+
+Once again, give the daemon a moment to finish its replica set election. Before attempting to update the FCV to 9.0, make sure the node is in `PRIMARY` state:
+
+```bash
+mongosh --quiet --eval "rs.status().members[0].stateStr"
+```
+
+Output:
+```text
+PRIMARY
+```
+
+Next, connect with `mongosh` and inspect the current FCV:
+
+```bash
+mongosh --quiet --eval "db.adminCommand({ getParameter: 1, featureCompatibilityVersion: 1 })"
+```
+
+It will show that 9.0 is currently running in backward-compatibility mode with FCV `8.3`.
+
+Finally, lock in the 9.0 features by advancing the compatibility version:
+
+```bash
+mongosh --quiet --eval "db.adminCommand({ setFeatureCompatibilityVersion: '9.0', confirm: true })"
+```
+
+Verify the final status:
+
+```bash
+mongosh --quiet --eval "db.adminCommand({ getParameter: 1, featureCompatibilityVersion: 1 })"
+```
+
+Output:
+```json
+{
+  "featureCompatibilityVersion": { "version": "9.0" },
+  "ok": 1
+}
+```
+
+Lastly, verify that your replica set and Hive-Engine databases (`hsc`, `hsc_history`, etc.) are healthy and reporting correctly:
+
+```bash
+mongosh --quiet --eval "rs.status().ok"
+mongosh --quiet --eval "db.adminCommand({ listDatabases: 1 })"
+```
+
+Everything is now fully migrated, running MongoDB 9.0 natively, and all your databases and collections remain intact.
+
+---
+
+## Summary of Key Takeaways
+
+1. **Never skip MongoDB intermediate rapid releases when targeting a new LTS major.** MongoDB 9.0 only supports incoming datasets with FCV `8.0` (from the prior LTS) or `8.3` (from the final rapid release).
+2. **Exit Code 62 with `Wrong mongod version` is non-destructive.** MongoDB refuses to touch database files when an FCV mismatch is encountered. Do not panic and do not run `mongod --repair` blindly.
+3. **Hive-Engine forces replica sets:** Because Hive-Engine requires a replica set for multi-document transactions and oplog processing, MongoDB nodes must complete election and achieve `PRIMARY` status on every restart before FCV commands can be executed. Running FCV updates during `STARTUP2` will fail.
+4. **The bridge technique works smoothly with APT:** By temporarily pulling in the missing intermediate release (8.3), you can boot the daemon, advance the internal FCV document, and then proceed with the target major release upgrade cleanly.
+
+As always,  
+**Michael Garcia** a.k.a. **TheCrazyGM**
+</div>
+  <footer class="hive-post-embed__source">
+    <span class="hive-post-embed__source-label">Source:</span>
+    <a href="https://hive.blog/@thecrazygm/upgrading-mongodb-8-to-9-why-systemd-refused-to-start-and-how-to-bridge-the-fcv-gap">Upgrading MongoDB 8 to 9: Why Systemd Refused to Start and How to Bridge the FCV Gap</a>
+    by
+    <a href="https://hive.blog/@thecrazygm">@thecrazygm</a>
+  </footer>
+</div>
+
+
+  </div><a class="u-url" href="/howto/hiveengine/mongodb/2026/10/05/upgrading-mongodb-8-to-9-why-systemd-refused-to-start-and-how-to-bridge-the-fcv-gap.html" hidden></a>
+</article>
+
+        </div>
+
+        
+        <aside class="page-sidebar" aria-label="Search and browse">
+          <section class="sidebar-section sidebar-search">
+            <h2 class="sidebar-heading">Search posts</h2>
+            <p class="sidebar-copy">Search the locally indexed post archive.</p>
+            <input type="text" id="search-input" placeholder="Search posts" autocomplete="off" />
+            <ul id="results-container"></ul>
+          </section>
+
+          <section class="sidebar-section sidebar-topics">
+            <h2 class="sidebar-heading">Browse topics</h2>
+            <p class="sidebar-copy">Jump into curated topic landing pages.</p>
+            <ul class="topic-list topic-list-sidebar"><li><a class="page-link" href="/account-recovery/">Account Recovery</a></li><li><a class="page-link" href="/core-development/">Core Development</a></li><li><a class="page-link" href="/dapps/">Dapps</a></li><li><a class="page-link" href="/docker/">Docker</a></li><li><a class="page-link" href="/hardfork/">Hardfork</a></li><li><a class="page-link" href="/hivemind/">Hivemind</a></li><li><a class="page-link" href="/javascript/">Javascript</a></li><li><a class="page-link" href="/multisig/">Multisig</a></li><li><a class="page-link" href="/python/">Python</a></li><li><a class="page-link" href="/ruby/">Ruby</a></li><li><a class="page-link" href="/testnet/">Testnet</a></li><li><a class="page-link" href="/tools/">Tools</a></li><li><a class="page-link" href="/witness/">Witness</a></li></ul>
+          </section>
+        </aside>
+        
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading"><a rel="author" href="/">Hive Chain Documentation</a></h2>
+    
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">site curated by: @inertia</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>Your resource for various levels of Hive Documentation.</p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+<script src="/assets/javascript/search.js"></script>
+    <script>
+      (function () {
+        var input = document.getElementById('search-input');
+        var results = document.getElementById('results-container');
+        if (input && results && typeof SimpleJekyllSearch !== 'undefined') {
+          SimpleJekyllSearch({
+            searchInput: input,
+            resultsContainer: results,
+            json: '/search.json'
+          });
+        }
+
+        if (typeof SteemContentRenderer === 'undefined') return;
+
+        var targets = document.querySelectorAll('[data-hive-render-target="true"]');
+        if (!targets.length) return;
+
+        var renderer = new SteemContentRenderer.DefaultRenderer({
+          baseUrl: 'https://hive.blog/',
+          breaks: true,
+          skipSanitization: false,
+          allowInsecureScriptTags: false,
+          addNofollowToLinks: true,
+          doNotShowImages: false,
+          ipfsPrefix: '',
+          assetsWidth: 640,
+          assetsHeight: 480,
+          imageProxyFn: function (url) { return url; },
+          usertagUrlFn: function (account) { return '/@' + account; },
+          hashtagUrlFn: function (hashtag) { return '/tags/#' + hashtag; },
+          isLinkSafeFn: function () { return true; }
+        });
+
+        targets.forEach(function (target) {
+          try {
+            var inputHtml = target.innerHTML;
+            target.innerHTML = renderer.render(inputHtml);
+          } catch (e) {
+            console.log(e);
+          }
+        });
+      })();
+    </script>
+
+  </body>
+
+</html>

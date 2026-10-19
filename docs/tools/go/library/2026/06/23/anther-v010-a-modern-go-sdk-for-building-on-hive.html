@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta property="og:image" content="/assets/images/sticker.png" />
+  <meta name="apple-mobile-web-app-title" content="Hive Docs" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" /><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Anther v0.1.0: A Modern Go SDK for Building on Hive | Hive Chain Documentation</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Anther v0.1.0: A Modern Go SDK for Building on Hive" />
+<meta name="author" content="thecrazygm" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="The work to modernize Hive developer tooling is continuing" />
+<meta property="og:description" content="The work to modernize Hive developer tooling is continuing" />
+<link rel="canonical" href="https://hive.blog/hive-139531/@thecrazygm/anther-v010-a-modern-go-sdk-for-building-on-hive" />
+<meta property="og:url" content="https://hive.blog/hive-139531/@thecrazygm/anther-v010-a-modern-go-sdk-for-building-on-hive" />
+<meta property="og:site_name" content="Hive Chain Documentation" />
+<meta property="og:image" content="https://files.peakd.com/file/peakd-hive/thecrazygm/23tGXzLnzf6Hn3fVoS8BS9tQY9CBTM5DP9D9bLJmCgGPebxF4PoTPuo32XAvMvWCr1grV.png" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2026-06-23T03:44:21-07:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="https://files.peakd.com/file/peakd-hive/thecrazygm/23tGXzLnzf6Hn3fVoS8BS9tQY9CBTM5DP9D9bLJmCgGPebxF4PoTPuo32XAvMvWCr1grV.png" />
+<meta property="twitter:title" content="Anther v0.1.0: A Modern Go SDK for Building on Hive" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"thecrazygm"},"dateModified":"2026-06-23T03:44:21-07:00","datePublished":"2026-06-23T03:44:21-07:00","description":"The work to modernize Hive developer tooling is continuing","headline":"Anther v0.1.0: A Modern Go SDK for Building on Hive","image":"https://files.peakd.com/file/peakd-hive/thecrazygm/23tGXzLnzf6Hn3fVoS8BS9tQY9CBTM5DP9D9bLJmCgGPebxF4PoTPuo32XAvMvWCr1grV.png","mainEntityOfPage":{"@type":"WebPage","@id":"https://hive.blog/hive-139531/@thecrazygm/anther-v010-a-modern-go-sdk-for-building-on-hive"},"url":"https://hive.blog/hive-139531/@thecrazygm/anther-v010-a-modern-go-sdk-for-building-on-hive"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://hivedocs.info/feed.xml" title="Hive Chain Documentation" /><script>
+if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNotTrack === "yes" || navigator.msDoNotTrack === "1")) {
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-161692811-1', 'auto');
+  ga('send', 'pageview');
+}
+</script>
+  
+<script src='https://unpkg.com/steem-content-renderer'></script>
+  <script src="/assets/javascript/universal-bridge-against-phishing.js"></script>
+  <script src="/assets/javascript/lazysizes.min.js" async=""></script>
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet" />
+  <link rel="shortcut icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="152x152" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="167x167" href="/assets/images/favicon-80x80.png" />
+</head>
+<body><header class="site-header" role="banner">
+  <div class="wrapper site-header-inner">
+    <a class="site-title" rel="author" href="/">Hive Chain Documentation</a>
+
+    <nav class="site-nav" aria-label="Primary">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/news/">News</a><a class="page-link" href="/howto/">How To</a><a class="page-link" href="/links/">Useful Links</a><a class="page-link" href="/authors/">Authors</a><a class="page-link" href="/topics/">Topics</a><a class="page-link" href="/search/">Search</a></div>
+    </nav>
+  </div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper page-layout has-search-panel">
+        <div class="page-main">
+          <article class="post h-entry post-article" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header post-hero">
+    <div class="post-hero-main">
+      <p class="post-kicker">Archive post</p>
+      <h1 class="post-title p-name" itemprop="name headline">Anther v0.1.0: A Modern Go SDK for Building on Hive</h1>
+      <p class="post-meta">
+        <time class="dt-published" datetime="2026-06-23T03:44:21-07:00" itemprop="datePublished">Jun 23, 2026
+        </time>• <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">
+            <a href="/authors/#author-thecrazygm">thecrazygm</a>
+          </span></span></p><p class="post-summary">The work to modernize Hive developer tooling is continuing</p></div><aside class="post-author-card">
+      <img src="https://images.hive.blog/u/thecrazygm/avatar" width="128" height="128" class="lazyload post-author-avatar" alt="Avatar for @thecrazygm" />
+      <div class="post-author-name">@thecrazygm</div>
+    </aside></header>
+
+  <div class="post-content e-content post-body" itemprop="articleBody">
+    <div class="hive-post-embed" data-hive-author="thecrazygm" data-hive-permlink="anther-v010-a-modern-go-sdk-for-building-on-hive">
+  <div id="content-thecrazygm-anther-v010-a-modern-go-sdk-for-building-on-hive" class="hive-post-embed__content" data-hive-render-target="true">Hey everyone,
+
+The work to modernize Hive developer tooling is continuing.
+
+Pollen gives JavaScript and TypeScript developers a modern path forward.  You can read that announcement [here](https://peakd.com/hive-139531/@thecrazygm/pollen-a-safer-cleaner-path-forward-for-hive-javascript-developers) and we have continued to work with it and on it.
+
+Nectar covers Python, it started this whole journey.
+
+And today we want to share that **Anther v0.1.0** is officially available for Go developers.
+
+Anther is a Go SDK for building Hive services, bots, indexers, transaction tools, and other applications that need to communicate with the blockchain without depending on an aging client stack.
+
+It includes local transaction serialization and signing, node failover, encrypted memos, account helpers, social API methods, multi-key authority verification, and native block and operation streams built around goroutines and channels.
+
+This is the first tagged release.
+
+It is not the end of the work, but it is a real starting point developers can pin, test, and build against.
+
+## Why Go?
+
+Go is a practical language for infrastructure.
+
+It produces simple standalone binaries. Its concurrency model is easy to reason about. The standard library is strong, cross-compilation is straightforward, and long-running services do not need a complicated runtime environment.
+
+That makes it a good fit for Hive applications such as:
+
+- bots that need to stay online around the clock
+- block and operation indexers
+- account monitoring services
+- transaction broadcasters
+- notification and community tools
+- backend APIs serving Hive data
+
+Hive has plenty of JavaScript and Python history, but developers should not have to switch languages just to get a usable SDK.
+
+Anther is meant to feel like a Go library.
+
+It uses explicit errors, goroutines, channels, contexts, and small focused packages rather than trying to copy the shape of any SDK from another language.
+
+## Transactions Stay Local
+
+The most important part of any blockchain SDK is what it does with transactions and private keys.
+
+Anther serializes supported Hive operations locally.
+
+It can construct a transaction, fetch the current TaPoS block parameters, encode the transaction into Hive-compatible bytes, sign those bytes with a WIF private key, calculate the transaction ID, and broadcast the signed result.
+
+The private key does not need to be sent to an RPC node.
+
+The serialization layer currently supports operations including:
+
+- votes
+- comments
+- transfers
+- custom JSON
+- comment options
+- account updates
+- account claims
+- claimed-account creation
+
+Anther uses the Decred `secp256k1` implementation for compact recoverable signatures and canonical low-S handling.
+
+That does not remove the need for careful review and testing.
+
+It does give the project an explicit, inspectable signing path built on a focused cryptographic dependency instead of a remote serialization call.
+
+## Reading Account Data
+
+![screenshot-20260623-063854.png](https://files.peakd.com/file/peakd-hive/thecrazygm/23tGXzLnzf6Hn3fVoS8BS9tQY9CBTM5DP9D9bLJmCgGPebxF4PoTPuo32XAvMvWCr1grV.png)
+
+The current release is tagged as `v0.1.0`:
+
+```bash
+go get github.com/srbde/hive-anther@v0.1.0
+```
+
+Anther provides both lower-level client methods and a higher-level account wrapper.
+
+Here is a basic account lookup:
+
+```go
+package main
+
+import (
+	"fmt"
+	"log"
+
+	"github.com/srbde/hive-anther/account"
+	"github.com/srbde/hive-anther/client"
+)
+
+func main() {
+	api := client.NewClient([]string{
+		"https://api.hive.blog",
+		"https://api.deathwing.me",
+	}, 30)
+
+	acct := account.NewAccount("thecrazygm", api)
+	if err := acct.Refresh(); err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Printf("Account: @%s\n", acct.Name)
+	fmt.Printf("HIVE: %v\n", acct.Data["balance"])
+	fmt.Printf("HBD: %v\n", acct.Data["hbd_balance"])
+}
+```
+
+The account package also includes helpers for reputation, voting power, Resource Credits, following, unfollowing, ignoring, and unignoring accounts.
+
+Anther can calculate HP from VESTS using current dynamic global properties rather than forcing every application to repeat that conversion itself.
+
+These are small conveniences, but they are exactly the kind of repeated blockchain-specific work an SDK should own.
+
+## Signing and Broadcasting
+
+A transfer follows the same direct pattern:
+
+```go
+package main
+
+import (
+	"fmt"
+	"log"
+	"os"
+
+	"github.com/srbde/hive-anther/client"
+	"github.com/srbde/hive-anther/transaction"
+)
+
+func main() {
+	api := client.NewClient([]string{
+		"https://api.hive.blog",
+		"https://api.deathwing.me",
+	}, 30)
+
+	tx := transaction.NewTransaction(api)
+	tx.AppendOp(&amp;transaction.Transfer{
+		From:   "youraccount",
+		To:     "recipient",
+		Amount: "0.001 HIVE",
+		Memo:   "Sent with Anther",
+	})
+
+	if err := tx.Sign(os.Getenv("ACTIVE_WIF")); err != nil {
+		log.Fatal(err)
+	}
+
+	result, err := tx.Broadcast()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Printf("Broadcast result: %v\n", result)
+}
+```
+
+The client retrieves the live block data needed for the transaction. The transaction package handles the wire format and signing. The node receives the completed signed transaction.
+
+That separation is intentional.
+
+Anther also supports signing with multiple keys and verifying that a transaction satisfies a supplied authority threshold.
+
+## Go-Native Blockchain Streams
+
+One of Anther's strongest features is live blockchain streaming.
+
+Go already has the right tools for this job.
+
+Goroutines handle the ongoing work. Channels deliver blocks, operations, and errors. A `context.Context` gives the caller a clean way to stop the stream or enforce a deadline.
+
+```go
+ctx, cancel := context.WithCancel(context.Background())
+defer cancel()
+
+ops, errs := api.StreamOperations(
+	ctx,
+	0,
+	client.Irreversible,
+	[]string{"transfer"},
+)
+
+for {
+	select {
+	case op := &lt;-ops:
+		fmt.Printf("Transfer in block %d: %v\n", op.Block, op.Op[1])
+	case err := &lt;-errs:
+		if err != nil {
+			log.Printf("stream error: %v", err)
+		}
+	case &lt;-ctx.Done():
+		return
+	}
+}
+```
+
+Anther can stream full blocks or filter applied and virtual operations by type.
+
+That gives indexers and monitoring tools a useful foundation without making each project rebuild polling, block progression, cancellation, and error delivery from scratch.
+
+## Resilient RPC Access
+
+Public RPC nodes fail.
+
+From time to time they time out, rate-limit, return HTTP errors, reject specific API calls, or temporarily fall behind the chain.
+
+A production client has to expect that.
+
+Anther accepts a list of nodes and keeps track of the active connection. When a request fails, it can retry with exponential backoff and rotate to another endpoint. The failover behavior covers transport failures, unsuccessful HTTP responses, and JSON-RPC errors.
+
+The client also stays on a working node instead of pointlessly rotating after every successful request.
+
+That sounds like a small implementation detail but for a service that needs to run unattended, it is the difference between a temporary node problem and an application outage.
+
+## More Than Database Calls
+
+Anther is not limited to basic condenser-style account queries.
+
+The current API includes helpers for areas such as:
+
+- dynamic global properties
+- account history
+- blocks and block ranges
+- applied and virtual operations
+- ranked posts and account posts
+- communities
+- account notifications
+- unread notification counts
+- content replies and discussions
+- follow counts
+- HAF-backed reputation and balance data
+
+There is also an in-memory wallet for managing account keys and signing transactions, plus compatible private memo encryption and decryption.
+
+Encrypted memos use secp256k1 shared-secret derivation, AES encryption, and the envelope format expected by the Hive ecosystem.
+
+The goal is not to expose every possible method on day one.
+
+The goal is to provide enough coherent pieces that developers can build complete Go applications without reaching for a second library every time they move beyond a basic RPC request.
+
+## Honest v0.1.0 Notes
+
+Anther is a first tagged release.
+
+The tag makes dependency management predictable, but `v0.1.0` still means the public API can evolve before v1.0.
+
+The current module declares **Go 1.26.3**. Use a compatible Go toolchain and pin the release explicitly in applications that need reproducible builds.
+
+If you are evaluating Anther now:
+
+- test the operations your application actually broadcasts
+- start with small-value transactions
+- configure more than one RPC endpoint
+- keep WIF keys in a proper secret store
+- use contexts to bound long-running work
+- report missing methods and unexpected chain responses
+
+The codebase has broad unit and integration-style coverage, but real applications will always find combinations a test suite did not anticipate.
+
+That feedback is useful at this stage.
+
+## One Ecosystem, Several Languages
+
+Anther is part of the same SRBDE developer-tooling effort as Pollen, and Nectar.
+
+The projects share standards without pretending every language should expose an identical API.
+
+Pollen follows modern TypeScript conventions.
+
+Nectar remains natural for Python developers.
+
+Anther uses the concurrency model and straightforward package structure Go developers expect.
+
+Different languages.
+
+The same priorities:
+
+- local transaction signing
+- explicit serialization
+- resilient node access
+- useful blockchain-specific helpers
+- maintained dependencies
+- tests around the dangerous parts
+
+Hive becomes easier to build on when developers can choose the right language for the application instead of choosing whichever language happens to have a surviving SDK.
+
+## Where It Stands Now
+
+Anther **v0.1.0** is available through the Go module system:
+
+```bash
+go get github.com/srbde/hive-anther@v0.1.0
+```
+
+The source and release are available at:
+
+&lt;https://github.com/srbde/hive-anther&gt;
+
+&lt;https://github.com/srbde/hive-anther/releases/tag/v0.1.0&gt;
+
+If you build Hive software in Go, I would like to hear what you need from it.
+
+Try the account helpers.
+
+Run a block stream.
+
+Test node failover.
+
+Review the transaction bytes.
+
+Build a small bot or service and report where the API feels awkward or incomplete.
+
+That is how a first release becomes dependable infrastructure.
+
+## Closing Thoughts
+
+An anther is the part of a flower that produces pollen.
+
+That made the name a natural fit beside Pollen.
+
+The names are connected because the projects are connected: separate tools doing different jobs while supporting the same ecosystem.
+
+Anther v0.1.0 gives Go developers a modern foundation for interacting with Hive, signing transactions locally, and building services that can survive more than one unreliable RPC endpoint.
+
+It is early, and it is tagged.
+
+And! It is now ready for Go developers to start putting it through its paces - putting it to work!
+
+As always,
+**Michael Garcia** a.k.a. **TheCrazyGM**
+
+</div>
+  <footer class="hive-post-embed__source">
+    <span class="hive-post-embed__source-label">Source:</span>
+    <a href="https://hive.blog/@thecrazygm/anther-v010-a-modern-go-sdk-for-building-on-hive">Anther v0.1.0: A Modern Go SDK for Building on Hive</a>
+    by
+    <a href="https://hive.blog/@thecrazygm">@thecrazygm</a>
+  </footer>
+</div>
+
+
+  </div><a class="u-url" href="/tools/go/library/2026/06/23/anther-v010-a-modern-go-sdk-for-building-on-hive.html" hidden></a>
+</article>
+
+        </div>
+
+        
+        <aside class="page-sidebar" aria-label="Search and browse">
+          <section class="sidebar-section sidebar-search">
+            <h2 class="sidebar-heading">Search posts</h2>
+            <p class="sidebar-copy">Search the locally indexed post archive.</p>
+            <input type="text" id="search-input" placeholder="Search posts" autocomplete="off" />
+            <ul id="results-container"></ul>
+          </section>
+
+          <section class="sidebar-section sidebar-topics">
+            <h2 class="sidebar-heading">Browse topics</h2>
+            <p class="sidebar-copy">Jump into curated topic landing pages.</p>
+            <ul class="topic-list topic-list-sidebar"><li><a class="page-link" href="/account-recovery/">Account Recovery</a></li><li><a class="page-link" href="/core-development/">Core Development</a></li><li><a class="page-link" href="/dapps/">Dapps</a></li><li><a class="page-link" href="/docker/">Docker</a></li><li><a class="page-link" href="/hardfork/">Hardfork</a></li><li><a class="page-link" href="/hivemind/">Hivemind</a></li><li><a class="page-link" href="/javascript/">Javascript</a></li><li><a class="page-link" href="/multisig/">Multisig</a></li><li><a class="page-link" href="/python/">Python</a></li><li><a class="page-link" href="/ruby/">Ruby</a></li><li><a class="page-link" href="/testnet/">Testnet</a></li><li><a class="page-link" href="/tools/">Tools</a></li><li><a class="page-link" href="/witness/">Witness</a></li></ul>
+          </section>
+        </aside>
+        
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading"><a rel="author" href="/">Hive Chain Documentation</a></h2>
+    
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">site curated by: @inertia</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>Your resource for various levels of Hive Documentation.</p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+<script src="/assets/javascript/search.js"></script>
+    <script>
+      (function () {
+        var input = document.getElementById('search-input');
+        var results = document.getElementById('results-container');
+        if (input && results && typeof SimpleJekyllSearch !== 'undefined') {
+          SimpleJekyllSearch({
+            searchInput: input,
+            resultsContainer: results,
+            json: '/search.json'
+          });
+        }
+
+        if (typeof SteemContentRenderer === 'undefined') return;
+
+        var targets = document.querySelectorAll('[data-hive-render-target="true"]');
+        if (!targets.length) return;
+
+        var renderer = new SteemContentRenderer.DefaultRenderer({
+          baseUrl: 'https://hive.blog/',
+          breaks: true,
+          skipSanitization: false,
+          allowInsecureScriptTags: false,
+          addNofollowToLinks: true,
+          doNotShowImages: false,
+          ipfsPrefix: '',
+          assetsWidth: 640,
+          assetsHeight: 480,
+          imageProxyFn: function (url) { return url; },
+          usertagUrlFn: function (account) { return '/@' + account; },
+          hashtagUrlFn: function (hashtag) { return '/tags/#' + hashtag; },
+          isLinkSafeFn: function () { return true; }
+        });
+
+        targets.forEach(function (target) {
+          try {
+            var inputHtml = target.innerHTML;
+            target.innerHTML = renderer.render(inputHtml);
+          } catch (e) {
+            console.log(e);
+          }
+        });
+      })();
+    </script>
+
+  </body>
+
+</html>

@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta property="og:image" content="/assets/images/sticker.png" />
+  <meta name="apple-mobile-web-app-title" content="Hive Docs" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" /><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Introducing Signet: A New Kind of Hive Wallet That Is 100% Open Source | Hive Chain Documentation</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Introducing Signet: A New Kind of Hive Wallet That Is 100% Open Source" />
+<meta name="author" content="beggars" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="I’ve been deep in the Hive ecosystem lately, and something kept bugging me" />
+<meta property="og:description" content="I’ve been deep in the Hive ecosystem lately, and something kept bugging me" />
+<link rel="canonical" href="https://hive.blog/hive-139531/@beggars/introducing-signet-a-new-kind-of-hive-wallet-that-is-100percent-open-source" />
+<meta property="og:url" content="https://hive.blog/hive-139531/@beggars/introducing-signet-a-new-kind-of-hive-wallet-that-is-100percent-open-source" />
+<meta property="og:site_name" content="Hive Chain Documentation" />
+<meta property="og:image" content="https://files.peakd.com/file/peakd-hive/beggars/23t78tucupPfkM3gM5DqcfC6W52W2T4HoDrFo75SU5rvMrHYLHBEqGd49twY9mHmYxo9L.png" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2026-03-14T23:08:21-07:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="https://files.peakd.com/file/peakd-hive/beggars/23t78tucupPfkM3gM5DqcfC6W52W2T4HoDrFo75SU5rvMrHYLHBEqGd49twY9mHmYxo9L.png" />
+<meta property="twitter:title" content="Introducing Signet: A New Kind of Hive Wallet That Is 100% Open Source" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"beggars"},"dateModified":"2026-03-14T23:08:21-07:00","datePublished":"2026-03-14T23:08:21-07:00","description":"I’ve been deep in the Hive ecosystem lately, and something kept bugging me","headline":"Introducing Signet: A New Kind of Hive Wallet That Is 100% Open Source","image":"https://files.peakd.com/file/peakd-hive/beggars/23t78tucupPfkM3gM5DqcfC6W52W2T4HoDrFo75SU5rvMrHYLHBEqGd49twY9mHmYxo9L.png","mainEntityOfPage":{"@type":"WebPage","@id":"https://hive.blog/hive-139531/@beggars/introducing-signet-a-new-kind-of-hive-wallet-that-is-100percent-open-source"},"url":"https://hive.blog/hive-139531/@beggars/introducing-signet-a-new-kind-of-hive-wallet-that-is-100percent-open-source"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://hivedocs.info/feed.xml" title="Hive Chain Documentation" /><script>
+if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNotTrack === "yes" || navigator.msDoNotTrack === "1")) {
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-161692811-1', 'auto');
+  ga('send', 'pageview');
+}
+</script>
+  
+<script src='https://unpkg.com/steem-content-renderer'></script>
+  <script src="/assets/javascript/universal-bridge-against-phishing.js"></script>
+  <script src="/assets/javascript/lazysizes.min.js" async=""></script>
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet" />
+  <link rel="shortcut icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="152x152" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="167x167" href="/assets/images/favicon-80x80.png" />
+</head>
+<body><header class="site-header" role="banner">
+  <div class="wrapper site-header-inner">
+    <a class="site-title" rel="author" href="/">Hive Chain Documentation</a>
+
+    <nav class="site-nav" aria-label="Primary">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/news/">News</a><a class="page-link" href="/howto/">How To</a><a class="page-link" href="/links/">Useful Links</a><a class="page-link" href="/authors/">Authors</a><a class="page-link" href="/topics/">Topics</a><a class="page-link" href="/search/">Search</a></div>
+    </nav>
+  </div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper page-layout has-search-panel">
+        <div class="page-main">
+          <article class="post h-entry post-article" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header post-hero">
+    <div class="post-hero-main">
+      <p class="post-kicker">Archive post</p>
+      <h1 class="post-title p-name" itemprop="name headline">Introducing Signet: A New Kind of Hive Wallet That Is 100% Open Source</h1>
+      <p class="post-meta">
+        <time class="dt-published" datetime="2026-03-14T23:08:21-07:00" itemprop="datePublished">Mar 14, 2026
+        </time>• <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">
+            <a href="/authors/#author-beggars">beggars</a>
+          </span></span></p><p class="post-summary">I've been deep in the Hive ecosystem lately, and something kept bugging me</p></div><aside class="post-author-card">
+      <img src="https://images.hive.blog/u/beggars/avatar" width="128" height="128" class="lazyload post-author-avatar" alt="Avatar for @beggars" />
+      <div class="post-author-name">@beggars</div>
+    </aside></header>
+
+  <div class="post-content e-content post-body" itemprop="articleBody">
+    <div class="hive-post-embed" data-hive-author="beggars" data-hive-permlink="introducing-signet-a-new-kind-of-hive-wallet-that-is-100percent-open-source">
+  <div id="content-beggars-introducing-signet-a-new-kind-of-hive-wallet-that-is-100percent-open-source" class="hive-post-embed__content" data-hive-render-target="true">I've been deep in the Hive ecosystem lately, and something kept bugging me. The blockchain itself is great. Fast, feeless, genuinely decentralised. But the tools for interacting with it? They feel like they were built to just get the job done and nothing more. I think Hive deserves better than that. I wanted a wallet that feels like opening a proper financial app, something I'd actually enjoy using.
+
+
+So I built Signet. It's a Chrome extension for managing Hive accounts, signing transactions, and connecting with dApps. Open source, MIT licensed, and designed from scratch around two things I care about a lot: real security and a great user experience.
+
+This was built without funding from the DHF or anyone else. Simply my time and effort.
+
+---
+
+## What It Looks Like
+
+I wanted Signet to feel more like a fintech app than a crypto utility. The design is built around a deep purple palette with Hive's red used as a deliberate accent, not splashed everywhere, just where it matters. Typography is Source Sans 3, chosen for how clean it reads at small sizes inside a 400x600 pixel popup.
+
+The dashboard leads with a **portfolio allocation ring**, a donut chart showing your HIVE/HP vs HBD split at a glance, with your total USD value right next to it. Below that sits an interactive **price chart** built with D3.js. You can toggle between 1h, 24h, 1w, 1m, and 1y views, hover to see exact prices at any point, and the line changes color based on whether the trend is up or down. Little things like gradient fills under the curve and smooth interpolation make it feel polished rather than thrown together.
+
+Your HIVE, HBD, and Hive Power balances each show with live USD conversion. Quick actions: Send, Receive, Stake, Savings, Delegate, Swap, are laid out in a color-coded grid. Voting power and resource credits get their own progress bars so you always know where you stand. Everything fades and slides in smoothly. No jarring page jumps.
+
+
+![image.png](https://files.peakd.com/file/peakd-hive/beggars/23t76tDkLHrHPPorU3KKsr1NLi3TJ6bPBcNu3aCXGfk7WM9Ypks1C3Gx5A1Hz2Y7vdoDS.png)
+
+
+
+![Screenshot 2026-03-15 at 4.05.51 pm.png](https://files.peakd.com/file/peakd-hive/beggars/23t78tucupPfkM3gM5DqcfC6W52W2T4HoDrFo75SU5rvMrHYLHBEqGd49twY9mHmYxo9L.png)
+
+
+![Screenshot 2026-03-15 at 4.05.23 pm.png](https://files.peakd.com/file/peakd-hive/beggars/23swiP5Jawf2wHd3B3agsvXLfJU4p9ieHPwFyhkg8FwAA8ZHGoDYhmCateqWi4bnqZVct.png)
+
+![Screenshot 2026-03-15 at 4.05.00 pm.png](https://files.peakd.com/file/peakd-hive/beggars/23tGVhpAHuNheXBwqbkcnRqW7B7Ek8TW4cwC4VbEubXJaYuuDEWsHAR9hDpJBZsXSjwsQ.png)
+
+
+![Screenshot 2026-03-15 at 4.04.52 pm.png](https://files.peakd.com/file/peakd-hive/beggars/23t76k1WjhcytJTMfLXgG29XPzFeT4RRtDDdxQZN6XQnGRV1FhgSzFV8bu3sCF4cSEHpM.png)
+
+---
+
+## What You Can Do With It
+
+Here's the full feature set:
+
+- Magi/Vsc Network support
+- **Contact list** If you send to recurring people, a contact list makes it easy to send without typing anything in
+- **Send and receive** HIVE and HBD with confirmation flows and memo support
+- **Power up and power down** — stake HIVE to Hive Power or start the 13-week unstaking process
+- **Delegation management** — create, view, and remove HP delegations
+- **Savings** — deposit and withdraw from savings, with the 20% APR on HBD clearly shown
+- **HIVE/HBD conversion** — both standard and collateralized conversions
+- **Governance** — vote for witnesses and proposals directly from the wallet
+- **Claim rewards** — one-tap reward claiming right on the dashboard
+- **Transaction history** — filterable by type (transfers, power operations, delegations, rewards)
+- **Multi-account support** — manage multiple Hive accounts with a quick-switch dropdown
+- **Edit accounts** — add or remove individual keys after initial setup, so you can start with just a posting key and add your active key later when you need it
+- **Fingerprint unlock** — use Touch ID on Mac or Windows Hello to unlock your wallet instantly. No more typing your password every time
+- **Auto-lock** — configurable idle timer that locks the wallet automatically
+- **Hive Engine tokens** — full Layer 2 token support with balances, transfers, staking, unstaking, delegation, and per-token price charts as well as tickers
+- **Password manager import** — pull in your keys from 1Password, LastPass, or Bitwarden CSV exports. Everything is parsed on-device, nothing leaves your browser
+
+---
+
+## Security
+
+This is the part I spent the most time on, because a wallet that isn't secure is worse than no wallet at all.
+
+**Encryption**: Every private key is encrypted with AES-256-GCM before it's stored. GCM is authenticated encryption. If anyone tampers with the encrypted data, decryption fails completely rather than producing corrupted output. Every encryption generates a fresh random IV and salt. No reuse, ever.
+
+**Key derivation**: Your master password goes through PBKDF2 with 600,000 iterations of SHA-256 before it becomes an encryption key. That's the current OWASP recommendation. At that iteration count, an attacker can manage maybe 2-3 password guesses per second per CPU core. A dictionary attack against any reasonable password becomes impractical.
+
+**Native crypto**: All of this runs through the browser's Web Crypto API — the actual native C++/Rust cryptographic engine, not a JavaScript library. That means timing-attack resistance, key material that JavaScript literally cannot inspect (CryptoKey objects are opaque), and zero third-party crypto code to worry about in the supply chain.
+
+**Session storage**: Your password lives in `chrome.storage.session` — memory only, never written to disk, wiped when the browser closes, and isolated to the extension process. The auto-lock timer clears it after inactivity too.
+
+---
+
+## Fingerprint Unlock
+
+This is probably my favourite feature. If your device has a biometric reader, Touch ID on a MacBook, Windows Hello, whatever your platform supports, Signet can use it to unlock your wallet. No password typing required.
+
+The way it works: after your first password unlock, Signet offers to enable biometric authentication. If you accept, it creates a WebAuthn credential through your platform authenticator. On a Mac, that means the Secure Enclave the same hardware security chip that backs macOS Keychain and Apple Pay. Your wallet password gets encrypted with a random AES-256 key, and the only way to decrypt it is by passing the biometric check.
+
+Next time you open the wallet, Touch ID fires automatically. Tap the sensor, and you're in. The password field is still there as a fallback if you need it, but honestly I almost never use it anymore.
+
+You can toggle it on or off anytime from Settings. The whole thing is built on the Web Authentication API, so it works with whatever biometric hardware your OS supports, it's not Mac-specific.
+
+---
+
+## For dApp Developers
+
+Signet injects a `window.signet` API into every page with 13 methods covering transfers, voting, custom JSON, message signing, delegation, staking, governance, encrypted memos, and conversions. Everything is Promise-based:
+
+```javascript
+window.addEventListener('signet_installed', async () =&gt; {
+  const response = await window.signet.requestTransfer(
+    'alice',    // from
+    'bob',      // to
+    '10.000',   // amount
+    'Thanks!',  // memo
+    'HIVE'      // currency
+  );
+
+  if (response.success) {
+    console.log('Sent!', response.result);
+  }
+});
+```
+
+Every operation opens a confirmation popup so the user explicitly approves it. Requests timeout after 5 minutes.
+
+For backward compatibility, Signet also exposes a `window.hive_keychain` shim. If your dApp already works with the callback-style API, it'll work with Signet without changing a line of code. Both `signet_installed` and `hive_keychain_installed` events are fired for detection.
+
+---
+
+## Password Manager Import
+
+Most Hive users store their keys in a password manager, which is smart. Signet meets them there. You can export a CSV from 1Password, LastPass, or Bitwarden, and Signet will scan it for Hive-related entries. Matching WIF key formats, labeled fields like "Posting Key", and Hive-related URLs. Select the accounts you want, and they're imported and encrypted locally. The CSV never leaves your device.
+
+It's a small feature but it makes the onboarding experience dramatically better, especially for people who already have their keys organised somewhere.
+
+---
+
+## QR Codes and Payment Links
+
+This is one of those features that sounds simple but changes how you actually use the wallet day-to-day.
+
+On the Receive page, Signet generates a QR code for your account. You can optionally type in a specific amount you want to receive, and the QR updates live. There are two modes:
+
+**Mobile mode** generates a Hivesigner URL — `https://hivesigner.com/sign/transfer?to=alice&amp;amount=10.000 HIVE`. When someone scans this QR with their phone camera, it opens their mobile browser, takes them to Hivesigner, and the transfer is pre-filled and ready to sign. No extension needed on mobile. This is the default because it's the most universally useful.
+
+**Signet mode** generates a `hive://transfer?to=alice&amp;amount=10.000&amp;currency=HIVE` URI. This is designed for desktop-to-desktop use. Copy the link, send it to someone, and when they paste it into Signet's Send field, all the transfer details auto-fill instantly — recipient, amount, currency, memo. No typing, no mistakes.
+
+The Send page also has a QR scan button that can read QR codes from image files. And pasting either format (Hivesigner URL or hive:// URI) into the recipient field triggers the same auto-fill behavior. It's the same underlying parser handling all of it.
+
+The real-world flow I use the most: I'm on my laptop, someone on Hive owes me 50 HBD. I open Receive, type 50, switch to HBD, tap "Payment Link". I paste that link in a DM. They paste it into their Signet Send field and everything's filled in. Or if they're on mobile, they click the link and Hivesigner handles it. Either way, the transfer happens with zero friction.
+
+---
+
+## Hive Engine Tokens
+
+This was a big one. Hive Engine is where a lot of the action is on Hive; LEO, SPS, DEC, BEE, and hundreds of other tokens. Signet has a dedicated Tokens tab that pulls all your Hive Engine balances, shows live HIVE prices, and calculates your total Layer 2 portfolio value in USD.
+
+Tap any token and you get a detail view with a D3.js price chart, a breakdown of your liquid, staked, delegated, and pending-unstake balances, and action buttons for transferring, staking, unstaking, and delegating. All without leaving the extension. Under the hood, these are `custom_json` operations broadcast to the Hive mainchain with the `ssc-mainnet-hive` id, so they go through the same confirmation and signing flow as everything else.
+
+The token list is searchable and sorted by value, so the tokens you care about are always at the top.
+
+---
+
+## The Stack
+
+For anyone curious about the technical choices:
+
+- **TypeScript** — a wallet is not the place for runtime type surprises
+- **Vite + esbuild** — Vite builds the popup UI, esbuild handles the service worker and content scripts as lean IIFE bundles
+- **React 18** — component isolation and a mature ecosystem for the popup SPA
+- **Tailwind CSS v4** — the entire design system is defined as CSS custom properties, enforced at the framework level
+- **Zustand** — all app state in a single lightweight store, no Redux boilerplate
+- **D3.js** — real data visualization for the price chart, not a charting wrapper
+- **dhive** — the official Hive blockchain client for RPC and transaction handling
+- **Web Crypto API** — native browser cryptography instead of a JavaScript library
+
+---
+
+## What's Coming
+
+Signet is usable today, but there's more I want to build:
+
+- Ledger hardware wallet support
+- Multi-chain expansion
+- A mobile companion app sharing the same crypto and state logic
+- Real-time notifications for incoming transfers
+
+---
+
+## Try It
+
+Signet is open source under the MIT license.
+
+```bash
+git clone https://github.com/user/signet.git
+cd signet
+npm install
+npm run build
+```
+
+Or download/star the repo here: https://github.com/Vheissu/signet
+
+Load the `dist/` folder as an unpacked extension in Chrome and you're up and running.
+
+When I've finished with a few more improvements and done some solid testing, it'll be available on the Chrome Extension Store to officially install.
+
+If you find a bug, open an issue. If you find a security vulnerability, please disclose it responsibly. And if you just want to talk about wallet architecture, I'm always up for that conversation.</div>
+  <footer class="hive-post-embed__source">
+    <span class="hive-post-embed__source-label">Source:</span>
+    <a href="https://hive.blog/@beggars/introducing-signet-a-new-kind-of-hive-wallet-that-is-100percent-open-source">Introducing Signet: A New Kind of Hive Wallet That Is 100% Open Source</a>
+    by
+    <a href="https://hive.blog/@beggars">@beggars</a>
+  </footer>
+</div>
+
+
+  </div><a class="u-url" href="/tools/wallet/signet/2026/03/14/introducing-signet-a-new-kind-of-hive-wallet-that-is-100percent-open-source.html" hidden></a>
+</article>
+
+        </div>
+
+        
+        <aside class="page-sidebar" aria-label="Search and browse">
+          <section class="sidebar-section sidebar-search">
+            <h2 class="sidebar-heading">Search posts</h2>
+            <p class="sidebar-copy">Search the locally indexed post archive.</p>
+            <input type="text" id="search-input" placeholder="Search posts" autocomplete="off" />
+            <ul id="results-container"></ul>
+          </section>
+
+          <section class="sidebar-section sidebar-topics">
+            <h2 class="sidebar-heading">Browse topics</h2>
+            <p class="sidebar-copy">Jump into curated topic landing pages.</p>
+            <ul class="topic-list topic-list-sidebar"><li><a class="page-link" href="/account-recovery/">Account Recovery</a></li><li><a class="page-link" href="/core-development/">Core Development</a></li><li><a class="page-link" href="/dapps/">Dapps</a></li><li><a class="page-link" href="/docker/">Docker</a></li><li><a class="page-link" href="/hardfork/">Hardfork</a></li><li><a class="page-link" href="/hivemind/">Hivemind</a></li><li><a class="page-link" href="/javascript/">Javascript</a></li><li><a class="page-link" href="/multisig/">Multisig</a></li><li><a class="page-link" href="/python/">Python</a></li><li><a class="page-link" href="/ruby/">Ruby</a></li><li><a class="page-link" href="/testnet/">Testnet</a></li><li><a class="page-link" href="/tools/">Tools</a></li><li><a class="page-link" href="/witness/">Witness</a></li></ul>
+          </section>
+        </aside>
+        
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading"><a rel="author" href="/">Hive Chain Documentation</a></h2>
+    
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">site curated by: @inertia</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>Your resource for various levels of Hive Documentation.</p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+<script src="/assets/javascript/search.js"></script>
+    <script>
+      (function () {
+        var input = document.getElementById('search-input');
+        var results = document.getElementById('results-container');
+        if (input && results && typeof SimpleJekyllSearch !== 'undefined') {
+          SimpleJekyllSearch({
+            searchInput: input,
+            resultsContainer: results,
+            json: '/search.json'
+          });
+        }
+
+        if (typeof SteemContentRenderer === 'undefined') return;
+
+        var targets = document.querySelectorAll('[data-hive-render-target="true"]');
+        if (!targets.length) return;
+
+        var renderer = new SteemContentRenderer.DefaultRenderer({
+          baseUrl: 'https://hive.blog/',
+          breaks: true,
+          skipSanitization: false,
+          allowInsecureScriptTags: false,
+          addNofollowToLinks: true,
+          doNotShowImages: false,
+          ipfsPrefix: '',
+          assetsWidth: 640,
+          assetsHeight: 480,
+          imageProxyFn: function (url) { return url; },
+          usertagUrlFn: function (account) { return '/@' + account; },
+          hashtagUrlFn: function (hashtag) { return '/tags/#' + hashtag; },
+          isLinkSafeFn: function () { return true; }
+        });
+
+        targets.forEach(function (target) {
+          try {
+            var inputHtml = target.innerHTML;
+            target.innerHTML = renderer.render(inputHtml);
+          } catch (e) {
+            console.log(e);
+          }
+        });
+      })();
+    </script>
+
+  </body>
+
+</html>

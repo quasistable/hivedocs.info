@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta property="og:image" content="/assets/images/sticker.png" />
+  <meta name="apple-mobile-web-app-title" content="Hive Docs" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" /><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Introducing the SRBDE SDK Layer: Open Infrastructure for Hive Builders | Hive Chain Documentation</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Introducing the SRBDE SDK Layer: Open Infrastructure for Hive Builders" />
+<meta name="author" content="open.mithril" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="When you build something on Hive, you need to talk to the chain" />
+<meta property="og:description" content="When you build something on Hive, you need to talk to the chain" />
+<link rel="canonical" href="https://hive.blog/hive-139531/@open.mithril/introducing-the-srbde-sdk-layer-open-infrastructure-for-hive-builders" />
+<meta property="og:url" content="https://hive.blog/hive-139531/@open.mithril/introducing-the-srbde-sdk-layer-open-infrastructure-for-hive-builders" />
+<meta property="og:site_name" content="Hive Chain Documentation" />
+<meta property="og:image" content="https://files.peakd.com/file/peakd-hive/open.mithril/23y8t1i6s9rWyXcLkdRGgESQLo9nDkiMLRdBE2JHeQfiiJLSapTFkPzGLHXupJ7S3e7v2.jpg" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2026-06-05T06:53:54-07:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="https://files.peakd.com/file/peakd-hive/open.mithril/23y8t1i6s9rWyXcLkdRGgESQLo9nDkiMLRdBE2JHeQfiiJLSapTFkPzGLHXupJ7S3e7v2.jpg" />
+<meta property="twitter:title" content="Introducing the SRBDE SDK Layer: Open Infrastructure for Hive Builders" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"open.mithril"},"dateModified":"2026-06-05T06:53:54-07:00","datePublished":"2026-06-05T06:53:54-07:00","description":"When you build something on Hive, you need to talk to the chain","headline":"Introducing the SRBDE SDK Layer: Open Infrastructure for Hive Builders","image":"https://files.peakd.com/file/peakd-hive/open.mithril/23y8t1i6s9rWyXcLkdRGgESQLo9nDkiMLRdBE2JHeQfiiJLSapTFkPzGLHXupJ7S3e7v2.jpg","mainEntityOfPage":{"@type":"WebPage","@id":"https://hive.blog/hive-139531/@open.mithril/introducing-the-srbde-sdk-layer-open-infrastructure-for-hive-builders"},"url":"https://hive.blog/hive-139531/@open.mithril/introducing-the-srbde-sdk-layer-open-infrastructure-for-hive-builders"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://hivedocs.info/feed.xml" title="Hive Chain Documentation" /><script>
+if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNotTrack === "yes" || navigator.msDoNotTrack === "1")) {
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-161692811-1', 'auto');
+  ga('send', 'pageview');
+}
+</script>
+  
+<script src='https://unpkg.com/steem-content-renderer'></script>
+  <script src="/assets/javascript/universal-bridge-against-phishing.js"></script>
+  <script src="/assets/javascript/lazysizes.min.js" async=""></script>
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet" />
+  <link rel="shortcut icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="152x152" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="167x167" href="/assets/images/favicon-80x80.png" />
+</head>
+<body><header class="site-header" role="banner">
+  <div class="wrapper site-header-inner">
+    <a class="site-title" rel="author" href="/">Hive Chain Documentation</a>
+
+    <nav class="site-nav" aria-label="Primary">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/news/">News</a><a class="page-link" href="/howto/">How To</a><a class="page-link" href="/links/">Useful Links</a><a class="page-link" href="/authors/">Authors</a><a class="page-link" href="/topics/">Topics</a><a class="page-link" href="/search/">Search</a></div>
+    </nav>
+  </div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper page-layout has-search-panel">
+        <div class="page-main">
+          <article class="post h-entry post-article" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header post-hero">
+    <div class="post-hero-main">
+      <p class="post-kicker">Archive post</p>
+      <h1 class="post-title p-name" itemprop="name headline">Introducing the SRBDE SDK Layer: Open Infrastructure for Hive Builders</h1>
+      <p class="post-meta">
+        <time class="dt-published" datetime="2026-06-05T06:53:54-07:00" itemprop="datePublished">Jun 5, 2026
+        </time>• <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">
+            <a href="/authors/#author-open.mithril">open.mithril</a>
+          </span></span></p><p class="post-summary">When you build something on Hive, you need to talk to the chain</p></div><aside class="post-author-card">
+      <img src="https://images.hive.blog/u/open.mithril/avatar" width="128" height="128" class="lazyload post-author-avatar" alt="Avatar for @open.mithril" />
+      <div class="post-author-name">@open.mithril</div>
+    </aside></header>
+
+  <div class="post-content e-content post-body" itemprop="articleBody">
+    <div class="hive-post-embed" data-hive-author="open.mithril" data-hive-permlink="introducing-the-srbde-sdk-layer-open-infrastructure-for-hive-builders">
+  <div id="content-open.mithril-introducing-the-srbde-sdk-layer-open-infrastructure-for-hive-builders" class="hive-post-embed__content" data-hive-render-target="true">When you build something on Hive, you need to talk to the chain. You need to sign transactions, query accounts, interact with Layer 2 tokens, and do it all reliably — in production, in containers, across environments you don't control.
+
+That infrastructure should already exist. Clean, maintained, and honestly documented. That's what SRBDE set out to build.
+
+Today we want to introduce the SRBDE SDK Layer: a suite of open-source Hive blockchain libraries covering four programming languages, a sidechain companion library, and more tools to come.  All of it lives under the [@srbde GitHub organization](https://github.com/srbde), maintained by the same team that uses these libraries every day.
+
+---
+
+## Why SRBDE Maintains These Libraries
+
+SRBDE — the Sustainable Resource and Business Development Enterprise — is an independent software organization. We don't have investors to answer to. We build tools because the ecosystem needs them and because we need them ourselves for the products and services we operate.
+
+Our philosophy borrows from sustainable agriculture: the goal is always to return more to the soil than you take. Open source is not a business model for us — it's a value. The commercial work we do funds the open work. The open work is the mission.
+
+The Hive ecosystem has historically had strong Python tooling, some TypeScript coverage, and gaps in a lot of other places. We decided to address those gaps systematically, across languages, with a consistent standard of care.
+
+<center>
+![sdkEcosystem.png](https://files.peakd.com/file/peakd-hive/open.mithril/23y8t1i6s9rWyXcLkdRGgESQLo9nDkiMLRdBE2JHeQfiiJLSapTFkPzGLHXupJ7S3e7v2.jpg)
+</center>
+
+## The SDK Layer at a Glance
+
+Here's what's live and maintained in the SRBDE org right now:
+
+### 🍯 hive-nectar — Python SDK
+**[github.com/srbde/hive-nectar](https://github.com/srbde/hive-nectar)**
+
+The flagship library. Nectar is the modern Python SDK for Hive, and the direct successor to `beem`. If you're writing Python that talks to Hive, this is where you start.
+
+`beem` built the foundation. Nectar carries it forward — with legacy cryptographic dependencies stripped out, a transparent in-memory fallback for containerized deployments, and a clean consolidated RPC surface built on `httpx2`. Version 1.0.0 shipped in May 2026.
+
+```
+pip install hive-nectar
+```
+
+### ⚙️ nectarengine — Hive-Engine Python SDK
+**[github.com/srbde/nectarengine](https://github.com/srbde/nectarengine)**
+
+The companion library for Hive Engine — the token and smart contract sidechain layer. nectarengine handles contract queries, token operations, and node list management, with the same `httpx2` transport backbone as Nectar and resilient local caching when the PeakD beacon API is unavailable. Version 1.0.0 shipped alongside Nectar.
+
+
+
+```
+pip install nectarengine
+```
+
+### 🌸 hive-pollen — TypeScript SDK
+**[github.com/srbde/hive-pollen](https://github.com/srbde/hive-pollen)**
+
+**dhive** built the foundation of JavaScript development on Hive — but it carries a decade of legacy: unmaintained cryptography, thousands of transient vulnerabilities, and a build system stuck in the past. Pollen is its spiritual successor, rebuilt for security, performance, and the environments developers actually build for today.
+
+```
+npm install @srbde/pollen
+```
+
+### 🌿 hive-anther — Go SDK
+**[github.com/srbde/hive-anther](https://github.com/srbde/hive-anther)**
+
+Our Go library for Hive. Built for backend services, microservices, and high-performance tooling where Go's concurrency model and deployment characteristics are an advantage.
+
+```
+go get github.com/srbde/hive-anther@latest
+```
+
+### 🧬 hive-xylem — Rust SDK
+**[github.com/srbde/hive-xylem](https://github.com/srbde/hive-xylem)**
+
+Our Rust library for Hive. For systems-level work, WASM targets, and anything where you need Rust's safety guarantees and performance profile alongside Hive blockchain interaction.
+
+```
+cargo add hive-xylem
+```
+
+---
+
+## What "Maintained" Actually Means
+
+A library listed on PyPI with a last commit from three years ago is not maintained. We want to be clear about what we mean when we say these libraries are maintained:
+
+- **We use them ourselves.** The tools we build for the Hive ecosystem and for SRBDE's own products depend on these SDKs. When something breaks in production, we feel it.
+- **We track the chain.** When Hive protocol changes, we update. When dependencies develop vulnerabilities, we act on them.
+- **We don't break existing API shapes.** Some of you have Python scripts that are close to a decade old. The modernization work in Nectar v1.0.0 was done without changing the external API surface that existing code depends on.
+- **We document honestly.** The README tells you what the library does, what it requires, and what its limitations are. We don't overstate.
+
+---
+
+## For Developers: Getting Started
+
+### Python — hive-nectar
+
+Full docs: [hive-nectar.readthedocs.io](https://hive-nectar.readthedocs.io/en/latest/)
+
+```
+pip install hive-nectar
+```
+
+```python
+from nectar import Hive
+from nectar.account import Account
+
+hive = Hive()
+account = Account("youraccount", blockchain_instance=hive)
+print(account.balances)
+```
+
+The ReadTheDocs site covers the full API surface, including examples for signing and broadcasting transactions, deploying in containerized environments, and Ledger hardware wallet support. The changelog and repo are at [github.com/srbde/hive-nectar](https://github.com/srbde/hive-nectar).
+
+---
+
+### Rust — hive-xylem
+
+Full docs: [docs.rs/hive-xylem](https://docs.rs/hive-xylem/0.1.0/hive_xylem/) · Crate: [crates.io/crates/hive-xylem](https://crates.io/crates/hive-xylem)
+
+```toml
+[dependencies]
+hive-xylem = "0.1.0"
+tokio = { version = "1.0", features = ["full"] }
+```
+
+```rust
+use hive_xylem::Client;
+
+#[tokio::main]
+async fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
+    let client = Client::new(vec!["https://api.hive.blog".to_string()], 30);
+
+    let accounts = client.get_accounts(&amp;["youraccount".to_string()]).await?;
+    if let Some(acc) = accounts.first() {
+        println!("Account:      @{}", acc.name);
+        println!("HIVE Balance: {}", acc.balance);
+        println!("HBD Balance:  {}", acc.hbd_balance);
+    }
+    Ok(())
+}
+```
+
+Xylem is fully async (Tokio), uses audited RustCrypto cryptography (`secp256k1`, `bs58`, `sha2`, `ripemd`), and handles offline transaction serialization natively — no RPC-based `get_transaction_hex` dependency. The repo includes examples for signing and broadcasting transactions. Source and examples at [github.com/srbde/hive-xylem](https://github.com/srbde/hive-xylem).
+
+---
+
+### TypeScript &amp; Go — hive-pollen and hive-anther
+
+Both libraries are built and active. Hosted documentation is coming — for now, the READMEs in each repo are the starting point:
+
+- [github.com/srbde/hive-pollen](https://github.com/srbde/hive-pollen) — TypeScript
+- [github.com/srbde/hive-anther](https://github.com/srbde/hive-anther) — Go
+
+---
+
+## The Bigger Picture
+
+The SDK layer is one piece of what SRBDE builds. We also operate community publishing tools, TTRPG content platforms under [TheCrazyGM](https://thecrazygm.com), and the [Mithril Destiny](https://www.patreon.com/mithrildestiny) creative publishing arm. The SRBDE corporate hub lives at [ecoinstats.net](https://ecoinstats.net).
+
+The technical work detailed in each library's release notes is documented by our lead developer [@thecrazygm](https://hive.blog/@thecrazygm) — if you want the deep engineering breakdown of what went into Nectar v1.0.0, his [recent post](https://peakd.com/hive-139531/@thecrazygm/nectar-and-nectarengine-v100-are-live-on-srbde) covers it thoroughly.
+
+This post is about the layer as a whole: what it is, what it covers, and the commitment behind it.
+
+---
+
+## Now Build Something
+
+If you're writing Hive tooling in Python, TypeScript, Go, or Rust — these libraries are for you. Fork them, use them, open issues, and contribute.
+
+Our repos live at [github.com/srbde](https://github.com/srbde).
+
+Brought to you by the *Sustainable Resource and Business Development Enterprise*
+</div>
+  <footer class="hive-post-embed__source">
+    <span class="hive-post-embed__source-label">Source:</span>
+    <a href="https://hive.blog/@open.mithril/introducing-the-srbde-sdk-layer-open-infrastructure-for-hive-builders">Introducing the SRBDE SDK Layer: Open Infrastructure for Hive Builders</a>
+    by
+    <a href="https://hive.blog/@open.mithril">@open.mithril</a>
+  </footer>
+</div>
+
+
+  </div><a class="u-url" href="/tools/sdk/infrastructure/2026/06/05/introducing-the-srbde-sdk-layer-open-infrastructure-for-hive-builders.html" hidden></a>
+</article>
+
+        </div>
+
+        
+        <aside class="page-sidebar" aria-label="Search and browse">
+          <section class="sidebar-section sidebar-search">
+            <h2 class="sidebar-heading">Search posts</h2>
+            <p class="sidebar-copy">Search the locally indexed post archive.</p>
+            <input type="text" id="search-input" placeholder="Search posts" autocomplete="off" />
+            <ul id="results-container"></ul>
+          </section>
+
+          <section class="sidebar-section sidebar-topics">
+            <h2 class="sidebar-heading">Browse topics</h2>
+            <p class="sidebar-copy">Jump into curated topic landing pages.</p>
+            <ul class="topic-list topic-list-sidebar"><li><a class="page-link" href="/account-recovery/">Account Recovery</a></li><li><a class="page-link" href="/core-development/">Core Development</a></li><li><a class="page-link" href="/dapps/">Dapps</a></li><li><a class="page-link" href="/docker/">Docker</a></li><li><a class="page-link" href="/hardfork/">Hardfork</a></li><li><a class="page-link" href="/hivemind/">Hivemind</a></li><li><a class="page-link" href="/javascript/">Javascript</a></li><li><a class="page-link" href="/multisig/">Multisig</a></li><li><a class="page-link" href="/python/">Python</a></li><li><a class="page-link" href="/ruby/">Ruby</a></li><li><a class="page-link" href="/testnet/">Testnet</a></li><li><a class="page-link" href="/tools/">Tools</a></li><li><a class="page-link" href="/witness/">Witness</a></li></ul>
+          </section>
+        </aside>
+        
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading"><a rel="author" href="/">Hive Chain Documentation</a></h2>
+    
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">site curated by: @inertia</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>Your resource for various levels of Hive Documentation.</p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+<script src="/assets/javascript/search.js"></script>
+    <script>
+      (function () {
+        var input = document.getElementById('search-input');
+        var results = document.getElementById('results-container');
+        if (input && results && typeof SimpleJekyllSearch !== 'undefined') {
+          SimpleJekyllSearch({
+            searchInput: input,
+            resultsContainer: results,
+            json: '/search.json'
+          });
+        }
+
+        if (typeof SteemContentRenderer === 'undefined') return;
+
+        var targets = document.querySelectorAll('[data-hive-render-target="true"]');
+        if (!targets.length) return;
+
+        var renderer = new SteemContentRenderer.DefaultRenderer({
+          baseUrl: 'https://hive.blog/',
+          breaks: true,
+          skipSanitization: false,
+          allowInsecureScriptTags: false,
+          addNofollowToLinks: true,
+          doNotShowImages: false,
+          ipfsPrefix: '',
+          assetsWidth: 640,
+          assetsHeight: 480,
+          imageProxyFn: function (url) { return url; },
+          usertagUrlFn: function (account) { return '/@' + account; },
+          hashtagUrlFn: function (hashtag) { return '/tags/#' + hashtag; },
+          isLinkSafeFn: function () { return true; }
+        });
+
+        targets.forEach(function (target) {
+          try {
+            var inputHtml = target.innerHTML;
+            target.innerHTML = renderer.render(inputHtml);
+          } catch (e) {
+            console.log(e);
+          }
+        });
+      })();
+    </script>
+
+  </body>
+
+</html>
