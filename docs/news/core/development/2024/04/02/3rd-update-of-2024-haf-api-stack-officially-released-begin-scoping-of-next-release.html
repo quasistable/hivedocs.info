@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta property="og:image" content="/assets/images/sticker.png" />
+  <meta name="apple-mobile-web-app-title" content="Hive Docs" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" /><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>3rd update of 2024: HAF API stack officially released, begin scoping of next release | Hive Chain Documentation</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="3rd update of 2024: HAF API stack officially released, begin scoping of next release" />
+<meta name="author" content="blocktrades" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Below are a few highlights of the Hive-related programming issues worked on by the BlockTrades team since my last report" />
+<meta property="og:description" content="Below are a few highlights of the Hive-related programming issues worked on by the BlockTrades team since my last report" />
+<link rel="canonical" href="https://hive.blog/hive-139531/@blocktrades/3rd-update-of-2024-haf-api-stack-officially-released-begin-scoping-of-next-release" />
+<meta property="og:url" content="https://hive.blog/hive-139531/@blocktrades/3rd-update-of-2024-haf-api-stack-officially-released-begin-scoping-of-next-release" />
+<meta property="og:site_name" content="Hive Chain Documentation" />
+<meta property="og:image" content="https://images.hive.blog/DQmSihw8Kz4U7TuCQa98DDdCzqbqPFRumuVWAbareiYZW1Z/blocktrades%20update.png" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2024-04-02T21:51:30-07:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="https://images.hive.blog/DQmSihw8Kz4U7TuCQa98DDdCzqbqPFRumuVWAbareiYZW1Z/blocktrades%20update.png" />
+<meta property="twitter:title" content="3rd update of 2024: HAF API stack officially released, begin scoping of next release" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"blocktrades"},"dateModified":"2024-04-02T21:51:30-07:00","datePublished":"2024-04-02T21:51:30-07:00","description":"Below are a few highlights of the Hive-related programming issues worked on by the BlockTrades team since my last report","headline":"3rd update of 2024: HAF API stack officially released, begin scoping of next release","image":"https://images.hive.blog/DQmSihw8Kz4U7TuCQa98DDdCzqbqPFRumuVWAbareiYZW1Z/blocktrades%20update.png","mainEntityOfPage":{"@type":"WebPage","@id":"https://hive.blog/hive-139531/@blocktrades/3rd-update-of-2024-haf-api-stack-officially-released-begin-scoping-of-next-release"},"url":"https://hive.blog/hive-139531/@blocktrades/3rd-update-of-2024-haf-api-stack-officially-released-begin-scoping-of-next-release"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://hivedocs.info/feed.xml" title="Hive Chain Documentation" /><script>
+if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNotTrack === "yes" || navigator.msDoNotTrack === "1")) {
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-161692811-1', 'auto');
+  ga('send', 'pageview');
+}
+</script>
+  
+<script src='https://unpkg.com/steem-content-renderer'></script>
+  <script src="/assets/javascript/universal-bridge-against-phishing.js"></script>
+  <script src="/assets/javascript/lazysizes.min.js" async=""></script>
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet" />
+  <link rel="shortcut icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="152x152" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="167x167" href="/assets/images/favicon-80x80.png" />
+</head>
+<body><header class="site-header" role="banner">
+  <div class="wrapper site-header-inner">
+    <a class="site-title" rel="author" href="/">Hive Chain Documentation</a>
+
+    <nav class="site-nav" aria-label="Primary">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/news/">News</a><a class="page-link" href="/howto/">How To</a><a class="page-link" href="/links/">Useful Links</a><a class="page-link" href="/authors/">Authors</a><a class="page-link" href="/topics/">Topics</a><a class="page-link" href="/search/">Search</a></div>
+    </nav>
+  </div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper page-layout has-search-panel">
+        <div class="page-main">
+          <article class="post h-entry post-article" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header post-hero">
+    <div class="post-hero-main">
+      <p class="post-kicker">Archive post</p>
+      <h1 class="post-title p-name" itemprop="name headline">3rd update of 2024: HAF API stack officially released, begin scoping of next release</h1>
+      <p class="post-meta">
+        <time class="dt-published" datetime="2024-04-02T21:51:30-07:00" itemprop="datePublished">Apr 2, 2024
+        </time>• <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">
+            <a href="/authors/#author-blocktrades">blocktrades</a>
+          </span></span></p><p class="post-summary">Below are a few highlights of the Hive-related programming issues worked on by the BlockTrades team since my last report</p></div><aside class="post-author-card">
+      <img src="https://images.hive.blog/u/blocktrades/avatar" width="128" height="128" class="lazyload post-author-avatar" alt="Avatar for @blocktrades" />
+      <div class="post-author-name">@blocktrades</div>
+    </aside></header>
+
+  <div class="post-content e-content post-body" itemprop="articleBody">
+    <div class="hive-post-embed" data-hive-author="blocktrades" data-hive-permlink="3rd-update-of-2024-haf-api-stack-officially-released-begin-scoping-of-next-release">
+  <div id="content-blocktrades-3rd-update-of-2024-haf-api-stack-officially-released-begin-scoping-of-next-release" class="hive-post-embed__content" data-hive-render-target="true">![blocktrades update.png](https://images.hive.blog/DQmSihw8Kz4U7TuCQa98DDdCzqbqPFRumuVWAbareiYZW1Z/blocktrades%20update.png)
+
+Below are a few highlights of the Hive-related programming issues worked on by the BlockTrades team since my last report.
+
+# A new release of the Hive API stack (version 1.27.5)
+
+The most important announcement is that we’ve tagged an official 1.27.5 release of the core API stack for Hive. This is the software run by Hive API nodes to provide data to almost all Hive apps. 
+
+This release is the biggest overhaul of the Hive software stack since Hive forked and represents 11 months work by the largest-yet team of core Hive developers (I didn’t calculate the man hours involved as the team has grown throughout that time, but it is a lot).
+
+For the past couple of weeks since my last report, we’ve been testing and optimizing the HAF apps and associated infrastructure needed to run Hive API nodes. Throughout this process, the new stack has been rigorously tested on the production api node operated by the BlockTrades team (api.hive.blog) as we made various optimizations. We’ve also had feedback from several of the other API node operators who helped us test the various release candidates of the stack before the final release. So at this point I’m pretty confident in the reliability and performance of the new stack.
+
+Long time readers of my blog are probably aware that one of the long term goals of our work has been to improve the scalability of the Hive software stack. This is because in many ways scalability is a key factor in the usefulness of blockchain software, because blockchains rely on the “network effect” for their usefulness, and when that network is limited in size by scalability, the potential usefulness of the blockchain itself is similarly limited. So it should probably come as no surprise that scalability was again a key goal of this release.
+
+## Scalability of the new stack and a useful testing benefit
+
+It’s not always easy to measure scalability as there are many technical aspects of a software stacks implementation and real-world usage that can place limits on its scalability, but one useful metric for a Hive API node can be the number of servers required and the loading on those servers as they handle a certain amount of traffic loading. 
+
+In the case of api.hive.blog, which has traditionally received quite a lot of Hive’s API traffic, we used to have to distribute the software stack across 4 servers, each with 64GB of RAM and 2TB of nvme storage (so 256GB of total RAM and 8TB of total persistent storage).  If this sounds like a lot of hardware, consider I was told that Steem was spending around $70K/month to maintain a fleet of servers performing the same function around the time Hive forked (bear in mind I don't know if this was also counting associated labor costs).
+
+One server in our old stack was dedicated just to running hivemind (the api service responsible for supplying social media information to Hive web apps) and it was extremely heavily loaded, to the extent that it represented one of the two bottlenecks to the node’s overall performance, despite many optimizations made to hivemind in previous releases (to some extent because API loading of hivemind API calls from Hive apps also increased over time).
+
+Another server that was heavily loaded was dedicated just to running a hived account history node to supply data about the transaction history of hive accounts (this was the 2nd API bottleneck). In the new stack, this functionality is replaced by the much more efficient and responsive HAF account history app (also known as hafah).
+
+With the new stack, we’re able to run the entire stack, including hivemind and hafah, on a single server  AND it is handling more traffic than our old stack did back in November. Despite the load doubling since that time, the new stack is considerably more responsive (API calls get answers 2x quicker on average and 70x or more faster in some cases) and the server is only lightly loaded (it’s only using about 1/6th of our single server’s available cpu power).
+
+The new server has better hardware than the old servers (it costs about twice as much as one of the old servers, so we only cut our server costs in half), but the hardware we have is completely overkill for the load we’re handling (we have 128GB of RAM and 8TB of storage whereas our target “recommended minimum” for an API node is 64GB of RAM and 4TB of storage). Its so much overkill that we can easily run a second copy of the entire stack on the same server and still have plenty of room left over for other software. 
+
+This ability to run a 2nd stack on our production server is actually quite useful to us as developers, since it allows us to fire up new copies of the stack with software improvements while continuing to serve API traffic from the old stack in the meantime, then quickly switch back and forth as we test improvements to the new stack.
+
+# How to setup the new stack: [HAF API node](https://gitlab.syncad.com/hive/haf_api_node)
+The repo link above contains docker compose scripts to easily install and manage a full Hive API node. It’s so simple to use that anyone who’s familiar with basic Linux system administration should be able to setup and operate their own Hive API node now. 
+
+There are several options for how you can setup a node:
+
+First, you can compile all the software yourself into docker images or you can fetch pre-built publicly available docker images that are automatically built and published by the CI system on gitlab.syncad.com.
+
+Next, to fill your API node with Hive’s existing blockchain data, you can sync the blocks from hived nodes (the slowest method),  replay the blockchain from a local block log file (probably about twice as fast if you have a local block log already), or even fetch an existing zfs snapshot with a pre-filled database (for most operators, this is likely the absolute fastest way to setup an api node unless you have really fast hardware).
+
+### Some replay benchmarks for Hive API nodes
+
+On our fastest local systems (AMD7950X with 2 fast names) we can replay HAF itself in 10 hours replay + 4 hours indexing/clustering time = 14 hours. Then it takes another 48 hours to replay the various HAF apps in parallel (with hivemind being the critical path among the existing default set of HAF apps). So, in total 14 + 48 = 62 hours to fully replay a Hive API node (a little under 3 days).
+
+However, our production server is a previous generation AMD system, so a full replay there probably takes around 21hrs + 80hrs = 101 hours (a little under 5 days).
+
+I don’t have feedback yet on how long it takes someone to download the ZFS snapshot we’ve put up in the cloud yet, but if I recall correctly it took us around 2 days to download it locally, and then it only took about an hour for it to catch up to the current headblock. So for anyone with slower hardware (or even fast hardware), this is probably the fastest way at the moment to setup a Hive API node. We’ll probably make the snapshot available as a torrent at some point, which should allow it to be downloaded much quicker than 2 days (as more seeds become available).
+
+# [Drone (replacement for Jussi)](https://gitlab.syncad.com/hive/drone)
+
+We had several reports of problems with broadcast_transaction API calls intermittently getting 502 responses from our API node. With some experimentation, we traced the problem back to drone, so we ended up adding a lot of new optional logging capability to drone, and ultimately figured out that it was an issue where some excessively long response headers were causing a problem for caddy (drone sends the responses to caddy, which then sends the responses back to Hive web apps). 
+
+This problem didn’t occur for Jussi because it already had a feature that “shrunk” the problematic portion of the headers. So we updated drone to avoid forwarding the problematic portion of the headers to caddy (they were of no use to caddy or the client apps anyways as they were primarily intended to be logged locally for analyzing API call latency, caching efficiency, etc). 
+
+Currently we are using drone as a replacement for Jussi on api.hive.blog because it more responsive in the case of cache misses, requires less CPU usage, and we’ve optimized the caching algorithms to be more effective at caching when handling concurrent requests for the same data.
+
+We haven’t yet made it the default choice in the haf_api_nodes scripts, but that will probably change quite soon.
+
+# [Hivemind API](https://gitlab.syncad.com/hive/hivemind) (social media API)
+We again dramatically improved the performance of several slow queries in hivemind that we discovered while testing the stack under production loads. The latest rounds of improvements speeded up commonly used queries related to fetching posts with a specific tag, and fetching follow and mute information (these changes are part of the official hivemind release). 
+
+We also identified a few remaining types of slow queries that we’re in the process of speeding up now (these upcoming changes will be trivially upgradeable).
+
+Finally, work is currently underway to reduce the amount of logging done by hivemind servers under load.
+# HAF block explorer API and UI
+
+As part of the official release we also corrected a few small issues reported with the HAF block explorer. 
+
+The block explorer UI is looking much better at this point, so hopefully we’ll find time to setup a publicly available web site for it before too long. Our API node is already providing API support for the HAF block explorer API, so if you run a local copy of the block explorer UI (e.g. using a pre-built docker image), you can point it to our API node and have your own personal block explorer web site while using very few computing resources.
+
+# What’s next?
+
+On the design front, we started early scoping work on our goals for the next release in gitlab discussions and had our first group meeting today on the topic of lite accounts and an implementation of 2nd layer smart contracts.
+
+The most fleshed out part of the plan so far is some of our ideas for supporting 2nd layer “lite accounts” (implemented via a HAF app). Some of the features to be provided are discussed here (although it doesn’t include some of newer ideas we discussed today): https://gitlab.syncad.com/hive/haf/-/issues/214
+
+While we’re still discussing the details of what level of functionality will be available in the initial release of the lite account app, I expect we can release it relatively quickly as the implementation appears quite simple.
+
+We also began very early discussions of potential implementations of a 2nd layer smart contract processor, but that’s a much more complicated topic with many points to research, so it’ll be several weeks at least before we have a full scoping of the initial release (in part because several of the designers involved are also actively working on existing projects such as HAF and hivemind improvements) and even that might be subject to change as we get into software prototyping.
+
+Finally, its worth mentioning that the new stack is easily upgradeable and few changes require hardforks, so we'll likely be delivering incremental improvements to the stack at a fairly fast rate.</div>
+  <footer class="hive-post-embed__source">
+    <span class="hive-post-embed__source-label">Source:</span>
+    <a href="https://hive.blog/@blocktrades/3rd-update-of-2024-haf-api-stack-officially-released-begin-scoping-of-next-release">3rd update of 2024: HAF API stack officially released, begin scoping of next release</a>
+    by
+    <a href="https://hive.blog/@blocktrades">@blocktrades</a>
+  </footer>
+</div>
+
+
+  </div><a class="u-url" href="/news/core/development/2024/04/02/3rd-update-of-2024-haf-api-stack-officially-released-begin-scoping-of-next-release.html" hidden></a>
+</article>
+
+        </div>
+
+        
+        <aside class="page-sidebar" aria-label="Search and browse">
+          <section class="sidebar-section sidebar-search">
+            <h2 class="sidebar-heading">Search posts</h2>
+            <p class="sidebar-copy">Search the locally indexed post archive.</p>
+            <input type="text" id="search-input" placeholder="Search posts" autocomplete="off" />
+            <ul id="results-container"></ul>
+          </section>
+
+          <section class="sidebar-section sidebar-topics">
+            <h2 class="sidebar-heading">Browse topics</h2>
+            <p class="sidebar-copy">Jump into curated topic landing pages.</p>
+            <ul class="topic-list topic-list-sidebar"><li><a class="page-link" href="/account-recovery/">Account Recovery</a></li><li><a class="page-link" href="/core-development/">Core Development</a></li><li><a class="page-link" href="/dapps/">Dapps</a></li><li><a class="page-link" href="/docker/">Docker</a></li><li><a class="page-link" href="/hardfork/">Hardfork</a></li><li><a class="page-link" href="/hivemind/">Hivemind</a></li><li><a class="page-link" href="/javascript/">Javascript</a></li><li><a class="page-link" href="/multisig/">Multisig</a></li><li><a class="page-link" href="/python/">Python</a></li><li><a class="page-link" href="/ruby/">Ruby</a></li><li><a class="page-link" href="/testnet/">Testnet</a></li><li><a class="page-link" href="/tools/">Tools</a></li><li><a class="page-link" href="/witness/">Witness</a></li></ul>
+          </section>
+        </aside>
+        
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading"><a rel="author" href="/">Hive Chain Documentation</a></h2>
+    
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">site curated by: @inertia</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>Your resource for various levels of Hive Documentation.</p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+<script src="/assets/javascript/search.js"></script>
+    <script>
+      (function () {
+        var input = document.getElementById('search-input');
+        var results = document.getElementById('results-container');
+        if (input && results && typeof SimpleJekyllSearch !== 'undefined') {
+          SimpleJekyllSearch({
+            searchInput: input,
+            resultsContainer: results,
+            json: '/search.json'
+          });
+        }
+
+        if (typeof SteemContentRenderer === 'undefined') return;
+
+        var targets = document.querySelectorAll('[data-hive-render-target="true"]');
+        if (!targets.length) return;
+
+        var renderer = new SteemContentRenderer.DefaultRenderer({
+          baseUrl: 'https://hive.blog/',
+          breaks: true,
+          skipSanitization: false,
+          allowInsecureScriptTags: false,
+          addNofollowToLinks: true,
+          doNotShowImages: false,
+          ipfsPrefix: '',
+          assetsWidth: 640,
+          assetsHeight: 480,
+          imageProxyFn: function (url) { return url; },
+          usertagUrlFn: function (account) { return '/@' + account; },
+          hashtagUrlFn: function (hashtag) { return '/tags/#' + hashtag; },
+          isLinkSafeFn: function () { return true; }
+        });
+
+        targets.forEach(function (target) {
+          try {
+            var inputHtml = target.innerHTML;
+            target.innerHTML = renderer.render(inputHtml);
+          } catch (e) {
+            console.log(e);
+          }
+        });
+      })();
+    </script>
+
+  </body>
+
+</html>

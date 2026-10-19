@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta property="og:image" content="/assets/images/sticker.png" />
+  <meta name="apple-mobile-web-app-title" content="Hive Docs" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" /><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Rate-limit support in the aiohivebot python lib. | Hive Chain Documentation</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Rate-limit support in the aiohivebot python lib." />
+<meta name="author" content="pibara" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Reporting on client-side rate limiting support in the aiohivebot asynchonous Python HIVE library" />
+<meta property="og:description" content="Reporting on client-side rate limiting support in the aiohivebot asynchonous Python HIVE library" />
+<link rel="canonical" href="https://hive.blog/hive-139531/@pibara/rate-limit-support-in-the-aiohivebot-python-lib" />
+<meta property="og:url" content="https://hive.blog/hive-139531/@pibara/rate-limit-support-in-the-aiohivebot-python-lib" />
+<meta property="og:site_name" content="Hive Chain Documentation" />
+<meta property="og:image" content="https://files.peakd.com/file/peakd-hive/pibara/23wr5usndHucjRZiUmnjSDr9vAu8QfgcmtEiLUhuBPLQrxznsBVcsE22m4KMPzUv1Ch35.png" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2024-06-08T17:12:48-07:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="https://files.peakd.com/file/peakd-hive/pibara/23wr5usndHucjRZiUmnjSDr9vAu8QfgcmtEiLUhuBPLQrxznsBVcsE22m4KMPzUv1Ch35.png" />
+<meta property="twitter:title" content="Rate-limit support in the aiohivebot python lib." />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"pibara"},"dateModified":"2024-06-08T17:12:48-07:00","datePublished":"2024-06-08T17:12:48-07:00","description":"Reporting on client-side rate limiting support in the aiohivebot asynchonous Python HIVE library","headline":"Rate-limit support in the aiohivebot python lib.","image":"https://files.peakd.com/file/peakd-hive/pibara/23wr5usndHucjRZiUmnjSDr9vAu8QfgcmtEiLUhuBPLQrxznsBVcsE22m4KMPzUv1Ch35.png","mainEntityOfPage":{"@type":"WebPage","@id":"https://hive.blog/hive-139531/@pibara/rate-limit-support-in-the-aiohivebot-python-lib"},"url":"https://hive.blog/hive-139531/@pibara/rate-limit-support-in-the-aiohivebot-python-lib"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://hivedocs.info/feed.xml" title="Hive Chain Documentation" /><script>
+if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNotTrack === "yes" || navigator.msDoNotTrack === "1")) {
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-161692811-1', 'auto');
+  ga('send', 'pageview');
+}
+</script>
+  
+<script src='https://unpkg.com/steem-content-renderer'></script>
+  <script src="/assets/javascript/universal-bridge-against-phishing.js"></script>
+  <script src="/assets/javascript/lazysizes.min.js" async=""></script>
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet" />
+  <link rel="shortcut icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="152x152" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="167x167" href="/assets/images/favicon-80x80.png" />
+</head>
+<body><header class="site-header" role="banner">
+  <div class="wrapper site-header-inner">
+    <a class="site-title" rel="author" href="/">Hive Chain Documentation</a>
+
+    <nav class="site-nav" aria-label="Primary">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/news/">News</a><a class="page-link" href="/howto/">How To</a><a class="page-link" href="/links/">Useful Links</a><a class="page-link" href="/authors/">Authors</a><a class="page-link" href="/topics/">Topics</a><a class="page-link" href="/search/">Search</a></div>
+    </nav>
+  </div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper page-layout has-search-panel">
+        <div class="page-main">
+          <article class="post h-entry post-article" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header post-hero">
+    <div class="post-hero-main">
+      <p class="post-kicker">Archive post</p>
+      <h1 class="post-title p-name" itemprop="name headline">Rate-limit support in the aiohivebot python lib.</h1>
+      <p class="post-meta">
+        <time class="dt-published" datetime="2024-06-08T17:12:48-07:00" itemprop="datePublished">Jun 8, 2024
+        </time>• <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">
+            <a href="/authors/#author-pibara">pibara</a>
+          </span></span></p><p class="post-summary">Reporting on client-side rate limiting support in the aiohivebot asynchonous Python HIVE library</p></div><aside class="post-author-card">
+      <img src="https://images.hive.blog/u/pibara/avatar" width="128" height="128" class="lazyload post-author-avatar" alt="Avatar for @pibara" />
+      <div class="post-author-name">@pibara</div>
+    </aside></header>
+
+  <div class="post-content e-content post-body" itemprop="articleBody">
+    <div class="hive-post-embed" data-hive-author="pibara" data-hive-permlink="rate-limit-support-in-the-aiohivebot-python-lib">
+  <div id="content-pibara-rate-limit-support-in-the-aiohivebot-python-lib" class="hive-post-embed__content" data-hive-render-target="true">## Some context for aiohivebot
+
+It has been a while since I pushed code to the aiohivebot project. The aiohivebot project is one of three interrelated projects that I'm working on:
+
+* **coinzdense** : post quantum signatures for Web-3
+* **aiohivebot** : An async python library for HIVE meant primarily for writing bots and middleware
+* **hive-archeology-bot** : A simple HIVE bot for personal usage that allows the owner to vote on content that is past its 7 day reward window. 
+
+Currently my focus is on aiohivebot,  but the goal is to let these three projects grow towards eachother as a proof of concept stack with the **hive-archeology-bot** running on top of the **aiohivebot** library, that in turn uses **coinzdense** for signing with a post-quantum twist. I'll write a blog post on that last part when I'm further allong, but the idea is to demonstrate the viability of hash-based signatures for HIVE by redundantly signing most hive-archeology-bot operations with hash-based signatures in custom_json.
+
+## What makes aiohivebot different from beam and lighthive
+
+The aiohivebot library has somewhat of a different setup from other Python HIVE libraries. It's main design is less suitable for commandline scripts than libraries such as beam and lighthive, but instead it is significantly better for use in long running middleware and bots. The core of aiohivebot is made up of a collection of (currently) 13 async tasks, one for each of the HIVE public API nodes. Each node is constantly probed for health, latency and new blocks, and a stream of blocks is fetched from whichever nodes have the block available the fastest. When during processing of the blocks other API calls are needed, the fastest of the healthy nodes will be used to get the results. 
+
+If for some reason the bot of middleware needs to be paused or powercycled, aiohivebot has hooks to keep track of the last block processed, so if that hook is persisted. after a reboot it can start at that block and not miss any blocks.
+For bots and middleware this is a decent setup, but there is, or rather there was an issue when we want to use this last feature for streaming historic data from the blockchain into our bot.
+
+## The problem with streaming historic data 
+
+While the aiohiveboty python library was made primaraly for processing and responding to life on-chain events in an async and cross-connective way, the start-at-block option that was desinged for clean power cycling of middleware and bots also works when we, say, want to stream three months of blocks to gather some interesting stats. I had used the library for that purpose a couple of times, mainly with the hive-archeology-bot migration in mind, but untill a few months ago when I wanted to look into the subject of the HBD apr, everything worked just fine.
+
+It seems that HIVE public-API nodes work just dandy when only streaming blocks at close to the max speed possible for the library, but when every block also gets queried for **virtual** operations, things get a bit more involved. I have no insights in the workings of HIVE public API nodes, but the fact that peakd stopped working from my home IP when I was running this script is probably a good indication that my script using aiohivebot ended up querying the public API nodes way to agressively.
+
+It became clear that if I wanted to fully support the start-at-block feature for more than short catch-up bursts, then some kind of rate-limiting would be needed.
+
+## My reluctance to work on rate-limiting
+
+Those of you who have been on the chain long enough to remember te STEEM flag-wars may remember that I used to run a little periodic script that made a graphical representation of recent events in the flag-wars in those days.
+Those scripts worked with an ancient and much more basic predecesor of of aiohivebot called **asyncsteem**. I used to have quite some time invested in asyncsteem, an asynchonous Python 2.x library that was buils on top of the Twisted framework. Like, as it seems, the current API nodes, the main public API node at that time (run by SteemIt Inc) didn't have any kind of rate limiting headers or standard HTTP error codes, but one day Steemit Inc decided introduce a rather brutal and primitive rate-limiting implementation, and from that day asyncsteem, my flag-war reports, and some other projects I was working on died an instance death.
+
+This experience at first made me very reluctant to start wading in the streaming of historic blocks again. 
+
+## HTTP 429 response and the Retry-After header
+
+The simplest form of rate limiting a server can implement leaves the client rather blind because no indication is sent to the client that there is any type of rate limiting in place until the server decides it has had enough. 
+This form can be OK if the window isn't too big. What happens is that the server will set some kind of per window quota for the client, either on IP or some other property that the server deems unique enough, and when the quota is reched, each consecutive web request from the client will result in a **429 Too Many Requests** error. This response will usualy be accompanied by a **Retry-After** header. 
+
+Imagine that an API node has a 30 second window with a policy of 100 requests per 30 seconds. Now imagine our client sends out 10 requests per second. After 10 seconds our client will get a 429 error with a Retry-After header set to 20 seconds. While not ideal, this would rate-limit the client in a crude but effective way. But imagine the same scenario with a 1 hour window and proportionally 12,000 request per hour as quota. At 10 request per second the client will burn blindly through its 12,000 requests in 20 minutes, after what it will get hid with a Retry-After header telling the client to come back after 40 minutes. Eventhough the policy isn't unreasonable, the fact that the client has no way to know how hard it will hit makes a 1 hour policy with these headers pretty much a deadblow for a blocks streaming library like aiohivebot. 
+
+So in short, if a node owner implements oonly 429 responses for rate limiting, (s)he should take care not to choose too big of a window for the policies.
+
+## draft-ietf-httpapi-ratelimit-headers and the RateLimit header
+
+There is a draft standard for HTTP headers for rate limiting that has been a while in the making. Although the latest draft has recently expired, and it's unclear if work continues, the headers proposed in the draft form a pretty decent addition to the 429 setup.
+
+While the IETF draft proposes two headers, the most usable header is the RateLimit header, that looks something like this:
+
+```
+RateLimit: limit=100, remaining=50, reset=5
+```
+
+What this header basicly tells the client is that in the current undisclosed time window the client got a quota of 100 requests and there are still 50 left. It also tells the client that the current time window will end in 5 seconds.
+This means that the client is free to make 50 requests in th next 5 seconds however it sees fit.
+
+Next to the RateLimit header, the IETF draft also defines the RateLimit-Policy header that should look something like this:
+
+```
+RateLimit-Policy: 10;w=1, 50;w=60, 1000;w=3600, 5000;w=86400
+```
+
+The above example defines four rate limiting policies with four different time windows.
+
+* 10 requests max per 1 second window
+* 50 requests max per 1 minute window
+* 1,000 requests per 1 hour window
+* 5,000 requests per 1 day window
+
+The aiohivebot code currently doesn't use or support this header. When HIVE public API nodes start sending these headers, I'll definetely start looking into properly making use of these headers in a way most suitable for aiohivebot use. 
+
+## Client side rate-limiting if the server uses no such headers and codes
+
+So currently the public API nodes don't return any of the abouve headers, but we still want to rate limit our client. So to accomodate this, I added a client side rate limiter to aiohivebot that allows for faking RateLimit headers based on a list of static client side policies like the ones specified in the RateLimit-Policy line above. Basicly aiohivebot comes with a json config file that allows a client side policy to be set on a per node basis, simulating that the server adds the Ratelimit header based on these policies in an expected way.
+
+## The new hive-nodes.json format
+
+Untill the previous version of aiohivebot, the config file hive-nodes.json was just a list of node DNS names. In the latest version we changed the format to a dict. Most of the content of the dict is currently used for defining rate limiting policies like this:
+
+```json
+{
+  "api.hive.blog": {
+    "policies": [ 
+            {"w": 60, "v": 240},
+            {"w": 600, "v": 1800},
+            {"w": 3600, "v": 9000},
+            {"w": 10800, "v": 21600}
+    ]
+  },
+  "api.deathwing.me": {
+    "policies": [ 
+            {"w": 60, "v": 240},
+            {"w": 600, "v": 1800},
+            {"w": 3600, "v": 9000},
+            {"w": 10800, "v": 21600}
+    ]
+  }
+  ...
+}
+
+```
+For now the policies are set like this for each of the nodes. 
+
+* 240 requests per minute (4 req/sec)
+* 1,800 requesta per 10 minutes ( 3 req/sec)
+* 9,000 request per hour ( 2.5 req/sec)
+* 21,6000 requests/day ( 2 req/sec)
+
+Let's demonstrate the concequences from these policies with a short script:
+
+```python
+import asyncio
+from aiohivebot import BaseBot
+
+class MyBot(BaseBot):
+    """Example of an aiohivebot python bot without real utility"""
+    def __init__(self):
+        jan2024=82316952
+        super().__init__(jan2024, use_virtual=False, maintain_order=False)
+
+    async def monitor_block_rate(self, rate):
+        print("block rate =", rate,"blocks/second")
+
+pncset = MyBot()
+loop = asyncio.get_event_loop()
+loop.run_until_complete(pncset.run())
+
+```
+
+This is basicaly a do nothing script that just prints the block processing rate once every aproximate 60 seconds.
+
+```
+block rate = 4.51 blocks/second
+block rate = 4.66 blocks/second
+block rate = 4.65 blocks/second
+block rate = 4.56 blocks/second
+block rate = 4.71 blocks/second
+block rate = 4.56 blocks/second
+block rate = 4.69 blocks/second
+block rate = 3.41 blocks/second
+block rate = 1.84 blocks/second
+block rate = 2.31 blocks/second
+block rate = 4.17 blocks/second
+block rate = 4.78 blocks/second
+block rate = 4.67 blocks/second
+block rate = 4.61 blocks/second
+block rate = 4.66 blocks/second
+block rate = 4.66 blocks/second
+block rate = 4.63 blocks/second
+block rate = 3.31 blocks/second
+block rate = 1.82 blocks/second
+block rate = 2.38 blocks/second
+block rate = 4.82 blocks/second
+block rate = 4.7 blocks/second
+block rate = 4.79 blocks/second
+block rate = 4.77 blocks/second
+block rate = 4.69 blocks/second
+block rate = 4.74 blocks/second
+block rate = 4.03 blocks/second
+block rate = 3.15 blocks/second
+block rate = 1.96 blocks/second
+block rate = 2.78 blocks/second
+block rate = 4.56 blocks/second
+block rate = 4.65 blocks/second
+block rate = 4.01 blocks/second
+block rate = 4.49 blocks/second
+block rate = 4.57 blocks/second
+block rate = 4.52 blocks/second
+block rate = 4.46 blocks/second
+block rate = 3.01 blocks/second
+block rate = 1.73 blocks/second
+block rate = 2.67 blocks/second
+block rate = 4.71 blocks/second
+block rate = 4.69 blocks/second
+block rate = 4.56 blocks/second
+block rate = 4.47 blocks/second
+block rate = 4.44 blocks/second
+block rate = 4.69 blocks/second
+block rate = 3.82 blocks/second
+block rate = 3.44 blocks/second
+block rate = 1.61 blocks/second
+block rate = 1.57 blocks/second
+block rate = 1.99 blocks/second
+block rate = 1.92 blocks/second
+block rate = 1.99 blocks/second
+block rate = 1.98 blocks/second
+block rate = 1.92 blocks/second
+block rate = 1.91 blocks/second
+block rate = 1.92 blocks/second
+block rate = 1.88 blocks/second
+block rate = 1.98 blocks/second
+block rate = 3.17 blocks/second
+block rate = 4.55 blocks/second
+block rate = 4.63 blocks/second
+block rate = 4.63 blocks/second
+block rate = 4.7 blocks/second
+block rate = 4.78 blocks/second
+block rate = 4.85 blocks/second
+block rate = 4.19 blocks/second
+block rate = 2.94 blocks/second
+block rate = 1.95 blocks/second
+block rate = 3.4 blocks/second
+block rate = 4.84 blocks/second
+block rate = 4.71 blocks/second
+block rate = 4.84 blocks/second
+block rate = 4.69 blocks/second
+block rate = 4.66 blocks/second
+block rate = 4.66 blocks/second
+block rate = 3.86 blocks/second
+block rate = 2.92 blocks/second
+block rate = 1.88 blocks/second
+block rate = 3.37 blocks/second
+block rate = 4.64 blocks/second
+block rate = 4.71 blocks/second
+block rate = 4.74 blocks/second
+block rate = 4.7 blocks/second
+block rate = 4.73 blocks/second
+block rate = 4.76 blocks/second
+block rate = 3.93 blocks/second
+block rate = 2.81 blocks/second
+block rate = 1.85 blocks/second
+block rate = 3.54 blocks/second
+block rate = 4.64 blocks/second
+block rate = 4.79 blocks/second
+block rate = 4.7 blocks/second
+block rate = 4.66 blocks/second
+block rate = 4.66 blocks/second
+block rate = 4.5 blocks/second
+block rate = 3.76 blocks/second
+block rate = 2.39 blocks/second
+block rate = 1.78 blocks/second
+block rate = 3.56 blocks/second
+block rate = 3.77 blocks/second
+block rate = 4.64 blocks/second
+block rate = 4.81 blocks/second
+block rate = 4.73 blocks/second
+block rate = 4.69 blocks/second
+block rate = 4.61 blocks/second
+block rate = 3.97 blocks/second
+block rate = 3.47 blocks/second
+block rate = 1.68 blocks/second
+block rate = 1.79 blocks/second
+block rate = 1.89 blocks/second
+block rate = 1.89 blocks/second
+block rate = 1.84 blocks/second
+block rate = 1.91 blocks/second
+block rate = 1.94 blocks/second
+block rate = 1.9 blocks/second
+block rate = 1.87 blocks/second
+```
+
+When you look quickly you see the block processing rate fluctuates quite a bit but not too much. If you look close at the pattern you should be able to see how the fluctuations have a pattern that matches the policies.
+
+## Input from node operators appreciated
+
+If you are reading this and happen to operate a public API node, please let me know what you think about the current client side rate limiting policies for the nodes, and for your node in particular. Are the policies OK? Can I increase the rate limits? Should I decrease them? If you have the option to add the header fields that would be amazing, but if you don't, please let me know what client side policies you would like me to put in the config for your node. 
+
+## Support and merchandise
+
+If you appreciate my work on aiohivebot or on the coinzdense/aiohivebot/hive-archeology-bot in its completeness, I would very much like to work more on these projects, and I could really use your support in order for me to allow myself to allocate more time to them. I've got (normal and legal) bills to pay, so I need to often choose activities that make me money over activities I'm pasionate about, but with yous support the second can become the first again.
+
+If you appreciate my work on these projects, please:
+
+* Upvote my posts
+* Consider making a (crypto or fiat) [donation](/opensource/@pibara/innuendo-donation-page)
+* Consider getting some [Innuendo Merchandise](/opensource/@pibara/innuendo-donation-page)
+
+If you have your own projects and are in need of some Python and/or C++ expertise and have other skill sets to contribute to my projects, thats very interesting too. We can support eachothers projects with an [hour swap](/opensource/@pibara/innuendodo--hour-swap-page). 
+
+While I prefer to work on these projects, if instead of supporting my open source projects you are in need of my skills, I'm [available for short contracts](/contracting/@pibara/innuendo-hire-me-page) with a discount if the project I'll be working on will be open source. 
+
+![image.png](https://files.peakd.com/file/peakd-hive/pibara/23wr5usndHucjRZiUmnjSDr9vAu8QfgcmtEiLUhuBPLQrxznsBVcsE22m4KMPzUv1Ch35.png)</div>
+  <footer class="hive-post-embed__source">
+    <span class="hive-post-embed__source-label">Source:</span>
+    <a href="https://hive.blog/@pibara/rate-limit-support-in-the-aiohivebot-python-lib">Rate-limit support in the aiohivebot python lib.</a>
+    by
+    <a href="https://hive.blog/@pibara">@pibara</a>
+  </footer>
+</div>
+
+
+  </div><a class="u-url" href="/tools/python/aiohivebot/2024/06/08/rate-limit-support-in-the-aiohivebot-python-lib.html" hidden></a>
+</article>
+
+        </div>
+
+        
+        <aside class="page-sidebar" aria-label="Search and browse">
+          <section class="sidebar-section sidebar-search">
+            <h2 class="sidebar-heading">Search posts</h2>
+            <p class="sidebar-copy">Search the locally indexed post archive.</p>
+            <input type="text" id="search-input" placeholder="Search posts" autocomplete="off" />
+            <ul id="results-container"></ul>
+          </section>
+
+          <section class="sidebar-section sidebar-topics">
+            <h2 class="sidebar-heading">Browse topics</h2>
+            <p class="sidebar-copy">Jump into curated topic landing pages.</p>
+            <ul class="topic-list topic-list-sidebar"><li><a class="page-link" href="/account-recovery/">Account Recovery</a></li><li><a class="page-link" href="/core-development/">Core Development</a></li><li><a class="page-link" href="/dapps/">Dapps</a></li><li><a class="page-link" href="/docker/">Docker</a></li><li><a class="page-link" href="/hardfork/">Hardfork</a></li><li><a class="page-link" href="/hivemind/">Hivemind</a></li><li><a class="page-link" href="/javascript/">Javascript</a></li><li><a class="page-link" href="/multisig/">Multisig</a></li><li><a class="page-link" href="/python/">Python</a></li><li><a class="page-link" href="/ruby/">Ruby</a></li><li><a class="page-link" href="/testnet/">Testnet</a></li><li><a class="page-link" href="/tools/">Tools</a></li><li><a class="page-link" href="/witness/">Witness</a></li></ul>
+          </section>
+        </aside>
+        
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading"><a rel="author" href="/">Hive Chain Documentation</a></h2>
+    
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">site curated by: @inertia</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>Your resource for various levels of Hive Documentation.</p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+<script src="/assets/javascript/search.js"></script>
+    <script>
+      (function () {
+        var input = document.getElementById('search-input');
+        var results = document.getElementById('results-container');
+        if (input && results && typeof SimpleJekyllSearch !== 'undefined') {
+          SimpleJekyllSearch({
+            searchInput: input,
+            resultsContainer: results,
+            json: '/search.json'
+          });
+        }
+
+        if (typeof SteemContentRenderer === 'undefined') return;
+
+        var targets = document.querySelectorAll('[data-hive-render-target="true"]');
+        if (!targets.length) return;
+
+        var renderer = new SteemContentRenderer.DefaultRenderer({
+          baseUrl: 'https://hive.blog/',
+          breaks: true,
+          skipSanitization: false,
+          allowInsecureScriptTags: false,
+          addNofollowToLinks: true,
+          doNotShowImages: false,
+          ipfsPrefix: '',
+          assetsWidth: 640,
+          assetsHeight: 480,
+          imageProxyFn: function (url) { return url; },
+          usertagUrlFn: function (account) { return '/@' + account; },
+          hashtagUrlFn: function (hashtag) { return '/tags/#' + hashtag; },
+          isLinkSafeFn: function () { return true; }
+        });
+
+        targets.forEach(function (target) {
+          try {
+            var inputHtml = target.innerHTML;
+            target.innerHTML = renderer.render(inputHtml);
+          } catch (e) {
+            console.log(e);
+          }
+        });
+      })();
+    </script>
+
+  </body>
+
+</html>

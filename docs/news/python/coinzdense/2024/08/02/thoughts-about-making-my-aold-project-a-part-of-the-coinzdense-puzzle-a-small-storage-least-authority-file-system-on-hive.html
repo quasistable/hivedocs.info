@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta property="og:image" content="/assets/images/sticker.png" />
+  <meta name="apple-mobile-web-app-title" content="Hive Docs" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" /><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Thoughts about making my old projects a part of the CoinZdense puzzle: A small-storage least authority file-system on HIVE? | Hive Chain Documentation</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Thoughts about making my old projects a part of the CoinZdense puzzle: A small-storage least authority file-system on HIVE?" />
+<meta name="author" content="pibara" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Thoughts on a potential 4th project. A small-storage least authority file-system on HIVE. But then there is time&amp;funding" />
+<meta property="og:description" content="Thoughts on a potential 4th project. A small-storage least authority file-system on HIVE. But then there is time&amp;funding" />
+<link rel="canonical" href="https://hive.blog/hive-139531/@pibara/thoughts-about-making-my-aold-project-a-part-of-the-coinzdense-puzzle-a-small-storage-least-authority-file-system-on-hive" />
+<meta property="og:url" content="https://hive.blog/hive-139531/@pibara/thoughts-about-making-my-aold-project-a-part-of-the-coinzdense-puzzle-a-small-storage-least-authority-file-system-on-hive" />
+<meta property="og:site_name" content="Hive Chain Documentation" />
+<meta property="og:image" content="https://files.peakd.com/file/peakd-hive/pibara/2423jQDTteabDZdibfCmHiU94Fivzr9dtiQgT5hyP14wVWDbFvfYsicjZrotyEaLjD86g.jpg" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2024-08-02T08:13:24-07:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="https://files.peakd.com/file/peakd-hive/pibara/2423jQDTteabDZdibfCmHiU94Fivzr9dtiQgT5hyP14wVWDbFvfYsicjZrotyEaLjD86g.jpg" />
+<meta property="twitter:title" content="Thoughts about making my old projects a part of the CoinZdense puzzle: A small-storage least authority file-system on HIVE?" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"pibara"},"dateModified":"2024-08-02T08:13:24-07:00","datePublished":"2024-08-02T08:13:24-07:00","description":"Thoughts on a potential 4th project. A small-storage least authority file-system on HIVE. But then there is time&amp;funding","headline":"Thoughts about making my old projects a part of the CoinZdense puzzle: A small-storage least authority file-system on HIVE?","image":"https://files.peakd.com/file/peakd-hive/pibara/2423jQDTteabDZdibfCmHiU94Fivzr9dtiQgT5hyP14wVWDbFvfYsicjZrotyEaLjD86g.jpg","mainEntityOfPage":{"@type":"WebPage","@id":"https://hive.blog/hive-139531/@pibara/thoughts-about-making-my-aold-project-a-part-of-the-coinzdense-puzzle-a-small-storage-least-authority-file-system-on-hive"},"url":"https://hive.blog/hive-139531/@pibara/thoughts-about-making-my-aold-project-a-part-of-the-coinzdense-puzzle-a-small-storage-least-authority-file-system-on-hive"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://hivedocs.info/feed.xml" title="Hive Chain Documentation" /><script>
+if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNotTrack === "yes" || navigator.msDoNotTrack === "1")) {
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-161692811-1', 'auto');
+  ga('send', 'pageview');
+}
+</script>
+  
+<script src='https://unpkg.com/steem-content-renderer'></script>
+  <script src="/assets/javascript/universal-bridge-against-phishing.js"></script>
+  <script src="/assets/javascript/lazysizes.min.js" async=""></script>
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet" />
+  <link rel="shortcut icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="152x152" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="167x167" href="/assets/images/favicon-80x80.png" />
+</head>
+<body><header class="site-header" role="banner">
+  <div class="wrapper site-header-inner">
+    <a class="site-title" rel="author" href="/">Hive Chain Documentation</a>
+
+    <nav class="site-nav" aria-label="Primary">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/news/">News</a><a class="page-link" href="/howto/">How To</a><a class="page-link" href="/links/">Useful Links</a><a class="page-link" href="/authors/">Authors</a><a class="page-link" href="/topics/">Topics</a><a class="page-link" href="/search/">Search</a></div>
+    </nav>
+  </div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper page-layout has-search-panel">
+        <div class="page-main">
+          <article class="post h-entry post-article" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header post-hero">
+    <div class="post-hero-main">
+      <p class="post-kicker">Archive post</p>
+      <h1 class="post-title p-name" itemprop="name headline">Thoughts about making my old projects a part of the CoinZdense puzzle: A small-storage least authority file-system on HIVE?</h1>
+      <p class="post-meta">
+        <time class="dt-published" datetime="2024-08-02T08:13:24-07:00" itemprop="datePublished">Aug 2, 2024
+        </time>• <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">
+            <a href="/authors/#author-pibara">pibara</a>
+          </span></span></p><p class="post-summary">Thoughts on a potential 4th project. A small-storage least authority file-system on HIVE. But then there is time&funding</p></div><aside class="post-author-card">
+      <img src="https://images.hive.blog/u/pibara/avatar" width="128" height="128" class="lazyload post-author-avatar" alt="Avatar for @pibara" />
+      <div class="post-author-name">@pibara</div>
+    </aside></header>
+
+  <div class="post-content e-content post-body" itemprop="articleBody">
+    <div class="hive-post-embed" data-hive-author="pibara" data-hive-permlink="thoughts-about-making-my-aold-project-a-part-of-the-coinzdense-puzzle-a-small-storage-least-authority-file-system-on-hive">
+  <div id="content-pibara-thoughts-about-making-my-aold-project-a-part-of-the-coinzdense-puzzle-a-small-storage-least-authority-file-system-on-hive" class="hive-post-embed__content" data-hive-render-target="true">## MinorFS 1.0
+
+In the distance part I wrote a project in Perl, it was way back in the time that Perl was the language of choice for many things in the same way Python is today. The project was called MinorFS, and it was meant as a kind of glue project for allowing least authority system development. In Linux there are least authority features, be it in a rather static way, using security kernel extensions such as SELinux and [AppArmor](https://apparmor.net/). At the programming language level there are least authority languages, called [object-capability](https://en.wikipedia.org/wiki/Object-capability_model) languages that provide the handles for true dynamic least authority. One amazing little language I had been playing with at that time was the [e-language](http://www.erights.org/), that ran on top of the JVM, and implemented a feature of persitent processes through storage that, running in user space, was pretty much unprotected from attacks from below.
+With my project [minorfs](https://github.com/pibara/MinorFS), I primaraly created a bit of glue by implementing a user space filesystem that could bridge the cap between E and AppArmor. For more info on the project, after 15 years it seems the images are gone, but [here](https://www.linuxjournal.com/article/10199) is an article I wrote about MinorFS for Linux Journal.
+
+MinorFS was actually two separate user space file-systems. The first, CapFS was a file-system where all files and directories had two valid names, a base name and a secure name, where the base name would show up in directory listings, and the secure name could be extracted from a file or directory by getting an extended attribute.
+
+![10199f1.jpg](https://files.peakd.com/file/peakd-hive/pibara/2423jQDTteabDZdibfCmHiU94Fivzr9dtiQgT5hyP14wVWDbFvfYsicjZrotyEaLjD86g.jpg)
+
+The second file-system was ViewFS and always contained two symbolic links into CapFS that were different for something that I referred to as a pseudo persistent process, in simplified terms being the n'th instance of something executable.
+For e-language code this meant that if the persistent state was serialized to disk under the capfs dir linked to by ViewFS, then no other process running as the same user would have access to that data UNLESS the E program was to explicitly delegate a secure name (aka sparse capability or password capability in capability theory).
+
+The initial version of MinorFS used an sql database to store the mapping between secure names and base names. 
+
+## Erasure Encoding for CA key recovery.
+
+Completely unrelated to caps or MinorFS, at some point in time I had to write code for a collection of offline certificate authority nodes running headless on Raspberry Pi boards, for access to a VPN. 
+
+All operations worked through files on an USB stick and leds. The normal operations of the CA's is irrelevant for this post, but there was one feature that I think is.
+
+Because a CA ran on a Raspbery Pi with the key stored on a no longer non-destructively removable micro-sd card, the CA hardware was expected to fail. And given that the model was that of a non hierarchical infrastructure, there was no master CA and there were no slaves. 
+
+So how did I handle node failure? 
+
+Every CA RPi, next to its own private key got an erassure encoding shard of each of the other CA RPi-s. With erasure encoding you create what is basicly akin to a RAID disk array on a really tiny scale.
+
+The CA RPi-s wouldn't just give up their shards, first an *intent* file had to be signed by more than half of the CAs. So the CA owner of the broken CA had to visit a shitload of other CA owners **twice** in order to initialize his replacement
+CA RPi.
+
+It wasn't a perfect system, by far, but it tought me how to work with erassure encoding, and tought me to apreciate erassure encoding for distributed redundancy.
+
+## CarvFS
+
+Another (so far) unrelated denelopment was related to computer forensics. With MinorFS I had learned to apreciate the power of user space file-systems for system design.
+
+CarvFS was another user space file-system meant for computer forensics, that allowed users and forensic tools to adress chunks of a bigger data unit as directories and files with location and size tokens forming the file and directory names.
+
+
+![2gsjgna1uruvUuS7ndh9YqVwYGPLVszbFLwwpAYXZooP1JES7NQP33akV38poTLY7mv3dWLANdeeD8CaGTft2i6KLoJZhsDPcc7B1H7ic9nBy2fgDt.png](https://files.peakd.com/file/peakd-hive/pibara/23tcNeS8U1DP3HLCq3jr7oUZ85zinLZLV4qnuHzYDuUJ9dYd7ZcK81CVE73cessmKF3ey.png)
+
+
+Most of CarvFS wasn't about hashing, but a tiny part was. If a fle or directory is made up of fragment descriptions, highly fragmented files can end up having names that are longer than the maximum file or directory name for the operating system. So to overcome this, MinorFS would automaticly convert potentially too long carvpaths to the hash of the carvpath, and store the back mapping in an sqlite database as we did in MinorFs. 
+
+## MinorFS 2.0 (the concepts) 
+
+At some point in time I set out to create a from scratch version of MinorFS using a hashing algoritm for decomposition and authorization. What was more, I wanted to extent the usability beyond the object capability language realm, and address the problem of trojans with the rewrite. I did a talk on the subject during the OHM2013.
+
+
+![image.png](https://files.peakd.com/file/peakd-hive/pibara/244Uus8ojSKptjkcaJ4VZSLnunf2kEbD12AKocMptDsUreXKrjKu6XMHPYjiPqKwXFzbp.png)
+
+OHM2013 was one of a four-anual series of security/hacking festifals that used to get organized in The Netherlands. It was a great festifal, but with a bit of a sad tone to it as I learned that the person who had introduced me to capability bases security and who had set me on the path that had led to MinorFS, [Hugh Daniel](https://en.wikipedia.org/wiki/Hugh_Daniel) had died not that long before the festifal date.
+
+The talks were recorder, but unfortunately the recordings from the tent I gave my talk in were lost, thus my talk isn't available online, but my [slides](https://www.slideshare.net/slideshow/ohm2013-trojans-slides/24928395) are.
+
+![image.png](https://files.peakd.com/file/peakd-hive/pibara/Ep3jeTwdE9rXjSex56iqY99UgX2WVvS3jbEyC6Fx6F3PtPgmiP1xnomgoyb3GPy6sLL.png)
+
+
+## RumpelTree
+
+Then things happened in my life, and I got the opportunity to get myself another M.Sc. An M.Sc in computer forensics. As a result, I had to scale down my MinorFS 2.0 activities. I ended up capturing the core hash based decomposition and atenuation algoritm in both a [C++](https://github.com/pibara/Rumpeltreepp) and a [Python](https://github.com/pibara/pyrumpeltree)
+
+The great thing about the RumpelTree algoritm compared to the original CapFs implementation, apart from the fact that the sqlite database is no longer needed, is that it's a pure hash-based algoritm, and the data is encrypted with an AES key that is derived from the sparse-capability used to access the file.
+
+
+![triplehash.jpg](https://files.peakd.com/file/peakd-hive/pibara/23wrAFLM1Da3yFutipfvXTCVa4YzTwx5fZFnCSNRDKxxL963LNxQ2TEmW17CoRhJyApca.jpg)
+
+A quick walkthrough. Before we can reason about a file-system based on the abouve image, Let's first consider how we can create an initial root for a file-system that runs on top of some other file-system. 
+
+Let's start off with a simple json structure
+
+```json
+{
+   "type" : "dir",
+   "dir" : []
+}
+```
+
+Now we take a master password and hash it to a 32 byte key that we will use as key1. We take this key and we hash it again to get key2. Then we take key2 and we hash it again to get key3.
+
+Now we take key2 and chop it into two 16 byte keys, we take the JSON and we encrypt it with AES-128 using the two 16 byte keys as AES key and IV respectively. After encrypting it, we take key3 and convert it to an alphanumeric value. For example using base32 encoding, or we could use base64 with some substitutions. We add some nesting to avoid directories with way too many files, so we end up with something like:
+
+* JMU/JAZ/JOKCR5K3PW3AOYRL4TDZXYG2YMPFQ3U5XF6TKZJDE3VXBA
+
+We write our encrypted JSON to this file and now we have a file system root for a capfs-like filesystem.
+
+Now we need to remember the root sparse-cap somehow. We take key1 and encode it to something alphanumeric. We can prefix the result so we can distinguish betweenrw sparse-caps and read-only sparse-caps. So we end up with something like:
+
+* rw-DHGYBBHFMNQNRNHRZXZUXE5LO4CTVB2JQTTMXFQLNULDEBIEBZIA
+
+Now if we wanted to create a subdirectory, what would happen?
+
+```
+mkdir /mnt/capfs/rw-DHGYBBHFMNQNRNHRZXZUXE5LO4CTVB2JQTTMXFQLNULDEBIEBZIA/foo
+```
+
+The capfs implementation will take the sparse-cap, see it is meant to be a rw cap, decode it, hash it two times to get key2 and key3 again, check to see the location designated by key3 actually exists, open the file, decrypt it using key2, see that it is a directory and that foo doesn't exist, take key2, the name "foo", and a secret that only the file-system nodes know to create a new key1' for foo, hash that key twice to get key2' and key3', encrypt a new empty-dir json, encrypt it and store it in the new position, then add the string "foo" to the initial dir object (there are some race condition issues here that we will ignore because it falls outside of the scope of this blog post), and re-encrypt and write the updated directory json to the underlying storage.
+
+ 
+## MattockFS
+
+In the years that I could't work on big projects because I wasn doing my computer forensics M.Sc, the knowledge and ideas didn't completely go to waste. During my research project where I looked into page cache efficiency in computer forensic disk image sprocessing at scale, I ended up writing a proof of concept piece of computer forensics architecture that again used a user space file-system, [mattockfs](https://github.com/pibara/MattockFS), and part of this user-space file-system used a least-authority setup in order to provide a forensic computing module with least-authority access to the framework, even if different modules ran as the same user. 
+
+Basicly MinorFS combined features from CarvFS with ideas from MinorFS in order to implement API as a file-system concepts. For more info, have a look at [this old blog post](/forensics/@pibara/mattockfs-computer-forensics-file-system-part-five) or have a look at my [paper](https://arxiv.org/abs/1703.00369).
+
+Part of my research included looking at the concept of opertunistic hashing in forensic frameworks, and to research this, I looked into many hashing algoritms. For my research I came to the conclusion that SHA1 and BLAKE2 together formed an ideal combination for computer forensics. SHA1 for compatibility with legacy forensic white and black lists, and BLAKE2 (BLAKE2bp to be exact) 
+
+
+![image.png](https://files.peakd.com/file/peakd-hive/pibara/23tmmXSdNWrwpCc5ybr9pK5LskkxizeeBWTJn8wh87hLy6vozrA1BNFHQK28fboaxKdJQ.png)
+
+Since doing my M.Sc research, BLAKE2 has become my go-to hashing algo for most of my work, in forensics combined with SHA1, and outside of forensics on its self.
+
+BLAKE2 is also the hashing algoritm used by [libsodium](https://doc.libsodium.org/), and amazing crypto library that takes a securety by default approach that works great when doing crypto in projects.
+
+## Ragnarok Conspiracy
+
+Next to a tech geek, I'm also a self-published author of speculative fiction and sci-fi. For my novel [Ragnarok Conspiracy](/fiction/@pibara/ragnarok-conspiracy) I looked into the idea of a quantum computing blockchain heist.
+
+In the novel, Wietse Dijkstra, a scientist that made a major discovery in the field of quantum physics in the 1990s got abducted and got hidden from the world for many decades by an unscrupulous organization that forced him to use his discoveries to create quantum computing technology aimed at industrial espionage. 
+
+Over the cause of multiple decades, this organization grows to secretly be the most powerfull entity in the world. In an attempt to expose his abductors, Wietse gets hold of the private laptop of one of his guards, and quantum-slices through all signatures and public keys he can find on the laptop to find the matching private keys that he puts back onto the laptop, disabling its boot capability in the hope some repair man outside of of the organization. He hides some quantum computing hardware in the laptop, hoping he can expose his abductors and the industrial espionage.
+
+
+![wietse.png](https://files.peakd.com/file/peakd-hive/pibara/AKU6r8ygDh2sCQEb5Z37iLQzULyi4RqDswsMHwjw2PJdv33baqjSx6JcenmLXGq.png)
+
+
+Unknown to Wietse, most of the crypto material on the laptop were blockchain data, so when the repair person where the laptop ends up ends up being a dating site scammer and hacker, the data on the laptop, before eventually exposing his abductors in a more dramatic way than Wietse could ever have imagined (The Copyright Wars), this doesn't happen before a massive quantum blockchain heist creates a domino effect that colapses the worlds monitary systems.
+
+After having completed my novel, and having published it on what used to be the STEEM blockchain, before publishing it on regular ebook channels, an *actual* blockchain heist happened on the exact blockchain that I had published my fiction on.
+
+After some readers of my fiction pointed me to [Quantum Resistant Ledger](https://www.theqrl.org/) I started reading up on QRL and on hash-based signing algoritms, and I started noticing the massive overlap between these algoritms and the work I had been doing with hash based algoritms, both in capability security and in computer forensics.
+
+## CoinZdense
+
+
+![FUkUE5bzkAZT3HzV5tJDiU2ik81PCd4JCyhWnRcDN8XJsVFY3UNB8DCaMFe45xNGGrVK6VnS6Yzbd56C2udqDLk9nPnSfTkBdDsNWg7RfKhRmCq3VdUzoBPLyojrEwnyZQJpJjxKnJpF3F6HKbKBUmBb6fdG7S2DrJHT.gif](https://files.peakd.com/file/peakd-hive/pibara/23wC1UGvzpuEZmDgnvr6vTRMzuxPd5TC8VCMRjHc4fQ9Wx99yhmFLYjt4we9j6ghEzbWJ.gif)
+
+
+So with that my new and ambitious project CoinZdense was born. I looked into hash based signatures and found that there were some subjects that needed adressing. Next to the problem solved by QRL for coin-only blockchains, Web 3.0 and utility blockchains that have any type of user abstraction, the problem is deeper and wider than what can be solves with the road that QRL took. Where for coin-only chains quantum-safe key-reuse is a nice feature, but the reall killer feature of quantum resistance lies in resistence against peer to peer attack resistance. Imagine you create a transaction on a lagged chain, and as you don't care much about the transaction taking long, you set relatively low fees. Now the attacker with a huge quantum computer slices through your signature in some time T, creats a new transaction with your USOs and sets fees equal to half the value of your USOs. If the slicing happens fast enough, there is a chance that the attacker's transaction will make it to a block before yours does.
+
+Utility chains and Web 3.0 chains will often have a problem that can materialize way before the peer to peer scenario becomes viable. For chains where key-reuse is not just a nice feature but an actual fundamental part of the architecture, signatures and public keys are just sitting there waiting for someone to have a big enough quantum computer to slice through them and retreive private keys. It won't matter if T is 1 minute, an hour, a day or six months, the attacker will have all the time of the world because the keypair isn't going anywhere.
+
+Further, the setup that QRL uses wouldn't scale enough, because reuse on a social chain like HIVE where every thumbs up, every comment and every mark-as-read will be signed with the same key, making reuse something that happend dozens to hundreds of times a day. In case of trading bots likely many orders of magnitude more.
+
+Finaly, key-management on blockchains are very far from least-authority. There sometimes are some static attentuated keys, such as the OWNER/ACTIVE/POSING setup in HIVE. 
+
+In CoinZDense I try to address all these things.
+
+I'm especialy exited about the concept of index-space as a resource, that I'm really exploring with this project. Interesing enough it's also a subject where CarvFS CarvPath annotation might come back in.
+
+
+![FUkUE5bzkAZT3HzV5tJDiU2ik81PCd4JCyhWnRcDN8XJsVFY3UNB8DCaMFe45xNGGrVJvvQcoggK9bFUpjbdfaAPUyhDYrmP5EmeoUUigyNK9T8eWs6Y1A8mdTwRnrEP5VoEFu3N3rg7fmdCLwGq4EwnY1vy6bXMBcJJ.png](https://files.peakd.com/file/peakd-hive/pibara/23viJwBERhZGkEvVjdRuA5zUfH4D9DaA6K1qnTQ2KVA8iYFza5eeApp8ETuXRvtJQA4Ti.png)
+
+
+Just like with my M.Sc though, my time isn't exactly abundant right now. I'm stuck in a slow and tedious and expensive divorce, and someone really special in my life is trying to restart her life with a new business in her country of birth and spending time on projects that don't assist me financially is something I can't affort that much right now. That means that without [sponsors](/opensource/@pibara/innuendo-donation-page) both my tech efforts and my fiction are running on a pilot light right now much of the time. 
+
+My priorities right now are:
+
+1) Work on my tech projects IF the work is at least partially sponsored
+2) Do work that helps me pay my legal bills and helps me prepare for restarting my life after my divorce is finaly final
+3) Anything I can do without spending money to help this special person get her business sorted.
+4) Unpaid unsponsored work on my tech projects
+5) My fiction
+
+## My current set of tech projects
+
+Right now there are three related and interdependant tech project shtat I'm working on. One I already discusse abouve is the CoinZdense project, seem my [talk](https://www.youtube.com/watch?v=gWKRztvfcDM) from two years ago.
+
+A second project is the [aiohivebot](https://github.com/pibara/aiohivebot) library. This library aims to be an async python library for writing HIVE bots, L2 nodes and middleware.
+
+A third project is the [HIVE archeology](https://github.com/pibara/hive-archeology) bot, a HIVE bot for private usage that allows its owner to vote on (and reward) posts that are beyond their initial 7 day voting window.
+
+The idea of working on all these three projects at the same time is that aiohivebot could provide a lib that is already usable for HIVE devs, while allowing to experiment with L2 hash-based signing and POLA subkey management by piggybagging hash based signatures onto ECDSA signed transactions with custom_json operations and JSON meta data on user account info, like its done in the [HIVE CoinZdense Disaster Recovery tools](https://github.com/pibara/hive-coinzdense-disaster-recovery) did.
+
+## A least-authority quantum-resistant distributed filesystem with subkey management features ?
+
+Even if my time is already quite short for working on these three projects, I'm still considering adding a 4th project. Given that the HIVE archeology bot is the simplest of the simplest bot, it might not be the best showcase or test of CoinZdense and aiohivebot suitability. A real L2 node, however simple, should be a much better demonstration.
+
+I was thinking about this, and I was thinking about my old projects, MinorFS, RumpelTree, CarvFS and MattockFS. And I was thinking about my prior experience with errasure encoding based system and security design.
+
+Then I remembered a talk me and a brilliant criminal lawyer co-presented in 2015, and one particular slide.
+
+
+![image.png](https://files.peakd.com/file/peakd-hive/pibara/Ep3jCG4MPSWLeyVHysCggrMcrR1D1TWopC7V2ugwjS4gtaMFjisN7JyJwbbZSh4eYu6.png)
+
+With MinorFS I wasn't the only one who wrote a least-authority file-system. [Zooko](https://en.wikipedia.org/wiki/Zooko_Wilcox-O%27Hearn), to paraphrase Sabina Hossenfelder's catchphrase "Yes, That guy again", the same Zooko from BLAKE2, had written a quite different type of least authority file-system, [Tahoe-LAFS](https://www.tahoe-lafs.org/trac/tahoe-lafs), where indeed LAFS stands for Least Authority File System. I remember discussing on the amazing cap-talk mailing list back in 2008 if there could be possibilities to use MinorFS and Tahoe-LAFS together. I don't remember the details, but it unfortuantely didn't lead to action back then.
+
+When preparing for my talk, I checked up with Zooko about Tahoe-LAFS, he pointed me to [RAIC](https://tahoe-lafs.readthedocs.io/en/latest/specifications/backends/raic.html).
+
+So what if I could make a relatively simple L2 for HIVE using aiohivebot and coinZdense that provides the user with the concept of a distributed and redundant least authority file-system akin to an intersection of MinorFS and Tahoe-LAFS, if possible (currently a chalenge) with support for CarvPath based decomposition.
+
+The idea would **NOT** be to create anything for big storage, no videos, nothing the size that would even justify puting relevant data off-chain away from L1. L1 already has redundance, it just doesn't have least auhority or confidentiality for that matter.
+
+## Just HIVE for now, but just "for now"
+
+Right now I'm focusing on the Python version of CoinZdense and all my other efforts are currently focuses on HIVE. This is however not the end station, at least not for CoinZdense. 
+
+I've been the main developer of the [aioflureedb](https://github.com/dlosatoes/aioflureedb) async Python library for [FlureeDB](https://developers.flur.ee/),plus the [Fluree Schema Scenario Tool](https://github.com/dlosatoes/fluree-schema-scenario-tool) TDD tool for FlureeDB, and I think FlureeDB, a blockchain bases graph database written in Clojure, would actually be an exelent piece of technology for a sidechain project.
+
+Like HIVE, FlureeDB is a blockchain project for what key reuse is truly a valuable spec for an underlying signing algoritm, and as such just like HIVE, FlureeDB could benefit a lot from a (slow) move towards hash based signatures.
+
+I could most definetely see great value at adding FlureeDB to the mix, but for now, while I am focusing on Python, FlureeDB will need to most definetely wait. It is important to realize though that I have no intent to keep limiting my CoinZdense related development to just targeting HIVE. HIVE is just *currently* everything I can remotely consider to have time for.
+
+I'm still learing Clojure at the moment and wouldn't consider myself anywhere close to the level a programmer in Clojure that I am in C++ and Python, so there are multipe reasons to put FlureeDB back on my list of blockchain technology to adress with CoinZdense, but primary is the limited time I can affort to spent on everything.
+
+And FlureeDB isn't the only one on my list, though it and HIVE are the only ones where I did a bit of a deep dive into the code and ecosystem so far.
+
+I really need to look into Agoric, Rune and Atom and their ecosystems are still on my radar, though I'm not sure right now I'll ever manage to get to the point where I would be working on exploring any of these for CoinZdense pigyback proof of concepts like the one I'm working on with my current three projects for HIVE.
+
+## The trust model
+
+One important note about the trust model for what I am considering building. I shall be using the RumpelTree trust model combined with that of the RPi CA setup as I discussed early in this post. When I commit a shard of my data to a node, the node sees the data, it may not seel all of the data, it sees the unencrypted erasure encoding shard. When I decompose a directory node, the node not only sees but even creates the access token (sparse capability) for that sub directory or file.  
+
+## Should a L2 mostly be 'just an index' ?
+
+So far I have nothing concrete, just a lot of ideas in my head about how to make things fit. The main goal for this 4th project in the collection would be to test and demonstrate the suitability of the python-CoinZdense/aiohivebot combination not just for simple bots like hive-archeology but also for creating L2 nodes on HIVE.
+
+Then I though about what it would take to implement this base least authority filesystem idea as a L2 for HIVE. CoinZdense would do all of the heavy lifting for subkey management. It would also elevate the confidenciality aspect to post-quantum level. The HIVE L1 would take care of the actual storage of data in the form of custom_json and custom_binary, remember we are not trying to implement a video storage L2. So in the end , most of it would be thinking out the best erasure encoding sharding model that uses an algoritm close to the RumpelTree concept, code linking the monitoring of CoinZdense signed custom json operations for the L2, and a public API. 
+
+But as far as storage in concerned, with the AES encrypted shards of data in custom_binary or custom_json, with user specific anchors and CoinZdense pubkeys in json_metadata of the account, the actual on-node storage needed seems to just exist of indices pointing to L2 blocks, transactions and opps.
+
+In fact, it pretty much seems to me when I think about it that non-index storage on L2 nodes, at least if the data isn't *also* on L1, might actualy be an anti-pattern.
+
+So my genuine question to the community and to other devs on here: Should an L2 just be logic and indices? That is, a side chain ofcource should be a side **chain** that is clear, we don't want to reprocess a huge chunk of the blocks 
+from the L1 to initialize a new L2 node, but in the end, shout an L2 in terms of storage just be a chain backed index of data on the L1?   
+
+## But what about an incentive model?
+
+Even with no high storage needs for L2 nodes, running any kind of node just for the fun of it might not be the best of models. Right now I have no incentive model for my idea of a least authority filesystem as an L2 for HIVE. To be fair, incentive models aren't really my cup of tea. I'm not a psychologist, just a book nerd and a tech geek. I absolutely realize that in this day and age, some kind of incentive model would be needed to get people tu run an L2 node. 
+
+Because of CoinZdense that I hope to keep blockchain agnostic, I'm hesitant to attach myself too strong to the HIVE blockchain by creating a DHF proposal *for development*, as it gives of a signal to other chains that CoinZdense is a HIVE project while I hope it not to be, even if its the first ecosystem I am targeting.
+
+For **running** the code however, a DHF proposal might be usefull if there is no other incentive model we could use. 
+
+**If I think it through, what I think is missing from HIVE, what is *realy* missing  is a mechnism for L2s to latch on to the RC economy of the L1.**
+
+This is absolutely a discussion I would love to see happening.
+
+## Can I add this to my list of projects?
+
+As I wrote, I currently have priorities that make it hard for me to work on my existing three projects even now, so should I really be adding a 4th project to the list?
+
+I'll be honest: without people helping me out, either with coding, or by helping partially make my work on these four project give me some financial returns, I don't think I should. 
+
+If you want me to work on this idea, next to my other three related main projects, please check out the posibilities to contribute either with [donations](https://peakd.com/opensource/@pibara/innuendo-donation-page) or check out my [merch on demand](https://peakd.com/merchondemand/@pibara/innuendo-merchendise).
+
+
+![FUkUE5bzkAZT3HzV5tJDiU2ik81PCd4JCyhWnRcDN8XJsVFY3UNB8DCaMFe45xNGGrVwQFk22xDn5Fc3PQKFsrNGE9q8cQgmnuyz2Gqrwt4ovvv7WNsKN2kTYFGkc79CMqE5UPLwhMDX1vSfJHqdQX5y185aa5wiKhmp.png](https://files.peakd.com/file/peakd-hive/pibara/242rwAMFMuvDm8AaTNF5cFwUTyjrXGcBwpFPWRJQmKzCyzxToXtv2EiYpTDRE7gsGY2GL.png)
+
+I recently applied for enabling sponsors on my github account to, but that one is still pending.
+
+![image.png](https://files.peakd.com/file/peakd-hive/pibara/23u6YmoQZtwKHoXVfxcrNfUoez76gi2i5MQpdymPPZBJbhXA8jW1bre3VNGEic7WQGNQe.png)
+
+I hope this page has shown you all a glimpse of my experience and skills, so it should be clear I have the capacity to do these projects, and I would love to do them just for the love of tech, and I will, but at a pace that is frustrating low right now. There is a huge difference between a 4 hours a week project done for the love of tech and a 20 hours a week project that has reliable sponsoring.
+
+So without sponsoring, I should probably not add the idea of a MinorFS/TAHOE-LAFS small-storage L2 for hive as a demonstator. It would be a really interesting test for both aiohivebot and coinZdense, but there is only so much fragmentation that is possible in a few hours a week. But then, maybe this idea, this 4th project, is exactly what my other three projects need to find sponsors for the project. 
+
+Quantum computing isn't close to the point where it becomes too late to really act for utility chains and Web 3.0 chains, so my lack of time resources might not be a problem yet. So it makes sense for me to work more on aiohivebot now untill I'm at the point where I can piggyback CoinZdense experiments onto it, and integrate these in a rewrite to aiohivebot of my hive archeology bot.
+
+But again, a personal use bot isn't a L2 and isn't even middleware, its just a personal use bot, so there is only so much the bot would demonstrate.  
+
+Regardless of everything though, I would really love some feedbacks on my ideas in this post. So please drop me a response. 
+
+For those who don't knopw yet, Ragnarok Conspiracy, my post-cryptocalyptical scifi novel, next to being available on [HIVE](https://peakd.com/fiction/@pibara/ragnarok-conspiracy), is also available for free on most [e-book channels](https://books2read.com/RagnarokConspiracy) as promotional material for my projects. Unfortunatly Amazon is the only channel where I failed to make it free, but you can sideload the mobi file from [smashwords](https://www.smashwords.com/signup/login/books/836234). I'm also posting chapters from my earlier book, the novelette Orussian Quarantine on [youtube](https://www.youtube.com/playlist?list=PLcw45lFjCpMPb3miYugOVjBwyLGvExb1j).  
+
+So please go and enjoy my fiction, let it resonate as to why my tech projects have value, and if you can spare it, get some merch, use one of the ways to sponsor my projects, or just help me out by liking my content and spreading the word.</div>
+  <footer class="hive-post-embed__source">
+    <span class="hive-post-embed__source-label">Source:</span>
+    <a href="https://hive.blog/@pibara/thoughts-about-making-my-aold-project-a-part-of-the-coinzdense-puzzle-a-small-storage-least-authority-file-system-on-hive">Thoughts about making my old projects a part of the CoinZdense puzzle: A small-storage least authority file-system on HIVE?</a>
+    by
+    <a href="https://hive.blog/@pibara">@pibara</a>
+  </footer>
+</div>
+
+
+  </div><a class="u-url" href="/news/python/coinzdense/2024/08/02/thoughts-about-making-my-aold-project-a-part-of-the-coinzdense-puzzle-a-small-storage-least-authority-file-system-on-hive.html" hidden></a>
+</article>
+
+        </div>
+
+        
+        <aside class="page-sidebar" aria-label="Search and browse">
+          <section class="sidebar-section sidebar-search">
+            <h2 class="sidebar-heading">Search posts</h2>
+            <p class="sidebar-copy">Search the locally indexed post archive.</p>
+            <input type="text" id="search-input" placeholder="Search posts" autocomplete="off" />
+            <ul id="results-container"></ul>
+          </section>
+
+          <section class="sidebar-section sidebar-topics">
+            <h2 class="sidebar-heading">Browse topics</h2>
+            <p class="sidebar-copy">Jump into curated topic landing pages.</p>
+            <ul class="topic-list topic-list-sidebar"><li><a class="page-link" href="/account-recovery/">Account Recovery</a></li><li><a class="page-link" href="/core-development/">Core Development</a></li><li><a class="page-link" href="/dapps/">Dapps</a></li><li><a class="page-link" href="/docker/">Docker</a></li><li><a class="page-link" href="/hardfork/">Hardfork</a></li><li><a class="page-link" href="/hivemind/">Hivemind</a></li><li><a class="page-link" href="/javascript/">Javascript</a></li><li><a class="page-link" href="/multisig/">Multisig</a></li><li><a class="page-link" href="/python/">Python</a></li><li><a class="page-link" href="/ruby/">Ruby</a></li><li><a class="page-link" href="/testnet/">Testnet</a></li><li><a class="page-link" href="/tools/">Tools</a></li><li><a class="page-link" href="/witness/">Witness</a></li></ul>
+          </section>
+        </aside>
+        
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading"><a rel="author" href="/">Hive Chain Documentation</a></h2>
+    
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">site curated by: @inertia</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>Your resource for various levels of Hive Documentation.</p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+<script src="/assets/javascript/search.js"></script>
+    <script>
+      (function () {
+        var input = document.getElementById('search-input');
+        var results = document.getElementById('results-container');
+        if (input && results && typeof SimpleJekyllSearch !== 'undefined') {
+          SimpleJekyllSearch({
+            searchInput: input,
+            resultsContainer: results,
+            json: '/search.json'
+          });
+        }
+
+        if (typeof SteemContentRenderer === 'undefined') return;
+
+        var targets = document.querySelectorAll('[data-hive-render-target="true"]');
+        if (!targets.length) return;
+
+        var renderer = new SteemContentRenderer.DefaultRenderer({
+          baseUrl: 'https://hive.blog/',
+          breaks: true,
+          skipSanitization: false,
+          allowInsecureScriptTags: false,
+          addNofollowToLinks: true,
+          doNotShowImages: false,
+          ipfsPrefix: '',
+          assetsWidth: 640,
+          assetsHeight: 480,
+          imageProxyFn: function (url) { return url; },
+          usertagUrlFn: function (account) { return '/@' + account; },
+          hashtagUrlFn: function (hashtag) { return '/tags/#' + hashtag; },
+          isLinkSafeFn: function () { return true; }
+        });
+
+        targets.forEach(function (target) {
+          try {
+            var inputHtml = target.innerHTML;
+            target.innerHTML = renderer.render(inputHtml);
+          } catch (e) {
+            console.log(e);
+          }
+        });
+      })();
+    </script>
+
+  </body>
+
+</html>

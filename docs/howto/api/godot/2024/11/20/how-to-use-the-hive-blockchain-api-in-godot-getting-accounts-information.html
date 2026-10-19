@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta property="og:image" content="/assets/images/sticker.png" />
+  <meta name="apple-mobile-web-app-title" content="Hive Docs" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" /><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>How to use the Hive Blockchain API in Godot - Getting Accounts Information | Hive Chain Documentation</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="How to use the Hive Blockchain API in Godot - Getting Accounts Information" />
+<meta name="author" content="wlfreitas" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="To start, I have no idea where my Owner/Master Key for my @wlffreitas account is, so I’m posting through this old account" />
+<meta property="og:description" content="To start, I have no idea where my Owner/Master Key for my @wlffreitas account is, so I’m posting through this old account" />
+<link rel="canonical" href="https://hive.blog/hive-139531/@wlfreitas/how-to-use-the-hive-blockchain-api-in-godot-getting-accounts-information" />
+<meta property="og:url" content="https://hive.blog/hive-139531/@wlfreitas/how-to-use-the-hive-blockchain-api-in-godot-getting-accounts-information" />
+<meta property="og:site_name" content="Hive Chain Documentation" />
+<meta property="og:image" content="https://files.peakd.com/file/peakd-hive/wlfreitas/23uQLiX7SxfFTzXNzhHPm5s2tUmZiTWMKtYdtMt7WJKLJ9oXbsx4KQaA55vm6dLQsCy7s.png" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2024-11-20T20:30:06-08:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="https://files.peakd.com/file/peakd-hive/wlfreitas/23uQLiX7SxfFTzXNzhHPm5s2tUmZiTWMKtYdtMt7WJKLJ9oXbsx4KQaA55vm6dLQsCy7s.png" />
+<meta property="twitter:title" content="How to use the Hive Blockchain API in Godot - Getting Accounts Information" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"wlfreitas"},"dateModified":"2024-11-20T20:30:06-08:00","datePublished":"2024-11-20T20:30:06-08:00","description":"To start, I have no idea where my Owner/Master Key for my @wlffreitas account is, so I’m posting through this old account","headline":"How to use the Hive Blockchain API in Godot - Getting Accounts Information","image":"https://files.peakd.com/file/peakd-hive/wlfreitas/23uQLiX7SxfFTzXNzhHPm5s2tUmZiTWMKtYdtMt7WJKLJ9oXbsx4KQaA55vm6dLQsCy7s.png","mainEntityOfPage":{"@type":"WebPage","@id":"https://hive.blog/hive-139531/@wlfreitas/how-to-use-the-hive-blockchain-api-in-godot-getting-accounts-information"},"url":"https://hive.blog/hive-139531/@wlfreitas/how-to-use-the-hive-blockchain-api-in-godot-getting-accounts-information"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://hivedocs.info/feed.xml" title="Hive Chain Documentation" /><script>
+if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNotTrack === "yes" || navigator.msDoNotTrack === "1")) {
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-161692811-1', 'auto');
+  ga('send', 'pageview');
+}
+</script>
+  
+<script src='https://unpkg.com/steem-content-renderer'></script>
+  <script src="/assets/javascript/universal-bridge-against-phishing.js"></script>
+  <script src="/assets/javascript/lazysizes.min.js" async=""></script>
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet" />
+  <link rel="shortcut icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="152x152" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="167x167" href="/assets/images/favicon-80x80.png" />
+</head>
+<body><header class="site-header" role="banner">
+  <div class="wrapper site-header-inner">
+    <a class="site-title" rel="author" href="/">Hive Chain Documentation</a>
+
+    <nav class="site-nav" aria-label="Primary">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/news/">News</a><a class="page-link" href="/howto/">How To</a><a class="page-link" href="/links/">Useful Links</a><a class="page-link" href="/authors/">Authors</a><a class="page-link" href="/topics/">Topics</a><a class="page-link" href="/search/">Search</a></div>
+    </nav>
+  </div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper page-layout has-search-panel">
+        <div class="page-main">
+          <article class="post h-entry post-article" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header post-hero">
+    <div class="post-hero-main">
+      <p class="post-kicker">Archive post</p>
+      <h1 class="post-title p-name" itemprop="name headline">How to use the Hive Blockchain API in Godot - Getting Accounts Information</h1>
+      <p class="post-meta">
+        <time class="dt-published" datetime="2024-11-20T20:30:06-08:00" itemprop="datePublished">Nov 20, 2024
+        </time>• <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">
+            <a href="/authors/#author-wlfreitas">wlfreitas</a>
+          </span></span></p><p class="post-summary">To start, I have no idea where my Owner/Master Key for my @wlffreitas account is, so I'm posting through this old account</p></div><aside class="post-author-card">
+      <img src="https://images.hive.blog/u/wlfreitas/avatar" width="128" height="128" class="lazyload post-author-avatar" alt="Avatar for @wlfreitas" />
+      <div class="post-author-name">@wlfreitas</div>
+    </aside></header>
+
+  <div class="post-content e-content post-body" itemprop="articleBody">
+    <div class="hive-post-embed" data-hive-author="wlfreitas" data-hive-permlink="how-to-use-the-hive-blockchain-api-in-godot-getting-accounts-information">
+  <div id="content-wlfreitas-how-to-use-the-hive-blockchain-api-in-godot-getting-accounts-information" class="hive-post-embed__content" data-hive-render-target="true">To start, I have no idea where my *Owner/Master Key* for my @wlffreitas account is, so I'm posting through this old account.
+
+Today I want to share a simple idea that could be useful for those developing in Godot and want to integrate Hive Blockchain data into their project. I'll show a step-by-step process for retrieving information from a Hive account, all using the public API from Hive Explorer and Godot.
+
+https://hivexplorer.com/api-docs
+
+<center>![howtousehive.png](https://files.peakd.com/file/peakd-hive/wlfreitas/23uQLiX7SxfFTzXNzhHPm5s2tUmZiTWMKtYdtMt7WJKLJ9oXbsx4KQaA55vm6dLQsCy7s.png)</center>
+
+I won't waste too much time because the goal here is to be direct and help you understand practically how to connect everything.
+
+So, if you're developing a game, app, or anything in Godot that needs to access this Hive information, this tutorial is for you.
+
+## What are we going to do here?
+In the code I'll provide, we’ll make a query to check if an account exists on the Hive Blockchain using [get_profile]() and [get_accounts](). Then, if the account is valid, we will fetch the profile details of that account, such as name, ID, reputation, followers, and even the profile picture.
+
+Very simple, but very useful, right?
+
+## Result
+
+<center>![image.png](https://files.peakd.com/file/peakd-hive/wlfreitas/23u5tD6vyXQxaABupwGHgR8KnVmFX1XG8L35CrtECyJiXBMbJwSKWaNX4ezX4JabdpU9s.png)</center>
+<center>![AZH0Klxnjj.gif](https://files.peakd.com/file/peakd-hive/wlfreitas/Enyq1JzUupp9a22kkETp32SfZspDXFr8U9ZwHkwXH8MsdFUWbotbFbubvSQWVqQho4C.gif)</center>
+
+You can create a much better interface than mine, of course. I just kept it simple to check some details that aren’t displayed. It also includes a text box to enter user names and fetch the information.
+
+## What we will use
+
+- Node type `Node` or `Control` `HiveAPI`
+  - LineEdit to be our input box
+  - Label to display the information
+  - HTTPRequest (Connected to HiveAPI)
+<br />
+- Node type `Node` or `Control` `ImageAPI`
+  - TextureRect to display the image
+  - HTTPRequest2 (Connected to ImageAPI)
+
+<center>![image.png](https://files.peakd.com/file/peakd-hive/wlfreitas/23y8FmCvcFPqD7GEtCXq5w9MzcVuiduUwSn1H1hiQc9toNWtnjjNbiafB7SPBwsMMJvyj.png)</center>
+
+## Let’s go to the code!
+
+Here is the script I will explain to you. The idea is to connect Godot to the Hive API using the `HTTPRequest` and fetch information for a specific user:
+
+This is the `HiveAPI` node, which will be responsible for the main part.
+
+```gdscript
+extends Node
+
+# HTTPRequest node
+onready var http_request = $HTTPRequest
+onready var input_account = $LineEdit
+onready var info_label = $Label
+var profile_image = ""
+
+var current_request = "" # To track the current request type
+
+func _ready():
+    http_request.connect("request_completed", self, "_on_request_completed")
+
+# Called when the search button is clicked
+func _on_LineEdit_text_entered(new_text):
+    var account_name = input_account.text.strip_edges()
+    if account_name == "":
+        info_label.text = "Please enter a valid account name."
+        return
+    # Builds the URL to verify the existence of the user
+    var url = "https://hivexplorer.com/api/find_accounts?accounts=[%22" + account_name + "%22]"
+    current_request = "check_user"
+    if http_request.request(url) != OK:
+        info_label.text = "Error sending HTTP request."
+
+# Processes the response to requests
+func _on_request_completed(result, response_code, headers, body):
+    if response_code == 200:
+        var data = parse_json(body.get_string_from_utf8())
+        if current_request == "check_user":
+            if data and data.get("accounts") and len(data["accounts"]) &gt; 0:
+                var account_name = data["accounts"][0]["name"]
+
+                # Now requests profile data
+                request_user_profile(account_name)
+            else:
+                info_label.text = "User not found."
+                
+        elif current_request == "get_profile":
+            if data:
+                var id = data.get("id")
+                var name = data.get("name", "")
+                var reputation = data.get("reputation", 0.0)
+                var created = data.get("created", "")
+                var followers = data.get("stats").get("followers", 0)
+                var about = data.get("metadata").get("profile").get("about", "")
+                var location = data.get("metadata").get("profile").get("location", "")
+                profile_image = data.get("metadata").get("profile").get("profile_image")
+                var image = get_node("/root/HIVE/ImageAPI")
+                image.initialize()
+                var website = data.get("metadata").get("profile").get("website", "")
+                info_label.text = "ID: %s\nName: %s\nReputation: %.2f\nCreated in: %s\nFollowers: %s\nAbout: %s\nLocation: %s\nWebsite: %s" % [id, name, reputation, created, followers, about, location, website]
+
+            else:
+                info_label.text = "Error processing API data."
+    else:
+        info_label.text = "Request error. Code: %d" % response_code
+
+# Makes the request to obtain the user's profile
+func request_user_profile(account_name):
+    var url = "https://hivexplorer.com/api/get_profile?account=%22" + account_name + "%22"
+    current_request = "get_profile"
+    if http_request.request(url) != OK:
+        info_label.text = "Error sending the profile request."
+```
+
+### Step-by-Step Explanation
+
+**Initializing the HTTPRequest**  
+First, we create an `HTTPRequest` and connect it to an event called `request_completed`. This event will be triggered every time a request is completed. This is where we will handle the API response.
+
+**Search Function (Check if the User Exists)**  
+When the search button is pressed (this happens in the `_on_LineEdit_text_entered` function), the script grabs the account name entered by the user and builds the URL to query whether this name exists on the Hive blockchain.  
+The URL we use is: `https://hivexplorer.com/api/find_accounts?accounts=[%22" + account_name + "%22]`.
+
+If the response is successful and the account is found, the function calls another function to fetch the account’s profile details.
+
+**Handling the API Response**  
+The `request_completed` event handles the response from the API. If the request was successful (response code 200), we try to process the returned data. The first thing we do is check if the user exists.
+
+**User Profile Details**  
+When we find the user, we make a new request to fetch the complete profile for that account using the URL: `https://hivexplorer.com/api/get_profile?account=%22" + account_name + "%22`.
+
+The response contains several data fields like ID, name, reputation, creation date, followers, location, and even the user’s website. These data are displayed on the Godot interface. I used a `profile_image` variable to store the profile image URL, which can be displayed elsewhere in your game or app.
+
+**Displaying the Information**  
+All of the data returned by the API is shown on the screen through the `info_label`, which displays the detailed information of the user. You can customize this to display the information however you want in your project.
+
+## Getting Profile Images
+
+Let’s make a request to fetch the profile image URL for a user, and after obtaining the response, we will display this image in a TextureRect.
+This other node I called `ImageAPI` will be responsible for fetching and storing the user’s profile images. Remember, to avoid issues with the image format being obtained, you should add:
+
+[load_jpg_from_buffer()]() To fetch JPG images.  
+[load_png_from_buffer()]() To fetch PNG images.
+
+Hey everyone! Let’s continue with another tutorial that is straightforward and useful for those programming in Godot and wanting to integrate Hive Blockchain account data. If you’re already familiar with the basics of HTTP requests, this code will be an expansion for working with profile images.
+
+Today, we will fetch the profile image of a Hive user using the Hive Explorer API and display it in a `TextureRect` in Godot. This approach can be very useful for games or apps that use Hive account data and want to dynamically show profile images.
+
+### What are we going to do here?
+We will make a request to get the profile image URL for a user, and after obtaining the response, we will display this image in a `TextureRect`. This is great if you want to show user profile images in your Godot project.
+
+### The code:
+
+Here’s the complete script we’ll explain. Since we’re fetching the image directly from the API and displaying it on the screen, this is a pretty simple integration:
+
+```gdscript
+extends Node
+
+# Node references
+onready var http_request = $HTTPRequest2
+onready var texture_rect = $TextureRect
+
+func initialize():
+	# URL image
+	var image = get_node("/root/HIVE/HiveAPI")
+	var url = image.profile_image
+	print(url)
+	# Make the request
+	var error = http_request.request(url)
+	if error != OK:
+		print("Error starting the request:", error)
+
+# Called when the request ends
+func _on_HTTPRequest2_request_completed(result, response_code, headers, body):
+	if result == OK and response_code == 200:
+		texture_rect.rect_min_size = Vector2(150, 150)  # Sets the minimum size (150x150)
+		texture_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED  # Keeps the proportion centered
+
+		var image = Image.new()
+		var err = image.load_png_from_buffer(body)  # Try uploading the PNG from
+
+ the body
+		if err == OK:
+			texture_rect.texture = ImageTexture.new().create_from_image(image)  # Creates the texture and applies it to the TextureRect
+		else:
+			print("Failed to load the image")
+```
+
+### Explanation
+
+1. **Setting Up the Nodes**:  
+   This script is attached to a `Node` that has an `HTTPRequest2` and a `TextureRect` (the node where the image will be displayed).
+
+2. **Making the Request**:  
+   When you press the button to fetch the profile image, it sends a request to the URL of the image. If the request is successful, the image is loaded into the `TextureRect` node.
+
+3. **Loading the Image**:  
+   The profile image is loaded from the API response. After checking if the `load_png_from_buffer` function returns OK, we convert the image into a texture and apply it to the `TextureRect` in Godot.
+
+In addition, we are adjusting the minimum size of the `TextureRect` and setting the stretch option to keep the aspect ratio centered, ensuring that the image is not distorted.
+
+## Node structuring
+
+<center>![image.png](https://files.peakd.com/file/peakd-hive/wlfreitas/23t76y7PW7NcLVAefgfu2KZCpG33Z5TCVTbwNyBdZzepU9FwH149U78EvfwbhrXd3bMow.png)</center>
+
+With this simple script, you can already integrate Hive Blockchain data into your Godot project. 
+
+Of course, this is just the beginning. You can expand this, get more data, or even use other APIs to enrich your application. Get more interesting information such as transactions, post activity and account votes, communities and more. The beauty of this type of integration is that you can start working with real blockchain data in a super simple and efficient way. This opens up a whole range of possibilities.
+
+I hope this tutorial has been useful to you. If you have any questions, please leave them in the comments.
+
+
+
+---
+<sub>Published with **[PeakVault](https://vault.peakd.com)**</sub>
+[![](https://files.peakd.com/file/peakd-hive/peakd/23uFHFH9niedvvByM7oWY7YGno8CnGqNHEBcgCe2wmAakRBfP2uMBo6LpysmqDtxaRVxC.png)](https://vault.peakd.com)</div>
+  <footer class="hive-post-embed__source">
+    <span class="hive-post-embed__source-label">Source:</span>
+    <a href="https://hive.blog/@wlfreitas/how-to-use-the-hive-blockchain-api-in-godot-getting-accounts-information">How to use the Hive Blockchain API in Godot - Getting Accounts Information</a>
+    by
+    <a href="https://hive.blog/@wlfreitas">@wlfreitas</a>
+  </footer>
+</div>
+
+
+  </div><a class="u-url" href="/howto/api/godot/2024/11/20/how-to-use-the-hive-blockchain-api-in-godot-getting-accounts-information.html" hidden></a>
+</article>
+
+        </div>
+
+        
+        <aside class="page-sidebar" aria-label="Search and browse">
+          <section class="sidebar-section sidebar-search">
+            <h2 class="sidebar-heading">Search posts</h2>
+            <p class="sidebar-copy">Search the locally indexed post archive.</p>
+            <input type="text" id="search-input" placeholder="Search posts" autocomplete="off" />
+            <ul id="results-container"></ul>
+          </section>
+
+          <section class="sidebar-section sidebar-topics">
+            <h2 class="sidebar-heading">Browse topics</h2>
+            <p class="sidebar-copy">Jump into curated topic landing pages.</p>
+            <ul class="topic-list topic-list-sidebar"><li><a class="page-link" href="/account-recovery/">Account Recovery</a></li><li><a class="page-link" href="/core-development/">Core Development</a></li><li><a class="page-link" href="/dapps/">Dapps</a></li><li><a class="page-link" href="/docker/">Docker</a></li><li><a class="page-link" href="/hardfork/">Hardfork</a></li><li><a class="page-link" href="/hivemind/">Hivemind</a></li><li><a class="page-link" href="/javascript/">Javascript</a></li><li><a class="page-link" href="/multisig/">Multisig</a></li><li><a class="page-link" href="/python/">Python</a></li><li><a class="page-link" href="/ruby/">Ruby</a></li><li><a class="page-link" href="/testnet/">Testnet</a></li><li><a class="page-link" href="/tools/">Tools</a></li><li><a class="page-link" href="/witness/">Witness</a></li></ul>
+          </section>
+        </aside>
+        
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading"><a rel="author" href="/">Hive Chain Documentation</a></h2>
+    
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">site curated by: @inertia</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>Your resource for various levels of Hive Documentation.</p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+<script src="/assets/javascript/search.js"></script>
+    <script>
+      (function () {
+        var input = document.getElementById('search-input');
+        var results = document.getElementById('results-container');
+        if (input && results && typeof SimpleJekyllSearch !== 'undefined') {
+          SimpleJekyllSearch({
+            searchInput: input,
+            resultsContainer: results,
+            json: '/search.json'
+          });
+        }
+
+        if (typeof SteemContentRenderer === 'undefined') return;
+
+        var targets = document.querySelectorAll('[data-hive-render-target="true"]');
+        if (!targets.length) return;
+
+        var renderer = new SteemContentRenderer.DefaultRenderer({
+          baseUrl: 'https://hive.blog/',
+          breaks: true,
+          skipSanitization: false,
+          allowInsecureScriptTags: false,
+          addNofollowToLinks: true,
+          doNotShowImages: false,
+          ipfsPrefix: '',
+          assetsWidth: 640,
+          assetsHeight: 480,
+          imageProxyFn: function (url) { return url; },
+          usertagUrlFn: function (account) { return '/@' + account; },
+          hashtagUrlFn: function (hashtag) { return '/tags/#' + hashtag; },
+          isLinkSafeFn: function () { return true; }
+        });
+
+        targets.forEach(function (target) {
+          try {
+            var inputHtml = target.innerHTML;
+            target.innerHTML = renderer.render(inputHtml);
+          } catch (e) {
+            console.log(e);
+          }
+        });
+      })();
+    </script>
+
+  </body>
+
+</html>

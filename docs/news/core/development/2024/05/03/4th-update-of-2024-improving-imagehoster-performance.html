@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta property="og:image" content="/assets/images/sticker.png" />
+  <meta name="apple-mobile-web-app-title" content="Hive Docs" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" /><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>4th update of 2024: improving imagehoster performance | Hive Chain Documentation</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="4th update of 2024: improving imagehoster performance" />
+<meta name="author" content="blocktrades" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="I’ll report on our general development work in a bit (probably next week or so), but we made some nice improvements to the imagehoster infrastructure in the past few days that I figured was worth sharing now" />
+<meta property="og:description" content="I’ll report on our general development work in a bit (probably next week or so), but we made some nice improvements to the imagehoster infrastructure in the past few days that I figured was worth sharing now" />
+<link rel="canonical" href="https://hive.blog/hive-139531/@blocktrades/4th-update-of-2024-improving-imagehoster-performance" />
+<meta property="og:url" content="https://hive.blog/hive-139531/@blocktrades/4th-update-of-2024-improving-imagehoster-performance" />
+<meta property="og:site_name" content="Hive Chain Documentation" />
+<meta property="og:image" content="https://images.hive.blog/DQmSihw8Kz4U7TuCQa98DDdCzqbqPFRumuVWAbareiYZW1Z/blocktrades%20update.png" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2024-05-03T11:58:24-07:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="https://images.hive.blog/DQmSihw8Kz4U7TuCQa98DDdCzqbqPFRumuVWAbareiYZW1Z/blocktrades%20update.png" />
+<meta property="twitter:title" content="4th update of 2024: improving imagehoster performance" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"blocktrades"},"dateModified":"2024-05-03T11:58:24-07:00","datePublished":"2024-05-03T11:58:24-07:00","description":"I’ll report on our general development work in a bit (probably next week or so), but we made some nice improvements to the imagehoster infrastructure in the past few days that I figured was worth sharing now","headline":"4th update of 2024: improving imagehoster performance","image":"https://images.hive.blog/DQmSihw8Kz4U7TuCQa98DDdCzqbqPFRumuVWAbareiYZW1Z/blocktrades%20update.png","mainEntityOfPage":{"@type":"WebPage","@id":"https://hive.blog/hive-139531/@blocktrades/4th-update-of-2024-improving-imagehoster-performance"},"url":"https://hive.blog/hive-139531/@blocktrades/4th-update-of-2024-improving-imagehoster-performance"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://hivedocs.info/feed.xml" title="Hive Chain Documentation" /><script>
+if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNotTrack === "yes" || navigator.msDoNotTrack === "1")) {
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-161692811-1', 'auto');
+  ga('send', 'pageview');
+}
+</script>
+  
+<script src='https://unpkg.com/steem-content-renderer'></script>
+  <script src="/assets/javascript/universal-bridge-against-phishing.js"></script>
+  <script src="/assets/javascript/lazysizes.min.js" async=""></script>
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet" />
+  <link rel="shortcut icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="152x152" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="167x167" href="/assets/images/favicon-80x80.png" />
+</head>
+<body><header class="site-header" role="banner">
+  <div class="wrapper site-header-inner">
+    <a class="site-title" rel="author" href="/">Hive Chain Documentation</a>
+
+    <nav class="site-nav" aria-label="Primary">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/news/">News</a><a class="page-link" href="/howto/">How To</a><a class="page-link" href="/links/">Useful Links</a><a class="page-link" href="/authors/">Authors</a><a class="page-link" href="/topics/">Topics</a><a class="page-link" href="/search/">Search</a></div>
+    </nav>
+  </div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper page-layout has-search-panel">
+        <div class="page-main">
+          <article class="post h-entry post-article" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header post-hero">
+    <div class="post-hero-main">
+      <p class="post-kicker">Archive post</p>
+      <h1 class="post-title p-name" itemprop="name headline">4th update of 2024: improving imagehoster performance</h1>
+      <p class="post-meta">
+        <time class="dt-published" datetime="2024-05-03T11:58:24-07:00" itemprop="datePublished">May 3, 2024
+        </time>• <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">
+            <a href="/authors/#author-blocktrades">blocktrades</a>
+          </span></span></p><p class="post-summary">I’ll report on our general development work in a bit (probably next week or so), but we made some nice improvements to the imagehoster infrastructure in the past few days that I figured was worth sharing now</p></div><aside class="post-author-card">
+      <img src="https://images.hive.blog/u/blocktrades/avatar" width="128" height="128" class="lazyload post-author-avatar" alt="Avatar for @blocktrades" />
+      <div class="post-author-name">@blocktrades</div>
+    </aside></header>
+
+  <div class="post-content e-content post-body" itemprop="articleBody">
+    <div class="hive-post-embed" data-hive-author="blocktrades" data-hive-permlink="4th-update-of-2024-improving-imagehoster-performance">
+  <div id="content-blocktrades-4th-update-of-2024-improving-imagehoster-performance" class="hive-post-embed__content" data-hive-render-target="true">![blocktrades update.png](https://images.hive.blog/DQmSihw8Kz4U7TuCQa98DDdCzqbqPFRumuVWAbareiYZW1Z/blocktrades%20update.png)
+
+
+
+I’ll report on our general development work in a bit (probably next week or so), but we made some nice improvements to the imagehoster infrastructure in the past few days that I figured was worth sharing now.
+
+# Hive imagehoster
+
+As many of you know, BlockTrades operates the imagehoster system that serves up images for Hive posts rendered by the various Hive frontends (hive.blog, ecency, peakd, etc). For example, the image at the top of this post is stored on that system.
+
+Since many of Hive’s social media services rely on the imagehoster to provide images, the overall time to fully render pages on these sites is impacted by the speed at which the imagehoster supplies images to users’ web browsers, which in term affects both user experience and even some forms of web ranking for the sites, so we want the server to be as quick as possible.
+
+Further more, every once in while, the imagehoster will have problems of one sort or another that can result in images failing to render on Hive web sites.
+
+But such problems usually can be fixed by simply restarting the imagehoster process every once in a while. So we haven’t focused a lot of our development effort on the imagehoster, since it mostly does what it is supposed to do reasonably well, and we weren’t aware of any easily made improvements that we hadn’t already made.
+
+However, in the past week we saw a case where the imagehoster was getting severely loaded, resulting in some images not showing up Hive sites, but a simple restart didn’t fix the issue, so we started digging into the issue more.
+
+### Imagehoster requests
+
+To see how we analyzed the problem, we first need to refresh on what types of requests the imagehoster processes and how the imagehoster system is configured.
+
+The simplest imagehoster request to understand is a direct request for a particular image (we’ll call this an image request). An image request always returns the same image data, as you would probably expect. 
+
+But the imagehoster also processes “avatar” requests. An avatar is the image that a user associates with their Hive account, and the user can change this image by generating an appropriate Hive transaction and publishing it to the Hive blockchain. 
+
+So to process an avatar request, another internal request needs to be made by the imagehoster to find out what image the user has last associated with his account (for web guys, I’ll add that this is done via a 302 redirect). 
+
+This redirect mapping between a Hive account and the avatar image name is stored inside hived. So whenever an avatar request is made to the imagehoster, the imagehoster then makes a get_accounts call to a hived node to find out what image it needs to lookup, and only then can we look up and return the appropriate image.
+
+When we first started looking into this problem, we actually were assuming that avatar requests would be the fast ones, despite requiring the extra lookup step, because the lookup step was assumed to be fast and avatar images are much smaller than most other images. But as it turns out, that extra lookup time played a key role in the problem we were having…
+
+### Imagehoster system configuration
+
+This is how an image request gets processed by the imagehoster system: 1) a user’s browser makes either an image request or an avatar request to the imagehoster computer, 2) the request to our computer is first intercepted by cloudflare (we configured cloudflare this way to help us cache the image data and lower the load on the imagehoster computer), 3) cloudflare will respond for our computer if the requested data is already in its cache, or if not, it will pass the request on to the nginx web server running on our computer, 4) our nginx server then routes this request to our local varnish cache, 5) If the image isn’t in the varnish cache, the request is passed onto our haproxy server, which then passes the request to the imagehoster itself, 6) if it’s an image, the imagehoster replies with the image, or if it is an avatar request it makes a get_accounts call to our hived node to find the associated image, then that image file name is returned to the user’s browser and their browser will make a follow-on request to the imagehoster for that image.
+
+## Analyzing the problem: looking for clues as to why requests were failing
+
+Initially, the only way we could see a problem with the imagehoster was by browsing web pages in the various Hive post web sites and seeing missing images, so we started by digging through various monitoring software reports and server logs to look for potential problems with available computing resources (CPU, memory, disk space, software constraints, etc). It was a bit frustrating at first, because we weren’t seeing any of the obvious problems with loading of the types that are typically associated with an overloaded server.
+
+### Not enough worker connections
+
+One thing we found early on during this search for clues was that during the time where the imagehoster was having problems, there were a bunch of these messages in the error logs of the nginx server: 
+“worker_connections are not enough”.
+
+An nginx server only allows a set number of worker connections (which impacts how many active image requests the server can handle at a single point in time). If requests start taking longer for the imagehoster system to process, the imagehoster can run out of available worker connections because they are all busy with older requests. 
+
+It is possible to increase the number of nginx worker connections, but before long you start to run into limits related to the open number of system file handles. It is also possible to increase the number of system file handles as well, but you really don’t want to be making these kinds of tweaks to your system: the better solution is to try to reduce the time your server takes to respond to requests, allowing you to process more requests with the same number of workers (work smarter, not harder).
+
+### Identifying the problematic requests
+
+Now that we had a good clue that the worker connections was the bottleneck, our next task was to figure what requests were causing the problem. This isn’t as easy as it might sound, because while we could see which individual requests were failing, they weren’t necessary the problem requests, they could just be the unlucky request that came in during a time when a worker wasn’t available quickly enough. So what we really needed to do was figure out which requests were taking a long time, not which ones were failing.
+
+Since we knew we had two different types of requests (image vs avatar), we figured it was possible that one sort or another might be the primary culprit. So we split these two types of traffic into two different ports on haproxy, allowing us to get separate statistics from haproxy about the two different request types (we also had to enable the haproxy stats page to collect this data, which we’d never bothered to do for the imagehoster before). 
+
+#### Avatar requests slower than expected
+
+And here was our first surprise: we found that the avatar requests were actually taking longer than the image requests when we were guessing the opposite. Even more surprising, it wasn’t just the “total time” to get the image redirect + the subsequent image fetch for the avatar that was taking longer, it was just the redirect time alone that was the dominant time.
+
+At this point, one immediate problem became clear: the redirect call was being made to a hived node located on a different computer. So while we had been focused on the size of the image data and time to read that data from local hard disks as the likely issue, the real issue was the ~300ms latency associated with fetching the relatively small redirect data from another computer located on a different continent.
+
+#### Using a local hived to reduce latency
+
+Fortunately, we had a simple solution for this problem: we setup a local hived node on the imagehoster computer, and now the redirect sub-requests as measured from haproxy dropped from 300+ ms to 6ms. 
+
+This change dramatically improved rendering times for pages on hive.blog and improved the user browsing experience. As far as we can tell so far, this also appears to have solved the “worker_connections are not enough” problem that resulted in missing images. We have over 24 hours of time without seeing those messages in the logs, but we’ll need a couple more days of monitoring to be completely sure.
+
+So at this point, the bottleneck for the processing of uncached avatar requests is now just the latency time from the user’s browser to the imageserver. Better response times are still possible in the case when the avatar request response is properly cached by cloudflare because cloudflare caching servers tend to have lower latency times to a user’s computer, and I’ll discuss how we’ve attacked the caching problem in the next section.
+
+
+### Caching problems
+
+Another problem we observed while looking for ways to improve server performance was that requests to the imagehoster weren’t being cached nearly as well as we would have anticipated. 
+
+Even worse, we found that the super small avatar “redirect” calls were being cached worse than image calls (this took a bit of experimentation to determine since we have almost no access to the cloudflare cache and can only observe results in the debug window of a web browser to see cache misses, but we eventually convinced ourselves this was the case). 
+
+Avatar redirects are really small, so a cache should be able to store just about all of them, and the same avatar lookups should be frequent, thus ensuring that an LRU-based caching algorithm would tend to favor caching avatar redirects over more occasionally fetched images on individual posts. This is another reason why we were surprised that avatar requests were causing the problematic loading on our system: we had originally expected cloudflare to be caching most of these requests so that our server would rarely need to handle them.
+
+But seeing is believing, so we next had to come up with some explanation for why images were disconcertingly being cached better than the more frequently accessed avatars. 
+
+From reading the headers of the image request responses, we could see that most of the cache misses were caused by cache expirations. A typical cache will expire items from its storage under one of two conditions: 1) the item has a specified expiration time and that time has elapsed or 2) the cache runs out of space to store items and has to expire some older less used ones in favor of storing new items. Unfortunately the response headers didn’t tell us which of the two were the problem and we lacked enough access to cloudflare to know why it was behaving as it was. 
+
+But the response headers did at least report the expiration times: for image requests, they were “immutable” and never expired (because an image request should always return the same data) but avatar requests were set to expire after 18000 seconds (i.e. 6 hours)  because a user could always change his account avatar image. But neither of these times seemed to explain anything: we were seeing items being expired from cloudflare’s cache must faster than 6 hours: it looked closer to 10-20 minutes. 
+
+So this lead us to suspect that the problem was related to cloudflare’s “unknown” algorithm for expiring items when the cache filled up. Maybe it decided to favor expiring items with shorter expiration times over longer expiration times when its storage was full. 
+
+These expiration times are set by the imagehoster itself when it produces the headers for the responses, so these expiration times can be changed just by changing the imagehoster code. So we decided to try setting avatar expiration times to immutable just like image requests to see if it caused the avatar requests to be cached more fairly. 
+
+Careful readers might start jumping up and down at this point and say: “Wait, didn’t you say earlier that you had to expire avatar requests from the cache because users could change the associated image”? Yes, that’s true, but there’s something else I didn’t mention previously: we actually run a special service that immediately expires avatar requests from the cloudflare and varnish caches whenever a user changes his avatar. 
+
+So why do we also have the 6 hour expiration if we immediately expire them when the mapping gets changed? It’s catch-all fix in case the service in some rare case fails to properly notify the caches to expire the image. So it’s not really super important to have the 6 hour expiration time, it just didn’t seem like it would be much of a problem to have to refresh it once every 6 hours.
+
+#### 6 hour vs 10min cache expiration times?
+
+It turns out the 6 hour expiration time that we were seeing in the request response wasn’t actually being  set by the imagehoster. The imagehoster code set the expiration header to 10 minutes (which is the time we were actually seeing expirations occur in cloudflare and in varnish). So we’ve concluded that it is probably cloudflare that is for some reason unknown to us rewriting the header expiration time to 6 hours. Presumably, this will impact caching time on local browsers that have caching enabled.
+
+So, we next changed the imagehoster code to increase the expiration time for avatar requests from 10 minutes to a day. With this setting, the expiration time is no longer being re-written, and it shows up with the specified expiration time in the response headers viewed in a browser. We stepped the expiration time back from “forever” to a day to restore the desired catch-all in case the service that expires changed avatars fails for some reason.
+
+And this of course also “fixed” cloudflare caching to store the images for longer than 10 minutes. So when we inspect avatar response headers in a browser, we generally see almost all avatar requests are being cached by cloudflare now.
+
+### Varnish cache generally ineffective right now
+
+Since we’re using cloudflare for caching, right now the 2nd level varnish caching isn’t really helping much since it appears the varnish cache isn’t larger than the cloudflare cache (we’ve only given 8GB to the varnish cache and we don’t know how big cloudflare’s cache is). But cloudflare’s cache is doing the job well enough, so there doesn’t seem to be any immediate need to experiment with increasing the size of varnish’s cache.
+
+### What kind of improvement did we get after the changes?
+
+Before the changes, we were seeing around 700+ ms for an avatar request that missed the cache and many cache misses. Now we rarely get a cache miss, and the response times are between 25-140ms (the first time we request a new avatar in our browser it takes around 140ms, the second time around 25ms, which we are speculating is because an edge server begins caching it closer to our browser after the first lookup). 
+
+We rarely see a cache miss anymore, but we can guess that such cache misses will take around an extra 100ms for us since we’re on a different continent from the imagehoster (so probably between 140-400ms based on our test requests for non-existing avatars).</div>
+  <footer class="hive-post-embed__source">
+    <span class="hive-post-embed__source-label">Source:</span>
+    <a href="https://hive.blog/@blocktrades/4th-update-of-2024-improving-imagehoster-performance">4th update of 2024: improving imagehoster performance</a>
+    by
+    <a href="https://hive.blog/@blocktrades">@blocktrades</a>
+  </footer>
+</div>
+
+
+  </div><a class="u-url" href="/news/core/development/2024/05/03/4th-update-of-2024-improving-imagehoster-performance.html" hidden></a>
+</article>
+
+        </div>
+
+        
+        <aside class="page-sidebar" aria-label="Search and browse">
+          <section class="sidebar-section sidebar-search">
+            <h2 class="sidebar-heading">Search posts</h2>
+            <p class="sidebar-copy">Search the locally indexed post archive.</p>
+            <input type="text" id="search-input" placeholder="Search posts" autocomplete="off" />
+            <ul id="results-container"></ul>
+          </section>
+
+          <section class="sidebar-section sidebar-topics">
+            <h2 class="sidebar-heading">Browse topics</h2>
+            <p class="sidebar-copy">Jump into curated topic landing pages.</p>
+            <ul class="topic-list topic-list-sidebar"><li><a class="page-link" href="/account-recovery/">Account Recovery</a></li><li><a class="page-link" href="/core-development/">Core Development</a></li><li><a class="page-link" href="/dapps/">Dapps</a></li><li><a class="page-link" href="/docker/">Docker</a></li><li><a class="page-link" href="/hardfork/">Hardfork</a></li><li><a class="page-link" href="/hivemind/">Hivemind</a></li><li><a class="page-link" href="/javascript/">Javascript</a></li><li><a class="page-link" href="/multisig/">Multisig</a></li><li><a class="page-link" href="/python/">Python</a></li><li><a class="page-link" href="/ruby/">Ruby</a></li><li><a class="page-link" href="/testnet/">Testnet</a></li><li><a class="page-link" href="/tools/">Tools</a></li><li><a class="page-link" href="/witness/">Witness</a></li></ul>
+          </section>
+        </aside>
+        
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading"><a rel="author" href="/">Hive Chain Documentation</a></h2>
+    
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">site curated by: @inertia</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>Your resource for various levels of Hive Documentation.</p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+<script src="/assets/javascript/search.js"></script>
+    <script>
+      (function () {
+        var input = document.getElementById('search-input');
+        var results = document.getElementById('results-container');
+        if (input && results && typeof SimpleJekyllSearch !== 'undefined') {
+          SimpleJekyllSearch({
+            searchInput: input,
+            resultsContainer: results,
+            json: '/search.json'
+          });
+        }
+
+        if (typeof SteemContentRenderer === 'undefined') return;
+
+        var targets = document.querySelectorAll('[data-hive-render-target="true"]');
+        if (!targets.length) return;
+
+        var renderer = new SteemContentRenderer.DefaultRenderer({
+          baseUrl: 'https://hive.blog/',
+          breaks: true,
+          skipSanitization: false,
+          allowInsecureScriptTags: false,
+          addNofollowToLinks: true,
+          doNotShowImages: false,
+          ipfsPrefix: '',
+          assetsWidth: 640,
+          assetsHeight: 480,
+          imageProxyFn: function (url) { return url; },
+          usertagUrlFn: function (account) { return '/@' + account; },
+          hashtagUrlFn: function (hashtag) { return '/tags/#' + hashtag; },
+          isLinkSafeFn: function () { return true; }
+        });
+
+        targets.forEach(function (target) {
+          try {
+            var inputHtml = target.innerHTML;
+            target.innerHTML = renderer.render(inputHtml);
+          } catch (e) {
+            console.log(e);
+          }
+        });
+      })();
+    </script>
+
+  </body>
+
+</html>

@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta property="og:image" content="/assets/images/sticker.png" />
+  <meta name="apple-mobile-web-app-title" content="Hive Docs" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" /><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Feedback wanted: Piggybacking quantum-resistant signatures on HIVE | Hive Chain Documentation</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Feedback wanted: Piggybacking quantum-resistant signatures on HIVE" />
+<meta name="author" content="pibara" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Asking for feedback on my piggybacking plans for hash based signatures in a post-quantum proof of concept stack for HIVE" />
+<meta property="og:description" content="Asking for feedback on my piggybacking plans for hash based signatures in a post-quantum proof of concept stack for HIVE" />
+<link rel="canonical" href="https://hive.blog/hive-139531/@pibara/feedback-wanted-piggybacking-quantum-resistant-signatures-on-hive" />
+<meta property="og:url" content="https://hive.blog/hive-139531/@pibara/feedback-wanted-piggybacking-quantum-resistant-signatures-on-hive" />
+<meta property="og:site_name" content="Hive Chain Documentation" />
+<meta property="og:image" content="https://files.peakd.com/file/peakd-hive/pibara/242P46hWjcrDfahvvcN4syJueUaLzgYt83fe44LzyKFJtpLJGKkH8P3bd91i9JbXe3eCg.png" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2024-09-19T05:50:00-07:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="https://files.peakd.com/file/peakd-hive/pibara/242P46hWjcrDfahvvcN4syJueUaLzgYt83fe44LzyKFJtpLJGKkH8P3bd91i9JbXe3eCg.png" />
+<meta property="twitter:title" content="Feedback wanted: Piggybacking quantum-resistant signatures on HIVE" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"pibara"},"dateModified":"2024-09-19T05:50:00-07:00","datePublished":"2024-09-19T05:50:00-07:00","description":"Asking for feedback on my piggybacking plans for hash based signatures in a post-quantum proof of concept stack for HIVE","headline":"Feedback wanted: Piggybacking quantum-resistant signatures on HIVE","image":"https://files.peakd.com/file/peakd-hive/pibara/242P46hWjcrDfahvvcN4syJueUaLzgYt83fe44LzyKFJtpLJGKkH8P3bd91i9JbXe3eCg.png","mainEntityOfPage":{"@type":"WebPage","@id":"https://hive.blog/hive-139531/@pibara/feedback-wanted-piggybacking-quantum-resistant-signatures-on-hive"},"url":"https://hive.blog/hive-139531/@pibara/feedback-wanted-piggybacking-quantum-resistant-signatures-on-hive"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://hivedocs.info/feed.xml" title="Hive Chain Documentation" /><script>
+if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNotTrack === "yes" || navigator.msDoNotTrack === "1")) {
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-161692811-1', 'auto');
+  ga('send', 'pageview');
+}
+</script>
+  
+<script src='https://unpkg.com/steem-content-renderer'></script>
+  <script src="/assets/javascript/universal-bridge-against-phishing.js"></script>
+  <script src="/assets/javascript/lazysizes.min.js" async=""></script>
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet" />
+  <link rel="shortcut icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="152x152" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="167x167" href="/assets/images/favicon-80x80.png" />
+</head>
+<body><header class="site-header" role="banner">
+  <div class="wrapper site-header-inner">
+    <a class="site-title" rel="author" href="/">Hive Chain Documentation</a>
+
+    <nav class="site-nav" aria-label="Primary">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/news/">News</a><a class="page-link" href="/howto/">How To</a><a class="page-link" href="/links/">Useful Links</a><a class="page-link" href="/authors/">Authors</a><a class="page-link" href="/topics/">Topics</a><a class="page-link" href="/search/">Search</a></div>
+    </nav>
+  </div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper page-layout has-search-panel">
+        <div class="page-main">
+          <article class="post h-entry post-article" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header post-hero">
+    <div class="post-hero-main">
+      <p class="post-kicker">Archive post</p>
+      <h1 class="post-title p-name" itemprop="name headline">Feedback wanted: Piggybacking quantum-resistant signatures on HIVE</h1>
+      <p class="post-meta">
+        <time class="dt-published" datetime="2024-09-19T05:50:00-07:00" itemprop="datePublished">Sep 19, 2024
+        </time>• <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">
+            <a href="/authors/#author-pibara">pibara</a>
+          </span></span></p><p class="post-summary">Asking for feedback on my piggybacking plans for hash based signatures in a post-quantum proof of concept stack for HIVE</p></div><aside class="post-author-card">
+      <img src="https://images.hive.blog/u/pibara/avatar" width="128" height="128" class="lazyload post-author-avatar" alt="Avatar for @pibara" />
+      <div class="post-author-name">@pibara</div>
+    </aside></header>
+
+  <div class="post-content e-content post-body" itemprop="articleBody">
+    <div class="hive-post-embed" data-hive-author="pibara" data-hive-permlink="feedback-wanted-piggybacking-quantum-resistant-signatures-on-hive">
+  <div id="content-pibara-feedback-wanted-piggybacking-quantum-resistant-signatures-on-hive" class="hive-post-embed__content" data-hive-render-target="true">This is a rather technical post that gets into the details of both the HIVE broadcast API and statefull hash based signatures, but I really hope this post reaches some of the more technical people in the community so I can hopefully find out if I'm on the right track with this.
+
+I'm currently working on the [aiohivebot](https://github.com/pibara/aiohivebot) python library for HIVE. AIO-Hivebot aims to become a specialized asyncio Python library for HIVE that is less suitable than [Beem](https://pypi.org/project/beem/) (I'm personaly not a fan of beem) or the excelent [lighthive](https://github.com/emre/lighthive) for writing small and nifty command line tools for the HIVE blockchain, and is aimed primaraly at writing middleware, layer-two, and bots for HIVE, that need to [work nicely](/hive-139531/@pibara/on-using-aiohivebot-in-conjunction-with-an-async-python-web-framework-like-aiohttp-or-starlette) with Python web frameworks like [aiohttp](https://pypi.org/project/aiohttp/) (my personal favorite), [sanic](https://pypi.org/project/sanic/) and [starlette](https://pypi.org/project/starlette/), and/or need to communicate with other chains or databases (or combinations of the two such as my favourite, [FlureeDB](https://github.com/fluree/db) using [@aioflureedb](https://hive.blog/@aioflureedb)) asynchonically. 
+
+The reason that I'm building aiohivebot isn't primaraly to build a new Python HIVE library for this purpose, it is to be part of a proof of concept stack for hash based signatures.
+
+
+
+![image.png](https://files.peakd.com/file/peakd-hive/pibara/242P46hWjcrDfahvvcN4syJueUaLzgYt83fe44LzyKFJtpLJGKkH8P3bd91i9JbXe3eCg.png)
+
+The stack starts with the HIVE blockchain and the Python CoinZdense implementation (also still under constuction) as its foundation. On top of that is the aiohivebot library that should bind HIVE and the CoinZdense hash based signatures together, for now in a piggybacking and proof-of-concept way as a **real** implementation will require updates to the HIVE core, and we are still quite a bit removed from that point. First we need a proof of concept. I will get into this later as this is the main subject of this post.
+
+On top of aiohivebot, I aim to first write a port of the [HIVE Archeaology bot](https://github.com/pibara/hive-archeology) to aiohivebot . This bot is a really simple bot that monitors for it's owner (me) upvoting expired content, and then creates and upvotes a comment with the origninal post's author as main beneficery.
+
+In the future I hope to expand this stack with something more serious than thie silly bot, but for a first POC, this should do.
+
+## Some details on hash based signatures
+
+Normal clasical signing on HIVE and most other blockchains uses a signing algoritm for signing transactions with called Elliptic Curve Digital Signature Algorithm , or ECDSA for short. ECDSA is a great and amazing algoritm, the signatures are short and the signing if fast and consistent in speed. And signing keys are stateless. All amazing properties. The alternative signing that CoinZdense aims to provide is noe of these things. Signatures are big and clunky, signing keys are statefull, and once in every few hundered or few thousand transactions, the time to sign the next transaction goes up by quite a bit because operations are needed to enable the next few hundred or few thousand transactions. So why would we want to use these so obviously much worse signatures? 
+
+Well, Quantum Computing (QC) is showly but surely gaining grounds and at some point in the not to near but not to distance future, ECDSA will stop being secure because the size of general purpose QC has exceeded a special treshold that will make it possible to reconstruct the private signing key from either the public signing key (that on HIVE is very much public as it is part of an accounts public data), or just from a single signature because ECDSA signatures with a special construct allow the public key to be reconstructed from the signature. For more info on this, see [this video](https://www.youtube.com/watch?v=gWKRztvfcDM&amp;t=0).
+
+So because of QC, towards the not so distant future, we want to start protecting Web 3.0 blockchains like HIVE with these clucky statefull signatures. For now we don't want to touch the core blockchain yet, we just want to test the concepts by piggybacking hash based signatures onto HIVE in a not enforced but still verifyable way, and the tech stack I'm working on in a rather slow and discontinous way aims to allow for that.
+
+## Account json_metadata as poor man's pubkey storage
+
+As I demonstrated already with my little [HIVE CoinZdense Disaster Recovery tools](https://github.com/pibara/hive-coinzdense-disaster-recovery) repo, it is possible, though not ideal, to use account json_metadata as a place to piggyback something like a hash based account recovery key. Nothing is currently enforcing the security of this data, but in the event to a real QC event against HIVE, timestamps may be used for actual account recovery.
+
+As an example, here is my current account json_metadata:
+
+
+```json
+{
+   "beneficiaries" : [],
+   "coinzdense_disaster_recovery" : {
+      "key-a" : "QRKB6rzqPbDLWbMQNi9iqFbofRLBBeJscxmzAQU75",
+      "sig-a" : "QH1SwjM6zJuT8hwurq3nz2vqpHdaRxoovKwemPwTEjT8BWrrsP3Qjg6N6sjfgdNSJVoP6djNEc6NferEDx4y2J2WVF3uhLia6A"
+   },
+   "profile" : {
+      "about" : "Mythpunk fiction. Python. C++. Computer Forensics. Computational Statistics. Cryptography. LCLΩ6HP, Entomophagy, N=1 experiments. Engineering.",
+      "cover_image" : "https://pbs.twimg.com/profile_banners/3021818589/1424700326",
+      "location" : "Netherlands",
+      "name" : "Rob J Meijer",
+      "profile_image" : "https://pbs.twimg.com/profile_images/881738626983505920/L94HR_Bv_400x400.jpg",
+      "website" : "https://steemit.com/bannerpost/@pibara/master-banner-post-7-18-2018"
+   }
+}
+```
+
+In this example there is a one-time-signature public key (key-a) and an ECDSA signature (sig-a) that is created with the user's **ACTIVE** key.  A similar construct should be possible with a full many-uses CoinZdense public key.
+
+Please note that these Proof-Of-Concept keys will be just that, I'll be using a **coinzdense_poc** key, and the keys will live in a different cryptographical namespace from any eventual CoinZdense pubkeys.
+
+It is important to note that CoinZdense keys will need an aditional key/value layer by design because of subkey-management. In theory this setup could create race conditions, but for now, while we are not building a layer-2 on multiple sub-keys, this shouldn't become an issue yet. Preventing race conditions in subkey registration though should be a consideration when proposing HIVE core changes in the future.
+ 
+## Adding extra custom_binary operation to transactions
+
+When a bot, middleware or L2 wants to create a comment, set comment options, upvote a post, or do anything differently that uses the users signing key, one or more [broadcast operations](https://developers.hive.io/apidefinitions/#apidefinitions-broadcast-ops) will get grouped into a transaction.
+
+When the transaction is composed, a call to [database_api.get_transaction_hex](https://developers.hive.io/apidefinitions/#database_api.get_transaction_hex) will return a hexadecimal representation of what is supposed to get signed with the users posting or active signing key.
+
+But we aren't going to do that yet. At least not with ECDSA. Instead we sign it with the CoinZdense POC hash based signing key, and use the result to create either a [custom_json]( https://developers.hive.io/apidefinitions/#broadcast_ops_custom_json) or a [custom_binary](https://developers.hive.io/apidefinitions/#broadcast_ops_custom_binary) broadcast opp to the existing transaction.
+
+Then, if needed, we add some extra state in an additional custom_json (this should only be needed when a treshold of the number of transactions is reached by this transaction, or potentially if its about to get reached). More about this in the next section.
+
+Now using the expanded transaction, we call database_api.get_transaction_hex a second time, sign the extended transaction and broadcast it to the chain.
+
+## Account json_metadata for stateless clients
+
+As mentioned before, hash-based signatures arent' stateless. They are like a resource that gets used up, both one signature at a time and in case of subkey management, sometimes with whole chunks of the resource getting allocated to a differerent  subkey. 
+
+As mentioned before, keys and subkeys can be piggybagged on account json_metadata (with some caveates towards race conditions in the future that the POC can't solve). But there is more state. State about what parts of the key have either been used up or have been allocated to subkeys. While for part of this state it can be stored client side, and earlier experiments did exactly that, it is desireable to make the POC even if everything is piggybacked on extra custom jsons and custom binaries, as close to the eventual real thing as possible. And as such, we will try to make it so that the only local state the client stores will be for speed, but if a client starts with just the private keys, it may start up pretty darn slow, but it will work just fine without any security risks associated with index re-use of hash based signing keys.
+
+So what is the main state? In it's basis it's the index to be used in the next signature. This index will increment by one every transaction untill the signing key is expended what with right dimensioning should roughly be one minute before never.
+This state will exist **per subkey**.
+
+![](https://images.hive.blog/p/FUkUE5bzkAZT3HzV5tJDiU2ik81PCd4JCyhWnRcDN8XJsVFY3UNB8DCaMFe45xNGGrVJvvQcoggK9bFUpjbdfaAPUyhDYrmP5EmeoUUigyNK9T8eWs6Y1A8mdTwRnrEP5VoEFu3N3rg7fmdCLwGq4EwnY1vy6bXMBcJJ)
+
+Next to this state, every it is important to realize that in CoinZdense subkeys can be revoked but not directly. subkeys are revoked through the invalidation of unused index space. Basicly every transaction invalidates one single index in the 2^64 size of index space.
+
+We have a choice to imidately move this to a full L2 implementation where everything is broadcast on a per subkey level and the L2 is responsible for keeping the complete invalidation map up to date and mostly hidden, or we can make our proof of concept library overextend itself for now and provide a full up to date map for all subkeys combined from any subkey, still allowing vor validation, but  keeping the revocation and invalidation in the open and outside of the (not curently existing) L2.
+
+My current first instinct is to go for this later option. Mostly because I feel that puting it in an L2 right now may keep it in an L2, what I feel is a bad idea. These invalidation maps should eventualy end up in the core, so keeping them an open cludge for now may be a good idea because it makes the fact that it is a temporary piggyback cludge very obvious. I hope I'm making sense.
+
+Right now my ideas regarding invalidation map and signing index posting in custom_json operations is as follows:
+
+* Subkey signing indexes get updated in the account json_metadata when a new transaction is done with the subkey and no transaction was done for that subkey for 4096 blocks or more.
+* The account json_metadata, next to the index will contain the pre broadcast head block number for when the subkey index was updated.
+* When any subkey index space gets revoked, or when a new subkey gets created and signed, the client overextends itself and calculates plus post the invalidation map for the full key, as if the client was a single node L2.
+* In the same transaction where the invalidation map is posted in a custom_json, the account json_metadata gets updated with a reference to the last head block number.
+
+This would make the account JSON possibly look something like this:
+
+```json
+{
+   "beneficiaries" : [],
+   "coinzdense_poc" : {
+      "invalidation_head": 89066372,
+      "subkeys": {
+          "F17B44958C3AAA94198DA8A89994F6AC": {
+              "path": ["ACTIVE"],
+              "offset": 16777216,
+              "size": 251658240,
+              "index": 119
+              "pubkey": "QRKB6rzqPbDLWbMQNi9iqFbofRLBBeJscxmzAQU75",
+              "sig-a" : "QH1SwjM6zJuT8hwurq3nz2vqpHdaRxoovKwemPwTEjT8BWrrsP3Qjg6N6sjfgdNSJVoP6djNEc6NferEDx4y2J2WVF3uhLia6A"
+          },
+          "ABB1956F1970AAAAA4CDA91765AC5555": {
+              "path": ["ACTIVE.POSTING"],
+              "offset": 268435456,
+              "size": 1879048192,
+              "index": 22783,
+              "creation_head": 89060013
+          },
+          "C1254567ABCFFB418907986038909CDD": {
+              "path": ["ACTIVE.POSTING.comment","ACTIVE.POSTING.vote"],
+              "offset": 2147483648,
+              "size": 16384,
+              "index": 14,
+              "creation_head": 89066465
+          }
+      }
+   },
+   "profile" : {
+   }
+}
+```
+
+Notice big things are made findable by refering to the broadcast time head value. This means that the client can find the actual invalidation data and and subkey pubkeys can be found by looking at blocks starting at the indicated block.
+
+An invalidation custom_json matching the above could look something like:
+
+```json
+{
+  "top_key": "F17B44958C3AAA94198DA8A89994F6AC",
+  "invalidated": [
+    [0, 16777215],
+    [16777216, 16777334],
+    [268435456, 268458238],
+    [2147483648, 2147483660]
+  ] 
+}
+```
+
+## The race condition
+
+For the archeaology bot, race conditions won't be a problem, there will be only one subkey, eventualy one like the multi path one in the example JSON, but we are quite a bit removed from there. But when a user actually starts to use multiple subkeys in paralel on different bots, there is a bit of a risk to the use of the account json_metadata to store. For now the impact seems to be relatively OK, though more thaugth may be needed on how to handle it. It seems that race condition problems should at least be detectable, and recovery strategies might be deviced, but deeper thought is needed.
+
+## Feedback ?
+
+For now these pigybacking ideas seem OK from my perspective, and I would like to make a start at implementing them with my current stack of projects. Though doing so only from my own thoughts and preliminary conclusions seems a bit tricky. I would prefer some feedback from the technical HIVE community. So if you read this and think you might have something usefull to say, even if you are unsure or something doesn't quite add up in my text abouve: Plaase comment on this post. I need feedback on my piggybacking plans for aiohivebot.
+
+## Help with funding
+
+If yuou think I'm doing good work with these three projects and you would like to support me and help me allocate more work on aiohivebot, coinzdense and the hive archaeology bot port, please have a look at my [donations and sonsors page](/opensource/@pibara/innuendo-donation-page), or sponsor my projects on [github](https://github.com/sponsors/pibara/). </div>
+  <footer class="hive-post-embed__source">
+    <span class="hive-post-embed__source-label">Source:</span>
+    <a href="https://hive.blog/@pibara/feedback-wanted-piggybacking-quantum-resistant-signatures-on-hive">Feedback wanted: Piggybacking quantum-resistant signatures on HIVE</a>
+    by
+    <a href="https://hive.blog/@pibara">@pibara</a>
+  </footer>
+</div>
+
+
+  </div><a class="u-url" href="/news/python/coinzdense/2024/09/19/feedback-wanted-piggybacking-quantum-resistant-signatures-on-hive.html" hidden></a>
+</article>
+
+        </div>
+
+        
+        <aside class="page-sidebar" aria-label="Search and browse">
+          <section class="sidebar-section sidebar-search">
+            <h2 class="sidebar-heading">Search posts</h2>
+            <p class="sidebar-copy">Search the locally indexed post archive.</p>
+            <input type="text" id="search-input" placeholder="Search posts" autocomplete="off" />
+            <ul id="results-container"></ul>
+          </section>
+
+          <section class="sidebar-section sidebar-topics">
+            <h2 class="sidebar-heading">Browse topics</h2>
+            <p class="sidebar-copy">Jump into curated topic landing pages.</p>
+            <ul class="topic-list topic-list-sidebar"><li><a class="page-link" href="/account-recovery/">Account Recovery</a></li><li><a class="page-link" href="/core-development/">Core Development</a></li><li><a class="page-link" href="/dapps/">Dapps</a></li><li><a class="page-link" href="/docker/">Docker</a></li><li><a class="page-link" href="/hardfork/">Hardfork</a></li><li><a class="page-link" href="/hivemind/">Hivemind</a></li><li><a class="page-link" href="/javascript/">Javascript</a></li><li><a class="page-link" href="/multisig/">Multisig</a></li><li><a class="page-link" href="/python/">Python</a></li><li><a class="page-link" href="/ruby/">Ruby</a></li><li><a class="page-link" href="/testnet/">Testnet</a></li><li><a class="page-link" href="/tools/">Tools</a></li><li><a class="page-link" href="/witness/">Witness</a></li></ul>
+          </section>
+        </aside>
+        
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading"><a rel="author" href="/">Hive Chain Documentation</a></h2>
+    
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">site curated by: @inertia</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>Your resource for various levels of Hive Documentation.</p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+<script src="/assets/javascript/search.js"></script>
+    <script>
+      (function () {
+        var input = document.getElementById('search-input');
+        var results = document.getElementById('results-container');
+        if (input && results && typeof SimpleJekyllSearch !== 'undefined') {
+          SimpleJekyllSearch({
+            searchInput: input,
+            resultsContainer: results,
+            json: '/search.json'
+          });
+        }
+
+        if (typeof SteemContentRenderer === 'undefined') return;
+
+        var targets = document.querySelectorAll('[data-hive-render-target="true"]');
+        if (!targets.length) return;
+
+        var renderer = new SteemContentRenderer.DefaultRenderer({
+          baseUrl: 'https://hive.blog/',
+          breaks: true,
+          skipSanitization: false,
+          allowInsecureScriptTags: false,
+          addNofollowToLinks: true,
+          doNotShowImages: false,
+          ipfsPrefix: '',
+          assetsWidth: 640,
+          assetsHeight: 480,
+          imageProxyFn: function (url) { return url; },
+          usertagUrlFn: function (account) { return '/@' + account; },
+          hashtagUrlFn: function (hashtag) { return '/tags/#' + hashtag; },
+          isLinkSafeFn: function () { return true; }
+        });
+
+        targets.forEach(function (target) {
+          try {
+            var inputHtml = target.innerHTML;
+            target.innerHTML = renderer.render(inputHtml);
+          } catch (e) {
+            console.log(e);
+          }
+        });
+      })();
+    </script>
+
+  </body>
+
+</html>

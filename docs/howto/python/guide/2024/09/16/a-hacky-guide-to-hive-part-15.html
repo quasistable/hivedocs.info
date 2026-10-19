@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta property="og:image" content="/assets/images/sticker.png" />
+  <meta name="apple-mobile-web-app-title" content="Hive Docs" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" /><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>A Hacky Guide to Hive (part 1.5) | Hive Chain Documentation</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="A Hacky Guide to Hive (part 1.5)" />
+<meta name="author" content="felixxx" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Second attempt at writing a guide for Hive" />
+<meta property="og:description" content="Second attempt at writing a guide for Hive" />
+<link rel="canonical" href="https://hive.blog/dev/@felixxx/a-hacky-guide-to-hive-part-15" />
+<meta property="og:url" content="https://hive.blog/dev/@felixxx/a-hacky-guide-to-hive-part-15" />
+<meta property="og:site_name" content="Hive Chain Documentation" />
+<meta property="og:image" content="https://files.peakd.com/file/peakd-hive/felixxx/23tRr8Yp4tXotCaDyQxBvwuP5vf3E9431i97P6h9dbWU7r74B3GjeGnCc4rCVkEZNdgcS.png" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2024-09-16T10:37:15-07:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="https://files.peakd.com/file/peakd-hive/felixxx/23tRr8Yp4tXotCaDyQxBvwuP5vf3E9431i97P6h9dbWU7r74B3GjeGnCc4rCVkEZNdgcS.png" />
+<meta property="twitter:title" content="A Hacky Guide to Hive (part 1.5)" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"felixxx"},"dateModified":"2024-09-16T10:37:15-07:00","datePublished":"2024-09-16T10:37:15-07:00","description":"Second attempt at writing a guide for Hive","headline":"A Hacky Guide to Hive (part 1.5)","image":"https://files.peakd.com/file/peakd-hive/felixxx/23tRr8Yp4tXotCaDyQxBvwuP5vf3E9431i97P6h9dbWU7r74B3GjeGnCc4rCVkEZNdgcS.png","mainEntityOfPage":{"@type":"WebPage","@id":"https://hive.blog/dev/@felixxx/a-hacky-guide-to-hive-part-15"},"url":"https://hive.blog/dev/@felixxx/a-hacky-guide-to-hive-part-15"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://hivedocs.info/feed.xml" title="Hive Chain Documentation" /><script>
+if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNotTrack === "yes" || navigator.msDoNotTrack === "1")) {
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-161692811-1', 'auto');
+  ga('send', 'pageview');
+}
+</script>
+  
+<script src='https://unpkg.com/steem-content-renderer'></script>
+  <script src="/assets/javascript/universal-bridge-against-phishing.js"></script>
+  <script src="/assets/javascript/lazysizes.min.js" async=""></script>
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet" />
+  <link rel="shortcut icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="152x152" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="167x167" href="/assets/images/favicon-80x80.png" />
+</head>
+<body><header class="site-header" role="banner">
+  <div class="wrapper site-header-inner">
+    <a class="site-title" rel="author" href="/">Hive Chain Documentation</a>
+
+    <nav class="site-nav" aria-label="Primary">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/news/">News</a><a class="page-link" href="/howto/">How To</a><a class="page-link" href="/links/">Useful Links</a><a class="page-link" href="/authors/">Authors</a><a class="page-link" href="/topics/">Topics</a><a class="page-link" href="/search/">Search</a></div>
+    </nav>
+  </div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper page-layout has-search-panel">
+        <div class="page-main">
+          <article class="post h-entry post-article" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header post-hero">
+    <div class="post-hero-main">
+      <p class="post-kicker">Archive post</p>
+      <h1 class="post-title p-name" itemprop="name headline">A Hacky Guide to Hive (part 1.5)</h1>
+      <p class="post-meta">
+        <time class="dt-published" datetime="2024-09-16T10:37:15-07:00" itemprop="datePublished">Sep 16, 2024
+        </time>• <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">
+            <a href="/authors/#author-felixxx">felixxx</a>
+          </span></span></p><p class="post-summary">Second attempt at writing a guide for Hive</p></div><aside class="post-author-card">
+      <img src="https://images.hive.blog/u/felixxx/avatar" width="128" height="128" class="lazyload post-author-avatar" alt="Avatar for @felixxx" />
+      <div class="post-author-name">@felixxx</div>
+    </aside></header>
+
+  <div class="post-content e-content post-body" itemprop="articleBody">
+    <div class="hive-post-embed" data-hive-author="felixxx" data-hive-permlink="a-hacky-guide-to-hive-part-15">
+  <div id="content-felixxx-a-hacky-guide-to-hive-part-15" class="hive-post-embed__content" data-hive-render-target="true">## Black Box
+
+6 months ago, I attempted writing a guide for programming with Hive.
+I tried [looking at Hive as a black box](/@felixxx/hive-as-a-black-box).
+I still like that concept, but after reading it all again, I realized that I've jumped too far ahead.
+I'll try taking shorter strides this time.
+I also changed the title and theme a little.
+
+I'll base the guide around [the publicly available nodes](https://developers.hive.io/quickstart/#quickstart-hive-full-nodes), and I'll further explain, why that doesn't matter, later, but in this part we need to look at how you _would_ install your own Hive node.
+
+I am trying to explain the exact same things as in the first guide, just with a different approach and more elaborate. By the end, [the examples I posted recently](/@felixxx/python-requests-for-hive-json-rpc), should make more sense.
+
+<center>![FELIXBOXANTENA.png](https://files.peakd.com/file/peakd-hive/felixxx/23tRr8Yp4tXotCaDyQxBvwuP5vf3E9431i97P6h9dbWU7r74B3GjeGnCc4rCVkEZNdgcS.png)</center>
+
+## Hive Nodes
+
+Hive is a software with open [source code](https://github.com/openhive-network/hive).
+So... you can download the code, 
+compile it and then run a node. (the rhyme!)
+
+![FELIXBOXVHSTAPE400.png](https://files.peakd.com/file/peakd-hive/felixxx/23u5T9MdcSRK9mfZk2nC313eoiiSBMeUGLm1r7SApy1oWkCMfn1BTvkeH9viZhaj3rTB4.png)
+
+### block_log
+
+The Hive blockchain itself gets stored as series of events.
+The events are all segmented in 3-second intervals, which are called blocks.
+But in the end, all events end up in one long file called ``block_log``.
+It's almost like a long tape recording.
+
+![FELIXBOXANTENAVCR400.png](https://files.peakd.com/file/peakd-hive/felixxx/23tRrRPbsEUHkGdhiZ2WKxvG9YD1upstXFdaqgThCizDn847M2WgDa6aj5e2rSgY1w1Pj.png)
+
+### Hived
+
+[Compiling the code for a Hive node](/@gtg/witness-update-release-candidate-for-eclipse-is-out#build-eclipse) will leave you with a ``hived`` binary.
+That's the ``Hive daemon``.
+You then need to synchronize your node with the network.
+This means, your Hive daemon needs to go through all blocks and replay all state changes that happened up until now. 
+In the tape analogy, you could load a block_log into you hived tape recorder and fast forward the tape, going over all past events, called indexing.
+The Hive daemon watches all events and creates databases in the background.
+
+### tables
+
+There are different modules you can activate for your node, called plugins.
+What's important here: for the most part, the API calls represent _get_ methods for underlying database tables.
+
+The blockchain itself only documents the **changes**.
+For example: The balance of an account is not directly accessible on the blockchain.
+While the blockchain contains all transfers to and from an account, the final balance needs to be calculated;
+The data needs to be compiled first, for quick access.
+
+![FELIXBOXANTENAVCRMOUTHPIECE400.png](https://files.peakd.com/file/peakd-hive/felixxx/23tGTdjW2co6HfV1eVGavf8HSbE8QKkHXJf2Tj6BwFrk3GgbK4Xp1rn6uajuz2EcfTo3w.png)
+
+## Custom Client
+
+I'll try to write a hacky guide on how to build your own custom client for Hive.
+It will enable you to build slim, reliable, customized services for Hive and operate them on a budget.
+
+This is approach isn't the best for all applications; If you want to do historical stuff, analyzing large amounts of data, statistics and such things, HiveSQL is better.
+
+If you don't know, where else to start, this could be a good bet.
+However, ironically, I got questions about this stuff myself.
+
+## Questions
+
+To some extent, Hive's still a black box to me.
+I know how to use some of it, but I don't understand how some of it really works.
+Sometimes, all I can hope for is that one of the gods of Hive takes pity and lets themselves down from the Olymp to answer to a mortal.
+
+- Wouldn't witness nodes need tables for things like account balance? How do they know, if someone isn't _stealing_? 
+
+- ``block_api.get_block_range`` seems to access a table where the block number is a key. Why is there no public method, which starts from the last entry? At least in SQL databases that's a request with _linear_ speed. (And I could get to the head block in one step). [It probably has something to do with block reversibility or rocksDB](/@dan/fractally-s-groundbreaking-new-database-outperforms-lmbdx-eos-hive-chainbase-rocksdb)...
+
+The good part is, that it doesn't really matter; I don't have to fully understand all of it.
+If there was a fundamental flaw in consensus finding, serialization, signing and other such things, it would be too lucrative to exploit it - someone would have found it and we'd know.
+
+## Notes
+
+- Since I will be using Python requests, you can use the exact same code to access your own node, locally, or the public nodes, via https.
+- I will not attempt to sign and broadcast anything for users. I will build a small html + JS based client as example, implementing [keychain](https://github.com/hive-keychain/hive-keychain-extension), because as [the developer portal](https://developers.hive.io/quickstart/#quickstart-hive-full-nodes/) states:
+&gt;By utilizing Authenticating services, you can eliminate or give more confidence to user, so they are assured their keys are safe. They can securely interact with your application, website or service.
+- I have medical issues with my hand, so I asked @manclar to help me with the images for these posts, and paid him for it.
+- This is a work in progress and subject to change.
+I appreciate all feedback, but please try to not comment 'That's not right' without further explanation. At least provide a link or something.
+
+<sub>tagging:
+@chrislybear, @ana-maria, @arc7icwolf, @slobberchops
+If you want to be included/excluded from this list of subscribers, please let me know.</sub>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+  <footer class="hive-post-embed__source">
+    <span class="hive-post-embed__source-label">Source:</span>
+    <a href="https://hive.blog/@felixxx/a-hacky-guide-to-hive-part-15">A Hacky Guide to Hive (part 1,5)</a>
+    by
+    <a href="https://hive.blog/@felixxx">@felixxx</a>
+  </footer>
+</div>
+
+
+  </div><a class="u-url" href="/howto/python/guide/2024/09/16/a-hacky-guide-to-hive-part-15.html" hidden></a>
+</article>
+
+        </div>
+
+        
+        <aside class="page-sidebar" aria-label="Search and browse">
+          <section class="sidebar-section sidebar-search">
+            <h2 class="sidebar-heading">Search posts</h2>
+            <p class="sidebar-copy">Search the locally indexed post archive.</p>
+            <input type="text" id="search-input" placeholder="Search posts" autocomplete="off" />
+            <ul id="results-container"></ul>
+          </section>
+
+          <section class="sidebar-section sidebar-topics">
+            <h2 class="sidebar-heading">Browse topics</h2>
+            <p class="sidebar-copy">Jump into curated topic landing pages.</p>
+            <ul class="topic-list topic-list-sidebar"><li><a class="page-link" href="/account-recovery/">Account Recovery</a></li><li><a class="page-link" href="/core-development/">Core Development</a></li><li><a class="page-link" href="/dapps/">Dapps</a></li><li><a class="page-link" href="/docker/">Docker</a></li><li><a class="page-link" href="/hardfork/">Hardfork</a></li><li><a class="page-link" href="/hivemind/">Hivemind</a></li><li><a class="page-link" href="/javascript/">Javascript</a></li><li><a class="page-link" href="/multisig/">Multisig</a></li><li><a class="page-link" href="/python/">Python</a></li><li><a class="page-link" href="/ruby/">Ruby</a></li><li><a class="page-link" href="/testnet/">Testnet</a></li><li><a class="page-link" href="/tools/">Tools</a></li><li><a class="page-link" href="/witness/">Witness</a></li></ul>
+          </section>
+        </aside>
+        
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading"><a rel="author" href="/">Hive Chain Documentation</a></h2>
+    
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">site curated by: @inertia</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>Your resource for various levels of Hive Documentation.</p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+<script src="/assets/javascript/search.js"></script>
+    <script>
+      (function () {
+        var input = document.getElementById('search-input');
+        var results = document.getElementById('results-container');
+        if (input && results && typeof SimpleJekyllSearch !== 'undefined') {
+          SimpleJekyllSearch({
+            searchInput: input,
+            resultsContainer: results,
+            json: '/search.json'
+          });
+        }
+
+        if (typeof SteemContentRenderer === 'undefined') return;
+
+        var targets = document.querySelectorAll('[data-hive-render-target="true"]');
+        if (!targets.length) return;
+
+        var renderer = new SteemContentRenderer.DefaultRenderer({
+          baseUrl: 'https://hive.blog/',
+          breaks: true,
+          skipSanitization: false,
+          allowInsecureScriptTags: false,
+          addNofollowToLinks: true,
+          doNotShowImages: false,
+          ipfsPrefix: '',
+          assetsWidth: 640,
+          assetsHeight: 480,
+          imageProxyFn: function (url) { return url; },
+          usertagUrlFn: function (account) { return '/@' + account; },
+          hashtagUrlFn: function (hashtag) { return '/tags/#' + hashtag; },
+          isLinkSafeFn: function () { return true; }
+        });
+
+        targets.forEach(function (target) {
+          try {
+            var inputHtml = target.innerHTML;
+            target.innerHTML = renderer.render(inputHtml);
+          } catch (e) {
+            console.log(e);
+          }
+        });
+      })();
+    </script>
+
+  </body>
+
+</html>

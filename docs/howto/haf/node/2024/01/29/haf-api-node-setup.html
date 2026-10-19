@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta property="og:image" content="/assets/images/sticker.png" />
+  <meta name="apple-mobile-web-app-title" content="Hive Docs" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" /><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Haf API Node Setup | Hive Chain Documentation</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Haf API Node Setup" />
+<meta name="author" content="disregardfiat" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Setting up a “full API node” has never been so easy. Let’s walk through it" />
+<meta property="og:description" content="Setting up a “full API node” has never been so easy. Let’s walk through it" />
+<link rel="canonical" href="https://hive.blog/hive/@disregardfiat/haf-api-node-setup" />
+<meta property="og:url" content="https://hive.blog/hive/@disregardfiat/haf-api-node-setup" />
+<meta property="og:site_name" content="Hive Chain Documentation" />
+<meta property="og:image" content="https://files.peakd.com/file/peakd-hive/disregardfiat/23tS2th8j9XcK16tzevSSwyEzz1mSTSoJD9JJ8zPmuUso8iVqa4yHk3tvmSvffcxjVT7F.png" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2024-01-29T15:19:48-08:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="https://files.peakd.com/file/peakd-hive/disregardfiat/23tS2th8j9XcK16tzevSSwyEzz1mSTSoJD9JJ8zPmuUso8iVqa4yHk3tvmSvffcxjVT7F.png" />
+<meta property="twitter:title" content="Haf API Node Setup" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"disregardfiat"},"dateModified":"2024-01-29T15:19:48-08:00","datePublished":"2024-01-29T15:19:48-08:00","description":"Setting up a “full API node” has never been so easy. Let’s walk through it","headline":"Haf API Node Setup","image":"https://files.peakd.com/file/peakd-hive/disregardfiat/23tS2th8j9XcK16tzevSSwyEzz1mSTSoJD9JJ8zPmuUso8iVqa4yHk3tvmSvffcxjVT7F.png","mainEntityOfPage":{"@type":"WebPage","@id":"https://hive.blog/hive/@disregardfiat/haf-api-node-setup"},"url":"https://hive.blog/hive/@disregardfiat/haf-api-node-setup"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://hivedocs.info/feed.xml" title="Hive Chain Documentation" /><script>
+if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNotTrack === "yes" || navigator.msDoNotTrack === "1")) {
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-161692811-1', 'auto');
+  ga('send', 'pageview');
+}
+</script>
+  
+<script src='https://unpkg.com/steem-content-renderer'></script>
+  <script src="/assets/javascript/universal-bridge-against-phishing.js"></script>
+  <script src="/assets/javascript/lazysizes.min.js" async=""></script>
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet" />
+  <link rel="shortcut icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="152x152" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="167x167" href="/assets/images/favicon-80x80.png" />
+</head>
+<body><header class="site-header" role="banner">
+  <div class="wrapper site-header-inner">
+    <a class="site-title" rel="author" href="/">Hive Chain Documentation</a>
+
+    <nav class="site-nav" aria-label="Primary">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/news/">News</a><a class="page-link" href="/howto/">How To</a><a class="page-link" href="/links/">Useful Links</a><a class="page-link" href="/authors/">Authors</a><a class="page-link" href="/topics/">Topics</a><a class="page-link" href="/search/">Search</a></div>
+    </nav>
+  </div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper page-layout has-search-panel">
+        <div class="page-main">
+          <article class="post h-entry post-article" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header post-hero">
+    <div class="post-hero-main">
+      <p class="post-kicker">Archive post</p>
+      <h1 class="post-title p-name" itemprop="name headline">Haf API Node Setup</h1>
+      <p class="post-meta">
+        <time class="dt-published" datetime="2024-01-29T15:19:48-08:00" itemprop="datePublished">Jan 29, 2024
+        </time>• <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">
+            <a href="/authors/#author-disregardfiat">disregardfiat</a>
+          </span></span></p><p class="post-summary">Setting up a "full API node" has never been so easy. Let's walk through it</p></div><aside class="post-author-card">
+      <img src="https://images.hive.blog/u/disregardfiat/avatar" width="128" height="128" class="lazyload post-author-avatar" alt="Avatar for @disregardfiat" />
+      <div class="post-author-name">@disregardfiat</div>
+    </aside></header>
+
+  <div class="post-content e-content post-body" itemprop="articleBody">
+    <div class="hive-post-embed" data-hive-author="disregardfiat" data-hive-permlink="haf-api-node-setup">
+  <div id="content-disregardfiat-haf-api-node-setup" class="hive-post-embed__content" data-hive-render-target="true">Craddle to Grave guide to setup a [haf_api_node](https://gitlab.syncad.com/hive/haf_api_node) (still in development).
+
+### Initial Server Setup
+Just getting yourself a server with 4TB of nvme diskspace isn't quite enough. You will likely need to disable any software RAID to actually have 4TB of space. The following are steps to use a rescue image and Hetzner's Install OS to bring your system online. These steps will be similar with other providers or even running the system from an ubuntu setup disk.
+
+#### Hardware Requirements
+* 32GB RAM
+* 4TB NVME (additional SSD or HD is great too)
+* Ubuntu 22.04 or better (23.10 preferred)
+
+### Let's Go
+ssh into your server
+
+Let's look at `lsblk`
+![lsblk](https://files.peakd.com/file/peakd-hive/disregardfiat/23tS2th8j9XcK16tzevSSwyEzz1mSTSoJD9JJ8zPmuUso8iVqa4yHk3tvmSvffcxjVT7F.png)
+You should see some disks here, note if you have some SSDs and some NVMEs you can install your OS on the SSD(or even SATA HD) and leave the NVMEs just for haf.
+
+`installimage` - Hetzner OS install
+
+
+![Ubuntu Select](https://files.peakd.com/file/peakd-hive/disregardfiat/23tmYKvaeBgN8E65SBduJ9onwgmoHcSKgr7LB9ivWYv6gD2jqZBda2aKW73soEVfnLGrh.png)
+
+
+![Jammy Jellyfish](https://files.peakd.com/file/peakd-hive/disregardfiat/23wCN74Da65XuVT2L9koE58vcDSxhpCTmWaueibkRJJLjU9b7k9cA7h3iemYq1qYpCmgf.png)
+
+
+![Disk Setup](https://files.peakd.com/file/peakd-hive/disregardfiat/48FiDjsQQkeKLLsApCkkEmEKHpKciqUHiv4UgMMLvU4qZdqJ2WqL3Qa5siRg8x4gtc.png)
+Here you will comment out any NVME Drives you want to use for haf, and make DRIVE1 your HD/SSD/NVME of choice. 
+
+![Software RAID](https://files.peakd.com/file/peakd-hive/disregardfiat/23t74kNbUXYHBLi6NJ6DJ8XewStpZVUjWgtR1Bjp8WTGurNrSJfaBh5n6qRSHdqusv6pZ.png)
+Ensure to disable (#) your Software RAID (SWRAID) and select 0 or 1 in the SWRAIDLEVEL
+
+![hostname](https://files.peakd.com/file/peakd-hive/disregardfiat/23tGTV6KdW2UMpST8AiqLEbBgxQqHp56ADPEJU54VSnqA7bcwBUKhN4z7fMfXVFF1Kzzv.png)
+
+Why not make your hostname smaller like haf or haf2 because jammy-2204-blah-blah-blah gets annoying to look at and doesn't tell you much if you have many boxes in the wild.
+
+* Save [F2] and exit [F10]
+  * F10 might require you to push [Esc] first
+* `reboot`
+
+Next time you ssh into your system you'll have a new fingerprint as the OS has changed. 
+
+First things first. Let's make sure your drives are set up correctly
+
+
+![lsblk](https://files.peakd.com/file/peakd-hive/disregardfiat/23tGcHajTQJ6UD9Tti1YJ5DLk2Qpe7tfxim6zxFk5vZCDGXgXtPNQd5o9d1PPDbFCrHxP.png)
+
+Hopefully you'll see at least 4TB of nvme disk(s) with no mountpoints.
+
+Housekeeping:
+`sudo apt update &amp;&amp; sudo apt upgrade -y`
+
+If you are going to upgrade to 23.10 now is the best time.
+
+![image.png](https://files.peakd.com/file/peakd-hive/disregardfiat/23tGvygDgAdurvwPPZ2nEkd4fUKQUn1A9QkLBS7ZLHhrHZ1PWJ5qTqFdECJq1c34nPvGz.png)
+* `sudo nano /etc/update-manager/release-upgrades`
+  * Change `lts` to `normal` and save
+  * If you use the 'do-release-upgrade -d` with the -d flag at this point in time you'll find yourself in a 24.04-dev system which doesn't have an official docker release. Docker does seem to be working with the 23.10 version, and I haven't found any other issues, but I'm not going to cover that install path here.
+* `sudo do-release-upgrade` -&gt; 23.04
+   * Follow the instructions... then do it again
+* `sudo do-release-upgrade` -&gt; 23.10
+
+
+![welcome screen](https://files.peakd.com/file/peakd-hive/disregardfiat/23tGbn3eCQh8HtFgj1Wn5a6XZxXVqX7ydEpRzZGTpZ3nGFhzuVxkvrL3W4gkyhYh9bYZ5.png)
+
+We haven't even got to the haf install and it's nearly over! Let's move into the real meat of the operation.
+
+* `git clone https://gitlab.syncad.com/hive/haf_api_node.git`
+* `cd haf_api_node/`
+
+You really should read the README... But if you want to get going as quick as possible let's get it going:
+
+```
+sudo apt-get update
+sudo apt-get install ca-certificates curl gnupg
+sudo install -m 0755 -d /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+sudo chmod a+r /etc/apt/keyrings/docker.gpg
+echo \
+  "deb [arch="$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+  "$(. /etc/os-release &amp;&amp; echo "$VERSION_CODENAME")" stable" | \
+  sudo tee /etc/apt/sources.list.d/docker.list &gt; /dev/null
+sudo apt-get update
+
+sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin zfsutils-linux -y
+```
+Copy and paste the above to get the prerequisites installed: docker and zfs utilities.
+
+Then run `./assisted_starup.sh`
+
+![Helpful .env Setup](https://files.peakd.com/file/peakd-hive/disregardfiat/23tRxiAzDPNzoHFhiYTXzMXyXK6epKmASZzdqWr4ZBcDJMTPjhi5ewhMXpEwNt8uBLKs3.png)
+
+This script will: 
+* verify your prerequists
+* build an environment file `.env` (as needed)
+  * Ask which services you intend to run
+  * Ask what domain name you have set up
+  * Ask if you wish to have your SSL certificates managed
+    * (Please have your DNS properly configured by this point if you say yes)
+* Scan for unmounted NVME drives (as needed)
+* Build a ZFS pool with those drives (as needed)
+* Create haf datasets in the zpool (as needed)
+* Build a RAM Disk to significantly speed up syncing times (disable with --no-ramdisk)
+* Start the Sync with only Core and Admin profiles
+* Monitor memory usage durring the Sync and add swapfiles (disable with --no-autoswap) to prevent OOM
+* Upon initial Sync:
+  * Will take a snapshot named "first_sync" so any changes made can forgo the long replay.
+  * Unmount the RAM Disk to improve API performance
+  * Add any additional services to be run (servers, apps, hafah...)
+  * Move memory management and sync times to a haf.log file
+  * Also remove any "--replay" arguments
+That's it. In 2(core)-7(with all apps) days you should have a fully synced haf_api_node at your.domain.com 
+
+### Efforts
+
+@blocktrades and company have put a lot of work into this to make spinning up new API nodes really easy. The continued progress of the years with snapshots, data compression, docker deploys, haf in general... really shine a light on how far and professional the system has gotten. I believe my node now is smaller than it was a couple of years ago, and for sure syncs faster even with a blockchain about twice the size, which keeps the costs down and improves our ability to have a well functioning ecosystem.
+
+I did write the `assisted_startup.sh` script that helps get things moving... as manually finding certain information is error prone, and monitoring the system yourself is not fun. That said, every step in the README can be done and still take advantage of the memory management features of the script.
+
+One of the biggest reasons to do that would be to run additional or fewer plugins on the hived config.ini... as these plugins need to be ran from the beginning. Other reasons might be to make your zpool from a mix of SSDs or to not include all available NVMEs in the pool. So certainly take a look at the README if you plan on doing anything non-standard. 
+
+Running API nodes isn't exactly cheap, and I have 2 of them now. If you'd like to support my witness I'd be forever thankful.
+
+## Public API Specs
+
+### hive-api.dlux.io
+
+Testing across:
+Ryzen 5 / 64GB / 5TB NVMEs / Germany =&gt; Ubuntu 23.10
+Ryzen 9 / 64GB / 4TB NVMEs / 2TB HHD / Germany =&gt; Ubuntu 24.04-dev
+</div>
+  <footer class="hive-post-embed__source">
+    <span class="hive-post-embed__source-label">Source:</span>
+    <a href="https://hive.blog/@disregardfiat/haf-api-node-setup">Haf API Node Setup</a>
+    by
+    <a href="https://hive.blog/@disregardfiat">@disregardfiat</a>
+  </footer>
+</div>
+
+
+  </div><a class="u-url" href="/howto/haf/node/2024/01/29/haf-api-node-setup.html" hidden></a>
+</article>
+
+        </div>
+
+        
+        <aside class="page-sidebar" aria-label="Search and browse">
+          <section class="sidebar-section sidebar-search">
+            <h2 class="sidebar-heading">Search posts</h2>
+            <p class="sidebar-copy">Search the locally indexed post archive.</p>
+            <input type="text" id="search-input" placeholder="Search posts" autocomplete="off" />
+            <ul id="results-container"></ul>
+          </section>
+
+          <section class="sidebar-section sidebar-topics">
+            <h2 class="sidebar-heading">Browse topics</h2>
+            <p class="sidebar-copy">Jump into curated topic landing pages.</p>
+            <ul class="topic-list topic-list-sidebar"><li><a class="page-link" href="/account-recovery/">Account Recovery</a></li><li><a class="page-link" href="/core-development/">Core Development</a></li><li><a class="page-link" href="/dapps/">Dapps</a></li><li><a class="page-link" href="/docker/">Docker</a></li><li><a class="page-link" href="/hardfork/">Hardfork</a></li><li><a class="page-link" href="/hivemind/">Hivemind</a></li><li><a class="page-link" href="/javascript/">Javascript</a></li><li><a class="page-link" href="/multisig/">Multisig</a></li><li><a class="page-link" href="/python/">Python</a></li><li><a class="page-link" href="/ruby/">Ruby</a></li><li><a class="page-link" href="/testnet/">Testnet</a></li><li><a class="page-link" href="/tools/">Tools</a></li><li><a class="page-link" href="/witness/">Witness</a></li></ul>
+          </section>
+        </aside>
+        
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading"><a rel="author" href="/">Hive Chain Documentation</a></h2>
+    
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">site curated by: @inertia</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>Your resource for various levels of Hive Documentation.</p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+<script src="/assets/javascript/search.js"></script>
+    <script>
+      (function () {
+        var input = document.getElementById('search-input');
+        var results = document.getElementById('results-container');
+        if (input && results && typeof SimpleJekyllSearch !== 'undefined') {
+          SimpleJekyllSearch({
+            searchInput: input,
+            resultsContainer: results,
+            json: '/search.json'
+          });
+        }
+
+        if (typeof SteemContentRenderer === 'undefined') return;
+
+        var targets = document.querySelectorAll('[data-hive-render-target="true"]');
+        if (!targets.length) return;
+
+        var renderer = new SteemContentRenderer.DefaultRenderer({
+          baseUrl: 'https://hive.blog/',
+          breaks: true,
+          skipSanitization: false,
+          allowInsecureScriptTags: false,
+          addNofollowToLinks: true,
+          doNotShowImages: false,
+          ipfsPrefix: '',
+          assetsWidth: 640,
+          assetsHeight: 480,
+          imageProxyFn: function (url) { return url; },
+          usertagUrlFn: function (account) { return '/@' + account; },
+          hashtagUrlFn: function (hashtag) { return '/tags/#' + hashtag; },
+          isLinkSafeFn: function () { return true; }
+        });
+
+        targets.forEach(function (target) {
+          try {
+            var inputHtml = target.innerHTML;
+            target.innerHTML = renderer.render(inputHtml);
+          } catch (e) {
+            console.log(e);
+          }
+        });
+      })();
+    </script>
+
+  </body>
+
+</html>

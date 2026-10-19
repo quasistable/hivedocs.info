@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta property="og:image" content="/assets/images/sticker.png" />
+  <meta name="apple-mobile-web-app-title" content="Hive Docs" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" /><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>A Hacky Guide to Hive (part 2.2.2: custom_YOson) | Hive Chain Documentation</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="A Hacky Guide to Hive (part 2.2.2: custom_YOson)" />
+<meta name="author" content="felixxx" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="finishing first demo of custom YOson" />
+<meta property="og:description" content="finishing first demo of custom YOson" />
+<link rel="canonical" href="https://hive.blog/dev/@felixxx/a-hacky-guide-to-hive-part-222-customyoson" />
+<meta property="og:url" content="https://hive.blog/dev/@felixxx/a-hacky-guide-to-hive-part-222-customyoson" />
+<meta property="og:site_name" content="Hive Chain Documentation" />
+<meta property="og:image" content="https://files.peakd.com/file/peakd-hive/felixxx/23wMQ8bUMubWa5kZfGGCiibyJtDVy9QXdN6ze5v4HL3nRaVrmio9jjipahrVJf8sArgis.png" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2024-09-22T02:51:45-07:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="https://files.peakd.com/file/peakd-hive/felixxx/23wMQ8bUMubWa5kZfGGCiibyJtDVy9QXdN6ze5v4HL3nRaVrmio9jjipahrVJf8sArgis.png" />
+<meta property="twitter:title" content="A Hacky Guide to Hive (part 2.2.2: custom_YOson)" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"felixxx"},"dateModified":"2024-09-22T02:51:45-07:00","datePublished":"2024-09-22T02:51:45-07:00","description":"finishing first demo of custom YOson","headline":"A Hacky Guide to Hive (part 2.2.2: custom_YOson)","image":"https://files.peakd.com/file/peakd-hive/felixxx/23wMQ8bUMubWa5kZfGGCiibyJtDVy9QXdN6ze5v4HL3nRaVrmio9jjipahrVJf8sArgis.png","mainEntityOfPage":{"@type":"WebPage","@id":"https://hive.blog/dev/@felixxx/a-hacky-guide-to-hive-part-222-customyoson"},"url":"https://hive.blog/dev/@felixxx/a-hacky-guide-to-hive-part-222-customyoson"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://hivedocs.info/feed.xml" title="Hive Chain Documentation" /><script>
+if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNotTrack === "yes" || navigator.msDoNotTrack === "1")) {
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-161692811-1', 'auto');
+  ga('send', 'pageview');
+}
+</script>
+  
+<script src='https://unpkg.com/steem-content-renderer'></script>
+  <script src="/assets/javascript/universal-bridge-against-phishing.js"></script>
+  <script src="/assets/javascript/lazysizes.min.js" async=""></script>
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet" />
+  <link rel="shortcut icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="152x152" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="167x167" href="/assets/images/favicon-80x80.png" />
+</head>
+<body><header class="site-header" role="banner">
+  <div class="wrapper site-header-inner">
+    <a class="site-title" rel="author" href="/">Hive Chain Documentation</a>
+
+    <nav class="site-nav" aria-label="Primary">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/news/">News</a><a class="page-link" href="/howto/">How To</a><a class="page-link" href="/links/">Useful Links</a><a class="page-link" href="/authors/">Authors</a><a class="page-link" href="/topics/">Topics</a><a class="page-link" href="/search/">Search</a></div>
+    </nav>
+  </div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper page-layout has-search-panel">
+        <div class="page-main">
+          <article class="post h-entry post-article" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header post-hero">
+    <div class="post-hero-main">
+      <p class="post-kicker">Archive post</p>
+      <h1 class="post-title p-name" itemprop="name headline">A Hacky Guide to Hive (part 2.2.2: custom_YOson)</h1>
+      <p class="post-meta">
+        <time class="dt-published" datetime="2024-09-22T02:51:45-07:00" itemprop="datePublished">Sep 22, 2024
+        </time>• <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">
+            <a href="/authors/#author-felixxx">felixxx</a>
+          </span></span></p><p class="post-summary">finishing first demo of custom YOson</p></div><aside class="post-author-card">
+      <img src="https://images.hive.blog/u/felixxx/avatar" width="128" height="128" class="lazyload post-author-avatar" alt="Avatar for @felixxx" />
+      <div class="post-author-name">@felixxx</div>
+    </aside></header>
+
+  <div class="post-content e-content post-body" itemprop="articleBody">
+    <div class="hive-post-embed" data-hive-author="felixxx" data-hive-permlink="a-hacky-guide-to-hive-part-222-customyoson">
+  <div id="content-felixxx-a-hacky-guide-to-hive-part-222-customyoson" class="hive-post-embed__content" data-hive-render-target="true">## Context
+
+Please read [last post](/@felixxx/a-hacky-guide-to-hive-part-221-blocks) for context.
+
+## SQLAlchemy
+
+This is no Python guide, this is no SQL guide.
+I just want to get the job done, so I use [SQLAlchemy](https://www.sqlalchemy.org/).
+You could build the following better or faster, in any language you want, without SQLAlchemy, for a different storage than SQLite... the main thing is: You'll probably need other data. 
+This is just a way to get to a working demo quickly.
+
+### db.py
+
+```
+from typing import List
+import datetime
+from sqlalchemy import String, ForeignKey, DateTime, create_engine
+from sqlalchemy.sql import func
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship, Session
+
+class Base(DeclarativeBase):
+    pass
+
+class Block(Base):
+    __tablename__ = "blocks"
+    num: Mapped[int] = mapped_column(primary_key=True)
+    timestamp: Mapped[str] = mapped_column(String(19))    
+    sql_timestamp: Mapped[datetime.datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())   
+    yos: Mapped[List["Yo"]] = relationship(back_populates="block", cascade="all, delete-orphan")     
+
+class Yo(Base):
+    __tablename__ = "yos"
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    author: Mapped[str] = mapped_column(String(16))
+    tx_id: Mapped[str] = mapped_column(String(40))
+    block_num: Mapped[int] = mapped_column(ForeignKey("blocks.num"))
+    block: Mapped[Block] = relationship(back_populates="yos")
+```
+This is no SQLAlchemy quide.
+It is for the most part just the example from the [SQLalchemy tutorial](https://docs.sqlalchemy.org/en/20/orm/quickstart.html), adapted to my data.
+It allows me to map SQL tables _blocks_ and _yos_ as classes _Block_ and _Yo_.
+I am not even sure, if I am doing it right, but for the demo it doesn't matter.
+
+```
+def make_db(db):
+    Base.metadata.create_all(create_engine(db))
+
+def set_blocks(blocks, session: Session):
+    session.add_all(blocks)
+
+def get_last_block(session: Session):    
+    return session.query(Block.num).order_by(Block.num.desc()).limit(1).first()[0]    
+```
+The main goal of db.py is to be able to:
+- make a DB
+- add blocks to DB table (set)
+- return blocks from DB (get)
+
+For now, I only need to get to the last block, so I built a specialized function, to do just that.
+
+```
+def make_yo_blocks(start, blocks):
+    num = start
+    yo_blocks = []       
+    for block in blocks:                
+        yos = []
+        for tx_i, transaction in enumerate(block['transactions']):
+            for operation in transaction['operations']:
+                if operation['type'] == 'custom_json_operation':
+                    if operation['value']['id'] == 'YO':
+                        yo = Yo(author= operation['value']['required_posting_auths'][0], tx_id= block['transaction_ids'][tx_i])
+                        yos.append(yo)
+        yo_block = Block(num= num, timestamp= block['timestamp'], yos= yos)
+        yo_blocks.append(yo_block)
+        num += 1
+    return yo_blocks
+```
+The above is the last piece. 
+It does a lot of things for a single function.
+It takes the _blocks_ data from last post and converts it to _Blocks_ (and _Yos_).
+It can break in a lot of places, but that's exactly what it should do for now.
+
+#### Example
+
+```
+db_file = "sqlite:///yo.db"
+init_block = Block(num = 89040473, timestamp = '2024-09-18T12:55:36', yos = [Yo(author = 'felixxx', tx_id = 'eb025cf797ee5bc81d7399282268079cc29cc66d')])
+
+def init():
+    make_db(db_file)
+    with Session(create_engine(db_file, echo=True)) as session:
+        set_blocks([init_block], session)
+        session.commit()
+```
+If you run this example init twice, you will get an error:
+Demonstrating that SQL is already doing stuff; it prevents inserting a block of the same _num_ twice.
+
+
+![custom_YOson.png](https://files.peakd.com/file/peakd-hive/felixxx/23wMQ8bUMubWa5kZfGGCiibyJtDVy9QXdN6ze5v4HL3nRaVrmio9jjipahrVJf8sArgis.png)
+
+
+## custom_YOson
+
+In the final process the api and db handling meet.
+
+### api.py
+```
+import requests
+
+def get_block_range(start, count, url):
+    data = '{"jsonrpc":"2.0", "method":"block_api.get_block_range","params":{"starting_block_num":'+str(start)+',"count": '+str(count)+'},"id":1}'
+    return requests.post(url, data)
+```
+That's the Hive api from last post. It's really that short.
+I modified it just a little, to move data conversion further upstream; Instead of a list of blocks, it now returns raw data.
+
+### custom_YOson.py
+
+```
+import db, api
+
+url = 'https://api.hive.blog'
+db_file = "sqlite:///yo.db"
+count = 10
+innit_block = db.Block(num = 89040473, timestamp = '2024-09-18T12:55:36', yos = [db.Yo(author = 'felixxx', tx_id = 'eb025cf797ee5bc81d7399282268079cc29cc66d')])
+
+def innit():
+    db.make_db(db_file)
+    with db.Session(db.create_engine(db_file)) as session:
+        db.set_blocks([innit_block], session)
+        session.commit()
+    
+def tick():    
+    with db.Session(db.create_engine(db_file)) as session:        
+        last = db.get_last_block(session)
+    response = api.get_block_range(last + 1, count, url)
+    blocks = response.json()['result']['blocks']
+    with db.Session(db.create_engine(db_file)) as session:
+        if last == db.get_last_block(session):        
+            db.set_blocks(db.make_yo_blocks(last + 1, blocks), session)
+            session.commit()
+```
+The main procedure, that should happen during every tick:
+
+- with open db session:
+	- get last block's num from db
+- query Hive node for next (count = 10) blocks 
+- convert Hive node response to dictionary, select key 'blocks'
+- with open db session:
+	- get last block's num again, if same: 
+	- convert blocks to Blocks
+	- store blocks
+
+### Process
+
+custom_YOson is only 75 lines long:
+
+- api.py (5)
+- db.py (48)
+- custom_YOson.py (22)
+
+You'd still have to wrap this in a loop, but the core procedure works for stream and resync.
+My main goal here was to use functions in tick() that each represent one step of the procedure.
+
+### Performance
+
+1 block @ 26 KB|10 blocks @ 168 KB|100 blocks @ 1919 KB
+-|-|-
+api.hive.blog: 0.693 s<br />YOson: 0.020 s<br />total: 0.714 s|api.hive.blog: 0.976 s<br />YOson: 0.017 s<br />total: 0.993 s|api.hive.blog: 7.910 s<br />YOson: 0.028 s<br />total: 7.939 s
+
+I did 3 test shots and what's clear: The node performance is the bottleneck.
+I could optimize my code or try a different language and database, but I could only shave off miliseconds.
+Acessing a node via localhost would probably be substantially faster, but even then: to improve this there probably isn't much you can do in Python...
+
+## Conclusion
+
+Hive's state changes. The only way to observe state changes is querying a node.
+In many ways, Hive is a like a black box.
+Goal was to build a white box, that has healthy data. (yo.db)
+How to best sanitize, store and handle the data depends on the application.
+You could build something like HiveSQL, hive-engine, a voting service or a game with a yo.db as engine, like above.
+
+Next post I'll cover error handling and deployment and build an application.
+
+Had I understood 8 years ago, when I first found this chain, how to build stuff like above... I could have made a lot of money. A lot of it isn't even Hive specific...
+
+**Please** test &amp; comment!</div>
+  <footer class="hive-post-embed__source">
+    <span class="hive-post-embed__source-label">Source:</span>
+    <a href="https://hive.blog/@felixxx/a-hacky-guide-to-hive-part-222-customyoson">A Hacky Guide to Hive (part 2.2.2: custom_YOson)</a>
+    by
+    <a href="https://hive.blog/@felixxx">@felixxx</a>
+  </footer>
+</div>
+
+
+  </div><a class="u-url" href="/howto/python/guide/2024/09/22/a-hacky-guide-to-hive-part-222-customyoson.html" hidden></a>
+</article>
+
+        </div>
+
+        
+        <aside class="page-sidebar" aria-label="Search and browse">
+          <section class="sidebar-section sidebar-search">
+            <h2 class="sidebar-heading">Search posts</h2>
+            <p class="sidebar-copy">Search the locally indexed post archive.</p>
+            <input type="text" id="search-input" placeholder="Search posts" autocomplete="off" />
+            <ul id="results-container"></ul>
+          </section>
+
+          <section class="sidebar-section sidebar-topics">
+            <h2 class="sidebar-heading">Browse topics</h2>
+            <p class="sidebar-copy">Jump into curated topic landing pages.</p>
+            <ul class="topic-list topic-list-sidebar"><li><a class="page-link" href="/account-recovery/">Account Recovery</a></li><li><a class="page-link" href="/core-development/">Core Development</a></li><li><a class="page-link" href="/dapps/">Dapps</a></li><li><a class="page-link" href="/docker/">Docker</a></li><li><a class="page-link" href="/hardfork/">Hardfork</a></li><li><a class="page-link" href="/hivemind/">Hivemind</a></li><li><a class="page-link" href="/javascript/">Javascript</a></li><li><a class="page-link" href="/multisig/">Multisig</a></li><li><a class="page-link" href="/python/">Python</a></li><li><a class="page-link" href="/ruby/">Ruby</a></li><li><a class="page-link" href="/testnet/">Testnet</a></li><li><a class="page-link" href="/tools/">Tools</a></li><li><a class="page-link" href="/witness/">Witness</a></li></ul>
+          </section>
+        </aside>
+        
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading"><a rel="author" href="/">Hive Chain Documentation</a></h2>
+    
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">site curated by: @inertia</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>Your resource for various levels of Hive Documentation.</p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+<script src="/assets/javascript/search.js"></script>
+    <script>
+      (function () {
+        var input = document.getElementById('search-input');
+        var results = document.getElementById('results-container');
+        if (input && results && typeof SimpleJekyllSearch !== 'undefined') {
+          SimpleJekyllSearch({
+            searchInput: input,
+            resultsContainer: results,
+            json: '/search.json'
+          });
+        }
+
+        if (typeof SteemContentRenderer === 'undefined') return;
+
+        var targets = document.querySelectorAll('[data-hive-render-target="true"]');
+        if (!targets.length) return;
+
+        var renderer = new SteemContentRenderer.DefaultRenderer({
+          baseUrl: 'https://hive.blog/',
+          breaks: true,
+          skipSanitization: false,
+          allowInsecureScriptTags: false,
+          addNofollowToLinks: true,
+          doNotShowImages: false,
+          ipfsPrefix: '',
+          assetsWidth: 640,
+          assetsHeight: 480,
+          imageProxyFn: function (url) { return url; },
+          usertagUrlFn: function (account) { return '/@' + account; },
+          hashtagUrlFn: function (hashtag) { return '/tags/#' + hashtag; },
+          isLinkSafeFn: function () { return true; }
+        });
+
+        targets.forEach(function (target) {
+          try {
+            var inputHtml = target.innerHTML;
+            target.innerHTML = renderer.render(inputHtml);
+          } catch (e) {
+            console.log(e);
+          }
+        });
+      })();
+    </script>
+
+  </body>
+
+</html>

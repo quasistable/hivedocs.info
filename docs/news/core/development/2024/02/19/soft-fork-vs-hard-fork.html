@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta property="og:image" content="/assets/images/sticker.png" />
+  <meta name="apple-mobile-web-app-title" content="Hive Docs" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" /><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Soft fork vs hard fork (technical). | Hive Chain Documentation</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Soft fork vs hard fork (technical)." />
+<meta name="author" content="andablackwidow" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="This is a continuation of discussion with @edicted from comments under that article. While the article itself is not about difference between soft and hard fork, somehow that topic emerged" />
+<meta property="og:description" content="This is a continuation of discussion with @edicted from comments under that article. While the article itself is not about difference between soft and hard fork, somehow that topic emerged" />
+<link rel="canonical" href="https://hive.blog/hive-139531/@andablackwidow/soft-fork-vs-hard-fork" />
+<meta property="og:url" content="https://hive.blog/hive-139531/@andablackwidow/soft-fork-vs-hard-fork" />
+<meta property="og:site_name" content="Hive Chain Documentation" />
+<meta property="og:image" content="https://images.ecency.com/DQmcokZ5MG3E3Sm736KeA3xEo4ej11HDoQYtF35B9EUZqst/fork_db.png" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2024-02-19T21:35:15-08:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="https://images.ecency.com/DQmcokZ5MG3E3Sm736KeA3xEo4ej11HDoQYtF35B9EUZqst/fork_db.png" />
+<meta property="twitter:title" content="Soft fork vs hard fork (technical)." />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"andablackwidow"},"dateModified":"2024-02-19T21:35:15-08:00","datePublished":"2024-02-19T21:35:15-08:00","description":"This is a continuation of discussion with @edicted from comments under that article. While the article itself is not about difference between soft and hard fork, somehow that topic emerged","headline":"Soft fork vs hard fork (technical).","image":"https://images.ecency.com/DQmcokZ5MG3E3Sm736KeA3xEo4ej11HDoQYtF35B9EUZqst/fork_db.png","mainEntityOfPage":{"@type":"WebPage","@id":"https://hive.blog/hive-139531/@andablackwidow/soft-fork-vs-hard-fork"},"url":"https://hive.blog/hive-139531/@andablackwidow/soft-fork-vs-hard-fork"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://hivedocs.info/feed.xml" title="Hive Chain Documentation" /><script>
+if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNotTrack === "yes" || navigator.msDoNotTrack === "1")) {
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-161692811-1', 'auto');
+  ga('send', 'pageview');
+}
+</script>
+  
+<script src='https://unpkg.com/steem-content-renderer'></script>
+  <script src="/assets/javascript/universal-bridge-against-phishing.js"></script>
+  <script src="/assets/javascript/lazysizes.min.js" async=""></script>
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet" />
+  <link rel="shortcut icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="152x152" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="167x167" href="/assets/images/favicon-80x80.png" />
+</head>
+<body><header class="site-header" role="banner">
+  <div class="wrapper site-header-inner">
+    <a class="site-title" rel="author" href="/">Hive Chain Documentation</a>
+
+    <nav class="site-nav" aria-label="Primary">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/news/">News</a><a class="page-link" href="/howto/">How To</a><a class="page-link" href="/links/">Useful Links</a><a class="page-link" href="/authors/">Authors</a><a class="page-link" href="/topics/">Topics</a><a class="page-link" href="/search/">Search</a></div>
+    </nav>
+  </div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper page-layout has-search-panel">
+        <div class="page-main">
+          <article class="post h-entry post-article" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header post-hero">
+    <div class="post-hero-main">
+      <p class="post-kicker">Archive post</p>
+      <h1 class="post-title p-name" itemprop="name headline">Soft fork vs hard fork (technical).</h1>
+      <p class="post-meta">
+        <time class="dt-published" datetime="2024-02-19T21:35:15-08:00" itemprop="datePublished">Feb 19, 2024
+        </time>• <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">
+            <a href="/authors/#author-andablackwidow">andablackwidow</a>
+          </span></span></p><p class="post-summary">This is a continuation of discussion with @edicted from comments under that article. While the article itself is not about difference between soft and hard fork, somehow that topic emerged</p></div><aside class="post-author-card">
+      <img src="https://images.hive.blog/u/andablackwidow/avatar" width="128" height="128" class="lazyload post-author-avatar" alt="Avatar for @andablackwidow" />
+      <div class="post-author-name">@andablackwidow</div>
+    </aside></header>
+
+  <div class="post-content e-content post-body" itemprop="articleBody">
+    <div class="hive-post-embed" data-hive-author="andablackwidow" data-hive-permlink="soft-fork-vs-hard-fork">
+  <div id="content-andablackwidow-soft-fork-vs-hard-fork" class="hive-post-embed__content" data-hive-render-target="true">This is a continuation of discussion with @edicted from comments under [that article](https://hive.blog/hive-167922/@edicted/-hive-vesting-routes). While the article itself is not about difference between soft and hard fork, somehow that topic emerged when we exchanged comments. Since I'm going to describe the inner workings of the code, it might be useful as a reference, hence the form of separate article.
+
+<sub>For future readers: the links to code I'm going to provide lead to `master` version of `v1.27.4` (latest official release), so they should remain usable, but if you are to look for the linked code in latest version, I'll have you know that a lot of it already migrated or will soon migrate to different places (f.e. in latest `develop` most functionality of `database::_push_block` is now split between `chain_plugin_impl::_push_block` and implementations of block writer interface). The essence of what the code does remains intact though.</sub>
+
+First see [official definition of a soft fork](https://www.investopedia.com/terms/s/soft-fork.asp)
+
+My claim:
+The definition doesn't fit Hive. Changes that would be "backward compatible" according to linked definition cannot be introduced without a hardfork in DPoS chains like Hive, when they are to affect validity of blocks. Soft forks can only affect validity of transactions, but once the transaction reaches block, soft fork cannot invalidate a block containing such transaction. It can work on block level in PoW chains, but attempt to do so in Hive is always a bug and the difference stems from irreversible blocks, a concept that is not present in PoW.
+
+<sub> I actually don't think it works exactly as described in linked definition even in Bitcoin, due to conflict of incentives - there is an easy way to avoid it and still achieve desired result. I'll get to that later.</sub>
+
+Said that, depending on relative frequency of blocks containing transactions that violate new rule, it is still possible to pull it off even in Hive, but it relies on chance and off chain coordination of witnesses.
+
+---
+
+A quote from discussion:
+
+&gt; The witnesses can drop a block for any reason they want.
+There doesn't have to be a cited reason for why it's against the rules.
+They just drop the block and get consensus, or don't.
+The rest of the network follows that fork by default because those are the rules of consensus.
+
+In above quote `or don't` is the key. The last sentence is false.
+
+In principle each node can use different code to run its operation, it can do whatever it wants with incoming transactions or blocks, it can also broadcast whatever it wants. A node can produce a block based on any past block and even out of schedule. The problem is, rest of the network is not obliged to put up with it, even if the node in question is a witness. So I'm not going to speculate what **could** theoretically happen if the node was custom made, but what **will** happen based on official code.
+
+---
+
+Let's name nodes that follow old rules `Conservatives` and those that want to introduce new stricter rule `Progressives`. Nothing related to politics, just the names fit. Also we are going to discuss a simple `check_new_rule()` test during processing of transaction and that the check is also performed when transaction is already part of block - there are other types of changes that might affect state or automatic processing, but that's outside of scope of this article.
+
+One more quote:
+&gt; &gt; a single backup witness is enough to push your transaction through
+
+&gt; This is not accurate because it only takes 16 consensus witnesses to enforce this soft fork and roll back blocks that include ninjamine ops.
+
+It is true that if the network already has majority of Progressive witnesses (regular majority is sufficient) the new rule will be enforced (the same will happen if all API nodes are Progressive, or when witnesses are behind bastions that are Progressive, or when they just happen to be linked to peers that are all Progressive). However they don't magically appear in the same moment. There is a transition period when only some witnesses will be Progressive, while the rest is Conservative. What happens between appearance of first Progressive and last needed to achieve majority is the essence of the problem.
+
+---
+
+<a id="fork_db" />
+### Fork database
+
+To discuss it further it will be essential to know the details of what happens with block that is broadcast and arrives at different nodes.
+
+When p2p plugin receives a block, it puts it in the writer queue and goes back to its merry chat with its peers. How it does that is not important here. The routine p2p called to insert the block is [`chain_plugin::accept_block`](https://gitlab.syncad.com/hive/hive/-/blob/v1.27.4/libraries/plugins/chain/chain_plugin.cpp#L1089). The block is then picked up from the queue by main writer loop [here](https://gitlab.syncad.com/hive/hive/-/blob/v1.27.4/libraries/plugins/chain/chain_plugin.cpp#L406) or [here](https://gitlab.syncad.com/hive/hive/-/blob/v1.27.4/libraries/plugins/chain/chain_plugin.cpp#L459) (depending on whether it is the first item picked after the loop woke up or one of the following) and the entry to processing starts [here](https://gitlab.syncad.com/hive/hive/-/blob/v1.27.4/libraries/plugins/chain/chain_plugin.cpp#L259). So far it was only some routines passing data without doing anything overly interesting. Some calls later the block finally reaches [fork database](https://gitlab.syncad.com/hive/hive/-/blob/v1.27.4/libraries/chain/database.cpp?ref_type=tags#L1190).
+
+![](https://images.ecency.com/DQmcokZ5MG3E3Sm736KeA3xEo4ej11HDoQYtF35B9EUZqst/fork_db.png)
+<sub>[source](https://i.dailymail.co.uk/i/pix/2014/02/26/article-0-1BD5E0FE00000578-570_634x1614.jpg)</sub>
+
+Fork database consists of a tree of forks and possibly some separate blocks/branches. The root of the tree is the item that holds Last Irreversible Block (LIB), `head()` of the tree is the same as head block in state, that is, it is top of active fork. Active fork is always **the longest validated fork**, with the exception of transition period when new block was added that made other fork **longer** and the node is in the process of `switch_forks()`.
+
+So what happens when new block is added to fork database? Most of the time it will fit top of active fork, that is, the block's `previous` value will point to current `head()`. That's possiblility `0`. Other possible situations:
+1. it fit top of current fork, but also fork database already contained separated block(s) that link to that block - the active fork grows by more than one block. Such situation happens usually during massive sync, when p2p requests a lot of blocks and they might arrive and be added to fork database out of order.
+2. new block fits top of an inactive fork.
+3. same as `2` but there are also separated block(s) that further prolong inactive fork.
+4. the block does not link to any forks on the tree but its number is within accepted range - it is stored as separate block, maybe some other block shows later and links it to existing forks like in `1` or `3`.
+5. the block does not link to any forks on the tree and is too old - the block is ignored.
+6. the block is a duplicate of a block that already exists in fork database - it is effectively ignored. Such situation should never happen, however during time before HF26 there was a change in how p2p marks network messages containing blocks - instead of hash of the whole message, now the id is the same as block id. Because HF26 nodes before actual hardfork still had to be able to communicate with nodes not yet prepared for it, p2p had to allow both styles of id and therefore could acquire two copies of the same block - one from old node with legacy id and one from new node with modern id. I'm not sure the code that allows such dualism was already removed (it shouldn't be needed since all nodes that we are interested to communicate with already use modern version of id).
+
+In case of `0` and `1` the newly arrived block and possibly blocks that follow are passed through `database::apply_block`. If the block fails with exception during that call, it is removed from fork database along with all blocks that link to it if there were any. The node can never return back to that block (and rightfully so - if it failed once, it will fail all the time - there is no randomness in block validation). If you are wondering if p2p can once again push that block, the answer is yes and no. Yes, if it pushed that block again, it would be processed as any new block, but p2p remembers ids of messages it already received from its peers, so it won't ask for the same block again (the time it keeps those ids is limited, so in theory it could actually happen).
+
+In case `2` or `3` we have two possibilities. Either inactive branch is still not longer than active one, in which case that is the end of it, or the branch grew longer and [`switch_forks()`](https://gitlab.syncad.com/hive/hive/-/blob/v1.27.4/libraries/chain/database.cpp?ref_type=tags#L1060) is initiated. The process is the following:
+ - all blocks down to newest common block between current active fork and the one that is to replace it are popped. Transactions from popped blocks are placed on special queue that is later **concatenated to front of pending transactions**.
+ - blocks from new fork are being accepted starting from oldest one. If any of them fails, the failed block and all newer that link to it are dropped. What remains (all the blocks in case none failed) is checked if it is still not shorter than previously active fork. If the condition is met, new fork remains active. If too many blocks were dropped due to failure and new fork became shorter as a result, whole process is reverted and previous active fork is activated again.
+ 
+<sub>If you thought *"hey, isn't it an attack vector?"*, you are not alone. It would be extremely hard to pull off in Hive with OBI (and even then it would be pretty weak due to all the optimizations), but for certain other chain it might be a bit painful - not fatal though.</sub>
+
+Situation `0` and `1` is **where behavior of Conservatives and Progressives might diverge**. If the block contains transaction that violates new rule but is ok according to old rule set, then Conservatives will accept that block, while Progressives will drop it. Now that is a problem. If there is currently 16 or more Conservative witnesses in future schedule, they will likely confirm the block in no time with OBI and make the contested block irreversible. It won't matter if more witnesses join the cause of Progressives later - the ones that were first already put themselves out of consensus. Their only option is to stop their nodes, revert to original code, <sup>optional</sup>load snapshot, <sup>optional</sup>replay and then sync from there as Conservatives. They might try to return back to Progressives later, but by that time their buddies are likely dead as well.
+
+Ok, but what if there was no OBI (like during times of hostile takeover), or Progressives were **lucky** and managed to convert enough witnesses before the contested block happened, so now there is not enough Conservatives to make the block irreversible in one go? As long as there is still more Conservatives, Progressives can struggle, but they will eventually fail.
+
+Let's see the luckiest possile case for them. The Conservative witness produces `forkC(N)` block on top of common `forkC(N-1)`. It contains problematic transaction. For all Conservative nodes this is just normal block. For Progressives that block is not acceptable and they drop it. That means they didn't yet start their fork and they are already one block behind. But it was supposed to be the luckiest case. So the next scheduled witness is a Progressive. He builds alternative block, `forkP(N)` on top of common `forkC(N-1)`, thus excluding dropped block from `forkP`. He broadcasts new block. All Progressives accept that block, since that is just continuation of main branch for them, but Conservative nodes see new block and create an inactive fork out of it in their version of fork database. Both `forkC` and `forkP` have the same length, but Conservatives are on `forkC` which is a validated branch. The `forkP(N)` block is left untouched in their databases. But Progressives are lucky. Next scheduled witness is also a Progressive and creates a block `forkP(N+1)` on top of `forkP(N)`. Yey. Now when Conservative node takes in that block, it attaches it to inactive fork that now becomes longer, so the node switches to the Progressive fork. Win, right? Not really. Remember the emphasis on what happens to transactions from popped blocks? Those popped transactions contain the one that violates new rule. When there is next time for Conservative witness to produce a block, he will include that transaction creating yet another contested block (unless transaction happened to expire already or there was some other transaction included in the meantime that made it invalid even in old rule set). Since Progressives are still a minority, there is no way they will hit the lucky schedule order forever, which means Conservatives will inevitably produce fork that is too long for Progressives to ever catch up to. Note that even in case where there is 10 vs 10 Conservatives and Progressives in top20, the backup witnesses are likely to remain Conservative for longer, and that is enough for Conservatives to supplement missing signatures (in form of blocks) and make their oldest contested block irreversible, with all the nasty consequences for the Progressives.
+
+Only once Progressives become a majority they will be guaranteed to always push their version through. In that situation the Conservatives are at a disadvantage, because the same popped transaction that previously lead to demise of Progressives, now forces them to eventually miss every block they are going to produce (they produce a block with failing transaction, Progressives sooner or later push the block out, which means Conservatives missed that block(s) and associated rewards, but also that the transaction returned to pending and will be included in their next block, causing the cycle to repeat).
+
+---
+
+<a id="coding_fork" />
+### Adding new rule to code
+
+But how does one add the new rule to code in the first place?
+
+```
+FC_ASSERT( !is_in_control() || check_new_rule() );
+```
+That is how an actual soft fork looks like in Hive. It passes without enforcing new rule when node is not in control (when it replays old block, reapplies pending transaction or processes new block made by someone else), but checks it when the node processes new solo transaction for the first time (= transaction that was just passed from API/P2P and is not yet part of block), or when it is a witness node that is in the process of building new block.
+
+<sub>By the way, the `is_in_control()` routine was added around HF26, along with a whole set of similar routines. Previously there was just `is_producing()` and, contrary what the name implied, it was actually set to `false` when witness was producing block, which lead to hard to replicate bugs in high traffic conditions.</sub>
+
+```
+FC_ASSERT( check_new_rule() );
+```
+That is what could be called a "berserker fork". It is always a bug to code it like that. First of all, it is not even backward compatible, because new rule would be applied to old blocks during replay and likely fail there. So maybe exclude replay?
+
+```
+FC_ASSERT( is_replaying_block() || check_new_rule() );
+```
+Nope. Can't sync old blocks. But what does it even mean "old blocks"? Clearly there has to be a point in time when the new rule starts to apply. Moreover, if that point is set in the future, it might help Progressives to gather enough members to avoid death scenarios.
+
+```
+FC_ASSERT( head_block_num() &lt; START_ENFORCING_RULE_BLOCK_NUM || check_new_rule() );
+```
+Right, but what if Progressives don't coordinate switch to new code fast enough before `START_ENFORCING_RULE_BLOCK_NUM` hits? Then it is the whole problem all over again. If only there was some mechanism where witnesses could announce on chain that they are ready for new rules, and on top of that, it would be nice to make sure there is enough witness support to make blocks irreversible, but not just for a single schedule, let's demand a bit more support than usual 16...
+
+```
+FC_ASSERT( !has_hardfork( HIVE_HARDFORK_WITH_NEW_RULE ) || check_new_rule() );
+```
+That is how a rule is introduced with a hardfork. By the way, previous code with block number was also a hardfork, just a dirty one (or maybe better call it ninja hardfork? 😜 all traces of it can be removed from the code after actual hardfork later).
+
+The best way is to combine soft fork with hard fork.
+```
+FC_ASSERT( !is_in_control() &amp;&amp; !has_hardfork( HIVE_HARDFORK_WITH_NEW_RULE ) || check_new_rule() );
+```
+This way even before hardfork hits, all Progressive nodes will still enforce new rules on new solo transactions, blocking violations completely (API nodes) or limiting their reach by refusing to broadcast them. In the same time all old blocks are processed normally, all blocks after hardfork activates have the rule enforced in whole network, and in the transition period the network is not hit with constant clusters of missed blocks.
+
+---
+
+<a id="fork_in_btc" />
+### PoW and soft forks
+
+Like I said before, I don't believe new stricter rules are introduced in Bitcoin the way described in the definition linked at the start. It is because reverted mined blocks cost a lot. If it was as described, then first Progressives have incentive to keep pushing new blocks on their fork, but Progressives that joined later have incentive to keep the blocks they produced before their conversion and only start enforcing new rule after that point. In other words different Progressives are pushed towards divergent forks, while remaining Conservatives are all on one fork. 
+
+The way to smoothly introduce new stricter rule is to start enforcing it only on transactions before they are included in blocks, like soft forks in Hive. That way problematic transactions are going to remain in mempool for longer, their senders might even be forced to increase fee to push them through, which naturally discourages users from sending such transactions. Miners can also choose to produce new blocks on top of those that follow new rule when they have a choice. Only after more than half of hash power follows new rule by such soft means, it is the time when actual enforcement can be triggered. At that point remaining miners are incentivized to convert as well, or they will lose money.
+</div>
+  <footer class="hive-post-embed__source">
+    <span class="hive-post-embed__source-label">Source:</span>
+    <a href="https://hive.blog/@andablackwidow/soft-fork-vs-hard-fork">Soft fork vs hard fork (technical).</a>
+    by
+    <a href="https://hive.blog/@andablackwidow">@andablackwidow</a>
+  </footer>
+</div>
+
+
+  </div><a class="u-url" href="/news/core/development/2024/02/19/soft-fork-vs-hard-fork.html" hidden></a>
+</article>
+
+        </div>
+
+        
+        <aside class="page-sidebar" aria-label="Search and browse">
+          <section class="sidebar-section sidebar-search">
+            <h2 class="sidebar-heading">Search posts</h2>
+            <p class="sidebar-copy">Search the locally indexed post archive.</p>
+            <input type="text" id="search-input" placeholder="Search posts" autocomplete="off" />
+            <ul id="results-container"></ul>
+          </section>
+
+          <section class="sidebar-section sidebar-topics">
+            <h2 class="sidebar-heading">Browse topics</h2>
+            <p class="sidebar-copy">Jump into curated topic landing pages.</p>
+            <ul class="topic-list topic-list-sidebar"><li><a class="page-link" href="/account-recovery/">Account Recovery</a></li><li><a class="page-link" href="/core-development/">Core Development</a></li><li><a class="page-link" href="/dapps/">Dapps</a></li><li><a class="page-link" href="/docker/">Docker</a></li><li><a class="page-link" href="/hardfork/">Hardfork</a></li><li><a class="page-link" href="/hivemind/">Hivemind</a></li><li><a class="page-link" href="/javascript/">Javascript</a></li><li><a class="page-link" href="/multisig/">Multisig</a></li><li><a class="page-link" href="/python/">Python</a></li><li><a class="page-link" href="/ruby/">Ruby</a></li><li><a class="page-link" href="/testnet/">Testnet</a></li><li><a class="page-link" href="/tools/">Tools</a></li><li><a class="page-link" href="/witness/">Witness</a></li></ul>
+          </section>
+        </aside>
+        
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading"><a rel="author" href="/">Hive Chain Documentation</a></h2>
+    
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">site curated by: @inertia</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>Your resource for various levels of Hive Documentation.</p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+<script src="/assets/javascript/search.js"></script>
+    <script>
+      (function () {
+        var input = document.getElementById('search-input');
+        var results = document.getElementById('results-container');
+        if (input && results && typeof SimpleJekyllSearch !== 'undefined') {
+          SimpleJekyllSearch({
+            searchInput: input,
+            resultsContainer: results,
+            json: '/search.json'
+          });
+        }
+
+        if (typeof SteemContentRenderer === 'undefined') return;
+
+        var targets = document.querySelectorAll('[data-hive-render-target="true"]');
+        if (!targets.length) return;
+
+        var renderer = new SteemContentRenderer.DefaultRenderer({
+          baseUrl: 'https://hive.blog/',
+          breaks: true,
+          skipSanitization: false,
+          allowInsecureScriptTags: false,
+          addNofollowToLinks: true,
+          doNotShowImages: false,
+          ipfsPrefix: '',
+          assetsWidth: 640,
+          assetsHeight: 480,
+          imageProxyFn: function (url) { return url; },
+          usertagUrlFn: function (account) { return '/@' + account; },
+          hashtagUrlFn: function (hashtag) { return '/tags/#' + hashtag; },
+          isLinkSafeFn: function () { return true; }
+        });
+
+        targets.forEach(function (target) {
+          try {
+            var inputHtml = target.innerHTML;
+            target.innerHTML = renderer.render(inputHtml);
+          } catch (e) {
+            console.log(e);
+          }
+        });
+      })();
+    </script>
+
+  </body>
+
+</html>

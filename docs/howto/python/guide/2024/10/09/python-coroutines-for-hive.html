@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta property="og:image" content="/assets/images/sticker.png" />
+  <meta name="apple-mobile-web-app-title" content="Hive Docs" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" /><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Python coroutines for Hive | Hive Chain Documentation</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Python coroutines for Hive" />
+<meta name="author" content="felixxx" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="beginner help" />
+<meta property="og:description" content="beginner help" />
+<link rel="canonical" href="https://hive.blog/dev/@felixxx/python-coroutines-for-hive" />
+<meta property="og:url" content="https://hive.blog/dev/@felixxx/python-coroutines-for-hive" />
+<meta property="og:site_name" content="Hive Chain Documentation" />
+<meta property="og:image" content="https://files.peakd.com/file/peakd-hive/felixxx/EorySYrJyMpYZG2zMY4pf5feMJJZ7noKRs8LMyL9LMQ2Fpt4CnuDsvEfMpYoJVSdgHm.png" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2024-10-09T04:39:21-07:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="https://files.peakd.com/file/peakd-hive/felixxx/EorySYrJyMpYZG2zMY4pf5feMJJZ7noKRs8LMyL9LMQ2Fpt4CnuDsvEfMpYoJVSdgHm.png" />
+<meta property="twitter:title" content="Python coroutines for Hive" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"felixxx"},"dateModified":"2024-10-09T04:39:21-07:00","datePublished":"2024-10-09T04:39:21-07:00","description":"beginner help","headline":"Python coroutines for Hive","image":"https://files.peakd.com/file/peakd-hive/felixxx/EorySYrJyMpYZG2zMY4pf5feMJJZ7noKRs8LMyL9LMQ2Fpt4CnuDsvEfMpYoJVSdgHm.png","mainEntityOfPage":{"@type":"WebPage","@id":"https://hive.blog/dev/@felixxx/python-coroutines-for-hive"},"url":"https://hive.blog/dev/@felixxx/python-coroutines-for-hive"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://hivedocs.info/feed.xml" title="Hive Chain Documentation" /><script>
+if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNotTrack === "yes" || navigator.msDoNotTrack === "1")) {
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-161692811-1', 'auto');
+  ga('send', 'pageview');
+}
+</script>
+  
+<script src='https://unpkg.com/steem-content-renderer'></script>
+  <script src="/assets/javascript/universal-bridge-against-phishing.js"></script>
+  <script src="/assets/javascript/lazysizes.min.js" async=""></script>
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet" />
+  <link rel="shortcut icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="152x152" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="167x167" href="/assets/images/favicon-80x80.png" />
+</head>
+<body><header class="site-header" role="banner">
+  <div class="wrapper site-header-inner">
+    <a class="site-title" rel="author" href="/">Hive Chain Documentation</a>
+
+    <nav class="site-nav" aria-label="Primary">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/news/">News</a><a class="page-link" href="/howto/">How To</a><a class="page-link" href="/links/">Useful Links</a><a class="page-link" href="/authors/">Authors</a><a class="page-link" href="/topics/">Topics</a><a class="page-link" href="/search/">Search</a></div>
+    </nav>
+  </div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper page-layout has-search-panel">
+        <div class="page-main">
+          <article class="post h-entry post-article" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header post-hero">
+    <div class="post-hero-main">
+      <p class="post-kicker">Archive post</p>
+      <h1 class="post-title p-name" itemprop="name headline">Python coroutines for Hive</h1>
+      <p class="post-meta">
+        <time class="dt-published" datetime="2024-10-09T04:39:21-07:00" itemprop="datePublished">Oct 9, 2024
+        </time>• <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">
+            <a href="/authors/#author-felixxx">felixxx</a>
+          </span></span></p><p class="post-summary">beginner help</p></div><aside class="post-author-card">
+      <img src="https://images.hive.blog/u/felixxx/avatar" width="128" height="128" class="lazyload post-author-avatar" alt="Avatar for @felixxx" />
+      <div class="post-author-name">@felixxx</div>
+    </aside></header>
+
+  <div class="post-content e-content post-body" itemprop="articleBody">
+    <div class="hive-post-embed" data-hive-author="felixxx" data-hive-permlink="python-coroutines-for-hive">
+  <div id="content-felixxx-python-coroutines-for-hive" class="hive-post-embed__content" data-hive-render-target="true">## Context
+This is for beginners.
+For when your first Python bot or script for Hive goes to production.
+I am not the right guy to post about clean code, but I've learned a few things.
+I've made some mistakes and will make more, but maybe I can help you avoid some.
+
+https://files.peakd.com/file/peakd-hive/felixxx/EorySYrJyMpYZG2zMY4pf5feMJJZ7noKRs8LMyL9LMQ2Fpt4CnuDsvEfMpYoJVSdgHm.png
+
+## Coroutines
+
+[In an earlier post](/@felixxx/your-1st-python-hive-bot-deployment) I demonstrated some deployment strategies for Hive bots.
+To improve on those bots, you'll need coroutines.
+This has nothing to do with Hive. 
+In the following, I demonstrate how I use them.
+Python supports 3 methods to handle coroutines.
+
+### multi-processing
+
+This is the most complicated and fastest.
+But Python is not fast to begin with. 
+If computation was the issue, I'd use a different language entirely.
+So multi-processing is out the window - I don't want _complicated_.
+
+### asyncio
+
+I am not the right guy to talk about this and it confused me for a while.
+async is different in javascript and Python and that made it more complicated.
+_Normal_ Python code is already synchronous, while js in browser sometimes just starts coroutines and doesn't wait... 
+
+Anyways, _normal_ Python codes executes like this:
+
+```
+import time
+
+def normal(interval):
+    print("normal for:", interval, "s")
+    time.sleep(interval)
+    print('normal finished')
+
+normal(2)
+normal(1)
+```
+The _normal_ function waits for each part of the procedure and continues line by line.
+This means the main thread is blocked when I use time.sleep.
+```
+normal for: 2 s
+normal finished
+normal for: 1 s
+normal finished
+```
+Async could be used like this:
+
+```
+import asyncio
+
+async def asynced(interval):
+    print("async for:", interval, "s")
+    await asyncio.sleep(interval)
+    print("async finished")
+
+loop = asyncio.new_event_loop()
+loop.create_task(asynced(1))
+loop.create_task(asynced(3))
+loop.run_forever()
+```
+While one function is ***a***waiting, another task will get executed.
+```
+async for: 1 s
+async for: 3 s
+async finished
+async finished
+```
+In javascript in browser, when using await, you kind of want the opposite effect.
+Using fetch for example kicks off a coroutine and you get a Promise as result of your fetch.
+You need to await or use a callback. That can be confusing.
+
+Anyways, in Python async is also usefull for when you are waiting for an external event.
+Because while you are waiting, you can unblock the thread and start a different task.
+Also, if one task breaks, the next one will still execute.
+
+## threading
+
+In the example I'll use threading **and** async.
+In the script above, the loop.runs_forever. And that still blocks the thread.
+
+```
+import time
+import asyncio
+import threading
+
+async def job(interval):
+    print("job for:", interval, "s")
+    time.sleep(interval)
+    print("job finished")
+
+loop = asyncio.new_event_loop()
+threading.Thread(target=loop.run_forever).start()
+
+asyncio.run_coroutine_threadsafe(job(2), loop)
+
+time.sleep(1)
+print("program keeps flowing")
+```
+Now the main thread is unblocked, and you can access the async loop in the separate thread with run_coroutine_threadsafe. I use it a a queue, which I add tasks to.
+```
+job for: 2 s
+program keeps flowing
+job finished
+```
+Even if the job threw an exception and broke, the main thread would keep rolling.
+## Complexity
+
+This adds a layer of complexity to Python.
+Sequential flow of routines is much easier to handle.
+Threadsafety and such things are no joke. Beware of race conditions 😵.
+I mean: imagine the async example writing chunks to a file - you'd never be sure in which order they get written. It's a high price to pay...
+
+## Performance
+
+The way I understand it, Python gets compiled and executed in such a way, that in the end it only uses one system thread. So what ever you do with threading here, if it is for performance, I'd suggest looking at other soultions.
+
+On the other hand, async libraries for Python such as aiohttp and uvicorn and stuff use async and make the whole thing fast enough to build a websocket server with.
+And with flask or other things like it, you can just let gunicorn spin up 100 Python workers in each their own system thread.
+
+## Application
+
+In the end it all depends on what you want to build.
+I assume the next step from building Python scripts is to get to a service, that others can use, too.
+I am not sure what to call an _app_ anymore, but I'll try to build one on this blog.
+
+## Conclusion
+
+This post was mainly for @arc7icwolf.
+I complained about his while true loop and never showed an alternative.
+I'll keep blogging and hope it makes sense...</div>
+  <footer class="hive-post-embed__source">
+    <span class="hive-post-embed__source-label">Source:</span>
+    <a href="https://hive.blog/@felixxx/python-coroutines-for-hive">Python coroutines for Hive</a>
+    by
+    <a href="https://hive.blog/@felixxx">@felixxx</a>
+  </footer>
+</div>
+
+
+  </div><a class="u-url" href="/howto/python/guide/2024/10/09/python-coroutines-for-hive.html" hidden></a>
+</article>
+
+        </div>
+
+        
+        <aside class="page-sidebar" aria-label="Search and browse">
+          <section class="sidebar-section sidebar-search">
+            <h2 class="sidebar-heading">Search posts</h2>
+            <p class="sidebar-copy">Search the locally indexed post archive.</p>
+            <input type="text" id="search-input" placeholder="Search posts" autocomplete="off" />
+            <ul id="results-container"></ul>
+          </section>
+
+          <section class="sidebar-section sidebar-topics">
+            <h2 class="sidebar-heading">Browse topics</h2>
+            <p class="sidebar-copy">Jump into curated topic landing pages.</p>
+            <ul class="topic-list topic-list-sidebar"><li><a class="page-link" href="/account-recovery/">Account Recovery</a></li><li><a class="page-link" href="/core-development/">Core Development</a></li><li><a class="page-link" href="/dapps/">Dapps</a></li><li><a class="page-link" href="/docker/">Docker</a></li><li><a class="page-link" href="/hardfork/">Hardfork</a></li><li><a class="page-link" href="/hivemind/">Hivemind</a></li><li><a class="page-link" href="/javascript/">Javascript</a></li><li><a class="page-link" href="/multisig/">Multisig</a></li><li><a class="page-link" href="/python/">Python</a></li><li><a class="page-link" href="/ruby/">Ruby</a></li><li><a class="page-link" href="/testnet/">Testnet</a></li><li><a class="page-link" href="/tools/">Tools</a></li><li><a class="page-link" href="/witness/">Witness</a></li></ul>
+          </section>
+        </aside>
+        
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading"><a rel="author" href="/">Hive Chain Documentation</a></h2>
+    
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">site curated by: @inertia</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>Your resource for various levels of Hive Documentation.</p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+<script src="/assets/javascript/search.js"></script>
+    <script>
+      (function () {
+        var input = document.getElementById('search-input');
+        var results = document.getElementById('results-container');
+        if (input && results && typeof SimpleJekyllSearch !== 'undefined') {
+          SimpleJekyllSearch({
+            searchInput: input,
+            resultsContainer: results,
+            json: '/search.json'
+          });
+        }
+
+        if (typeof SteemContentRenderer === 'undefined') return;
+
+        var targets = document.querySelectorAll('[data-hive-render-target="true"]');
+        if (!targets.length) return;
+
+        var renderer = new SteemContentRenderer.DefaultRenderer({
+          baseUrl: 'https://hive.blog/',
+          breaks: true,
+          skipSanitization: false,
+          allowInsecureScriptTags: false,
+          addNofollowToLinks: true,
+          doNotShowImages: false,
+          ipfsPrefix: '',
+          assetsWidth: 640,
+          assetsHeight: 480,
+          imageProxyFn: function (url) { return url; },
+          usertagUrlFn: function (account) { return '/@' + account; },
+          hashtagUrlFn: function (hashtag) { return '/tags/#' + hashtag; },
+          isLinkSafeFn: function () { return true; }
+        });
+
+        targets.forEach(function (target) {
+          try {
+            var inputHtml = target.innerHTML;
+            target.innerHTML = renderer.render(inputHtml);
+          } catch (e) {
+            console.log(e);
+          }
+        });
+      })();
+    </script>
+
+  </body>
+
+</html>
