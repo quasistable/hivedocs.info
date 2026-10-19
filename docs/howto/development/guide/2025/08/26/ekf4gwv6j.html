@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta property="og:image" content="/assets/images/sticker.png" />
+  <meta name="apple-mobile-web-app-title" content="Hive Docs" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" /><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Hive社区： Hive blockchain开发指南 | Hive Chain Documentation</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Hive社区： Hive blockchain开发指南" />
+<meta name="author" content="lemooljiang" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="在开发喵星时重新应用了下hivejs的各个功能，把一些常用的应用场景都趟了一遍，也算有些心得。总结总结，给Hive社区的小伙伴们做些参考。" />
+<meta property="og:description" content="在开发喵星时重新应用了下hivejs的各个功能，把一些常用的应用场景都趟了一遍，也算有些心得。总结总结，给Hive社区的小伙伴们做些参考。" />
+<link rel="canonical" href="https://hive.blog/hive-105017/@lemooljiang/ekf4gwv6j" />
+<meta property="og:url" content="https://hive.blog/hive-105017/@lemooljiang/ekf4gwv6j" />
+<meta property="og:site_name" content="Hive Chain Documentation" />
+<meta property="og:image" content="https://hivedocs.info/assets/images/favicon.png" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2025-08-26T03:38:09-07:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="https://hivedocs.info/assets/images/favicon.png" />
+<meta property="twitter:title" content="Hive社区： Hive blockchain开发指南" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"lemooljiang"},"dateModified":"2025-08-26T03:38:09-07:00","datePublished":"2025-08-26T03:38:09-07:00","description":"在开发喵星时重新应用了下hivejs的各个功能，把一些常用的应用场景都趟了一遍，也算有些心得。总结总结，给Hive社区的小伙伴们做些参考。","headline":"Hive社区： Hive blockchain开发指南","image":"https://hivedocs.info/assets/images/favicon.png","mainEntityOfPage":{"@type":"WebPage","@id":"https://hive.blog/hive-105017/@lemooljiang/ekf4gwv6j"},"url":"https://hive.blog/hive-105017/@lemooljiang/ekf4gwv6j"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://hivedocs.info/feed.xml" title="Hive Chain Documentation" /><script>
+if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNotTrack === "yes" || navigator.msDoNotTrack === "1")) {
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-161692811-1', 'auto');
+  ga('send', 'pageview');
+}
+</script>
+  
+<script src='https://unpkg.com/steem-content-renderer'></script>
+  <script src="/assets/javascript/universal-bridge-against-phishing.js"></script>
+  <script src="/assets/javascript/lazysizes.min.js" async=""></script>
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet" />
+  <link rel="shortcut icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="152x152" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="167x167" href="/assets/images/favicon-80x80.png" />
+</head>
+<body><header class="site-header" role="banner">
+  <div class="wrapper site-header-inner">
+    <a class="site-title" rel="author" href="/">Hive Chain Documentation</a>
+
+    <nav class="site-nav" aria-label="Primary">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/news/">News</a><a class="page-link" href="/howto/">How To</a><a class="page-link" href="/links/">Useful Links</a><a class="page-link" href="/authors/">Authors</a><a class="page-link" href="/topics/">Topics</a><a class="page-link" href="/search/">Search</a></div>
+    </nav>
+  </div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper page-layout has-search-panel">
+        <div class="page-main">
+          <article class="post h-entry post-article" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header post-hero">
+    <div class="post-hero-main">
+      <p class="post-kicker">Archive post</p>
+      <h1 class="post-title p-name" itemprop="name headline">Hive社区： Hive blockchain开发指南</h1>
+      <p class="post-meta">
+        <time class="dt-published" datetime="2025-08-26T03:38:09-07:00" itemprop="datePublished">Aug 26, 2025
+        </time>• <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">
+            <a href="/authors/#author-lemooljiang">lemooljiang</a>
+          </span></span></p><p class="post-summary">在开发喵星时重新应用了下hivejs的各个功能，把一些常用的应用场景都趟了一遍，也算有些心得。总结总结，给Hive社区的小伙伴们做些参考。</p></div><aside class="post-author-card">
+      <img src="https://images.hive.blog/u/lemooljiang/avatar" width="128" height="128" class="lazyload post-author-avatar" alt="Avatar for @lemooljiang" />
+      <div class="post-author-name">@lemooljiang</div>
+    </aside></header>
+
+  <div class="post-content e-content post-body" itemprop="articleBody">
+    <div class="hive-post-embed" data-hive-author="lemooljiang" data-hive-permlink="ekf4gwv6j">
+  <div id="content-lemooljiang-ekf4gwv6j" class="hive-post-embed__content" data-hive-render-target="true">在开发[喵星](https://miao.ilark.io)时重新应用了下hivejs的各个功能，把一些常用的应用场景都趟了一遍，也算有些心得。总结总结，给Hive社区的小伙伴们做些参考。
+
+
+#  <center> Hive dev </center>
+
+![back2.jpg](https://ipfs.ilark.io/ipfs/QmP2whEw9cSHGLPCyGaESdWidJFRxjfZvA5MT6RPZ1EcDC)
+
+
+- [下载与资源](#下载与资源)
+- [公共节点](#公共节点)
+- [安装与使用](#安装与使用)
+- [dhive](#dhive)
+- [Auth权限](#auth权限)
+- [获取帐户数据](#获取帐户数据)
+- [Hive登录逻辑](#hive登录逻辑)
+- [发布文章](#发布文章)
+- [json_metadata](#json_metadata)
+- [一篇文章的结构](#一篇文章的结构)
+- [点赞某篇文章](#点赞某篇文章)
+- [获取粉丝列表](#获取粉丝列表)
+- [获取关注列表](#获取关注列表)
+- [获取文章的函数们](#获取文章的函数们)
+- [获取作者的最近文章列表](#获取作者的最近文章列表)
+- [获取所有文章并保存在本地](#获取所有文章并保存在本地)
+- [获取用户关注作者的文章列表](#获取用户关注作者的文章列表)
+- [获取某篇文章的回复](#获取某篇文章的回复)
+- [获取某篇文章的所有回复](#获取某篇文章的所有回复)
+- [获取作者对别人的留言](#获取作者对别人的留言)
+- [获取对作者的评论](#获取对作者的评论)
+- [转帐HIVE或HBD](#转帐hive或hbd)
+- [获取某位作者某篇文章的点赞](#获取某位作者某篇文章的点赞)
+- [创建新用户](#创建新用户)
+- [HP代理](#hp代理)
+- [查询代理](#查询代理)
+
+
+## 下载与资源
+[hive官网 ｜](https://hive.io/)
+[开发 ｜](https://developers.hive.io/)
+[hivedev ](https://github.com/lemooljiang/Hive-tutorials-CN)
+
+
+## 公共节点
+[参考](https://developers.hive.io/quickstart/#quickstart-hive-full-nodes)
+```
+https://api.hive.blog	        @blocktrades
+https://api.openhive.network	@gtg
+https://rpc.mahdiyari.info	  @mahdiyari
+https://techcoderx.com	      @techcoderx
+https://api.deathwing.me      @deathwing
+https://hive-api.arcange.eu	  @arcange
+```
+
+## 安装与使用
+```js
+yarn add @hiveio/hive-js //^2.0.8
+// npm install @hiveio/hive-js --save
+//<script src="https://cdn.jsdelivr.net/npm/@hiveio/hive-js/dist/hive.min.js"></script>
+
+import hive from '@hiveio/hive-js'
+//初始化hive节点
+const hiveConNode = 'https://api.openhive.network'
+// const hiveConNode = 'https://api.hive.blog'
+hive.api.setOptions({ url: hiveConNode})
+```
+
+
+## dhive
+```js
+npm install @hiveio/dhive --save
+
+var dhive = require("@hiveio/dhive")
+
+var client = new dhive.Client(["https://api.hive.blog", "https://api.hivekings.com", "https://api.openhive.network"])
+var key = dhive.PrivateKey.fromLogin("username", "password", "posting")
+```
+
+## Auth权限
+```js
+//认证  
+hive.auth.verify(name, password, auths)
+eg:
+let username = 'epexa'
+let password = 'P5...' // 用户密码
+let auths = {
+    posting: [['STM6...']],
+}
+hive.auth.verify(username, password, auths)  //return true or false
+
+// Generate Keys  生成公钥对
+hive.auth.generateKeys(name, password, roles)
+let publicKeys = hive.auth.generateKeys(newAccountName, newAccountPassword, ['owner', 'active', 'posting', 'memo'])
+//返回数据
+{
+  owner: 'STM5sxKw1uEdryNmCj3xAxxxxxx',
+  active: 'STM5iEkPwjNPw6WecgeDxxxxx',
+  posting: 'STM7dKMMke2aiPTCnExxxx',
+  memo: 'STM8KxMKW5t9QkweXBogdxxxxxx'
+}
+
+// Get Private Keys 从用户名和密码得到对应的公私钥
+hive.auth.getPrivateKeys(name, password, roles)
+let roles = ['owner', 'active', 'posting', 'memo']
+let res = hive.auth.getPrivateKeys(name, password, roles)
+//返回数据
+ {
+  owner: '5JDZPwykhCb6ZmmvSUFcTsxxxxxxxx',
+  ownerPubkey: 'STM5sxKw1uEdryNmCxxxxxx',
+  active: '5JSxdtFeCNGSRt18u7WDxxxxxxxx',
+  activePubkey: 'STM5iEkPwjNPw6Wecxxxxx',
+  posting: '5KE3ET6DD6X47VWDUCXxxxxxxxx',
+  postingPubkey: 'STM7dKMMke2aixxxxxxxx',
+  memo: '5JgW5NNxT7VJAQMxjtCbDmFxxxxxxxx',
+  memoPubkey: 'STM8KxMKW5t9QkweXBoxxxxxx'
+} 
+
+// Is Wif //判断是否是私钥，返回 true 或 false
+hive.auth.isWif(privWif)
+let privWif = "5JfxkpNEBFDxxxvxxxxxxxx"
+let res = hive.auth.isWif(privWif)  //true
+
+// To Wif 从用户名和密码得到对应的私钥
+hive.toWif(name, password, role)
+let role = ["active"]
+let res = hive.auth.toWif(name, password, role)
+//返回数据
+"5Jv9NHkL8TrdvJNue2EKZHQDbxxxxxxx"
+
+// Wif Is Valid 验证公私钥对是否匹配，返回true 或 false
+hive.auth.wifIsValid(privWif, pubWif)
+let privWif = "5Jv9NHkL8TrdvJNubXxxxxxx"
+let pubWif = "STM5f2H2rbSmVoEzrPxxxxxxxx"
+let res = hive.auth.wifIsValid(privWif, pubWif)   //true
+
+
+// Wif To Public 从私钥得到对应的公钥
+hive.auth.wifToPublic(privWif)
+let privWif = "5Jv9NHkL8TrdvJNue2qxxxxxxx"
+let res = hive.auth.wifToPublic(privWif)
+
+// Sign Transaction
+hive.auth.signTransaction(trx, keys)
+```
+
+
+## 获取帐户数据
+帐户数据几乎都在这里了，包括创建的时间，余额，点赞能量等等。
+```js
+let result = await hive.api.getAccountsAsync([account])
+console.log(256, result, result.length === 0)  //length为0表示帐户不存在
+```
+
+## Hive登录逻辑
+```js
+let account = "lucky"
+let privWif = "5tikkkxxxxxx"
+let result = await hive.api.getAccountsAsync([account])
+if(result.length === 0){  
+  return ('用户不存在!') 
+}
+
+//判断是否私钥
+let hiveres = hive.auth.isWif(privWif)
+let postWif = privWif
+if(hiveres !== true){
+  //获取发贴私钥(从密码)
+  let role = ["posting"]
+  postWif = hive.auth.toWif(account, privWif, role)
+} 
+
+//公私钥是否配对
+let pubWif = result[0].posting.key_auths[0][0]
+let isvalid3 = hive.auth.wifIsValid(postWif, pubWif)
+if(isvalid3 === true){
+  return ({
+    username: account,
+    wif: postWif,
+    avatar: `https://images.hive.blog/u/${account}/avatar`
+  })
+} else {
+  return ('密钥错误！')
+}
+```
+
+## 发布文章
+发贴或评论都是用的同一个函数，只是发帖的parent_author为空。
+```js
+hive.broadcast.comment(wif, parentAuthor, parentPermlink, author, permlink, title, body, jsonMetadata, function(err, result) {
+  console.log(err, result)
+})  //commentAsync
+
+//函数讲解
+hive.broadcast.comment (
+    wif,                 //发帖密钥
+    parentAuthor,        // 如果是发帖则为空，如果是评论则为父帖作者
+    parentPermlink,      // 如果是发帖则为主标签，如果是评论则为父帖地址
+    author,              // 作者
+    permlink,            // URL地址
+    title,               // 标题 ,如果是评论则为空
+    body,                // 内容
+    jsonMetadata         // json
+)
+
+eg:
+let wif = '5pfffff'
+let parentAuthor = ''
+let parentPermlink = 'cn'
+let author = 'lemooljiang'
+let permlink = 'kdk54gf'
+let title = '这是标题'
+let body = '这是正文' 
+let tags = ['cn', 'miao', 'bitcoin']
+let jsonMetadata = {"tags": tags, "dapp": "miao", "format": "markdown"}
+
+hive.broadcast.comment(wif, parentAuthor, parentPermlink, author, permlink, title, body, jsonMetadata, function(err, result) {
+  console.log(1234, err, result)
+})
+
+// 另一种Async写法：
+let res = await hive.broadcast.commentAsync(wif, parentAuthor, parentPermlink, author, permlink, title, body, jsonMetadata)
+console.log(126, res)  
+/*  
+{ id: '1bea63265fd12d5bf725e1d1e7083eecb6444ff5',                                                   22:17:06
+  ref_block_num: 4735,
+  ref_block_prefix: 588181965,
+  expiration: '2025-08-04T14:27:06',
+  operations: [ [ 'comment', [Object] ] ],
+  extensions: [],
+  signatures:
+   [ '2076f2e87b1d976804eexxxxxxxx' ] }
+    */
+```      
+
+## json_metadata
+post.json_metadata还可以按需求写入其它的数据，有点类似MongoDB。这样的话易于对文章进行过滤，也可保存一些特殊的数据。
+```js
+json_metadata: "{"tags":["cn","network-institute","markdown","html"],"app":"miao","format":"markdown"}"
+eg:
+let jsonMetadata = {"tags": tags, "dapp": "miao", "format": "markdown", "cover": hash, "text": text}
+JSON.stringify(jsonMetadata)
+```
+
+
+## 一篇文章的结构
+```
+{
+  author: 'lemooljiang',
+  permlink: 'tfdhqbvp',
+  category: 'hive-105017',
+  title: '洞庭南路离奇车祸，数人伤亡',
+  body: '昨晚的车祸由于发生在身边，不由感到阵阵后怕。车祸也是让人感到匪夷所思......',
+  json_metadata: '{"tags":["cn","cn-reader","yueyang","caraccident"],"dapp":"larkBlog","format":"markdown"}',
+  created: '2025-08-07T04:13:57',
+  last_update: '2025-08-07T04:13:57',
+  depth: 0,
+  children: 0,
+  last_payout: '1969-12-31T23:59:59',
+  cashout_time: '2025-08-14T04:13:57',
+  total_payout_value: '0.000 HBD',
+  curator_payout_value: '0.000 HBD',
+  pending_payout_value: '4.143 HBD',
+  promoted: '0.000 HBD',
+  replies: [],
+  body_length: 403,
+  author_reputation: 439510683431084,
+  parent_author: '',
+  parent_permlink: 'hive-105017',
+  url: '/hive-105017/@lemooljiang/tfdhqbvp',
+  root_title: '洞庭南路离奇车祸，数人伤亡',
+  beneficiaries: [],
+  max_accepted_payout: '1000000.000 HBD',
+  percent_hbd: 10000,
+  id: 144763251,
+  author_rewards: 0,
+  max_cashout_time: '1969-12-31T23:59:59',
+  reward_weight: 10000,
+  root_author: 'lemooljiang',
+  root_permlink: 'tfdhqbvp',
+  allow_replies: true,
+  allow_votes: true,
+  allow_curation_rewards: true,
+  reblogged_by: [],
+  net_votes: 37,
+  children_abs_rshares: 0,
+  total_pending_payout_value: '0.000 HBD',
+  total_vote_weight: 13801670934098,
+  vote_rshares: 13801670934098,
+  net_rshares: 13801670934098,
+  abs_rshares: 13801670934098,
+  active_votes: [{
+      percent: 7000,
+      reputation: 3100979937647200,
+      rshares: 5785001502757,
+      time: '2025-08-07T04:17:45',
+      voter: 'deanliu',
+      weight: 5785001502757
+    },......]
+}
+```
+
+
+## 点赞某篇文章
+```js
+hive.broadcast.vote(wif, voter, author, permlink, weight, function(err, result) {
+  console.log(err, result)
+})
+
+//函数讲解
+hive.broadcast.vote (
+    wif,         //发帖密钥
+    voter,       //点赞人
+    author,      //作者
+    permlink,    // URL地址
+    weight       //点赞比重，100*100
+)
+eg:
+hive.broadcast.vote(
+  "5KRSmEMffffff",
+  "lemooljiang",
+  "starnote",
+  '6ekczn-2019',
+  10000,
+  function(err, result) {
+    console.log(8888, err, result)
+  })
+```
+
+## 获取粉丝列表
+```js
+hive.api.getFollowers('lemooljiang', '', 'blog', 10, function(err, result) {
+  console.log(111, err, result)
+})
+```
+
+## 获取关注列表
+```js
+hive.api.getFollowing('lemooljiang', '', 'blog', 10, function(err, result) {
+  console.log(222, err, result)
+})
+```
+
+## 获取文章的函数们
+getDiscussionsByXXX
+```js
+//query的参数结构
+string           tag;
+uint32_t         limit = 0;
+set<string>      filter_tags;
+set<string>      select_authors;   
+set<string>      select_tags;      
+uint32_t         truncate_body = 0;
+optional<string> start_author;
+optional<string> start_permlink;
+optional<string> parent_author;
+optional<string> parent_permlink;
+
+// 获取热门文章
+hive.api.getDiscussionsByHot(query, function(err, result) {
+  console.log(err, result)
+})
+
+eg:
+hive.api.getDiscussionsByHot({tag: 'photography', limit: 1}, function(err, result) {
+  console.log(err, result)
+})
+
+
+//获取某标签的趁势热贴（只有7天的）
+hive.api.getDiscussionsByTrending({tag: 'photography', limit: 1}, function(err, result) {
+  console.log(err, result)
+});
+
+eg:
+getTrending(){
+  let query = { tag: "cn", limit : 20 }
+  hive.api.getDiscussionsByTrending(query, function(err, data) {
+    //取到最后一篇文章的author和Permlink，做为下一次查询的起始点
+    author.value = data[data.length - 1].author
+    permlink.value = data[data.length - 1].permlink
+  })
+}
+
+//获取新帖(所有日期的)
+hive.api.getDiscussionsByCreated({tag: 'photography', limit: 1}, function(err, result) {
+  console.log(err, result)
+})
+```
+
+
+## 获取作者的最近文章列表
+```js
+//获取最新文章
+hive.api.getDiscussionsByAuthorBeforeDate(author, startPermlink, beforeDate, limit, function(err, result) {
+  console.log(err, result)
+})
+
+let author = username
+let beforeDate = new Date().toISOString().split('.')[0]
+let startPermlink = null
+let result = await hive.api.getDiscussionsByAuthorBeforeDateAsync(author, startPermlink, beforeDate, 10)
+// console.log(655,result)  一次最多能取100篇
+```
+
+## 获取所有文章并保存在本地
+```js
+import hive from '@hiveio/hive-js'
+import fs from "fs"
+
+//初始化hive节点
+const hiveConNode = 'https://api.openhive.network'
+// const hiveConNode = 'https://api.hive.blog'
+hive.api.setOptions({ url: hiveConNode})
+
+const waiting = async() =&gt; {
+  return new Promise(resolve =&gt; {
+      setTimeout(resolve, 6000)  //6秒
+  })
+}
+
+async function getArticles(author, startPermlink, beforeDate, limit){
+  let posts = []
+  while(true){
+    let result = await hive.api.getDiscussionsByAuthorBeforeDateAsync(author, startPermlink, beforeDate, limit)
+    console.log(655,"result:",result.length)
+
+    //如果查询数组为空，则已查询完，可以终止查询了 result: 0
+    if(result.length == 0){
+      console.log(8888, posts.length)  //从新到旧的数组
+      break
+    }
+
+    //做一次遍历去掉重复的文章 
+    result.forEach(post =&gt; {
+      if (post.permlink != startPermlink) {
+        //把数据规整
+        let newPost = {
+          "title": post.title,
+          "author": post.author,
+          "category": post.parent_permlink,
+          "permlink": post.permlink,
+          "body": post.body,
+          "created": post.created,
+          "tags": JSON.parse(post.json_metadata).tags  //"tags":["cn-reader","cn"]
+        }
+        // posts.push(post)
+        posts.push(newPost)
+      }
+    })
+    //取到最后一篇文章的Permlink，做为下一次查询的起始点
+    startPermlink = result[result.length - 1].permlink  
+
+    await waiting() //主要是因为节点的限制
+  }
+  
+  console.log(5598, "posts", posts.length, posts[posts.length - 1].title, posts[posts.length - 1].created) 
+
+  //保存为md文件
+  let path = './2025.md'
+  fs.writeFileSync(path, JSON.stringify(posts))
+  console.log(666, "save ok!")
+
+  return posts
+}
+
+let author = 'lemooljiang'  //改成自己的名字
+let beforeDate = new Date().toISOString().split('.')[0]
+getArticles(author, null, beforeDate, 80) //传入要查询的作者名，初始标签，初始时间，一次查询的条数(最多是100)
+```
+
+
+## 获取用户关注作者的文章列表
+```js
+let query = {tag: body.tag, limit: body.limit, start_author: body.author, start_permlink: body.permlink}
+let result = await hive.api.getDiscussionsByFeedAsync(query)
+
+eg:
+let query = {tag: "lemooljiang", limit: 10, start_author: "nie", start_permlink: "sskxiik"}
+let result = await hive.api.getDiscussionsByFeedAsync(query)
+```
+
+## 获取某篇文章的回复
+```js
+hive.api.getContentReplies(author, permlink, function(err, result) {
+  console.log(err, result)
+})
+
+eg:
+hive.api.getContentReplies('lemooljiang', 'hivejs-41', function(err, result) {
+  console.log(err, result)
+})
+```
+
+## 获取某篇文章的所有回复
+使用递归的方法获取
+```js
+async function getAllReplies(author, permlink, res=[]) {
+  let replies = await hive.api.getContentRepliesAsync(author, permlink)
+  let children = []
+  replies.forEach(item =&gt; {
+    res.push(item)
+    if(item.children &gt; 0){
+      //把得到的子数据塞进 .child 中
+      children.push(getAllReplies(item.author, item.permlink, item.child=[]))
+    }
+  })
+  await Promise.all(children)
+  return res
+}
+```
+
+## 获取作者对别人的留言
+```js
+let author = "lucky"
+let query = { limit : 30, start_author: author, start_permlink: ""}
+hive.api.getDiscussionsByComments(query, function(err, result) {
+  console.log(265, err, result)
+}
+```
+
+## 获取对作者的评论
+从帐户历史中遍历获取
+```js
+async function getToAuthorReplies(author, limit){
+  //获取对作者的最新评论
+  let replies = []
+  let res = await hive.api.getAccountHistoryAsync(author, -1, limit)
+  res.forEach(item =&gt; {
+    if(item[1].op[0] == "comment" &amp; item[1].op[1].parent_author == author){
+      replies.push(item)
+    }
+  })
+  return replies
+}
+```
+
+## 转帐HIVE或HBD
+```js
+hive.broadcast.transfer(wif, from, to, amount, memo, function(err, result) {
+    console.log(err, result)
+})
+// wif,      from,       to,     amount, memo
+// 转账私钥，发起转帐地址，转给谁， 金额，   备注
+transfer("wif", "lemool", "lucky", "0.001 HBD", "You are awesome ! take some tokens")
+
+eg:
+async hiveTransfer(){
+  let from = "lemooljiang"
+  let to = "lucky"
+  let wif = "5KNxxxxxxxxxxxxxxxx"
+  // let ss = parseFloat(hivevalue).toFixed(3)
+  // let amount = ss+' HIVE'
+  let amount = "100.200 HIVE"  //必须是3位小数且带上单位的格式，
+  let memo = "测试"
+  await hive.broadcast.transferAsync(wif, from, to, amount, memo)
+}
+```
+
+## 获取某位作者某篇文章的点赞
+```js
+let author = "lemooljiang"
+let permlink = "pvw4dotxg"
+let res = await hive.api.getActiveVotesAsync(author, permlink)
+console.log(566, res)
+```
+
+## 创建新用户
+hive.auth.generateKeys 用于生成4组密钥(owner, active, posting, memo)，
+hvie.broadcast.accountCreate 用于创建账号
+```js
+register() {
+  let newAccountName = "betty"  //新帐户
+  let newAccountPassword = "FDDjjjRxxxxxxxx"  //新帐户密码
+  let publicKeys = this.steem.auth.generateKeys(newAccountName, newAccountPassword, ['owner', 'active', 'posting', 'memo'])
+  let owner = { weight_threshold: 1, account_auths: [], key_auths: [[publicKeys.owner, 1]] }
+  let active = { weight_threshold: 1, account_auths: [], key_auths: [[publicKeys.active, 1]] }
+  let posting = { weight_threshold: 1, account_auths: [], key_auths: [[publicKeys.posting, 1]] }
+  let memoKey = publicKeys.memo
+
+  let creator = "lemooljiang"  //创建者
+  let creatorWif = "5Jbfffxxxxx"  //创建者的资金密钥
+  let fee = "3.000 HIVE"    //费用
+  let jsonMetadata = ""
+  hvie.broadcast.accountCreate(
+    creatorWif,
+    fee,
+    creator,
+    newAccountName,
+    owner,
+    active,
+    posting,
+    memoKey,
+    jsonMetadata,
+    (err, result) =&gt; {
+      if(err){
+        console.log(444, '创建失败！', err)
+      }else{
+        console.log(666, '创建成功！', result)
+      }
+    })
+}
+```
+
+## HP代理
+HP代理是以VESTS来计算的
+```js
+hive.broadcast.delegateVestingShares(wif, delegator, delegatee, vesting_shares, function(err, result) {
+  console.log(err, result)
+})
+wif - 资金私钥
+delegator - 代理人
+delegatee - 被代理人
+vesting_shares - hp要转换成vests 
+
+//VESTS和HP换算关系
+async function main() {
+  let s = await hive.api.getDynamicGlobalPropertiesAsync()
+  console.log(11, s)
+  console.log(12, s.total_vesting_shares)
+  console.log(13, s.total_vesting_fund_hive)
+  console.log(14, "hp_to_vests", parseFloat(s.total_vesting_shares) / parseFloat(s.total_vesting_fund_hive))
+}
+main()
+//
+12 313254970159.720284 VESTS
+13 188674228.477 HIVE
+当前 1 HP = 1660.295487 VESTS
+
+eg:
+async delegate(){
+  let wif = '5KNxxxxxxxxxxxxxxx'
+  let delegator = 'lemool'
+  let delegatee = "lucky"
+  let a = await hive.api.getDynamicGlobalPropertiesAsync()
+  let hp_to_vests = parseFloat(a.total_vesting_shares) / parseFloat(a.total_vesting_fund_hive)
+  let b = '1.8' * hp_to_vests  //代理1.8个HP
+  let c = b.toFixed(6)  //6位小数
+  let vests = c+' VESTS'  //换算成VESTS
+  await hive.broadcast.delegateVestingSharesAsync(wif, delegator, delegatee, vests)
+}
+////执行结果：
+operations: Array(1)
+0: Array(2)
+0: "delegate_vesting_shares"
+1:
+delegatee: "tsteem.test"
+delegator: "timool"
+vesting_shares: "3483.359523 VESTS"
+__proto__: Object
+length: 2
+
+注意: 最小代理量不能小于1HP,要取消代理直接把代理量设为0即可，取消代理要有7天才能回到原有帐户。
+```
+
+## 查询代理
+```js
+hive.api.getVestingDelegations('ned', '', 2, function(err, result) {
+  console.log(err, result)
+})  //null []
+
+eg:
+async getDelegateHP(){
+  let user = 'lemooljiang'
+  let res = await hive.api.getVestingDelegationsAsync(user, '', 2) 
+  if(res.length == 0){
+    return 0
+  } else{
+    return parseFloat(res[0].vesting_shares)
+  }
+ }
+```&lt;/div&gt;
+  <footer class="hive-post-embed__source">
+    <span class="hive-post-embed__source-label">Source:</span>
+    <a href="https://hive.blog/@lemooljiang/ekf4gwv6j">Hive社区： Hive blockchain开发指南</a>
+    by
+    <a href="https://hive.blog/@lemooljiang">@lemooljiang</a>
+  </footer>
+&lt;/div&gt;
+
+</string></string></string></string></string></string></string></div></div>
+
+  </div><a class="u-url" href="/howto/development/guide/2025/08/26/ekf4gwv6j.html" hidden></a>
+</article>
+
+        </div>
+
+        
+        <aside class="page-sidebar" aria-label="Search and browse">
+          <section class="sidebar-section sidebar-search">
+            <h2 class="sidebar-heading">Search posts</h2>
+            <p class="sidebar-copy">Search the locally indexed post archive.</p>
+            <input type="text" id="search-input" placeholder="Search posts" autocomplete="off" />
+            <ul id="results-container"></ul>
+          </section>
+
+          <section class="sidebar-section sidebar-topics">
+            <h2 class="sidebar-heading">Browse topics</h2>
+            <p class="sidebar-copy">Jump into curated topic landing pages.</p>
+            <ul class="topic-list topic-list-sidebar"><li><a class="page-link" href="/account-recovery/">Account Recovery</a></li><li><a class="page-link" href="/core-development/">Core Development</a></li><li><a class="page-link" href="/dapps/">Dapps</a></li><li><a class="page-link" href="/docker/">Docker</a></li><li><a class="page-link" href="/hardfork/">Hardfork</a></li><li><a class="page-link" href="/hivemind/">Hivemind</a></li><li><a class="page-link" href="/javascript/">Javascript</a></li><li><a class="page-link" href="/multisig/">Multisig</a></li><li><a class="page-link" href="/python/">Python</a></li><li><a class="page-link" href="/ruby/">Ruby</a></li><li><a class="page-link" href="/testnet/">Testnet</a></li><li><a class="page-link" href="/tools/">Tools</a></li><li><a class="page-link" href="/witness/">Witness</a></li></ul>
+          </section>
+        </aside>
+        
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading"><a rel="author" href="/">Hive Chain Documentation</a></h2>
+    
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">site curated by: @inertia</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>Your resource for various levels of Hive Documentation.</p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+<script src="/assets/javascript/search.js"></script>
+    <script>
+      (function () {
+        var input = document.getElementById('search-input');
+        var results = document.getElementById('results-container');
+        if (input && results && typeof SimpleJekyllSearch !== 'undefined') {
+          SimpleJekyllSearch({
+            searchInput: input,
+            resultsContainer: results,
+            json: '/search.json'
+          });
+        }
+
+        if (typeof SteemContentRenderer === 'undefined') return;
+
+        var targets = document.querySelectorAll('[data-hive-render-target="true"]');
+        if (!targets.length) return;
+
+        var renderer = new SteemContentRenderer.DefaultRenderer({
+          baseUrl: 'https://hive.blog/',
+          breaks: true,
+          skipSanitization: false,
+          allowInsecureScriptTags: false,
+          addNofollowToLinks: true,
+          doNotShowImages: false,
+          ipfsPrefix: '',
+          assetsWidth: 640,
+          assetsHeight: 480,
+          imageProxyFn: function (url) { return url; },
+          usertagUrlFn: function (account) { return '/@' + account; },
+          hashtagUrlFn: function (hashtag) { return '/tags/#' + hashtag; },
+          isLinkSafeFn: function () { return true; }
+        });
+
+        targets.forEach(function (target) {
+          try {
+            var inputHtml = target.innerHTML;
+            target.innerHTML = renderer.render(inputHtml);
+          } catch (e) {
+            console.log(e);
+          }
+        });
+      })();
+    </script>
+
+  </body>
+
+</html>

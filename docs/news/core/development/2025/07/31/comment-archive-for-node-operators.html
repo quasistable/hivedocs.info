@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta property="og:image" content="/assets/images/sticker.png" />
+  <meta name="apple-mobile-web-app-title" content="Hive Docs" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" /><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Comment archive - for node operators and technical | Hive Chain Documentation</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Comment archive - for node operators and technical" />
+<meta name="author" content="andablackwidow" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="This is continuation of previous post about latest optimizations. This article is going to contain description of second optimization listed there - comment archive" />
+<meta property="og:description" content="This is continuation of previous post about latest optimizations. This article is going to contain description of second optimization listed there - comment archive" />
+<link rel="canonical" href="https://hive.blog/hive-139531/@andablackwidow/comment-archive-for-node-operators" />
+<meta property="og:url" content="https://hive.blog/hive-139531/@andablackwidow/comment-archive-for-node-operators" />
+<meta property="og:site_name" content="Hive Chain Documentation" />
+<meta property="og:image" content="https://images.ecency.com/DQmQ1zNgvAwqiLDUugpY51kUz6ZFxuSuaAaHpg8Q37mZyvu/double_pacman.png" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2025-07-31T17:32:36-07:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="https://images.ecency.com/DQmQ1zNgvAwqiLDUugpY51kUz6ZFxuSuaAaHpg8Q37mZyvu/double_pacman.png" />
+<meta property="twitter:title" content="Comment archive - for node operators and technical" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"andablackwidow"},"dateModified":"2025-07-31T17:32:36-07:00","datePublished":"2025-07-31T17:32:36-07:00","description":"This is continuation of previous post about latest optimizations. This article is going to contain description of second optimization listed there - comment archive","headline":"Comment archive - for node operators and technical","image":"https://images.ecency.com/DQmQ1zNgvAwqiLDUugpY51kUz6ZFxuSuaAaHpg8Q37mZyvu/double_pacman.png","mainEntityOfPage":{"@type":"WebPage","@id":"https://hive.blog/hive-139531/@andablackwidow/comment-archive-for-node-operators"},"url":"https://hive.blog/hive-139531/@andablackwidow/comment-archive-for-node-operators"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://hivedocs.info/feed.xml" title="Hive Chain Documentation" /><script>
+if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNotTrack === "yes" || navigator.msDoNotTrack === "1")) {
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-161692811-1', 'auto');
+  ga('send', 'pageview');
+}
+</script>
+  
+<script src='https://unpkg.com/steem-content-renderer'></script>
+  <script src="/assets/javascript/universal-bridge-against-phishing.js"></script>
+  <script src="/assets/javascript/lazysizes.min.js" async=""></script>
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet" />
+  <link rel="shortcut icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="152x152" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="167x167" href="/assets/images/favicon-80x80.png" />
+</head>
+<body><header class="site-header" role="banner">
+  <div class="wrapper site-header-inner">
+    <a class="site-title" rel="author" href="/">Hive Chain Documentation</a>
+
+    <nav class="site-nav" aria-label="Primary">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/news/">News</a><a class="page-link" href="/howto/">How To</a><a class="page-link" href="/links/">Useful Links</a><a class="page-link" href="/authors/">Authors</a><a class="page-link" href="/topics/">Topics</a><a class="page-link" href="/search/">Search</a></div>
+    </nav>
+  </div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper page-layout has-search-panel">
+        <div class="page-main">
+          <article class="post h-entry post-article" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header post-hero">
+    <div class="post-hero-main">
+      <p class="post-kicker">Archive post</p>
+      <h1 class="post-title p-name" itemprop="name headline">Comment archive - for node operators and technical</h1>
+      <p class="post-meta">
+        <time class="dt-published" datetime="2025-07-31T17:32:36-07:00" itemprop="datePublished">Jul 31, 2025
+        </time>• <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">
+            <a href="/authors/#author-andablackwidow">andablackwidow</a>
+          </span></span></p><p class="post-summary">This is continuation of previous post about latest optimizations. This article is going to contain description of second optimization listed there - comment archive</p></div><aside class="post-author-card">
+      <img src="https://images.hive.blog/u/andablackwidow/avatar" width="128" height="128" class="lazyload post-author-avatar" alt="Avatar for @andablackwidow" />
+      <div class="post-author-name">@andablackwidow</div>
+    </aside></header>
+
+  <div class="post-content e-content post-body" itemprop="articleBody">
+    <div class="hive-post-embed" data-hive-author="andablackwidow" data-hive-permlink="comment-archive-for-node-operators">
+  <div id="content-andablackwidow-comment-archive-for-node-operators" class="hive-post-embed__content" data-hive-render-target="true">## Recent optimizations
+
+This is continuation of [previous post about latest optimizations](https://hive.blog/hive-139531/@andablackwidow/pool-allocator-optimization-for-node). This article is going to contain description of second optimization listed there - comment archive.
+
+We've came a long way since split with legacy chain. A lot of previously applied memory-focused optimizations consisted of identifying and elimination of data that was unnecessary to run consensus code. There were also gains on rearranging of data, so it is stored better. There are still some places where that type of changes can be done, but the expected gains are nothing compared to 18GB (15.2GB after pool allocator optimization) that is already consumed out of recommended 24GB size of SHM. The biggest one is moving account metadata and related API to some HAF application (and that's less than 800MB and already optional - just compile without `COLLECT_ACCOUNT_METADATA`). We've basically run out of data that is never needed. There is one thing that could still give significant savings (even 2.5GB) - [future task mentioned at the end of previous article](https://hive.blog/hive-139531/@andablackwidow/pool-allocator-optimization-for-node#todo) - but the effect would only be that big because of one particular index - comments.
+
+![](https://images.ecency.com/DQmQ1zNgvAwqiLDUugpY51kUz6ZFxuSuaAaHpg8Q37mZyvu/double_pacman.png)
+
+Above "double pacman" chart shows relative sizes of various indexes (with account metadata eliminated). On the left we see breakdown of content of SHM before comment archive optimization. As you can see comments take over 3/4 of all the consumed memory. Second part shows how it looks afterwards - a justification for separate [follow-up future task](https://gitlab.syncad.com/hive/hive/-/issues/675#note_159288).
+
+The idea behind comment archive optimization is the following: once comment is paid you can't delete it, nothing in its content that is stored in consensus state can be changed, moreover votes or replies to such comments are relatively rare, so why keep it all the time in memory? Drop it to database and instead rely on its caching mechanisms to do the work for us.
+
+&gt; Note: the text of comment can still be edited, but `hived` doesn't care about that, since that data is in HAF/Hivemind and not in SHM.
+
+One thing has to be emphasized - this is a trade-off. You can't just migrate data that is still sometimes used to disk storage and expect not to pay for it with performance. Depending on relative frequency of accessing external data as well as hardware (disk in particular) the cost might be bigger or smaller. Quite surprisingly, although now it's kind of obvious, the most frequent event when `hived` needs to look into the archive is new comment - it needs to check if the comment is really new or an edit of existing one. It is also the slowest of all types of access to archive.
+
+---
+
+<a id="results" />
+## Results from application of second optimization
+
+Just like the last time, let's starts with some results. Again, for fair comparison, timings are for up to 93M block. This time the baseline measurement is a value from previous optimization, marked as `comment-archive = NONE`:
+ - 17 hours 28 minutes 22 seconds - replay (`comment archive = NONE`)
+ - **18 hours 40 minutes 2 seconds - replay** (`comment archive = ROCKSDB`)
+ - 29 hours 44 minutes 47 seconds - synchronization without checkpoints (`comment archive = NONE`)
+ - **30 hours exactly - synchronization without checkpoints** (`comment archive = ROCKSDB`)
+
+&gt; One thing to note is that disk performance has big impact, results are also a lot more unstable (like +/- 30 minutes difference per run - best replay run was 18 hours 12 minutes 42 seconds). I've also noticed that runs with smaller SHM tends to last longer, but it might be just a coincidence. I've only run one sync with that configuration so far.
+
+Ok, so version with optimization is running one to 5 quarters longer. So what did we gain for that lost performance? Previously recommended size of SHM was 24GB. After optimization with pool allocator you could run with 20GB with solid safety margin, since 15.2GB was actually taken. With comment archive I'd recommend 8GB (that's how I ran the measurements) and half of it is still empty. Unfortunately RocksDB also needs to take something for its cache, so `hived` process took 12.6GB of RAM at the peak (4.6GB above size of SHM). For comparison, without comment archive `hived` was taking 26GB at the peak (2GB above size of SHM).
+
+In the course of reviewing main implementation by [Mariusz](https://gitlab.syncad.com/Trela) I've added some detailed statistics - it was needed to make sure we are not introducing some scaling problem with that changes. Now we have a lot more data to draw nice graphs, although only from replay (performance stats are unfortunately not unified across modes of `hived` operation). I'll tell more about it below, but to properly read the graphs, you need to at least know that the mechanism of comment archive has proper abstract layer allowing for multiple implementations and there are currently three of them, although they are only available (officially) in mirrornet and testnet. You can switch between them with `config.ini` option `comment-archive` (option does not exist for mainnet and its use has no effect, unless you [comment out two lines of code](https://gitlab.syncad.com/hive/hive/-/blob/6a81899a5e4365ecbbc294ad7d69e9d8304c760e/libraries/plugins/chain/chain_plugin.cpp#L1487) - don't do it on your production node, especially not without reading the whole article first). The option has three values - `NONE` turns off comment archive optimization, `MEMORY` uses in-memory (SHM) archive, finally `ROCKSDB` is the default version, the only one officially supported for mainnet. Each version has its own requirements for `shared-file-size` - I've run them with `24G`, `20G` and `8G` respectively.
+
+![](https://images.ecency.com/DQmVfW3KEd7J71Q1kQFcwCHymtVWGW5AotTsotb7cVyxm5h/ca_shm.png)
+<sub>Full resolution [here](https://images.ecency.com/DQmVfW3KEd7J71Q1kQFcwCHymtVWGW5AotTsotb7cVyxm5h/ca_shm.png)</sub>
+
+If you want to learn about strange bumps on red graph, you'll need to read technical part below, for now let's focus on the difference between yellow (no comment archive) and blue (archive in RocksDB). The Y axis is megabytes of SHM taken, X axis is block number. As you can see all versions start the same until HF19 when comment archiving starts. The allocation in `NONE` version also drops despite no archive, because that's also the moment when 0.5GB of `comment_cashout_ex_index` is wiped (one of optimizations that were included in HF24 version). After that the `ROCKSDB` version fluctuates and permanently grows only with new accounts, while other versions grow constantly also with new comments.
+
+Execution times are pretty similar for all versions, with `MEMORY` being the fastest:
+ - **16 hours 41 minutes 50 seconds** (`comment archive = MEMORY`)
+
+![](https://images.ecency.com/DQmc26aCf5BjACGaFfoTH8Wm9Mcft1HzWoZgJU5TW4FBxFU/ca_time.png)
+<sub>Full resolution [here](https://images.ecency.com/DQmc26aCf5BjACGaFfoTH8Wm9Mcft1HzWoZgJU5TW4FBxFU/ca_time.png)</sub>
+
+Anomalies from previous graph in red are now more prominent, especially the one at 65.58M block mark. The Y axis is rolling average (from 200k blocks) of processing time in microseconds per block (that's why the peak of red is barely above 2000us, but in reality it is one block that was processing for 4 minutes - one of the reasons why `MEMORY` did not become officially available option). X axis is block number. Comparison between version without optimization (yellow) and with official one (blue) shows that sometimes blue is actually faster. The details in technical section below, but here I can give it away that the number of new comments is the main factor - the more new comments, the slower new version is compared to version without optimization.
+
+That's all I have for node operators. The rest of article has some technical info on the implementation(s), contains detailed comparisons between versions and some story on what I did trying to make `MEMORY` work.
+
+--- 
+
+<a id="rocksdb" />
+## How does official version work?
+
+I'm not going to dive in too much detail on `ROCKSDB` version internals, that is, the RocksDB part. Mariusz did a great job by cutting preexisting code of `account_history_rocksdb` plugin and reusing a lot of it in his implementation, so when I was reviewing it, I mostly verified that it is indeed the same code that was working fine for ages. General structure, data flow and how it cooperates with the rest of `hived` code is the new important part.
+
+The [main interface is `comments_handler`](https://gitlab.syncad.com/hive/hive/-/blob/6a81899a5e4365ecbbc294ad7d69e9d8304c760e/libraries/chain/include/hive/chain/external_storage/comments_handler.hpp#L14). It has three subgroups of methods. The main one is `get_comment()`. It handles access to comment in uniform way, no matter whether it was found in `comment_index` in memory (SHM) or in archive. In order to do so it needs to have a unified way to represent returned comment. After all when it is already in memory, we want to access it via pointer to existing object. When comment is pulled from archive, the archive needs to construct temporary representation of comment from database data and someone needs to govern its lifetime. That's why `get_comment()` returns [`comment` - special wrapper](https://gitlab.syncad.com/hive/hive/-/blob/6a81899a5e4365ecbbc294ad7d69e9d8304c760e/libraries/chain/include/hive/chain/external_storage/comment.hpp#L9) that is either just regular pointer or also a smart pointer holding temporary comment representation. The `comment` instance can be used the same way direct `comment_object` would.
+
+Second group of methods is `on_cashout()` and `on_irreversible_block()`. These are callbacks that react on events that are important for comment handling. First one is the last moment when all the comment related data is available. After the event `comment_cashout_object` part is released and no longer available, so if particular implementation of comment archive needs something out of it, it needs to remember it somewhere aside.
+
+&gt; Important note: the event happens during normal block processing, which means the cashout is not yet irreversible. It means the same comment can be "cashed out" multiple times, as previous cashout event is undone by fork switch. Moreover it is entirely possible for comment to not experience cashout after fork switch, because if certain conditions are met, the destination fork can contain transaction that deletes the comment before it is cashed out again. See [unit test that covers such cases](https://gitlab.syncad.com/hive/hive/-/blob/6a81899a5e4365ecbbc294ad7d69e9d8304c760e/tests/unit/tests/comments_in_external_storage.cpp#L374).
+
+The `on_irreversible_block()` event indicates that certain block became irreversible. All comments that were cashed out inside that block (or earlier) can now be safely moved to archive.
+
+&gt; Again: if the archive moves selected comments to archive, that is, removes them from `comment_index`, it needs to take into account that such operation is **normally** subject to undo mechanics. It means the moved comments can be reintroduced to SHM during fork switch. Such situation is also covered by above mentioned test.
+
+Third group of methods is `open()`, `close()`, `wipe()` and all methods of base class `external_storage_snapshot`. These are called on global events, mostly during application startup and shutdown, exactly during main `database` calls of the same names. The names are self explanatory.
+
+Class that constitutes official (`ROCKSDB`) [implementation of comment archive is `rocksdb_comment_archive`](https://gitlab.syncad.com/hive/hive/-/blob/6a81899a5e4365ecbbc294ad7d69e9d8304c760e/libraries/chain/include/hive/chain/external_storage/rocksdb_comment_archive.hpp#L12). It delegates all database related work to [`provider` - instance of `rocksdb_comment_storage_provider`](https://gitlab.syncad.com/hive/hive/-/blob/6a81899a5e4365ecbbc294ad7d69e9d8304c760e/libraries/chain/include/hive/chain/external_storage/rocksdb_comment_storage_provider.hpp#L19) (this is the place where RocksDB structure for holding comments is defined, most of database related work is implemented in its base class that it shares with `account_history_rocksdb`) and [`snapshot` - instance of `rocksdb_snapshot`](https://gitlab.syncad.com/hive/hive/-/blob/6a81899a5e4365ecbbc294ad7d69e9d8304c760e/libraries/chain/include/hive/chain/external_storage/rocksdb_snapshot.hpp#L16) for when it needs to handle snapshot related events.
+
+When comment is requested with `get_comment()`, it is first looked for in `comment_index` (SHM). Most of the time it will be found there, returned via regular pointer and that's it. Only when it is not found the access to RocksDB happens. `provider` tries to pull the comment data out of external database and if found the temporary comment is created and returned.
+
+&gt; As I was writing it, I've noticed we are not using pool allocator for temporary comments. We should, although it won't make difference for replay, as sum of whole access times to comments that exist in archive just amount to a bit over 4 minutes. Result of a fix should show on detailed measurements and specific stress tests though, so that is something to be corrected.
+
+Comment can be in three phases:
+ - fresh comment, not yet cashed out
+ - after cashout, but the block when it happened is not yet irreversible
+ - when cashout of the comment happened in irreversible block
+
+Method `on_cashout()` is called right after the comment was cashed out. `ROCKSDB` version of comment archive stores all necessary data in newly constructed `volatile_comment_object` (similar concept to `volatile_operation_object` known from `account_history_rocksdb`). The object holds all the data on comment that is going to be written to database later as well as `block_number` to know when it is safe to actually store it in database. Existence of that object indicates that the related comment is ready for archiving. Once `on_irreversible_block()` is called, all comments that have their volatile counterparts marked with `block_number` at or below new LIB are saved to RocksDB by `provider` and then removed from SHM (both `comment_object` and its volatile representation). It is not done with every `on_irreversible_block()` call though. Only when there is enough comments ready to be archived the process starts. That grouping is why migration process is surprisingly fast when calculated as "per comment" rate.
+
+&gt; It is "kind of bug", because code looks at whole number of volatile comments, not at the number of comments that are at or below LIB, so in some cases (f.e. OBI turned off) it would execute migration more frequently than intended. However calculating the latter would take more time than it would save.
+
+The implementation of last method group is just redirections to common functions of `provider` and/or `snapshot` - open database (optionally creating it when not present), flush and close it, remove all storage files, finally load or save snapshot to/from selected location. Most of it is completely independent of the content of RocksDB database, and parts that are comment specific (definitions of columns) are handled inside virtual methods.
+
+&gt; There is one slight drawback of reusing code from `account_history_rocksdb` (or maybe not, as it is still just one place to fix). Account History has outdated concept of LIB. LIB used to be part of consensus (calculated from blocks that act as confirmations for previous blocks), but that changed with introduction of OBI. Now each node can have its own LIB value reflecting its own state based on presence or absence of OBI confirmation transactions. Consensus only defines the smallest value of last irreversible block number. There used to be a problem with LIB for AH. As the plugin has the option to exclude reversible data from its API responses, it needs to know which block is LIB. But during replay value of LIB as indicated by state was smaller than actual LIB. After all whole replay happens exclusively on irreversible blocks. Now all replayed blocks are immediately irreversible (same with synced blocks at or below last checkpoint), but when it was not yet the case, AH worked around the problem by introducing "reindex point" that was something like "LIB that results from replay". I'm only talking about it here, because if you were to read into the code of `rocksdb_comment_storage_provider`, you are going to inevitably run into that confusing thing.
+
+---
+
+<a id="stats" />
+## Statistics
+
+I've said that access to archive is relatively rare and that it was the assumption that enabled the whole optimization. How rare is it exactly?
+
+![](https://images.ecency.com/DQmNW1bmY4CUL9fiL9KkDnVWfJ5GpWPkjQgX7Q9LeAwHX3D/ca_access_frequency.png)
+<sub>Full resolution [here](https://images.ecency.com/DQmNW1bmY4CUL9fiL9KkDnVWfJ5GpWPkjQgX7Q9LeAwHX3D/ca_access_frequency.png)</sub>
+
+In above chart scale on Y axis is logarithmic. The blue graph shows most common access type - from `comment_index`. It is order of magnitude more frequent than next one - access to comment that does not exist (yellow line). Access to nonexistent comment happens pretty much exclusively when new comment is being processed. It is another order of magnitude more frequent than access to existing but archived comment, although there are some moments when such accesses become much more frequent. Overall throughout replay up to 93M block the total times fresh comment is accessed is almost 1.2 billion, total number of not found comments is 126 million and total number of accesses to archived comment is just 15 million.
+
+![](https://images.ecency.com/DQmNo4P5TUh6btjbcyffDCmBVdb9CehZVtRuJFZeFnNvr5n/ca_rocksdb_times.png)
+<sub>Full resolution [here](https://images.ecency.com/DQmNo4P5TUh6btjbcyffDCmBVdb9CehZVtRuJFZeFnNvr5n/ca_rocksdb_times.png)</sub>
+
+Here we have average access times in nanoseconds. For access to `comment_index` total average is just 1512ns, access to archive is ten times more - 15156ns. The slowest is check that comment does not exist, which costs 38106ns on average, but can cross 70000ns. The chart reveals one interesting thing. RocksDB does "compacting" once in a while (whatever it means), optimizing its indexes, so the access time does not just grow with growth of database - in uneven intervals (probably because database does not grow evenly either) access time goes back to shorter levels. There are also two more measurements, but adding them on the chart just made it less readable:
+ - processing cashout events (creation of volatile comment representation) takes on average 5348ns
+ - migration of comments from SHM to archive costs 2794ns per comment
+
+&gt; Chart shows potential minor replay optimization - before archiving starts at HF19 we know the comment that was not found in SHM won't be found in (still empty) archive, so we could take a shortcut.
+
+---
+
+<a id="none" />
+## How does it compare to version with no optimization?
+
+Since the mechanism has an interface, it is possible to implement it differently. [One of such implementations is  `placeholder_comment_archive`](https://gitlab.syncad.com/hive/hive/-/blob/6a81899a5e4365ecbbc294ad7d69e9d8304c760e/libraries/chain/include/hive/chain/external_storage/placeholder_comment_archive.hpp#L9) used when `comment-archive = NONE`. That implementation is really simple - it does nothing in most of its methods. In particular cashed out comments just remain in SHM, even after cashout became irreversible. Effectively it turns off comment archive optimization. But having such implementation allowed for measuring "old way".
+
+![](https://images.ecency.com/DQmT7xFaSzrQRTsCy1Fy8eVsaBnq6QF4atMJeEYd9eK3c6t/ca_none_times.png)
+<sub>Full resolution [here](https://images.ecency.com/DQmT7xFaSzrQRTsCy1Fy8eVsaBnq6QF4atMJeEYd9eK3c6t/ca_none_times.png)</sub>
+
+There is no access to archive in the chart since there is no archive in this case. As expected time to tell if comment exists or not grows with size of `comment_index` (with log<sub>2</sub> of number of comments to be precise since `comment_index` is a binary tree). On average it takes 8994ns, but towards the end times are more like 12000ns and they will only grow. Access to existing comment is average 2375ns, which is over 50% more than in case of `ROCKSDB` version. In the long run it will also have tendency to grow as average depth of tree traversal to reach for random comment grows.
+
+---
+
+<a id="memory" />
+## What is `MEMORY` version?
+
+As stated at the start, the `ROCKSDB` version is a trade-off. Very good trade-off, but trade-off nonetheless. I wanted to have an implementation that would be an improvement over `NONE` version in both performance **and** memory area. Of course it is not possible to achieve amazing reduction of memory requirements of `ROCKSDB` version, but something still can be gained.
+
+First it is necessary to point out what information is held in `comment_index`. Aside from fairly small `comment_object` (32 bytes) each `comment_index::MULTIINDEX_NODE_TYPE` holds also two indexes (another 32 bytes each per comment). The `by_id` is mandatory for all chain objects as it is used by undo mechanism. Before cashout `id` is also used to access parallel indices, `comment_cashout_index` in this case (and `comment_cashout_ex_index` before it is wiped). The second index is `by_permlink` which is actually using author+permlink hash for comment ordering. Since parallel objects are not present after cashout, cashed out comment can't be "undone" either (once its cashout is irreversible), the `by_id` index stops being useful for comments after cashout. The `MEMORY` version takes advantage of that.
+
+Before I'll describe multiple implementations I've tried and how they fared, first some common elements. `MEMORY` does not use volatile comment representation. It keeps track of cashed out comments in local map - just the list of comment ids bound to block number.
+ - *Won't that map disappear when node shuts down?* - It will, however that information is about comments with not yet irreversible cashout. It means when node restarts, `undo_all()` call will revert results of processing of reversible blocks and then sync will reapply those blocks again, including processing of cashouts. In other words the data on which comments to archive will naturally rebuild itself.
+ - *What about undo? Such structure won't be able to react on fork switch.* - True, but blocks from target fork will have to process cashouts of all the same comments, even in the same order (although it does not matter in this case).
+ - *Ha, got you! Target fork might contain different transactions, in particular it might delete comment with non-positive net votes.* - In such rare case nothing wrong will happen as long as code that migrates comments to archive does not enforce existence of all the comments it expected (in other words missing comment means it was deleted, so do nothing).
+
+During rereading the code I've actually found yet another case when the above way of handling migration will fail (not verified yet with test). I wonder if any of the readers is going to find that scenario (no @small.minion, not you). Identify assumptions, challenge them, see what happens. It is fun :o) I'm only going to give you one hint: it involves two fork switches in short succession. It is also trivial to fix.
+
+The above optimization cannot be used directly by `ROCKSDB`, because it does not immediately archive comments when their cashout became irreversible. In other words, if applied to `ROCKSDB`, the map might contain some data on comments that won't automatically restore itself after restart.
+
+&gt; Actually it is possible, we only need to change the condition when `ROCKSDB` migrates comments. Not just having enough comments to migrate, but also in case of shutting down node or being in live mode. That way we'd still have benefits of migrating comments in big groups during replay and sync, while making sure no irreversible comment data remains in in-memory map. Another TODO for later.
+
+Second difference between `MEMORY` and `ROCKSDB`, common to all `MEMORY` implementations I've tried, is about what happens to original `comment_object` after migration. It is removed from `comment_index` of course, but not with standard `remove()` call. I had to introduce `remove_no_undo()` specifically for that case. The thing is, objects removed with `remove()` might "come back to life" if it happens that we had a fork switch or we've restarted node before undo session that was active during `remove()` call is subjected to `commit()`. For `ROCKSDB` it is not a problem, because `comment_object` is removed at the same time as its `volatile_comment_object` equivalent. It means in worst case the comment is going to be migrated again (RocksDB record is going to be overwritten with exactly the same data). However in case of `MEMORY`, where data on which comment to migrate is not subject to undo mechanism, resurrected comment would remain in SHM until node is replayed/synced from zero. Not gamebreaking problem, but still a bug.
+
+&gt; Note: `remove_no_undo()` cannot be introduced globally to all indexes, because it assumes that object being removed has no record in any of active undo sessions. You could break that assumption for `comment_object` in testnet, by setting ultra short cashout times (in single digit amounts of blocks), but we can ignore that.
+
+`MEMORY` holds data on archived comments inside SHM container that is not attached to undo mechanism. It only has one index (the equivalent of `by_permlink` from `comment_index`), although I had some trouble using normal containers, so I've used single-indexed multiindex instead. First implementation (ORDERED) used `ordered_unique` index, that is, a tree, the same that we always use for all chain objects stored in multiindexes. The space taken in SHM was reduced by expected amount - 3.8GB - which is close to the size of `by_id` index of `comment_index` (fresh comments still remain). Performance however was barely better than `ROCKSDB`, worse than `NONE` - not acceptable.
+
+Second version, which is the one that is currently in place, used `hashed_unique` type of index. Since hashmap allocates its buckets in large blocks, I could no longer use our pool allocator that only works for single object allocations - [see previous article](https://hive.blog/hive-139531/@andablackwidow/pool-allocator-optimization-for-node#implementation) (this is exactly the moment I started researching pool allocators provided by `boost`).
+
+&gt; If we had our own hashmap, we could use different allocator for buckets and another for contained objects, but that's not possible with multiindex, since it derives all its multiple internal allocators from the same class provided in its definition, just with different template parameters.
+
+That version achieved expected results, but not to a degree I was hoping for. It was not even 50 minutes faster than `NONE` (I'm pretty sure not-so-great results are partially caused by being forced to use slower allocator), it also ate more space in SHM than expected. I actually thought hashmap will be smaller than tree, however it only freed 1.9GB compared to `NONE`, almost 2GB less than ORDERED version. I'd still make it one of official implementations, maybe even pushed more to make it faster and more compact (I only experimented with different `boost` allocators at that stage), however it displayed one **critical flaw** that made it unsuitable for mainnet use, dangerous actually. During migration, when new comment is added to archive, it is written into a hashmap bucket. But there is only so many buckets available. Once hashmap decides its fill level makes it too probable to have effective hash collisions (effective hash is result of `hash()` call modulo number of buckets; 75% is default maximum fill level, if I remember correctly - adjustable), it **stops everything**, allocates new set of buckets that is roughly twice as big as previous one (look for `BOOST_MULTI_INDEX_BA_SIZES` in bucket_array.hpp in `boost` sources) and rewrites content of old buckets to new ones. Since it needs to calculate new effective hash for each object, the process is called *rehashing*. Normally it is fast, however we have extraordinary amount of comments, so rehashing also takes noticeable amount of time. It is not a problem for replay - the only thing is, it is visible on graph as a sudden increase of average processing time and also sudden large allocation. Last such event happened at around block 65.58M where rehashing grew bucket array from 100'663'319 to 201'326'611 buckets. It took four minutes. We still have 25M comments to write before next such event, which is likely to take 8 minutes. What is acceptable for replay or sync, is absolutely devastating in live mode. Since the process is triggered by specific amount of comments, and that is part of consensus, that is, equal on all nodes, if `MEMORY` was allowed to be run on mainnet with that flaw, all nodes (configured to use `MEMORY`) would stop to do the rehash at exactly the same time. Once they were done, there could be no network to return to, since during those minutes witness participation could drop to zero. We could allow node operators to preallocate bigger hashmap, so the event does not occur in next decade, but I can't picture everyone remembering to increase the value once that time passes.
+
+Once I've noticed the problem, I tried to eliminate it. First, since it is the amount of comments in single hashmap that is causing rehash to last that long, why not split one big hashmap into a lot of smaller ones? To do it evenly, we'd need some source of good entropy bits. We have them already. The `hash()` on a `comment_object` uses 2 of 5 32bit words of `author_and_permlink_hash`. Why not use couple bits from third word to distribute comments evenly between different hashmaps? That's what I did. I've checked versions with 12 bits (4k hashmaps) and 14 bits (16k hashmaps). As expected, hashmaps were filling up roughly evenly, which means they needed to rehash in close proximity of each other, however not all during processing of the same block. Instead of one long rehashing in one block, those versions were doing many shorter rehashes in close but different blocks. Such thing would be totally acceptable for live mode since the longest rehash only lasted couple hundred milliseconds. The problem? While SHM fill level was the same in all versions (except around rehashing time, where the versions with many hashmaps had a wave of smaller allocations instead of one big), the more hashmaps version used, the slower it was. And the differences were big (relatively) - still faster than `NONE`, but considering `MEMORY` was already barely satisfactory in performance gain, losing any part of that was not good. The only explanation I could come up with was cache hit rate - with more hashmaps it is more likely that the extra data hashmap holds is not in cache. To test that possibility I've come up with similar but different idea. Let's make it so that some hashmaps are used more frequently than others, that is, still split the load between many hashmaps, but do it based on author id. That way each author will have all their comments in the same hashmap and maybe chance for that hashmap data being in cache will increase. So I used 12 bits of `author_id` to split archived comments between 4k hashmaps. The goal was achieved - that version was still slower than version with one hashmap, but only a bit. In the same time it turned out that rehashes, while happening in different blocks (spread even more than version with uniform splitting), were sometimes unacceptably long (longest was over 2.3 seconds). Since it was not possible to rule out that the times will get long enough to cause missed blocks, I've dropped that version too.
+
+In the end I had to drop the idea of using `MEMORY` as selectable official version, so mainnet does not support switching implementation with `comment-archive` option. For this reason I didn't even bother with finishing implementation - `MEMORY` does not support snapshots, because it is not implemented. `MEMORY` is still useful though. For `queen` where every bit of performance counts (`queen` plugin is still in queue for its own article), it is also nice training ground to test different containers under predictable heavy load.
+
+&gt; The version with 4k evenly split hashmaps was the most promising - it was as fast as version with one hashmap up to around last rehashing event, where version with one hashmap returned to speed, while version with 4k hashmaps continued to be slower - maybe hashmaps of specific size are just slower for some reason? I think it would be possible to make our own hashmap specifically for the purpose of `MEMORY` implementation, and the rehashing problem could also be fixed - either explore new "garbage collector" implementations (I remember they had to "stop the world" to do their thing, but as far as I know modern ones don't do that anymore), or try to do rehashing in the background in separate thread (access to not-yet-ready new bucket array would require locking, so it's not clear how the performance would look like in that case).
+
+For sake of completion let's see detailed measurements of that version:
+
+![](https://images.ecency.com/DQmQzhWr9KrVg19PttdDgtmCnuVX2UJaS98f8Rugc8yghrq/ca_memory_times.png)
+<sub>Full resolution [here](https://images.ecency.com/DQmQzhWr9KrVg19PttdDgtmCnuVX2UJaS98f8Rugc8yghrq/ca_memory_times.png)</sub>
+
+Access to `comment_index` is on average 1453ns - similar to `ROCKSDB`. Access to archive is 2912ns, with over 1000ns variation in both directions. It takes 5038ns to tell that the comment is not present. Not only faster, but unlike in `NONE`, it does not appear to be growing with size of archive (understandable, since hash container is used). Last timings not present on the chart: 141ns for processing of cashout events (recording ids of cashed out comments) and 11991ns for moving comments to archive (28% of that time is result of rehashing events).
+
+&gt; It looks like `ROCKSDB` could speed up by up to 10 minutes by dropping use of `volatile_comment_object` and using in-memory map.
+
+---
+
+<a id="comparison" />
+## Final comparison
+
+![](https://images.ecency.com/DQmTxJDgLF3dfcYYAfhU9mz1yYK2wWsCwoRNQGRCLq8ABVH/ca_all_times.png)
+<sub>Full resolution [here](https://images.ecency.com/DQmTxJDgLF3dfcYYAfhU9mz1yYK2wWsCwoRNQGRCLq8ABVH/ca_all_times.png)</sub>
+
+Rolling average (from 200k blocks) of sum of all time spent inside comment archive mechanisms. Y axis is in microseconds per block. `ROCKSDB` spends on average twice as much time in comment archive code as other two versions. It loses especially at times of increased production of new comments. `MEMORY` is generally faster than `NONE`, but its advantage is hindered by time it spends on rehashing (it is still faster, just not as much).
+
+---
+
+
+<a id="todo" />
+## TODO
+
+There are couple small topics mentioned above. But generally [point 7 of my wish list for Hive](https://gitlab.syncad.com/hive/hive/-/issues/675#note_159285) is complete in main part. There is one more step to do - implementation based on HAF, but it will only be necessary once we decide to [implement point 12 of the wish list](https://gitlab.syncad.com/hive/hive/-/issues/675#note_159294).
+
+Next big topic that has similar focus on trade-off between memory allocation vs performance is [point 8](https://gitlab.syncad.com/hive/hive/-/issues/675#note_159288) mentioned at the start. As far as I know, Mariusz is already making experiments to explore possible ways of implementing it. That task is not as straightforward as with comments, because account related data is held in multiple indexes and accounts are used all the time, just not all of them. Moreover we'd need to be able to apply similar treatment to other classes of chain objects that we expect to increase in volume in the future (depending on which other tasks are to be approved for implementation).</div>
+  <footer class="hive-post-embed__source">
+    <span class="hive-post-embed__source-label">Source:</span>
+    <a href="https://hive.blog/@andablackwidow/comment-archive-for-node-operators">Comment archive - for node operators and technical</a>
+    by
+    <a href="https://hive.blog/@andablackwidow">@andablackwidow</a>
+  </footer>
+</div>
+
+
+  </div><a class="u-url" href="/news/core/development/2025/07/31/comment-archive-for-node-operators.html" hidden></a>
+</article>
+
+        </div>
+
+        
+        <aside class="page-sidebar" aria-label="Search and browse">
+          <section class="sidebar-section sidebar-search">
+            <h2 class="sidebar-heading">Search posts</h2>
+            <p class="sidebar-copy">Search the locally indexed post archive.</p>
+            <input type="text" id="search-input" placeholder="Search posts" autocomplete="off" />
+            <ul id="results-container"></ul>
+          </section>
+
+          <section class="sidebar-section sidebar-topics">
+            <h2 class="sidebar-heading">Browse topics</h2>
+            <p class="sidebar-copy">Jump into curated topic landing pages.</p>
+            <ul class="topic-list topic-list-sidebar"><li><a class="page-link" href="/account-recovery/">Account Recovery</a></li><li><a class="page-link" href="/core-development/">Core Development</a></li><li><a class="page-link" href="/dapps/">Dapps</a></li><li><a class="page-link" href="/docker/">Docker</a></li><li><a class="page-link" href="/hardfork/">Hardfork</a></li><li><a class="page-link" href="/hivemind/">Hivemind</a></li><li><a class="page-link" href="/javascript/">Javascript</a></li><li><a class="page-link" href="/multisig/">Multisig</a></li><li><a class="page-link" href="/python/">Python</a></li><li><a class="page-link" href="/ruby/">Ruby</a></li><li><a class="page-link" href="/testnet/">Testnet</a></li><li><a class="page-link" href="/tools/">Tools</a></li><li><a class="page-link" href="/witness/">Witness</a></li></ul>
+          </section>
+        </aside>
+        
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading"><a rel="author" href="/">Hive Chain Documentation</a></h2>
+    
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">site curated by: @inertia</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>Your resource for various levels of Hive Documentation.</p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+<script src="/assets/javascript/search.js"></script>
+    <script>
+      (function () {
+        var input = document.getElementById('search-input');
+        var results = document.getElementById('results-container');
+        if (input && results && typeof SimpleJekyllSearch !== 'undefined') {
+          SimpleJekyllSearch({
+            searchInput: input,
+            resultsContainer: results,
+            json: '/search.json'
+          });
+        }
+
+        if (typeof SteemContentRenderer === 'undefined') return;
+
+        var targets = document.querySelectorAll('[data-hive-render-target="true"]');
+        if (!targets.length) return;
+
+        var renderer = new SteemContentRenderer.DefaultRenderer({
+          baseUrl: 'https://hive.blog/',
+          breaks: true,
+          skipSanitization: false,
+          allowInsecureScriptTags: false,
+          addNofollowToLinks: true,
+          doNotShowImages: false,
+          ipfsPrefix: '',
+          assetsWidth: 640,
+          assetsHeight: 480,
+          imageProxyFn: function (url) { return url; },
+          usertagUrlFn: function (account) { return '/@' + account; },
+          hashtagUrlFn: function (hashtag) { return '/tags/#' + hashtag; },
+          isLinkSafeFn: function () { return true; }
+        });
+
+        targets.forEach(function (target) {
+          try {
+            var inputHtml = target.innerHTML;
+            target.innerHTML = renderer.render(inputHtml);
+          } catch (e) {
+            console.log(e);
+          }
+        });
+      })();
+    </script>
+
+  </body>
+
+</html>

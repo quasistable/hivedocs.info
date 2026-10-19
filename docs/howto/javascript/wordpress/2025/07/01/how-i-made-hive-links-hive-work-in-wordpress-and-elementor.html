@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta property="og:image" content="/assets/images/sticker.png" />
+  <meta name="apple-mobile-web-app-title" content="Hive Docs" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" /><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>How I Made Hive Links (hive://) Work in WordPress and Elementor | Hive Chain Documentation</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="How I Made Hive Links (hive://) Work in WordPress and Elementor" />
+<meta name="author" content="louis88" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Hey everyone, I wanted to share a quick tip for anyone who uses Hive Keychain and wants to let people take Hive actions directly from their website — especially if you use QR codes or buttons for things like event" />
+<meta property="og:description" content="Hey everyone, I wanted to share a quick tip for anyone who uses Hive Keychain and wants to let people take Hive actions directly from their website — especially if you use QR codes or buttons for things like event" />
+<link rel="canonical" href="https://hive.blog/hive-139531/@louis88/how-i-made-hive-links-hive-work-in-wordpress-and-elementor" />
+<meta property="og:url" content="https://hive.blog/hive-139531/@louis88/how-i-made-hive-links-hive-work-in-wordpress-and-elementor" />
+<meta property="og:site_name" content="Hive Chain Documentation" />
+<meta property="og:image" content="https://files.peakd.com/file/peakd-hive/louis88/23xKxUaW2iTKxjXDbRLKBtGsyKFiZgaSELMhUKytMTUePHtWp62adCfXkzU65bCnkEQCH.png" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2025-07-01T13:40:51-07:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="https://files.peakd.com/file/peakd-hive/louis88/23xKxUaW2iTKxjXDbRLKBtGsyKFiZgaSELMhUKytMTUePHtWp62adCfXkzU65bCnkEQCH.png" />
+<meta property="twitter:title" content="How I Made Hive Links (hive://) Work in WordPress and Elementor" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"louis88"},"dateModified":"2025-07-01T13:40:51-07:00","datePublished":"2025-07-01T13:40:51-07:00","description":"Hey everyone, I wanted to share a quick tip for anyone who uses Hive Keychain and wants to let people take Hive actions directly from their website — especially if you use QR codes or buttons for things like event","headline":"How I Made Hive Links (hive://) Work in WordPress and Elementor","image":"https://files.peakd.com/file/peakd-hive/louis88/23xKxUaW2iTKxjXDbRLKBtGsyKFiZgaSELMhUKytMTUePHtWp62adCfXkzU65bCnkEQCH.png","mainEntityOfPage":{"@type":"WebPage","@id":"https://hive.blog/hive-139531/@louis88/how-i-made-hive-links-hive-work-in-wordpress-and-elementor"},"url":"https://hive.blog/hive-139531/@louis88/how-i-made-hive-links-hive-work-in-wordpress-and-elementor"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://hivedocs.info/feed.xml" title="Hive Chain Documentation" /><script>
+if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNotTrack === "yes" || navigator.msDoNotTrack === "1")) {
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-161692811-1', 'auto');
+  ga('send', 'pageview');
+}
+</script>
+  
+<script src='https://unpkg.com/steem-content-renderer'></script>
+  <script src="/assets/javascript/universal-bridge-against-phishing.js"></script>
+  <script src="/assets/javascript/lazysizes.min.js" async=""></script>
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet" />
+  <link rel="shortcut icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="152x152" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="167x167" href="/assets/images/favicon-80x80.png" />
+</head>
+<body><header class="site-header" role="banner">
+  <div class="wrapper site-header-inner">
+    <a class="site-title" rel="author" href="/">Hive Chain Documentation</a>
+
+    <nav class="site-nav" aria-label="Primary">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/news/">News</a><a class="page-link" href="/howto/">How To</a><a class="page-link" href="/links/">Useful Links</a><a class="page-link" href="/authors/">Authors</a><a class="page-link" href="/topics/">Topics</a><a class="page-link" href="/search/">Search</a></div>
+    </nav>
+  </div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper page-layout has-search-panel">
+        <div class="page-main">
+          <article class="post h-entry post-article" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header post-hero">
+    <div class="post-hero-main">
+      <p class="post-kicker">Archive post</p>
+      <h1 class="post-title p-name" itemprop="name headline">How I Made Hive Links (hive://) Work in WordPress and Elementor</h1>
+      <p class="post-meta">
+        <time class="dt-published" datetime="2025-07-01T13:40:51-07:00" itemprop="datePublished">Jul 1, 2025
+        </time>• <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">
+            <a href="/authors/#author-louis88">louis88</a>
+          </span></span></p><p class="post-summary">Hey everyone, I wanted to share a quick tip for anyone who uses Hive Keychain and wants to let people take Hive actions directly from their website — especially if you use QR codes or buttons for things like event</p></div><aside class="post-author-card">
+      <img src="https://images.hive.blog/u/louis88/avatar" width="128" height="128" class="lazyload post-author-avatar" alt="Avatar for @louis88" />
+      <div class="post-author-name">@louis88</div>
+    </aside></header>
+
+  <div class="post-content e-content post-body" itemprop="articleBody">
+    <div class="hive-post-embed" data-hive-author="louis88" data-hive-permlink="how-i-made-hive-links-hive-work-in-wordpress-and-elementor">
+  <div id="content-louis88-how-i-made-hive-links-hive-work-in-wordpress-and-elementor" class="hive-post-embed__content" data-hive-render-target="true">Hey everyone,
+I wanted to share a quick tip for anyone who uses Hive Keychain and wants to let people take Hive actions directly from their website — especially if you use QR codes or buttons for things like event tickets.
+
+![image.png](https://files.peakd.com/file/peakd-hive/louis88/23xKxUaW2iTKxjXDbRLKBtGsyKFiZgaSELMhUKytMTUePHtWp62adCfXkzU65bCnkEQCH.png)
+
+
+### 📌 The Problem
+WordPress uses a filter called `kses_allowed_protocols` to define which link protocols are "safe".
+By default, `http`, `https`, `mailto`, etc. are allowed — but `hive` is not.
+If you try to add a link like `hive://` in a button or icon box, it just gets stripped away or removed completly when you save it - in the Frontend.
+But sometimes we want to share Hive-Links for Transfers etc. and they should just work.
+
+I noticed that **it does work** if you add a plain `hive://` link in a normal text editor widget as raw HTML — but not in dedicated link fields like buttons or widgets like from Elementor Page-Builder.
+
+### 📌 Why I Needed This
+
+From time to time I have to deal with websites where I would like to integrate direct Hive links - e.g. pay for something in a store or book a ticket for an event and would like to pay with Keychain.
+
+
+### ✅ The Solution
+The fix is super simple...
+WordPress filters which link protocols are allowed through an internal whitelist called **kses**.
+If your protocol (like hive://) is not on that list, it’s removed to prevent abuse.
+
+So all I needed to do was add `hive` to the allowed protocols.
+And instead of messing with my `functions.php` or uploading extra plugin files, I decided to manage it easily with the Code Snippets plugin.
+
+### 🗂️ The Snippet
+Here’s the exact snippet I use:
+
+```
+/**
+ * Allow the custom 'hive://' protocol in WordPress and Elementor links.
+ *
+ * This snippet can be added via the Code Snippets plugin instead of editing theme files.
+ * It hooks into 'kses_allowed_protocols' to add 'hive' as a safe protocol.
+ * Works for links in posts, pages, menus, widgets, and Elementor fields.
+ *
+ * @param array $protocols List of allowed protocols.
+ * @return array Updated list with 'hive' included.
+ */
+function allow_hive_protocol_snippet( $protocols ) {
+    $protocols[] = 'hive';
+    return $protocols;
+}
+add_filter( 'kses_allowed_protocols', 'allow_hive_protocol_snippet' );
+```
+
+or simply without the explanation
+
+```
+function allow_hive_protocol_snippet( $protocols ) {
+    $protocols[] = 'hive';
+    return $protocols;
+}
+add_filter( 'kses_allowed_protocols', 'allow_hive_protocol_snippet' );
+```
+
+### 📌 How to use
+- Go to WP Admin → Snippets → Add New
+- Give your snippet a clear name, like Allow Hive Protocol
+- Paste the code above into the code field.
+- Choose Run snippet everywhere.
+- Save and activate.
+
+
+![image.png](https://files.peakd.com/file/peakd-hive/louis88/48Hh6GRXc3bJEdP8ydwjXrDJee8smQ2r9sfqEKP1xVxBxZU4aoBFWDgR35s9bgP8vQ.png)
+![image.png](https://files.peakd.com/file/peakd-hive/louis88/23tHXAFWo8Nj1FcfFPA1Z5nRuGqVzux5ajCZDsYBdQms5FcaXn2bTHeRFu3c3b8YrGbYH.png)
+
+
+✅ That’s it!
+No need to touch theme files or upload a custom plugin — all managed safely through Code Snippets Plugin. Wait... We need a Link to place! Therefore we go the Website from @stoodkev: https://qr.hive-keychain.com/
+
+![image.png](https://files.peakd.com/file/peakd-hive/louis88/23wr9sHA39HxWr6NjT87fpPrRjdwnWqbSs4kzefB9oxnnqsHvSD6j869p7Gcy4NmJdMeN.png)
+
+### qr.hive-keychain.com
+
+Here we now have the option of generating our own ready-made links for transfers, delegations, witness votes, proxies and proposal votes, which also work with the Hive Keychain browser extension or the mobile app. This is also the page I use when I want to create links, e.g. for the buy button on a page. In the screenshot above you can see what the URL looks like. This cannot be pasted into the browser line and must really be available as a link. As an example, you can now click [here and vote for my HIVE-Witness Node](hive://sign/op/WyJhY2NvdW50X3dpdG5lc3Nfdm90ZSIseyJ3aXRuZXNzIjoibG91aXMud2l0bmVzcyIsImFwcHJvdmUiOnRydWV9XQ..). When you click, your keychain should open and ask if you want to vote for my Witness. Of course you say yes, because supporting my Witness is always good :).
+
+Btw. This is the long Link for the above link:
+`hive://sign/op/WyJhY2NvdW50X3dpdG5lc3Nfdm90ZSIseyJ3aXRuZXNzIjoibG91aXMud2l0bmVzcyIsImFwcHJvdmUiOnRydWV9XQ..`
+
+
+
+<div class="pull-left"><div class="text-justify">
+
+And this the QR-Code:
+![image.png](https://files.peakd.com/file/peakd-hive/louis88/AJmrNppCWdL8D6nMDZxGGeNNX1CVZ7SeA5m7Hn6imEJiQE1kuXPuGZzN31nccgp.png)
+
+However, you can only use this QR code within the Hive Keychain app. So open the scanner in the app and then scan it. It takes a little while until it is recognized but it works, as you can see in the screenshot on the right.
+
+</div></div>
+<div class="pull-right"><div class="text-justify">
+
+![image.png](https://files.peakd.com/file/peakd-hive/louis88/23xAJnFTnAZtSicCzXmBksq55bebN4mBXhppMfFWPi3jHxFep5natCNQk4ATykbyfLdDN.png)
+
+</div></div>
+
+---
+
+That should be all for now. I now have the possibility to create different hive links that work wonderfully with the Keychain Browser Extension and thus add a payment button to different pages that have nothing to do with HIVE, for example, and pay with Keychain HIVE/HBD. Furthermore the possibility to create a QR code for the link. Now I'll soon be thinking about how far it would be possible to integrate these functions into an online shop/merch store or SAAS tailored to HIVE, as the recurring transfers are very interesting. Maybe I'll also think about a solution for a Woocommerce integration so that payments can be made at the checkout with Woocommerce using HBD/HIVE (once the extension is installed and I have a way to query our awesome 3 second transactions on an external page to see if the transfer has actually gone through and the order is complete).
+
+Until then - hope this helps some of you who are working on your Wordpress website.</div>
+  <footer class="hive-post-embed__source">
+    <span class="hive-post-embed__source-label">Source:</span>
+    <a href="https://hive.blog/@louis88/how-i-made-hive-links-hive-work-in-wordpress-and-elementor">How I Made Hive Links (hive://) Work in WordPress and Elementor</a>
+    by
+    <a href="https://hive.blog/@louis88">@louis88</a>
+  </footer>
+</div>
+
+
+  </div><a class="u-url" href="/howto/javascript/wordpress/2025/07/01/how-i-made-hive-links-hive-work-in-wordpress-and-elementor.html" hidden></a>
+</article>
+
+        </div>
+
+        
+        <aside class="page-sidebar" aria-label="Search and browse">
+          <section class="sidebar-section sidebar-search">
+            <h2 class="sidebar-heading">Search posts</h2>
+            <p class="sidebar-copy">Search the locally indexed post archive.</p>
+            <input type="text" id="search-input" placeholder="Search posts" autocomplete="off" />
+            <ul id="results-container"></ul>
+          </section>
+
+          <section class="sidebar-section sidebar-topics">
+            <h2 class="sidebar-heading">Browse topics</h2>
+            <p class="sidebar-copy">Jump into curated topic landing pages.</p>
+            <ul class="topic-list topic-list-sidebar"><li><a class="page-link" href="/account-recovery/">Account Recovery</a></li><li><a class="page-link" href="/core-development/">Core Development</a></li><li><a class="page-link" href="/dapps/">Dapps</a></li><li><a class="page-link" href="/docker/">Docker</a></li><li><a class="page-link" href="/hardfork/">Hardfork</a></li><li><a class="page-link" href="/hivemind/">Hivemind</a></li><li><a class="page-link" href="/javascript/">Javascript</a></li><li><a class="page-link" href="/multisig/">Multisig</a></li><li><a class="page-link" href="/python/">Python</a></li><li><a class="page-link" href="/ruby/">Ruby</a></li><li><a class="page-link" href="/testnet/">Testnet</a></li><li><a class="page-link" href="/tools/">Tools</a></li><li><a class="page-link" href="/witness/">Witness</a></li></ul>
+          </section>
+        </aside>
+        
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading"><a rel="author" href="/">Hive Chain Documentation</a></h2>
+    
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">site curated by: @inertia</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>Your resource for various levels of Hive Documentation.</p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+<script src="/assets/javascript/search.js"></script>
+    <script>
+      (function () {
+        var input = document.getElementById('search-input');
+        var results = document.getElementById('results-container');
+        if (input && results && typeof SimpleJekyllSearch !== 'undefined') {
+          SimpleJekyllSearch({
+            searchInput: input,
+            resultsContainer: results,
+            json: '/search.json'
+          });
+        }
+
+        if (typeof SteemContentRenderer === 'undefined') return;
+
+        var targets = document.querySelectorAll('[data-hive-render-target="true"]');
+        if (!targets.length) return;
+
+        var renderer = new SteemContentRenderer.DefaultRenderer({
+          baseUrl: 'https://hive.blog/',
+          breaks: true,
+          skipSanitization: false,
+          allowInsecureScriptTags: false,
+          addNofollowToLinks: true,
+          doNotShowImages: false,
+          ipfsPrefix: '',
+          assetsWidth: 640,
+          assetsHeight: 480,
+          imageProxyFn: function (url) { return url; },
+          usertagUrlFn: function (account) { return '/@' + account; },
+          hashtagUrlFn: function (hashtag) { return '/tags/#' + hashtag; },
+          isLinkSafeFn: function () { return true; }
+        });
+
+        targets.forEach(function (target) {
+          try {
+            var inputHtml = target.innerHTML;
+            target.innerHTML = renderer.render(inputHtml);
+          } catch (e) {
+            console.log(e);
+          }
+        });
+      })();
+    </script>
+
+  </body>
+
+</html>

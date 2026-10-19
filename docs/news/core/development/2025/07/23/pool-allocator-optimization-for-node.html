@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta property="og:image" content="/assets/images/sticker.png" />
+  <meta name="apple-mobile-web-app-title" content="Hive Docs" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" /><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Pool allocator optimization - for node operators and technical | Hive Chain Documentation</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Pool allocator optimization - for node operators and technical" />
+<meta name="author" content="andablackwidow" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Recently three big ticket items from my dream list for Hive were done. This article highlights first one" />
+<meta property="og:description" content="Recently three big ticket items from my dream list for Hive were done. This article highlights first one" />
+<link rel="canonical" href="https://hive.blog/hive-139531/@andablackwidow/pool-allocator-optimization-for-node" />
+<meta property="og:url" content="https://hive.blog/hive-139531/@andablackwidow/pool-allocator-optimization-for-node" />
+<meta property="og:site_name" content="Hive Chain Documentation" />
+<meta property="og:image" content="https://images.ecency.com/DQmfWaofXEGNjiDtGBcsnt3D3ky5NScASU4ehKNyqYoo5Yd/pool_global.png" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2025-07-23T13:13:12-07:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="https://images.ecency.com/DQmfWaofXEGNjiDtGBcsnt3D3ky5NScASU4ehKNyqYoo5Yd/pool_global.png" />
+<meta property="twitter:title" content="Pool allocator optimization - for node operators and technical" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"andablackwidow"},"dateModified":"2025-07-23T13:13:12-07:00","datePublished":"2025-07-23T13:13:12-07:00","description":"Recently three big ticket items from my dream list for Hive were done. This article highlights first one","headline":"Pool allocator optimization - for node operators and technical","image":"https://images.ecency.com/DQmfWaofXEGNjiDtGBcsnt3D3ky5NScASU4ehKNyqYoo5Yd/pool_global.png","mainEntityOfPage":{"@type":"WebPage","@id":"https://hive.blog/hive-139531/@andablackwidow/pool-allocator-optimization-for-node"},"url":"https://hive.blog/hive-139531/@andablackwidow/pool-allocator-optimization-for-node"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://hivedocs.info/feed.xml" title="Hive Chain Documentation" /><script>
+if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNotTrack === "yes" || navigator.msDoNotTrack === "1")) {
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-161692811-1', 'auto');
+  ga('send', 'pageview');
+}
+</script>
+  
+<script src='https://unpkg.com/steem-content-renderer'></script>
+  <script src="/assets/javascript/universal-bridge-against-phishing.js"></script>
+  <script src="/assets/javascript/lazysizes.min.js" async=""></script>
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet" />
+  <link rel="shortcut icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="152x152" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="167x167" href="/assets/images/favicon-80x80.png" />
+</head>
+<body><header class="site-header" role="banner">
+  <div class="wrapper site-header-inner">
+    <a class="site-title" rel="author" href="/">Hive Chain Documentation</a>
+
+    <nav class="site-nav" aria-label="Primary">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/news/">News</a><a class="page-link" href="/howto/">How To</a><a class="page-link" href="/links/">Useful Links</a><a class="page-link" href="/authors/">Authors</a><a class="page-link" href="/topics/">Topics</a><a class="page-link" href="/search/">Search</a></div>
+    </nav>
+  </div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper page-layout has-search-panel">
+        <div class="page-main">
+          <article class="post h-entry post-article" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header post-hero">
+    <div class="post-hero-main">
+      <p class="post-kicker">Archive post</p>
+      <h1 class="post-title p-name" itemprop="name headline">Pool allocator optimization - for node operators and technical</h1>
+      <p class="post-meta">
+        <time class="dt-published" datetime="2025-07-23T13:13:12-07:00" itemprop="datePublished">Jul 23, 2025
+        </time>• <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">
+            <a href="/authors/#author-andablackwidow">andablackwidow</a>
+          </span></span></p><p class="post-summary">Recently three big ticket items from my dream list for Hive were done. This article highlights first one</p></div><aside class="post-author-card">
+      <img src="https://images.hive.blog/u/andablackwidow/avatar" width="128" height="128" class="lazyload post-author-avatar" alt="Avatar for @andablackwidow" />
+      <div class="post-author-name">@andablackwidow</div>
+    </aside></header>
+
+  <div class="post-content e-content post-body" itemprop="articleBody">
+    <div class="hive-post-embed" data-hive-author="andablackwidow" data-hive-permlink="pool-allocator-optimization-for-node">
+  <div id="content-andablackwidow-pool-allocator-optimization-for-node" class="hive-post-embed__content" data-hive-render-target="true">## Recent optimizations
+
+Recently (as in the course of last couple months - how the time flies) three big ticket items from [my dream list for Hive](https://gitlab.syncad.com/hive/hive/-/issues/675) were done. And since those are significant optimizations that open way for further work, I thought you might be interested in learning about them. What is important is that, while the things I'm going to describe are part of `develop`, none of them are part of any official release, so unless you are running bleeding edge version of the node, you are yet to feel the impact of those changes.
+
+Here is a full list - this article will only describe first optimization, leaving further for future articles:
+
+1. [pool allocators](https://gitlab.syncad.com/hive/hive/-/issues/675#note_159289) - introduction of specialized allocator for chain objects.
+The implementation had two stages. First applied pool allocator to chain objects in multiindexes, which addresses performance of adding and removing such objects, that is, pretty much equally affects replay, sync (with or without checkpoints) and live.
+[MR!1525 (main implementation)](https://gitlab.syncad.com/hive/hive/-/merge_requests/1525)
+[MR!1554 (pool size adjustments)](https://gitlab.syncad.com/hive/hive/-/merge_requests/1554)
+[MR!1563 (optimized removal)](https://gitlab.syncad.com/hive/hive/-/merge_requests/1563).
+Second stage applied pool allocator to objects created for undo sessions. Replay and sync before last checkpoint are not affected by it, because they don't use undo mechanism. The main beneficiary in that case is sync (without/after last checkpoint), because the most speedup happens on `commit()` (when changes become irreversible), while creation of undo related objects and `undo()` calls (that are very frequent in live mode) are affected in lesser degree. For that reason live mode performance is increased, but not that much.
+[MR!1591 (main implementation)](https://gitlab.syncad.com/hive/hive/-/merge_requests/1591).
+
+2. [comment archive](https://gitlab.syncad.com/hive/hive/-/issues/675#note_159285) - sacrifice a bit of performance for massive reduction in memory consumption.
+Comments that were paid (and that payment became irreversible) are archived - moved from memory to RocksDB. That way the largest index in SHM is mostly eliminated. Reduction of memory consumption and smaller comment index that still remains in memory (containing fresh comments), has positive impact on performance, which reduces performance loss from having to reach to archive. That optimization is still a trade-off though.
+[MR!1536 (main implementation)](https://gitlab.syncad.com/hive/hive/-/merge_requests/1536)
+[MR!1565 (allowing alternative implementations, performance stats)](https://gitlab.syncad.com/hive/hive/-/merge_requests/1565).
+
+3. [undo session optimizations](https://gitlab.syncad.com/hive/hive/-/issues/675#note_159293) - reduce overhead of undo mechanism itself.
+That optimization is focused on live mode, where undo sessions are created for each transaction multiple times and the content of undo data is small, making overhead of the mechanism itself so much more prominent. Since I was not content with the result of just that, I've included couple other changes as well, mainly affecting custom operations, which are majority of all traffic.
+[MR!1526 (main and additional optimizations)](https://gitlab.syncad.com/hive/hive/-/merge_requests/1526).
+
+&gt; As for time flying way too fast - I've described [possibility of those optimizations in article](https://hive.blog/hive-139531/@andablackwidow/future-optimizations-speculation)... THREE... YEARS ago.
+
+---
+
+<a id="results" />
+## Results from application of first optimization
+
+Let's start with the results. In order to make comparisons fair, I've run replay and sync on the same computer as before and also up to 93M. Baseline results (marked as "before optimizations") are [in article about previous optimization](https://hive.blog/hive-139531/@andablackwidow/checkpoints-for-node-operators#results):
+ - **17 hours 28 minutes 22 seconds - replay** (first stage of optimization, second stage has no impact on replay)
+ - 22 hours 15 minutes 7 seconds - replay (before optimizations)
+ - **29 hours 44 minutes 47 seconds - synchronization without checkpoints** (both stages of optimization)
+ - **33 hours 38 minutes 56 seconds - synchronization without checkpoints** (first stage of optimization)
+ - 42 hours 42 minutes 36 seconds - synchronization without checkpoints (before optimizations)
+
+As you can see first stage of optimization reduced running time by over 4 hours 45 minutes in case of replay and over 5 hours in case of sync. Second stage, affecting only sync, shaved another 3 hours.
+
+Important note: all three above mentioned optimizations were introduced generally in the same time, so they interact with each other. While measurements of first stage of pool allocator optimization were made when other changes were not yet present in the code, last run with both stages was done while all other optimizations were in place already. Optimization 3 - undo session optimizations - should not have much impact on sync, because it only affects undo session itself, and there is only one session per block during sync. Optimization 2 - comment archive - would have an impact, however I've added a way to turn it off (unofficially), and that's how I've made above measurement.
+
+There is one more notable benefit of pool allocator optimization - reduced memory consumption. Unfortunately I don't have detailed measurements from before optimization (I've added them later). But last replay ended up with 8.8GB free of 24GB SHM, while old logs show 6GB free while switching to live mode. It is result of reduced fragmentation, the same effect as when you load from snapshot, but in this case the effect is persistent instead of degrading over time.
+
+That concludes part that might be of interest to node operators. Stick around to learn about what pool allocator is, how our implementation achieved above results and how it works in general. To be honest the following part should've been written by [the author of main implementation](https://gitlab.syncad.com/marek), but as far as I know he does not have Hive account. At least as a reviewer and author of second stage I'm confident in my understanding of the code :o)
+
+--- 
+
+<a id="pool" />
+## Pool allocator - what is it?
+
+Pool allocator is a well known design pattern, which aims mostly at increasing speed, but also gaining reduced fragmentation (more usable memory) as a side effect. The speedup is gained mainly by limiting costly calls to general purpose allocator (`boost::interprocess:allocator` in our case) and by making it more likely that related objects are close together (spatial locality) which improves cache hit rate. Of course it is not like such allocators can be used everywhere, they have specific purpose and related limitations. Here the limitation is that all allocated objects must be of the same size. Pool allocator internally reserves space for preselected [large] amount of objects all at once (block of objects) and then gives out fragments of that space when individual allocations are requested. Only when the space is exhausted it needs to reach for general purpose allocator to acquire another block of memory.
+
+Such allocators are ideal in situation when you need to store a lot of small objects of the same class, and that's exactly what state in `hived` is composed of. State consists of chain objects - there are many types of those for different data (f.e. `comment_object` or `account_authority_object`), but in the same time there are large amounts of objects of each class (with exceptions - there are some classes that have only one or couple instances, like `witness_schedule_object`). Moreover those objects are stored in `ordered_unique` indexes of `boost::multi_index::multi_index_container` which are basically trees. Each tree node is allocated individually (along with its index data), so normally you have tons of small allocations. Since operations are mixed and even one operation can cause `hived` to allocate different state objects, objects of different classes would normally end up mixed in memory. Pool allocator hides individual allocations and makes it more probable that nodes of the same tree are placed close in memory, so you have reduced cache miss rate while traversing such tree.
+
+&gt; Note that there is no guarantee that tree nodes that you traverse through are going to be close by, not only in practice, but also in principle. For example comments have two indexes - `by_id` and `by_permlink` (which is in fact ordered by value of a hash made out of permlink and author id). Comments created one after another will have ids that are close, so they are likely to be close when traversing tree with `by_id` index, but it is unlikely that they are going to also be close when traversing with `by_permlink`. However, without pool allocator, you'd get objects representing f.e. votes, or comment options etc. in between comments even in `by_id` case.
+
+![](https://images.ecency.com/DQmfWaofXEGNjiDtGBcsnt3D3ky5NScASU4ehKNyqYoo5Yd/pool_global.png)
+
+---
+
+<a id="implementation" />
+## Our implementation - first stage
+
+The [pool allocator implementation](https://gitlab.syncad.com/hive/hive/-/blob/6a81899a5e4365ecbbc294ad7d69e9d8304c760e/libraries/chainbase/include/chainbase/pool_allocator.hpp#L18) that Marek made is named (who could've guessed) `pool_allocator_t`, [later aliased](https://gitlab.syncad.com/hive/hive/-/blob/6a81899a5e4365ecbbc294ad7d69e9d8304c760e/libraries/chainbase/include/chainbase/pool_allocator.hpp#L458) to `multi_index_allocator` (with typical template parameters and also wrapping some choices) - the latter is used as parameter wherever multi_index is declared (f.e. [for `account_object`](https://gitlab.syncad.com/hive/hive/-/blob/6a81899a5e4365ecbbc294ad7d69e9d8304c760e/libraries/chain/include/hive/chain/account_object.hpp#L588) or [for `reward_fund_object`](https://gitlab.syncad.com/hive/hive/-/blob/6a81899a5e4365ecbbc294ad7d69e9d8304c760e/libraries/chain/include/hive/chain/hive_objects.hpp#L631) with individual pool size value).
+
+&gt; If you wonder why a singleton `reward_fund_object` needs pool size of 2 - even for singletons there will actually be more than one object, because `boost` allocates one extra for its internal purposes inside `struct header_holder` that is part of `multi_index_container`.
+
+Aside from a lot of typedefs and methods needed to be compatible with `boost` and/or allocator scheme in general, the class offers just two important methods: `allocate` and `deallocate`. Moreover, it works under assumption that those methods are called only for single object allocations. It is important limitation, because it makes the allocator not suitable to be used with containers that request multiple consecutive objects, like `flat_map`, `vector` or `hashed_unique` index type of `multi_index`. On the other hand, making such assumption allows to greatly simplify internal structure. No allocation metadata is ever needed, allocator never has to look for memory fragments that are adequately big, each allocation is just "give out the first free chunk in current block from pool" and deallocation is "bind released space into chain of free chunks".
+
+&gt; Of course when there is no free chunk, the allocator has to allocate new block, also when all the spaces free up during deallocation it might want to return whole block back to underlying allocator, but those events are very rare in comparison to `allocate`/`deallocate` calls.
+
+`pool_allocator_t`, like most other allocators, is a template. Its parameters define type of objects it is handling and size of single block (how many objects it is going to preallocate from main allocator each time it runs out of free space). Its runtime data consists of one or many blocks (`block_t` - **not to be confused with blockchain blocks**), each block holding some extra data, but composed mainly of `BLOCK_SIZE` array of `chunk_t` which are essentially preallocated objects. When chunk is free, that memory is not waiting idly, it holds index of next free chunk, which means there is no extra space needed to keep track of which chunks are free. Free chunks form a single linked list that is used as LIFO - last freed chunk is on top of the list and will be first to give out on next allocation from that block.
+
+All blocks are owned by `block_index` set ordered by memory address. That ordering is used during `deallocate` calls to determine which block the returned space belongs to.
+
+To operate quickly, allocator points to blocks from either `block_list` vector or (mutually exclusive) from `current_block`. Blocks that are considered `empty()`, that is, there are no free chunks in them, are only present in `block_index`, but are neither on `block_list`, nor they can be `current_block`. `block_list` can contain `null_ptr` entries, `current_block` can also be `null_ptr` - I'll show when that happens in a moment.
+
+`current_block` is the first place to go to when new `allocate` is requested. Most of the time `current_block` will have a free chunk to give, but if there is no `current_block`, it needs to switch to nearest (starting from end) block from `block_list`, removing it from there in the process.
+
+&gt; Blocks "know" if they are on `block_list` by holding their position there in form of `on_list_index` (when that member has `invalid_index` value, it means the block is not on `block_list`).
+
+![](https://images.ecency.com/DQmXNC4bJMwGQKkSeNnCjRmGaS7hG1aYPm4VWdu8kGNyj1W/pool_blocks.png)
+
+Only when no block was found that way (there is no block that has any free chunk), allocator reaches for underlying `boost::interprocess::allocator` to build new `full()` block. Such new block becomes `current_block`. Effectively allocation only happens on block that is `current_block`.
+
+&gt; Freshly built block is initially filled with bindings `chunks[0].next == 1`, `chunks[1].next == 2` etc. and last points to `invalid_index`.
+
+Block holds `current` index that points to first free chunk in that block. When block gives away a chunk, it moves `current` to `chunk[current].next` - next free chunk. Once block becomes `empty()` (no more free chunks), value of `current` is `invalid_index`. That binding value is not important, `invalid_index` was chosen to clearly indicate it will never be used. And that is assured by setting `current_block` to `null_ptr` when it becomes `empty()` - once that happens the block won't be used until some object that it holds is deallocated. It is one way for `current_block` to be nullified (it is also its initial state).
+
+![](https://images.ecency.com/DQmYmDCgdPjUEbspdPzCpTHLUHrLB5sU4YKaWiWgJaJprqH/pool_block.png)
+
+Deallocation is a bit more complicated. First we need to know which block the object being released belongs to. Most of the time it will be in `current_block`, so we are looking there first (that happens mostly in live mode when object creation is undone and redone when transactions are reapplied). The implementation also holds second most probable place to look - `last_found_block`. This is optimization for our characteristics of deallocations - a lot of objects allocated in close proximity are also deallocated in the same time, because that's how they are processed (f.e. all `comment_cashout_object`s created for comments written in the same time are released seven days later, therefore it pays to remember which pool block contained last released objects. If neither "shortcut" contained released object, we need to look for proper block with its address using `block_index` (block found that way becomes new `last_found_block`).
+
+Inside the block releasing object consists of writing current `current` to found chunk and setting new `current` to index of that chunk, effectively placing freshly released on top of list of free chunks. In most cases that's all there is. We just need to make sure the block containing just released chunk is on `block_list` (unless it is `current_block`). However when releasing a chunk made the block `full()` (unless we are in `PRESERVE_LAST_BLOCK` version of pool allocator and we just released last object), we are also releasing whole block. The block is also nullified - either as `current_block` or as a member of `block_list`.
+
+Observant reader should notice one thing - I've never mentioned locking. It is not because need for locks during allocation and release is obvious. It is because the `pool_allocator_t` does not lock. It is only used for state objects and all changes in state can only happen under common [write lock](https://gitlab.syncad.com/hive/hive/-/blob/6a81899a5e4365ecbbc294ad7d69e9d8304c760e/libraries/plugins/chain/chain_plugin.cpp#L571), there is no need to waste any time on locking inside pool allocator.
+
+---
+
+<a id="undo" />
+## Applying to undo state
+
+For first stage of optimization pool allocator was used inside multiindexes that hold state objects. Each allocator is specialized in holding just one type of objects, in fact even if there were two instances of multiindex holding the same type of objects, they'd have separate pools. That feature is problematic if we wanted to use pool allocator for state objects inside undo sessions (and we do - second stage of optimization). In order to not have separate pools constantly allocated and released as undo stack is formed and cleared, we needed a way to share the same pool between many containers of the same type. At first I thought that would be simple task, but it took over a week and multiple changes of concept. Final version consists of [explicitly instantiated](https://gitlab.syncad.com/hive/hive/-/blob/6a81899a5e4365ecbbc294ad7d69e9d8304c760e/libraries/chainbase/include/chainbase/chainbase.hpp#L917) pool allocators ([aliased as `undo_state_allocator_t`](https://gitlab.syncad.com/hive/hive/-/blob/6a81899a5e4365ecbbc294ad7d69e9d8304c760e/libraries/chainbase/include/chainbase/pool_allocator.hpp#L465) - that version uses `PRESERVE_LAST_BLOCK` flag to prevent release of last block when last object is released). Those instances are then [wrapped](https://gitlab.syncad.com/hive/hive/-/blob/6a81899a5e4365ecbbc294ad7d69e9d8304c760e/libraries/chainbase/include/chainbase/pool_allocator.hpp#L389) and passed down to containers inside `undo_state` where they finally take form of [`shared_pool_allocator_t`](https://gitlab.syncad.com/hive/hive/-/blob/6a81899a5e4365ecbbc294ad7d69e9d8304c760e/libraries/chainbase/include/chainbase/pool_allocator.hpp#L424). That class uses passed instance as its `impl`, that is, it passes all calls down to the shared instance.
+
+![](https://images.ecency.com/DQme5E6jdSvMBjPSCkbr1JrVsiqyAzZUWcAUSH3Ax18ZVFy/shared_pool.png)
+
+Unfortunately there is a "type gap" that I failed to eliminate. The boost containers in `undo_state` don't use instance of allocator passed to their constructor. They internally form different instance, actually allocator of completely different type, because they don't store just the objects that are their official content - those objects are "intrusively wrapped", that is, more data is glued to them in order to form internal links of the container (just like in multiindex). However they expect to be passed instance of allocator for their official content. Final type is formed by [`rebind`ing such allocator](https://gitlab.syncad.com/hive/hive/-/blob/6a81899a5e4365ecbbc294ad7d69e9d8304c760e/libraries/chainbase/include/chainbase/pool_allocator.hpp#L401) with new extended content type.
+
+So what do I mean by "type gap"? Pool allocators that are to be shared need to know final stored type - they get it from definition of containers inside `undo_state` (`stored_allocator_type::value_type`), f.e.:
+```
+undo_state_allocator&lt;typename undo_state::id_value_type_map::stored_allocator_type::value_type&gt; _shared_undo_object_allocator;
+```
+The container inside `undo_state` needs to know type of allocator for its officially stored value (`id_value_allocator_type`) - it will only instantiate when passed instance of such allocator:
+```
+typedef t_map&lt; id_type, value_type, std::less<id_type>, id_value_allocator_type &gt; id_value_type_map;
+```
+So `id_value_allocator_type`, which is:
+```
+typedef undo_allocator_carrier&lt; std::pair&lt;const id_type, value_type&gt; &gt; id_value_allocator_type;
+```
+which in turn translates to:
+```
+template &lt;typename T, uint32_t BLOCK_SIZE = DEFAULT_UNDO_STATE_POOL_ALLOCATOR_BLOCK_SIZE&gt;
+using undo_allocator_carrier = shared_allocator_carrier&lt;T, BLOCK_SIZE&gt;;
+```
+has no chance of knowing final allocator type, it will only be formed with `rebind`. It means it cannot carry the shared instance of pool allocator in typed form, it can only hold `void* carried_allocator;` and use `reinterpret_cast` to "retype" it when final allocator is created. It means there is a way to use the carrier incorrectly (and in best case cause a crash).
+
+When I was making second stage of optimization, I was also running specific benchmark - "colony+queen cycle" with typical mix of transactions (I'll write about it some day in separate article). In theory it covers what happens in live mode, however that optimization barely had any impact, just 2-3%. Later I've made a [separate benchmarking test - MR!1599](https://gitlab.syncad.com/hive/hive/-/merge_requests/1599) to see what was going on. Turns out the thing that gained the most is `commit()`, which causes all the objects in committed undo session(s) to be released at once, with no other work. That happens all the time during sync, but in live, especially when new transactions are processed, `undo()` calls are prevalent. Undo means old version of each object needs to be rewritten first and only then the undo state is released, so the allocation/release takes much smaller portion of the time, hence not that much impact. On top of that all that work was done with third optimization mentioned at the start already in the code (undo session optimizations), which eliminated a lot of interaction with undo for many transactions, so "colony+queen cycle" had even less room for improvement with second stage of pool allocator optimization.
+
+---
+
+<a id="boost" />
+## Alternatives offered by `boost`
+
+As I've mentioned, pool allocators are nothing new. So of course `boost` library offers such allocators - six different types in fact: `node_allocator`, `private_node_allocator`, `cached_node_allocator`, `adaptive_pool`, `private_adaptive_pool` and `cached_adaptive_pool`. Why not use them instead?
+
+There are two reasons. Those with `private_` in the name somehow don't even compile when applied to multiindex. Too bad, because only they could be safely configured to turn off locking, other versions share their storage between instances, and not just different instances of the same allocator, but of different allocators - as long as the object size is the same. It means we couldn't be sure pool is not accessed from different thread outside of our state guarding write lock. Other versions are simply too slow, in fact with the number of objects we are holding in the state, there is not much difference between normal allocator and pool (there is actually, but only at the very start, when state is not yet that big).
+
+Second reason is in [future task](https://gitlab.syncad.com/hive/hive/-/issues/675#note_159292). It is possible (at least in theory, I have not tried yet) to define your own smart pointer. Boost interprocess allocators (and our pool allocator too) use `boost::interprocess::offset_ptr`, because it is necessary to preserve correct addressing in SHM (with regular pointer restart of node would end in all pointers pointing to some random place and a crash). But `offset_ptr` is as big as regular pointer, moreover it has no "free bits" for `boost` to use to optimize placement of color bit in its tree index structures. With our own smart pointer we could not only reduce size of a pointer to 4 bytes, it would also have free bit to optimize even more aggressively (from 32 bits to 12 bits per index node) and the only assumption would be to never have more than 2 billion objects of the same type in memory. In order to use custom smart pointer you have to have your own custom allocator, which we already have.
+
+---
+
+<a id="todo" />
+## TODO
+
+[Point 9 of my wish list for Hive](https://gitlab.syncad.com/hive/hive/-/issues/675#note_159289) is complete, so next step is above mentioned [point 10](https://gitlab.syncad.com/hive/hive/-/issues/675#note_159292) that is now possible.
+&lt;/div&gt;
+  <footer class="hive-post-embed__source">
+    <span class="hive-post-embed__source-label">Source:</span>
+    <a href="https://hive.blog/@andablackwidow/pool-allocator-optimization-for-node">Pool allocator optimization - for node operators and technical</a>
+    by
+    <a href="https://hive.blog/@andablackwidow">@andablackwidow</a>
+  </footer>
+&lt;/div&gt;
+
+</id_type></div></div>
+
+  </div><a class="u-url" href="/news/core/development/2025/07/23/pool-allocator-optimization-for-node.html" hidden></a>
+</article>
+
+        </div>
+
+        
+        <aside class="page-sidebar" aria-label="Search and browse">
+          <section class="sidebar-section sidebar-search">
+            <h2 class="sidebar-heading">Search posts</h2>
+            <p class="sidebar-copy">Search the locally indexed post archive.</p>
+            <input type="text" id="search-input" placeholder="Search posts" autocomplete="off" />
+            <ul id="results-container"></ul>
+          </section>
+
+          <section class="sidebar-section sidebar-topics">
+            <h2 class="sidebar-heading">Browse topics</h2>
+            <p class="sidebar-copy">Jump into curated topic landing pages.</p>
+            <ul class="topic-list topic-list-sidebar"><li><a class="page-link" href="/account-recovery/">Account Recovery</a></li><li><a class="page-link" href="/core-development/">Core Development</a></li><li><a class="page-link" href="/dapps/">Dapps</a></li><li><a class="page-link" href="/docker/">Docker</a></li><li><a class="page-link" href="/hardfork/">Hardfork</a></li><li><a class="page-link" href="/hivemind/">Hivemind</a></li><li><a class="page-link" href="/javascript/">Javascript</a></li><li><a class="page-link" href="/multisig/">Multisig</a></li><li><a class="page-link" href="/python/">Python</a></li><li><a class="page-link" href="/ruby/">Ruby</a></li><li><a class="page-link" href="/testnet/">Testnet</a></li><li><a class="page-link" href="/tools/">Tools</a></li><li><a class="page-link" href="/witness/">Witness</a></li></ul>
+          </section>
+        </aside>
+        
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading"><a rel="author" href="/">Hive Chain Documentation</a></h2>
+    
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">site curated by: @inertia</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>Your resource for various levels of Hive Documentation.</p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+<script src="/assets/javascript/search.js"></script>
+    <script>
+      (function () {
+        var input = document.getElementById('search-input');
+        var results = document.getElementById('results-container');
+        if (input && results && typeof SimpleJekyllSearch !== 'undefined') {
+          SimpleJekyllSearch({
+            searchInput: input,
+            resultsContainer: results,
+            json: '/search.json'
+          });
+        }
+
+        if (typeof SteemContentRenderer === 'undefined') return;
+
+        var targets = document.querySelectorAll('[data-hive-render-target="true"]');
+        if (!targets.length) return;
+
+        var renderer = new SteemContentRenderer.DefaultRenderer({
+          baseUrl: 'https://hive.blog/',
+          breaks: true,
+          skipSanitization: false,
+          allowInsecureScriptTags: false,
+          addNofollowToLinks: true,
+          doNotShowImages: false,
+          ipfsPrefix: '',
+          assetsWidth: 640,
+          assetsHeight: 480,
+          imageProxyFn: function (url) { return url; },
+          usertagUrlFn: function (account) { return '/@' + account; },
+          hashtagUrlFn: function (hashtag) { return '/tags/#' + hashtag; },
+          isLinkSafeFn: function () { return true; }
+        });
+
+        targets.forEach(function (target) {
+          try {
+            var inputHtml = target.innerHTML;
+            target.innerHTML = renderer.render(inputHtml);
+          } catch (e) {
+            console.log(e);
+          }
+        });
+      })();
+    </script>
+
+  </body>
+
+</html>

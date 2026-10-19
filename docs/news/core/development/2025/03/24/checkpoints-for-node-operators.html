@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta property="og:image" content="/assets/images/sticker.png" />
+  <meta name="apple-mobile-web-app-title" content="Hive Docs" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" /><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Checkpoints (for node operators) | Hive Chain Documentation</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Checkpoints (for node operators)" />
+<meta name="author" content="andablackwidow" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Checkpoint is a configuration option where you can specify id of block that has to match when node is about to process it. If block does not match given id, the node should stop" />
+<meta property="og:description" content="Checkpoint is a configuration option where you can specify id of block that has to match when node is about to process it. If block does not match given id, the node should stop" />
+<link rel="canonical" href="https://hive.blog/hive-139531/@andablackwidow/checkpoints-for-node-operators" />
+<meta property="og:url" content="https://hive.blog/hive-139531/@andablackwidow/checkpoints-for-node-operators" />
+<meta property="og:site_name" content="Hive Chain Documentation" />
+<meta property="og:image" content="https://images.ecency.com/DQmVKGFBzM9QwqFbbEDLrobhsB8jcgaTSr4ELqWsFx3QYGe/78610577_p0_master1200.jpg" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2025-03-24T18:00:42-07:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="https://images.ecency.com/DQmVKGFBzM9QwqFbbEDLrobhsB8jcgaTSr4ELqWsFx3QYGe/78610577_p0_master1200.jpg" />
+<meta property="twitter:title" content="Checkpoints (for node operators)" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"andablackwidow"},"dateModified":"2025-03-24T18:00:42-07:00","datePublished":"2025-03-24T18:00:42-07:00","description":"Checkpoint is a configuration option where you can specify id of block that has to match when node is about to process it. If block does not match given id, the node should stop","headline":"Checkpoints (for node operators)","image":"https://images.ecency.com/DQmVKGFBzM9QwqFbbEDLrobhsB8jcgaTSr4ELqWsFx3QYGe/78610577_p0_master1200.jpg","mainEntityOfPage":{"@type":"WebPage","@id":"https://hive.blog/hive-139531/@andablackwidow/checkpoints-for-node-operators"},"url":"https://hive.blog/hive-139531/@andablackwidow/checkpoints-for-node-operators"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://hivedocs.info/feed.xml" title="Hive Chain Documentation" /><script>
+if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNotTrack === "yes" || navigator.msDoNotTrack === "1")) {
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-161692811-1', 'auto');
+  ga('send', 'pageview');
+}
+</script>
+  
+<script src='https://unpkg.com/steem-content-renderer'></script>
+  <script src="/assets/javascript/universal-bridge-against-phishing.js"></script>
+  <script src="/assets/javascript/lazysizes.min.js" async=""></script>
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet" />
+  <link rel="shortcut icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="152x152" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="167x167" href="/assets/images/favicon-80x80.png" />
+</head>
+<body><header class="site-header" role="banner">
+  <div class="wrapper site-header-inner">
+    <a class="site-title" rel="author" href="/">Hive Chain Documentation</a>
+
+    <nav class="site-nav" aria-label="Primary">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/news/">News</a><a class="page-link" href="/howto/">How To</a><a class="page-link" href="/links/">Useful Links</a><a class="page-link" href="/authors/">Authors</a><a class="page-link" href="/topics/">Topics</a><a class="page-link" href="/search/">Search</a></div>
+    </nav>
+  </div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper page-layout has-search-panel">
+        <div class="page-main">
+          <article class="post h-entry post-article" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header post-hero">
+    <div class="post-hero-main">
+      <p class="post-kicker">Archive post</p>
+      <h1 class="post-title p-name" itemprop="name headline">Checkpoints (for node operators)</h1>
+      <p class="post-meta">
+        <time class="dt-published" datetime="2025-03-24T18:00:42-07:00" itemprop="datePublished">Mar 24, 2025
+        </time>• <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">
+            <a href="/authors/#author-andablackwidow">andablackwidow</a>
+          </span></span></p><p class="post-summary">Checkpoint is a configuration option where you can specify id of block that has to match when node is about to process it. If block does not match given id, the node should stop</p></div><aside class="post-author-card">
+      <img src="https://images.hive.blog/u/andablackwidow/avatar" width="128" height="128" class="lazyload post-author-avatar" alt="Avatar for @andablackwidow" />
+      <div class="post-author-name">@andablackwidow</div>
+    </aside></header>
+
+  <div class="post-content e-content post-body" itemprop="articleBody">
+    <div class="hive-post-embed" data-hive-author="andablackwidow" data-hive-permlink="checkpoints-for-node-operators">
+  <div id="content-andablackwidow-checkpoints-for-node-operators" class="hive-post-embed__content" data-hive-render-target="true"><a id="definition" />
+## What is it?
+
+Checkpoint is a configuration option where you can specify id of block that has to match when node is about to process it. If block does not match given id, the node should stop. For blocks that are older than last specified checkpoint, a lot of validation checks are not performed, which saves synchronization time. The idea is that when you trust specific witness, you can add checkpoint with block they produced and skip normal validation of blocks up to selected block, because those checks were done by the witness you trust. It is particularly useful when you are setting another node in different server location, where you don't have block log - you can read recent block from the node you have (which performed all the checks), pass that block's id as a checkpoint to configuration of new node, and run sync as an alternative to copying block log and running replay. You can specify many checkpoints (each will be enforced), but the one with highest block number is the most important, since up to that point the validation checks are reduced.
+
+Checkpoint is an old but cryptic feature of Hive node. It didn't even have any tests. When I picked the task of optimizing it, I had to look through code to see what it is supposed to do and how to use it. It didn't do any sanity checks, f.e. if you copy-paste checkpoint to make new, but then you only overwrite id part, number from id and from checkpoint specification won't match - a mistake that is very easy to do and also very easy to prevent. Previously you'd only learn about it when your node synced to such incorrect checkpoint and failed. Also checkpoints were silent - there was only information about existence of checkpoints at the start and when final one was passed. Now each checkpoint leaves a message in log when it is reached (look for lines with `test_checkpoint`).
+
+For the mainnet testing I've used following checkpoint specification:
+```
+checkpoint = [20000000,01312d0047be2e999509f9d7a84132e434d2e8bf]
+checkpoint = [40000000,02625a000d8be8b1085b94d25e0c20daf1e9be56]
+checkpoint = [60000000,039387005ffd5040dee61d37f5ddf09fefdc8b52]
+checkpoint = [80000000,04c4b40015f1b274e95227f6d3bcc1a9bbec8708]
+checkpoint = [93000000,058b114080bbaa6ae8b808953ab22a36c2c8c713]
+```
+Those lines are part of `config.ini`.
+
+---
+
+The whole topic started with [discussion under one of @gtg posts](https://hive.blog/hive-160391/@miosha/re-gtg-2024718t01234956z).
+&gt; To be honest it smells like a bug (or more optimistically - as an optimization opportunity).
+
+Dan correctly pointed to undo sessions as potential bottleneck...
+&gt; Probably we should modify the code dealing with checkpoints to skip undo logic up to the checkpoint.
+
+...but I was sceptical at first. Nevertheless [issue was created](https://gitlab.syncad.com/hive/hive/-/issues/704) to check it.
+
+![](https://images.ecency.com/DQmVKGFBzM9QwqFbbEDLrobhsB8jcgaTSr4ELqWsFx3QYGe/78610577_p0_master1200.jpg)
+<sub>Source [pixiv](https://www.pixiv.net/en/artworks/78610577)</sub>
+
+---
+<a id="changes" />
+## What changed?
+
+Just as Dan suggested, when incoming block is older than last checkpoint, node no longer creates undo session for it. It also means that such block immediately becomes irreversible. The positive is that it gives massive speedup, because normally every chain object, that is modified during processing of blocks, creates its copy inside undo session. By skipping undo we are not creating any of those copies, nor touch memory that would be needed to hold them. There is a tradeoff though - in case the node somehow gets block that is invalid, it won't be able to recover, so it will stop with broken state. Same if it gets blocks from different fork - it won't be able to switch to main fork. I've never observed any forks during synchronization, but you never know (out of order blocks, yes, but still from main fork, so they are processed properly eventually). 
+
+---
+<a id="results" />
+## Results
+
+I've run multiple synchronizations and replays up to 93M block (with `--exit-at-block 93000000`) on the same computer to be able to compare run times. Here are the results from fastest to slowest:
+ - 22 hours 15 minutes 7 seconds - replay
+ - **23 hours 20 minutes 45 seconds - synchronization with optimized checkpoints (no undo sessions)**
+ - 35 hours 12 minutes 7 seconds - synchronization with checkpoints prior to optimizations (with undo sessions)
+ - 38 hours 50 minutes 31 seconds - replay with `--validate-during-replay`
+ - 42 hours 42 minutes 36 seconds - synchronization without checkpoints
+
+As expected replay is the fastest and synchronization without checkpoints is the slowest. Replay is the best option if you have your own block log already where you want to start a node from zero. However if you don't have block log at the location, you have to add time necessary to upload it there. Even worse if you have block log not from your own node, but taken from someone else. You should validate its content, but as you can see from results, validation comes at a massive cost.
+&gt; By the way, checkpoints used to not work during replay, but I've fixed it, so now if you already have block log that you might not want to trust, you can substitute validation with use of checkpoints (not truly the same thing, but considering the cost of full validation...).
+
+The interesting part is synchronization with checkpoints, that is, subject of optimization. In case you don't have a block log where you want to start new node, it used to be so-so option - more convenient than manually downloading block log first for replay, but significantly slower. Still it was actually pretty good option for cases where you don't have much disk space, so you couldn't download full block log for replay anyway (with synchronization you can use pruned block log - technically you could replay in such case, but that would entail a lot of node restarts and manual swapping of block log parts). New **optimized version of checkpoints is marginally slower than replay**, significant portion of the difference comes from parts when node is network constrained (blocks are processed faster than p2p can download them).
+
+&gt; Being network constrained depends on the network :o) You can easily see 
+how it is in your case by looking through log. Main writer loop has two layers. The outer one tries to report use statistics every 30 seconds. The messages are like the following: `waiting for work: 60.82%, waiting for locks: 0.09%, processing transactions: 0.00%, processing blocks: 38.68%, unknown: 0.41%`. However during massive sync inner loop won't break as long as there are blocks to process. Therefore you won't have above messages in log when node is CPU constrained. Even if node does catch up with incoming blocks, as long as `processing blocks` is near 100%, it is all good.
+
+![](https://images.ecency.com/DQmZexf8bNffE39AmFDYGSRYSTTPidkPxCcQ4hmTupBdgKi/sync_replay.png)
+<sub>[Full resolution](https://images.ecency.com/DQmZexf8bNffE39AmFDYGSRYSTTPidkPxCcQ4hmTupBdgKi/sync_replay.png)</sub>
+
+As you can see, during first 3M blocks both replays are significantly faster than syncs, because blocks are almost empty. Later up to 13M they are still better, although replay with validation becomes slower as blocks are more full, while new sync with checkpoints starts to run hand in hand with replay.
+&gt; The data for the chart is a rolling average of 200k blocks every 10k blocks (without averaging the chart was too jaggy). Y-axis is in microseconds per block.
+
+---
+
+I'm not sure when the change is going to become part of official release, but as it does not require hardfork, it will be there sooner rather than later. [Related merge request !1498](https://gitlab.syncad.com/hive/hive/-/merge_requests/1498) is already merged into `develop`.
+
+It's nice that sync with checkpoints became viable option, but more exciting changes are coming. In fact three big optimization features from [my dream list](https://gitlab.syncad.com/hive/hive/-/issues/675) are already in the works, one even reached review stage. So stay tuned :o)</div>
+  <footer class="hive-post-embed__source">
+    <span class="hive-post-embed__source-label">Source:</span>
+    <a href="https://hive.blog/@andablackwidow/checkpoints-for-node-operators">Checkpoints (for node operators)</a>
+    by
+    <a href="https://hive.blog/@andablackwidow">@andablackwidow</a>
+  </footer>
+</div>
+
+
+  </div><a class="u-url" href="/news/core/development/2025/03/24/checkpoints-for-node-operators.html" hidden></a>
+</article>
+
+        </div>
+
+        
+        <aside class="page-sidebar" aria-label="Search and browse">
+          <section class="sidebar-section sidebar-search">
+            <h2 class="sidebar-heading">Search posts</h2>
+            <p class="sidebar-copy">Search the locally indexed post archive.</p>
+            <input type="text" id="search-input" placeholder="Search posts" autocomplete="off" />
+            <ul id="results-container"></ul>
+          </section>
+
+          <section class="sidebar-section sidebar-topics">
+            <h2 class="sidebar-heading">Browse topics</h2>
+            <p class="sidebar-copy">Jump into curated topic landing pages.</p>
+            <ul class="topic-list topic-list-sidebar"><li><a class="page-link" href="/account-recovery/">Account Recovery</a></li><li><a class="page-link" href="/core-development/">Core Development</a></li><li><a class="page-link" href="/dapps/">Dapps</a></li><li><a class="page-link" href="/docker/">Docker</a></li><li><a class="page-link" href="/hardfork/">Hardfork</a></li><li><a class="page-link" href="/hivemind/">Hivemind</a></li><li><a class="page-link" href="/javascript/">Javascript</a></li><li><a class="page-link" href="/multisig/">Multisig</a></li><li><a class="page-link" href="/python/">Python</a></li><li><a class="page-link" href="/ruby/">Ruby</a></li><li><a class="page-link" href="/testnet/">Testnet</a></li><li><a class="page-link" href="/tools/">Tools</a></li><li><a class="page-link" href="/witness/">Witness</a></li></ul>
+          </section>
+        </aside>
+        
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading"><a rel="author" href="/">Hive Chain Documentation</a></h2>
+    
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">site curated by: @inertia</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>Your resource for various levels of Hive Documentation.</p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+<script src="/assets/javascript/search.js"></script>
+    <script>
+      (function () {
+        var input = document.getElementById('search-input');
+        var results = document.getElementById('results-container');
+        if (input && results && typeof SimpleJekyllSearch !== 'undefined') {
+          SimpleJekyllSearch({
+            searchInput: input,
+            resultsContainer: results,
+            json: '/search.json'
+          });
+        }
+
+        if (typeof SteemContentRenderer === 'undefined') return;
+
+        var targets = document.querySelectorAll('[data-hive-render-target="true"]');
+        if (!targets.length) return;
+
+        var renderer = new SteemContentRenderer.DefaultRenderer({
+          baseUrl: 'https://hive.blog/',
+          breaks: true,
+          skipSanitization: false,
+          allowInsecureScriptTags: false,
+          addNofollowToLinks: true,
+          doNotShowImages: false,
+          ipfsPrefix: '',
+          assetsWidth: 640,
+          assetsHeight: 480,
+          imageProxyFn: function (url) { return url; },
+          usertagUrlFn: function (account) { return '/@' + account; },
+          hashtagUrlFn: function (hashtag) { return '/tags/#' + hashtag; },
+          isLinkSafeFn: function () { return true; }
+        });
+
+        targets.forEach(function (target) {
+          try {
+            var inputHtml = target.innerHTML;
+            target.innerHTML = renderer.render(inputHtml);
+          } catch (e) {
+            console.log(e);
+          }
+        });
+      })();
+    </script>
+
+  </body>
+
+</html>

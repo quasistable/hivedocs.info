@@ -1,1422 +1,574 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="https://hivedocs.info/feed.xml" rel="self" type="application/atom+xml" /><link href="https://hivedocs.info/" rel="alternate" type="text/html" /><updated>2026-10-18T19:01:55-07:00</updated><id>https://hivedocs.info/feed.xml</id><title type="html">Hive Chain Documentation</title><subtitle>Your resource for various levels of Hive Documentation.</subtitle><author><name>site curated by: @inertia</name></author><entry><title type="html">Hive Analytics Dashboard (using HafSQL) - Next Version crazy fast and easy to use.</title><link href="https://hivedocs.info/tools/sql/analytics/2024/12/30/hive-analytics-dashboard-using-hafsql-next-version-crazy-fast-and-easy-to-use.html" rel="alternate" type="text/html" title="Hive Analytics Dashboard (using HafSQL) - Next Version crazy fast and easy to use." /><published>2024-12-30T03:57:00-08:00</published><updated>2024-12-30T03:57:00-08:00</updated><id>https://hivedocs.info/tools/sql/analytics/2024/12/30/hive-analytics-dashboard-using-hafsql-next-version-crazy-fast-and-easy-to-use</id><content type="html" xml:base="https://hivedocs.info/tools/sql/analytics/2024/12/30/hive-analytics-dashboard-using-hafsql-next-version-crazy-fast-and-easy-to-use.html"><![CDATA[<div class="hive-post-embed" data-hive-author="louis88" data-hive-permlink="hive-analytics-dashboard-using-hafsql-next-version-crazy-fast-and-easy-to-use">
-  <div id="content-louis88-hive-analytics-dashboard-using-hafsql-next-version-crazy-fast-and-easy-to-use" class="hive-post-embed__content" data-hive-render-target="true">A few days ago, I converted my original script, which is written in Python and only ran locally on my computer, into an application that can run in a browser with an interface. You can find the article here: https://peakd.com/hive-139531/@louis88/a-single-file-analytics-tool-to-find-post-payouts-from-a-list-of-users
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="https://hivedocs.info/feed.xml" rel="self" type="application/atom+xml" /><link href="https://hivedocs.info/" rel="alternate" type="text/html" /><updated>2026-10-18T19:55:51-07:00</updated><id>https://hivedocs.info/feed.xml</id><title type="html">Hive Chain Documentation</title><subtitle>Your resource for various levels of Hive Documentation.</subtitle><author><name>site curated by: @inertia</name></author><entry><title type="html">Aioha Web Components</title><link href="https://hivedocs.info/tools/aioha/authentication/2025/12/31/aioha-web-components.html" rel="alternate" type="text/html" title="Aioha Web Components" /><published>2025-12-31T08:18:27-08:00</published><updated>2025-12-31T08:18:27-08:00</updated><id>https://hivedocs.info/tools/aioha/authentication/2025/12/31/aioha-web-components</id><content type="html" xml:base="https://hivedocs.info/tools/aioha/authentication/2025/12/31/aioha-web-components.html"><![CDATA[<div class="hive-post-embed" data-hive-author="aioha" data-hive-permlink="aioha-web-components">
+  <div id="content-aioha-aioha-web-components" class="hive-post-embed__content" data-hive-render-target="true"><center>![](https://files.peakd.com/file/peakd-hive/aioha/23tbMAXFrAgUGz6KiHpZTU5qc8MdzoLiQ51GQmfXvdXL7nG8BpCMUEkegTngbG6oZ5YT4.png)</center>
 
-I was actually very happy with the development, as everything worked as I had imagined. But for a long time I had been thinking that retrieving information for every single API call per account is simply too resource-intensive and takes far too long. The idea that came to me was to rewrite the software in such a way that it can be realized with the HiveSQL database query, since information can be retrieved directly and almost instantly. Since I am not very familiar with SQL, I simply discarded this idea and continued working with the API endpoint version. After I published the API version on Github the day before yesterday, I took it upon myself to spend the day yesterday getting to grips with SQL a little more. I became aware of the new development by @blocktrades and @mahdiyari, who have published HAFSQL. More about this in the articles
+As promised in [our presentation](/hive-139531/@aioha/dnuboasdem), we announce the release of Aioha web components that can be used in vanilla HTML/JS or any web framework to easily integrate Hive logins with 6 authentication providers including all the UI components and logic required.
 
-https://gitlab.com/mahdiyari/hafsql
-https://gitlab.com/mahdiyari/hafsql-api
-https://peakd.com/hive-139531/@mahdiyari/hafsql-update-200-rc1-breaking-changes
-https://peakd.com/hive-139531/@mahdiyari/public-hafsql-database-on-haf
-Proposal: https://peakd.com/hive-139531/@mahdiyari/proposal-public-haf-hafsql-database-maintenance-and-development-of-hafsql
+Built using Lit and adapted from our [React UI](https://aioha.dev/docs/react/ui), the modal web component uses shadow DOM by default to ensure consistent styling regardless of how the rest of the application are styled.
+
+This allows developers to quickly bootstrap an Aioha-powered Hive app using any framework in less than 5 minutes.
+
+# Installation
+
+```sh
+pnpm i @aioha/lit-ui @aioha/aioha
+```
+
+Or import from the CDN:
+
+```html
+<script type="importmap">
+  {
+    "imports": {
+      "@aioha/aioha": "https://unpkg.com/@aioha/aioha@latest/dist/bundle.js",
+      "@aioha/lit-ui": "https://unpkg.com/@aioha/lit-ui@latest/dist/bundle.min.js"
+    }
+  }
+</script>
+```
+
+# Usage
+
+It takes no more than 5 lines of JavaScript code and one line of HTML to integrate the Aioha modal web components in your application. The full example usage may be found [here](https://github.com/aioha-hive/lit-ui/blob/main/examples/index.html).
+
+```html
+<html>
+  <body>
+    <button id="connectButton" type="button">Connect Wallet</button>
+    <div id="loginModal"></div>
+  <body>
+  <script type="module">
+    import { initAioha, KeyTypes } from '@aioha/aioha'
+    import { initModal } from '@aioha/lit-ui'
+
+    // Initialize Aioha
+    const aioha = initAioha()
+
+    // Initialize modal UI in a div
+    const modal = initModal(aioha, document.getElementById('loginModal'), {
+      loginOptions: {
+        // see available config here: https://aioha.dev/docs/core/usage#login
+      }
+    })
+
+    // Show modal on button click
+    document.getElementById('connectButton').addEventListener('click', () => (modal.displayed = true))
+  </script>
+&lt;/html&gt;
+```
+
+For more details on the web components, please refer to the [documentation](https://aioha.dev/docs/ui/web-components).
+
+# Bundle size
+
+|Bundle Name|Uncompressed Size|gzipped|
+|-|-|-|
+|bundle.min.js|193 KiB|61 KiB|
+
+# Links
+
+Landing page and docs: https://aioha.dev
+Github: https://github.com/aioha-hive
+NPM: https://www.npmjs.com/package/@aioha/aioha
+Sting: https://chat.peakd.com/t/hive-169420/0&lt;/div&gt;
+  <footer class="hive-post-embed__source">
+    <span class="hive-post-embed__source-label">Source:</span>
+    <a href="https://hive.blog/@aioha/aioha-web-components">Aioha Web Components</a>
+    by
+    <a href="https://hive.blog/@aioha">@aioha</a>
+  </footer>
+&lt;/div&gt;
+
+</body></body></html></div></div>]]></content><author><name>aioha</name></author><category term="tools" /><category term="aioha" /><category term="authentication" /><summary type="html"><![CDATA[Hive login modal UI on any web framework in under 5 lines of code]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://files.peakd.com/file/peakd-hive/aioha/23tbMAXFrAgUGz6KiHpZTU5qc8MdzoLiQ51GQmfXvdXL7nG8BpCMUEkegTngbG6oZ5YT4.png" /><media:content medium="image" url="https://files.peakd.com/file/peakd-hive/aioha/23tbMAXFrAgUGz6KiHpZTU5qc8MdzoLiQ51GQmfXvdXL7nG8BpCMUEkegTngbG6oZ5YT4.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">MongoBleed (CVE-2025-14847): A breakdown for Hive Engine Operators</title><link href="https://hivedocs.info/news/hiveengine/security/2025/12/29/mongobleed-cve-2025-14847-a-breakdown-for-hive-engine-operators.html" rel="alternate" type="text/html" title="MongoBleed (CVE-2025-14847): A breakdown for Hive Engine Operators" /><published>2025-12-29T10:45:09-08:00</published><updated>2025-12-29T10:45:09-08:00</updated><id>https://hivedocs.info/news/hiveengine/security/2025/12/29/mongobleed-cve-2025-14847-a-breakdown-for-hive-engine-operators</id><content type="html" xml:base="https://hivedocs.info/news/hiveengine/security/2025/12/29/mongobleed-cve-2025-14847-a-breakdown-for-hive-engine-operators.html"><![CDATA[<div class="hive-post-embed" data-hive-author="thecrazygm" data-hive-permlink="mongobleed-cve-2025-14847-a-breakdown-for-hive-engine-operators">
+  <div id="content-thecrazygm-mongobleed-cve-2025-14847-a-breakdown-for-hive-engine-operators" class="hive-post-embed__content" data-hive-render-target="true">Hey everyone,
+
+A new Critical Vulnerability Exposure (CVE) is making the rounds in the database world. Dubbed **MongoBleed** (CVE-2025-14847), this exploit allows attackers to siphon data directly from a MongoDB server's memory.
+![Mongo Logos](https://images.contentstack.io/v3/assets/blt7151619cb9560896/bltac81c4aa3529ee37/65fd965e8f4444482dc3a079/la1a2b2h67gwwqnvs-mdb-logos.svg)
+[Github Repo with working Proof of Concept](https://github.com/joe-desimone/mongobleed)
+
+While the name sounds terrifying, Hive Engine node operators can likely keep their blood pressure low. Let's break down exactly how this script works and why our specific architecture keeps us safe.
+
+## The "Layman's" Explanation
+
+Imagine you hand a librarian a sealed envelope. You tell them, "This envelope contains a 500-page book. Please read the title of the first chapter."
+
+In reality, the envelope only contains a sticky note.
+
+A secure librarian would open the envelope, see the sticky note, and say, "You lied, this is too short."
+
+A **MongoBleed** vulnerable librarian opens the envelope, reads the sticky note, and because they trust your claim about the "500 pages," they keep reading. They read the sticky note, then they read the mail on their desk, then they read the diary of the person standing next to them, until they reach the 500th "page."
+
+Finally, confused by what they just read, they shout back at you: _"I cannot find a chapter title in this text: [READS OUT CONTENTS OF DIARY AND OTHER MAIL]!"_
+
+By listening to the error message, you effectively stole the secrets on the librarian's desk.
+
+## The Technical Breakdown
+
+Looking at the proof-of-concept code, specifically the `send_probe` and `extract_leaks` functions, we can see the attack relies on a specific chain of failures:
+
+1. **The Compressed Wrapper:** The script sends an `OP_COMPRESSED` message using `zlib`.
+2. **The Inflation Lie:** Inside the payload header, it declares an inflated `buffer_size` and a BSON document length that is much larger than the actual data provided.
+3. **The Memory Over-read:** When the MongoDB server decompresses and attempts to parse the BSON document, it trusts the length header. It reads past the end of the malicious packet into the server's adjacent RAM.
+4. **The Error Channel:** The server hits invalid data in that adjacent memory and generates an error message: `field name '[LEAKED_DATA]'`. The attacker simply parses these error logs to reconstruct the memory dump.
+
+## Why Hive Engine Nodes Are "Usually" Immune
+
+Despite the severity of this bug, the standard setup for a Hive Engine node mitigates this risk almost entirely.
+
+### 1. The Firewall is Your First Defense
+
+This exploit requires a direct socket connection to the MongoDB port (default 27017).
+Most competent node operators follow standard security practices:
+
+- Bind MongoDB to `127.0.0.1` (localhost).
+- Use a firewall (like `ufw` or cloud security groups) to block external traffic to database ports.
+  If the attacker cannot complete the TCP handshake, the packet never arrives, and the bleed never happens.
+
+### 2. We Don't Use Zlib
+
+The exploit explicitly relies on the `OP_COMPRESSED` opcode with the zlib designator (Byte `2` in the payload). Hive Engine nodes typically communicate locally or over high-speed connections where compression overhead is unnecessary. If your configuration disables zlib compression or the negotiation for it, the attack vector closes immediately.
+
+### 3. Public Data is... Public
+
+The "Bleed" allows attackers to read random chunks of server memory. In a corporate environment, this is catastrophic because that memory might contain user passwords, credit card numbers, or session tokens.
+In our environment, the MongoDB instance stores the Hive Engine sidechain state. This is public blockchain data. While leaking API keys or admin passwords for the server itself is theoretically possible if they happen to be in adjacent memory, the bulk of the "stolen" data would simply be public ledger information that is already available to everyone.
+
+## Summary
+
+MongoBleed is a clever use of buffer over-reads and error message side-channels. It serves as a great reminder to patch your software. However, for a Hive Engine operator running a standard, firewalled setup without compression, this is a non-event.
+
+Patch your systems, keep your firewalls tight, and carry on.
+
+As always,
+Michael Garcia a.k.a. TheCrazyGM
+</div>
+  <footer class="hive-post-embed__source">
+    <span class="hive-post-embed__source-label">Source:</span>
+    <a href="https://hive.blog/@thecrazygm/mongobleed-cve-2025-14847-a-breakdown-for-hive-engine-operators">MongoBleed (CVE-2025-14847): A breakdown for Hive Engine Operators</a>
+    by
+    <a href="https://hive.blog/@thecrazygm">@thecrazygm</a>
+  </footer>
+</div>]]></content><author><name>thecrazygm</name></author><category term="news" /><category term="hiveengine" /><category term="security" /><summary type="html"><![CDATA[A new Critical Vulnerability Exposure (CVE) is making the rounds in the database world]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://images.contentstack.io/v3/assets/blt7151619cb9560896/bltac81c4aa3529ee37/65fd965e8f4444482dc3a079/la1a2b2h67gwwqnvs-mdb-logos.svg" /><media:content medium="image" url="https://images.contentstack.io/v3/assets/blt7151619cb9560896/bltac81c4aa3529ee37/65fd965e8f4444482dc3a079/la1a2b2h67gwwqnvs-mdb-logos.svg" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Introducing Vest_Core - A Tool to See &amp;amp; Filter Hive Power Ups</title><link href="https://hivedocs.info/tools/analytics/hafsql/2025/12/28/introducing-vestcore-a-tool-to-see-and-filter-hive-power-ups.html" rel="alternate" type="text/html" title="Introducing Vest_Core - A Tool to See &amp;amp; Filter Hive Power Ups" /><published>2025-12-28T06:30:57-08:00</published><updated>2025-12-28T06:30:57-08:00</updated><id>https://hivedocs.info/tools/analytics/hafsql/2025/12/28/introducing-vestcore-a-tool-to-see-and-filter-hive-power-ups</id><content type="html" xml:base="https://hivedocs.info/tools/analytics/hafsql/2025/12/28/introducing-vestcore-a-tool-to-see-and-filter-hive-power-ups.html"><![CDATA[<div class="hive-post-embed" data-hive-author="louis88" data-hive-permlink="introducing-vestcore-a-tool-to-see-and-filter-hive-power-ups">
+  <div id="content-louis88-introducing-vestcore-a-tool-to-see-and-filter-hive-power-ups" class="hive-post-embed__content" data-hive-render-target="true">
+Yesterday, I saw a short message and immediately thought, “Wait a minute, this could definitely be implemented quite well with hafSQL from @mahdiyari.” So, the short message triggered me and prompted me to reopen Google Gemini AI Studio and build a small but nice front end that covers exactly this request from @acidyo.
+
+![image.png](https://files.peakd.com/file/peakd-hive/louis88/23tRtg41WjrHBzPUiSsUCNRNQ3pkeiJCS9KYCoCY7B5pnq4BbsuogFzbi8k3Euzhpz8YX.png)
 
 
-#### SQL Calls are the Solution
-My goal was not to retrieve lists of 18,000 for several hours via the API calls, for example, but to get to the details quickly, because waiting several hours was simply lousy and I no longer wanted to. So yesterday I took the time to rebuild the software based on calls to the HAFSQL database from mahdiyari. I have to say, this variant is simply lightning fast and delivers exactly the result I expected. However, I still had another problem - I can't make SQL queries from a local HTML document, for example, so I have to outsource the software to a web server using NodeJS, for example, so that the queries work. Locally this wasn't a problem, but so that you can view and use the software, I had to switch to a service called Render.com, which provides me with a mini-server and receives a ping from uptimerobot every 5 minutes so that the server is (hopefully) permanently online. Anyway, I'm happy that after many hours of work it worked and services like Hivewatchers but also every single user of yours can work with it. Here is the software with the HAFSQL integration:
+The result of my work is a frontend that connects in the background to the hafSQL database. It fetches the latest power ups from Hive blockchain users and shows them in a clean and easy way. You can choose between different time ranges to load the information. At the moment there is a quick scan for the last 1 hour, a daily feed for an entire day, a weekly summary that shows all power ups from the last seven days, and a call that loads the last 30 days. I decided not to include a longer time range because the amount of data becomes very large. If I load more than thirty days the page becomes slow and too heavy for simple use.
 
-### Hive Analytics Dashboard (using HafSQL)
-A web-based dashboard for monitoring Hive blockchain posts using HafSQL database. This tool allows you to track posts from multiple accounts, monitor their payouts, and analyze engagement metrics.
+![52shots_so.png](https://files.peakd.com/file/peakd-hive/louis88/23xUkzJDRJtKgHVVhLQi1yo2Rhs2dkzbfy3npDyu8KmQ3JJmvAiLobAo9dd99YfVRsJEC.png)
 
-## Live-Version 
-https://hive-fetcher-hafsql.onrender.com/
-(Running on Render.com / If Service is unavailable - please drop me a Message.)
+Once the transactions are loaded you can use several filters. For example, you can show only power ups over &gt; **100 HIVE**, &gt; **1,000 HIVE**, &gt; **10,000 HIVE**, or even &gt; **100,000 HIVE**. This helps to highlight big movements that do not happen every day. You can also search the list for specific usernames. If the power up came from staking rewards or from an external account, you can filter that as well. This means you can see if a power up was done to the own account or if someone decided to power up another Hive account.
 
-Github Repo: https://github.com/louis-88/hive-fetcher-hafsql
+It's hosted on Vercel and you can access the Tool here:
 
-## Screenshots
+## https://power-up-tracker.vercel.app
 
-<div class="pull-left"><div class="text-justify">
+## 🚀 Features
 
-![Clean View](https://github.com/user-attachments/assets/499dbfe0-a55d-4489-b9a7-1fa51510917a)
-
-</div></div>
-<div class="pull-right"><div class="text-justify">
-
-![Dummy Data fetched](https://github.com/user-attachments/assets/85fab5c8-3dc3-43d7-9876-92985c2fe379)
-
-</div></div>
-
----
+- **Real-Time Monitoring**: Monitor Power-Ups across various time intervals (1h, 24h, 7d, 30d).
+- **Interactive Data Analysis**: 
+    - **Account Drilling**: Click on any username to instantly filter all transactions associated with that account.
+    - **Volume Filters**: Predefined filters for significant stakes (&gt; 100, &gt; 1K, &gt; 10K, &gt; 100K HIVE).
+- **Performance Optimized**:
+    - **Paginated Output**: Smoothly browse through thousands of records.
+    - **Memory Purge**: "Clear Buffer" feature to release system memory when handling extremely large datasets.
+- **Visualizations**: Dynamic "Density Plot" (Oscilloscope-style) to identify Power-Up spikes.
+- **System Logs**: Live logging of all database queries and system events.
 
 
+![image.png](https://files.peakd.com/file/peakd-hive/louis88/23t72k89vUqUo5PnpKMpu12a3Q8iHMCHSsTaXQnDPbtwMoVCCXd3MNnJniprABV6jUcVi.png)
 
-## Features
 
-- Monitor multiple Hive accounts simultaneously
-- Track post payouts and engagement metrics
-- Batch processing of account data
-- Customizable time range and payout thresholds
-- Real-time progress tracking
-- Sortable results table
-- Support for both PeakD and Hive.blog frontend links
-- Custom HafSQL database connection configuration
-- File upload support for bulk account lists
+## TOP_STAKERS
+
+For each view (selected period), the top 20 stakers are also calculated and displayed. These are the users who have powered up the most HIVE during the period.
+
+
+![image.png](https://files.peakd.com/file/peakd-hive/louis88/23swbZk1aVwF6CNtiwE9H8PDVhJP8gUPe2y8LWp4a5exuCuS3JAFdCBjaePThsSX8qWnk.png)
+
+
+
+Feedback is welcome... if you need improvements/adjustments, just write a comment. Thank you for your support.</div>
+  <footer class="hive-post-embed__source">
+    <span class="hive-post-embed__source-label">Source:</span>
+    <a href="https://hive.blog/@louis88/introducing-vestcore-a-tool-to-see-and-filter-hive-power-ups">Introducing Vest_Core - A Tool to See &amp; Filter Hive Power Ups</a>
+    by
+    <a href="https://hive.blog/@louis88">@louis88</a>
+  </footer>
+</div>]]></content><author><name>louis88</name></author><category term="tools" /><category term="analytics" /><category term="hafsql" /><summary type="html"><![CDATA[Yesterday, I saw a short message and immediately thought, “Wait a minute, this could definitely be implemented quite well with hafSQL from @mahdiyari.” So, the short message triggered me and prompted me to reopen Google]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://files.peakd.com/file/peakd-hive/louis88/23xUkzJDRJtKgHVVhLQi1yo2Rhs2dkzbfy3npDyu8KmQ3JJmvAiLobAo9dd99YfVRsJEC.png" /><media:content medium="image" url="https://files.peakd.com/file/peakd-hive/louis88/23xUkzJDRJtKgHVVhLQi1yo2Rhs2dkzbfy3npDyu8KmQ3JJmvAiLobAo9dd99YfVRsJEC.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Decentralized Google Login</title><link href="https://hivedocs.info/news/core/authentication/2025/12/26/decentralized-google-login.html" rel="alternate" type="text/html" title="Decentralized Google Login" /><published>2025-12-26T03:56:39-08:00</published><updated>2025-12-26T03:56:39-08:00</updated><id>https://hivedocs.info/news/core/authentication/2025/12/26/decentralized-google-login</id><content type="html" xml:base="https://hivedocs.info/news/core/authentication/2025/12/26/decentralized-google-login.html"><![CDATA[<div class="hive-post-embed" data-hive-author="thebeedevs" data-hive-permlink="decentralized-google-login">
+  <div id="content-thebeedevs-decentralized-google-login" class="hive-post-embed__content" data-hive-render-target="true">Decentralized Google Login
+==========================
+
+<img src="https://images.ecency.com/p/2FFvzA2zeqoVPgRCnRzbu6rj6tCWHWVCA9ZaKB4ZqAfdo82ug6V5U6RWb4s4zZGpoTiWwzcVPFUc8a1uvZaopA9LqhDazfX9qZq94wSfCv2mUidNXACLFrCjShWv1.png?format=match&amp;mode=fit" alt="Decentralized Google Login main features" />
+
+* * *
+
+Dear Hive Community ❗
+
+Over the past few months, we've been working to bring our ideas for improving authorization on the Hive platform to life.
+
+Our goal was simple: allow users to forget about keys and dedicated passwords, making their interactions with Hive tools as smooth and effortless as possible.
+
+### 🤔 Decentralized and Google — something doesn't add up here
+
+Most of us have a Google account and use it to sign in to various applications. So why not use it for Hive? Nothing new, you might say — several existing services already offer this option... But here's where we're different.
+
+Our approach keeps everything **client-side** and preserves your privacy. While we allow you to associate your Google and Hive accounts, this information is stored only on your end. Neither we nor Google will know which Hive account you're using when you authorize with Google.
+
+### 💡 How It Works
+
+The core idea is to store your Hive credentials in encrypted form (inaccessible to Google or anyone else) on Google Drive. This allows you to access your credentials automatically after signing in to your Google account on any device. No more storing keys in multiple places ❗❗
+
+Why can't Google read your data? Because during setup, we ask you to create a password that encrypts your data before it's sent to Google Drive. This password is used only by the client-side code — we never see it either. As always, we recommend saving this password in a secure location, as you'll need it once on each new device to decrypt the data stored on Google Drive.
+
+Once setup is complete on your device, our login component saves an encryption key derived from your password in your browser's local storage. After that, you won't need to enter your password again — Google authorization alone will be sufficient.
+
+### 🔐 What if someone accesses my wallet data on Google Drive?
+
+No one can — not even you. That's right: only our application can access the files it saves to your Google Drive.
+
+To achieve this additional layer of security, we've used a dedicated feature offered by the Google Drive API: [Storing Application-Specific Data](https://developers.google.com/workspace/drive/api/guides/appdata). This means our app can't access other parts of your Drive, and you can't directly access the file we store there. Why is this secure? Because our application must identify itself to Google (during your authentication) using a secret key known only to that specific application deployment. This variable exists only on the server side.
+
+To fully access your keys, the following steps are required:
+
+1.  **Authenticate with your Google Account** (client-side), using the standard Google OAuth redirect flow. You'll need to complete the setup process, authorize integration with our website, and grant Drive access.
+    
+2.  **Server-side token extension**: Once the initial Google authentication is complete, the application redirects to our server to extend the session token with support for the Google Drive API mentioned above.
+    
+3.  **Receive the final session token**: The token is sent back to the client side to access the file stored on Google Drive.
+    
+4.  **Decrypt your data**: If data already exists on Drive and you have the encryption key stored on your device, the file content will be decrypted automatically. Otherwise, you'll be prompted for your password.
+    
+5.  **Use your unlocked keys**: Now you can use them to sign transactions. As with all our tools, you cannot access private keys directly — this prevents leaks. You can only use them for operations like encrypting data or signing transactions.
+    
+
+You can try this wallet yourself — it's available on our Web Components testing playground: [Hive Bridge](https://auth.openhive.network). Choose **Connect your wallet** and select **Google Drive** based implementation:
+
+<img src="https://images.ecency.com/p/AmRc67RgYaWTxvDAy3kqUun3erBFGxjwNVAxLEdRsKYJuF9kJZXxQ8MjHQTcPoNWPNMXXZMKWHZDm6iETkUATqxgpW9YDtQLLCyWfZojxhZEf92WmVY2yeo6vYfj1Jwq69qkJKXM7RhytH4vDx82yrA6JmQ61Xgi.png?format=match&amp;mode=fit" alt="Hive Bridge wallet selection" />
+
+I hope it will be also available at our Denser deployment (together with all other login providers) soon, to make it available for regular blog users.
+
+Make sure you've already stored your keys in a safe place — our tool only allows you to use them securely.
+
+### ⚙️ For Developers
+
+This implementation is available as a reusable package that implements the Wax [ISignatureProvider](https://github.com/openhive-network/wax/blob/a5301bf86cbe2c992fd783bb107945ec80adb1a6/ts/wasm/lib/detailed/extensions/signatures/index.ts#L3) interface, so it can easily be used for signing if you've already adopted our earlier implementations like the MetaMask or Keychain signature providers.
+
+For an integration example, check out our testing implementation in the [Hive Bridge source code](https://gitlab.syncad.com/hive/wallet-dapp).
+
+We hope this solution represents a small innovation. It's also a step toward direct social login (our package is designed to support multiple cloud storage implementations, not just Google Drive), including Hive account creation.
+
+Thank you for reading. We look forward to your feedback and hope these tools prove useful.
+
+**thebeedevs Team**</div>
+  <footer class="hive-post-embed__source">
+    <span class="hive-post-embed__source-label">Source:</span>
+    <a href="https://hive.blog/@thebeedevs/decentralized-google-login">Decentralized Google Login</a>
+    by
+    <a href="https://hive.blog/@thebeedevs">@thebeedevs</a>
+  </footer>
+</div>]]></content><author><name>thebeedevs</name></author><category term="news" /><category term="core" /><category term="authentication" /><summary type="html"><![CDATA[Google Drive Social Login Privacy Encryption Safety Keys Authorization Hive]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://images.ecency.com/DQmXdefaKLkRfbbNFYSST1aedGay5RLzKwL5ee9HiTByhWV/title_diagram.gif" /><media:content medium="image" url="https://images.ecency.com/DQmXdefaKLkRfbbNFYSST1aedGay5RLzKwL5ee9HiTByhWV/title_diagram.gif" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Hive-Nectar &amp;amp; Nectarengine v0.2.x Released!</title><link href="https://hivedocs.info/tools/python/nectar/2025/12/19/hive-nectar-and-nectarengine-v02x-released.html" rel="alternate" type="text/html" title="Hive-Nectar &amp;amp; Nectarengine v0.2.x Released!" /><published>2025-12-19T06:54:09-08:00</published><updated>2025-12-19T06:54:09-08:00</updated><id>https://hivedocs.info/tools/python/nectar/2025/12/19/hive-nectar-and-nectarengine-v02x-released</id><content type="html" xml:base="https://hivedocs.info/tools/python/nectar/2025/12/19/hive-nectar-and-nectarengine-v02x-released.html"><![CDATA[<div class="hive-post-embed" data-hive-author="thecrazygm" data-hive-permlink="hive-nectar-and-nectarengine-v02x-released">
+  <div id="content-thecrazygm-hive-nectar-and-nectarengine-v02x-released" class="hive-post-embed__content" data-hive-render-target="true">Hey everyone,
+
+Today I want to officially announce that the v0.2.x series of `hive-nectar` and `nectarengine` are live!
+
+![AI got flashy for this one!](https://files.peakd.com/file/peakd-hive/thecrazygm/23xVGdhqsn7DtK8oh1HiWKCpD6WP95gsaYvQYTLzWHQrtAcn7tY687Mc4agcqtnsJb6AS.png)
+
+After much testing, crushing bugs, and modernization, I feel they are ready for the masses. We even had a successful prelaunch test with @steembasicincome, where the libraries are already purring along in production.
+
+They are up on GitHub and PyPI right now.
+
+### Get the Code
+
+**Hive-Nectar v0.2.3**
+
+- **GitHub:** [Release v0.2.3](https://github.com/TheCrazyGM/hive-nectar/releases/tag/v0.2.3)
+- **PyPI:** [hive-nectar](https://pypi.org/project/hive-nectar/)
+
+**Nectarengine v0.2.1**
+
+- **GitHub:** [Release v0.2.1](https://github.com/TheCrazyGM/nectarengine/releases/tag/v0.2.1)
+- **PyPI:** [nectarengine](https://pypi.org/project/nectarengine/)
+
+Please submit any issues you find to the GitHub trackers.
+
+As always,
+Michael Garcia a.k.a. TheCrazyGM
+</div>
+  <footer class="hive-post-embed__source">
+    <span class="hive-post-embed__source-label">Source:</span>
+    <a href="https://hive.blog/@thecrazygm/hive-nectar-and-nectarengine-v02x-released">Hive-Nectar &amp; Nectarengine v0.2.x Released!</a>
+    by
+    <a href="https://hive.blog/@thecrazygm">@thecrazygm</a>
+  </footer>
+</div>]]></content><author><name>thecrazygm</name></author><category term="tools" /><category term="python" /><category term="nectar" /><summary type="html"><![CDATA[Today I want to officially announce that the v0.2.x series of hive-nectar and nectarengine are live]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://files.peakd.com/file/peakd-hive/thecrazygm/23xVGdhqsn7DtK8oh1HiWKCpD6WP95gsaYvQYTLzWHQrtAcn7tY687Mc4agcqtnsJb6AS.png" /><media:content medium="image" url="https://files.peakd.com/file/peakd-hive/thecrazygm/23xVGdhqsn7DtK8oh1HiWKCpD6WP95gsaYvQYTLzWHQrtAcn7tY687Mc4agcqtnsJb6AS.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">November core dev update</title><link href="https://hivedocs.info/news/core/development/2025/12/16/november-core-dev-update.html" rel="alternate" type="text/html" title="November core dev update" /><published>2025-12-16T22:23:39-08:00</published><updated>2025-12-16T22:23:39-08:00</updated><id>https://hivedocs.info/news/core/development/2025/12/16/november-core-dev-update</id><content type="html" xml:base="https://hivedocs.info/news/core/development/2025/12/16/november-core-dev-update.html"><![CDATA[<div class="hive-post-embed" data-hive-author="howo" data-hive-permlink="november-core-dev-update">
+  <div id="content-howo-november-core-dev-update" class="hive-post-embed__content" data-hive-render-target="true">
+![image.png](https://files.peakd.com/file/peakd-hive/howo/AK82avdzA9e7oh3rayuxN4gJYXdwJgZAnV2KiMwyG9L21BU9k3hd5aZBtABZW1c.png)
+
+
+Hello! It's been a while since I've done one of these so I figured I'd share what I've been working on. As usual, I'm mostly on Hivemind these days, though I'm also working on getting HAF to work on Postgres 18 but I'm waiting on some dependencies (pg_search) to be updated to work with Postgres 18 before I can start testing this. There's also some groundwork needed on Blocktrades' team in setting up new Docker images that work with PG 18 etc.
+
+This month was focused on a major refactoring effort to move the community operations from Python to PostgreSQL, which was successfully completed. There was one performance optimization that didn't work out, but overall it was a productive month.
+
+# The bad: One optimization was attempted and merged but then reverted
+
+https://gitlab.syncad.com/hive/hivemind/-/merge_requests/939
+
+I attempted to optimize how we fetch user roles in communities by returning the role directly in process_hive_post_operation instead of fetching it in a separate query. This should have been a straightforward performance win by reducing database roundtrips. However, similar to past issues, this caused problems that only showed up during full sync testing. The optimization had to be reverted. These kinds of performance issues are tricky to catch because they require full sync testing, which is very time consuming. I'll get back to it later and make another attempt at making it work.
+
+
+# The good
+
+## SQLized all community operations
+
+https://gitlab.syncad.com/hive/hivemind/-/merge_requests/940
+
+This was the big project for November. We've been slowly moving away from Python implementations into PgSQL in Hivemind, mostly for performance but also as PgSQL is a stricter language than Python (one is typed, the other isn't) so it leaves less room for error. It is harder to write though.
+
+Overall this took a lot of time and testing but we see a noticeable improvement across the board on operation processing speed ranging from 30% to 100% faster. This is good both for new nodes who will be able to sync faster but also API nodes in operation who will need less processing power to manage blocks as they arrive (in reality the processing power when operating live is relatively negligible but it also means you get to run more things in parallel!)
+
+## Subscribe performance optimization
+
+https://gitlab.syncad.com/hive/hivemind/-/merge_requests/932
+
+Before the full SQLization work, I also pushed a standalone optimization that made subscribe/unsubscribe operations process twice as fast. This was a nice early win that will yield similar benefits.
+
+# Fixed BigINT overflow issue
+
+https://gitlab.syncad.com/hive/hivemind/-/merge_requests/926
+
+Some numeric values on Hive are really big, like really really big. So big that they can exceed the limit for some JSON implementations. This means either an overflow or undefined behavior. This realistically happens very rarely because it takes someone with a LOT of stake (e.g., [if someone were to vote with stake that wasn't meant to be used](https://peakd.com/eos/@ned/re-dan-ukoxz-eos-io-development-update-20180203t190236132z)). We chatted about what was the best way to tackle this on the core dev meeting and decided that it was best to switch the fields that may overflow to text so API users can cast to the appropriate variable type for their language.
+
+## Updated and refreshed communities doc:
+
+https://gitlab.syncad.com/hive/hivemind/-/merge_requests/919
+
+Ever since @roadscape made the first design doc, the communities feature has changed a lot, mostly under my development. A lot of things in the doc that were written at the time are no longer true, or just incorrect due to how the project evolved. So it was high time to come back to it and update everything with up-to-date info for developers.
+
+## Various bug fixes
+
+Then there's a ton of smaller things that aren't as worthy to mention. I figured I'd put a few here to give you an idea. Ever since we started using Claude Code there's a lot of velocity that goes towards smaller things that were not worth our time but that now are totally within reach (e.g., checking for typos or smaller errors/bugs).
+
+- Removed all MySQL code: https://gitlab.syncad.com/hive/hivemind/-/merge_requests/934
+- Fixed forgotten hardcoded test string in validation (minor optimization): https://gitlab.syncad.com/hive/hivemind/-/merge_requests/927
+- Fixed a bunch of inaccuracies, bugs in code examples, renamed VSC to Magi + resize error in the devportal: https://gitlab.syncad.com/hive/devportal/-/merge_requests/153, https://gitlab.syncad.com/hive/devportal/-/merge_requests/152, https://gitlab.syncad.com/hive/devportal/-/merge_requests/151
+- Updated mesh API stack for 1.28.5 + added checksum validation and error checking: https://gitlab.syncad.com/hive/mesh-api/-/commit/9926ee47433f4781b0e55516005d92f13ce7abf6
+
+# Conclusion
+
+I'm really happy with the results of SQLized communities. I've been wanting to do that forever and happy to see it bear fruit. I am currently working on more optimizations and features for Hivemind. I have a bunch of ideas on how a few features that would be nice to Hive for communities to incentivize their members to be more active (leaderboards and events), as well as make moderation more transparent than with just notifications. I'm still working on the HAF for Postgres 18 as well but that's on standby as I said in the intro. Finally, I am currently syncing a node for a small experiment to check how reputation would look like if we didn't have the (arbitrary) requirement that only someone with more reputation than you can remove your reputation.</div>
+  <footer class="hive-post-embed__source">
+    <span class="hive-post-embed__source-label">Source:</span>
+    <a href="https://hive.blog/@howo/november-core-dev-update">November core dev update</a>
+    by
+    <a href="https://hive.blog/@howo">@howo</a>
+  </footer>
+</div>]]></content><author><name>howo</name></author><category term="news" /><category term="core" /><category term="development" /><summary type="html"><![CDATA[It's been a while since I've done one of these so I figured I'd share what I've been working on]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://files.peakd.com/file/peakd-hive/howo/AK82avdzA9e7oh3rayuxN4gJYXdwJgZAnV2KiMwyG9L21BU9k3hd5aZBtABZW1c.png" /><media:content medium="image" url="https://files.peakd.com/file/peakd-hive/howo/AK82avdzA9e7oh3rayuxN4gJYXdwJgZAnV2KiMwyG9L21BU9k3hd5aZBtABZW1c.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Update! HiveKeywordsFetcher just got even better! Usernames, Timerange and Chunks!</title><link href="https://hivedocs.info/tools/search/analytics/2025/12/13/update-hivekeywordsfetcher-just-got-even-better-usernames-timerange-and-chunks.html" rel="alternate" type="text/html" title="Update! HiveKeywordsFetcher just got even better! Usernames, Timerange and Chunks!" /><published>2025-12-13T15:32:18-08:00</published><updated>2025-12-13T15:32:18-08:00</updated><id>https://hivedocs.info/tools/search/analytics/2025/12/13/update-hivekeywordsfetcher-just-got-even-better-usernames-timerange-and-chunks</id><content type="html" xml:base="https://hivedocs.info/tools/search/analytics/2025/12/13/update-hivekeywordsfetcher-just-got-even-better-usernames-timerange-and-chunks.html"><![CDATA[<div class="hive-post-embed" data-hive-author="louis88" data-hive-permlink="update-hivekeywordsfetcher-just-got-even-better-usernames-timerange-and-chunks">
+  <div id="content-louis88-update-hivekeywordsfetcher-just-got-even-better-usernames-timerange-and-chunks" class="hive-post-embed__content" data-hive-render-target="true">
+![595shots_so.png](https://files.peakd.com/file/peakd-hive/louis88/23tkhyPPFiLVhnc1Nkw9mCbTxcy8SRVd812ATCgUyJSAVRACFbdCNSqxLGiLYyPAgQDsw.png)
+
+Hey everyone!
+
+Some time ago, I created a small tool that lets you search for posts on the Hive blockchain using specific keywords. The idea was to help people quickly find posts that include certain words or phrases. Since the first version of the tool, I have spent more time working on it and adding more useful features.
+
+Today, I released some updates that were requested by the community. One of the most wanted features was the ability to search within a custom date range. This is now possible, but for performance reasons, it is currently only available when searching posts from a specific user. I also added more options for time range selection, including useful presets like the last 1,2,3,4,5 Months, and even the past year.
+
+To improve performance even more, I added something called "chunking." This means that if you search over a longer period of time, the tool will automatically split the search into smaller 30-day blocks. This helps avoid timeouts in the hafSQL database requests and keeps the tool stable and fast.
+
+These changes make the tool much more powerful and useful, especially for curators, moderators, or anyone looking to monitor specific topics or keywords on Hive.
+
+As always, you can find and use the tool for free at:
+### 👉 https://hive-keyword-search.onrender.com
+
+Feel free to test the new features, and let me know if you have more ideas. I really enjoy working on tools like this, especially when I see that the community finds value in it.
+
+![image.png](https://files.peakd.com/file/peakd-hive/louis88/23wBxxDJq7uJDEvSGh7VWYRZYjsUb7cxwdRk86fvVyDg4UGu34AhrPxA7iC2VbjtVHeof.png)
+
+
+### New Features &amp; Enhanced Flexibility
+- **Custom Date Range Search:** You can now search using specific start and end dates (e.g., January 1st to March 15th) instead of just the fixed "last X days."
+
+- **Search by Author (User Scope):** You can now filter search results to see posts only from a specific author.
+
+- **Smart Chunking for Long Searches:**
+  - Searches covering more than 90 days are automatically split into smaller, 30-day chunks.
+  - This prevents database timeouts, and all the results are automatically merged and sorted for you.
+
+### User Experience &amp; Stability
+- Smarter Date Selector: The custom date range option is now only visible when you are using the "Search by Author" filter, keeping the interface cleaner for general searches.
+
+- Keyword Limit: The maximum number of keywords has been adjusted to 3.
+
+### Improvements &amp; Debugging
+- **Improved API Error Handling:** The system now handles JSON errors more gracefully and provides more informative error messages.
+
+- **Enhanced Debugging:**
+  - The "Debug Information" panel now shows the SQL queries for all search chunks, clearly labeled.
+  - An Execution Log provides real-time updates on which chunk is currently being processed.
+  - Debug SQL is now extracted even if a specific search chunk fails, aiding troubleshooting.
+
+### Local Development Screenshots
+(This wont work on the small server i think...)
+
+![image.png](https://files.peakd.com/file/peakd-hive/louis88/23tbJmoxTrUoJbcH6YF71s9nBgQvnjtgv2ZHeXmACxKcdkDQbdN7rzNiUxmwYE1qgPFDZ.png)
+
+![image.png](https://files.peakd.com/file/peakd-hive/louis88/Eo6AogepHEEBhhhBsQxo39Qa85uAthaS7oqPWrtzL1JZ3bgCFiEZutQxeTGJa65uKQw.png)
+
+Thank you very much for your feedback so far! I look forward to receiving more and, of course, your support for my work.</div>
+  <footer class="hive-post-embed__source">
+    <span class="hive-post-embed__source-label">Source:</span>
+    <a href="https://hive.blog/@louis88/update-hivekeywordsfetcher-just-got-even-better-usernames-timerange-and-chunks">Update! HiveKeywordsFetcher just got even better! Usernames, Timerange and Chunks!</a>
+    by
+    <a href="https://hive.blog/@louis88">@louis88</a>
+  </footer>
+</div>]]></content><author><name>louis88</name></author><category term="tools" /><category term="search" /><category term="analytics" /><summary type="html"><![CDATA[Some time ago, I created a small tool that lets you search for posts on the Hive blockchain using specific keywords]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://files.peakd.com/file/peakd-hive/louis88/23tkhyPPFiLVhnc1Nkw9mCbTxcy8SRVd812ATCgUyJSAVRACFbdCNSqxLGiLYyPAgQDsw.png" /><media:content medium="image" url="https://files.peakd.com/file/peakd-hive/louis88/23tkhyPPFiLVhnc1Nkw9mCbTxcy8SRVd812ATCgUyJSAVRACFbdCNSqxLGiLYyPAgQDsw.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">24hr Sprint - hive-nectar v0.2.0 - still in the oven</title><link href="https://hivedocs.info/tools/python/nectar/2025/12/12/24hr-sprint-hive-nectar-v020-still-in-the-oven.html" rel="alternate" type="text/html" title="24hr Sprint - hive-nectar v0.2.0 - still in the oven" /><published>2025-12-12T04:40:09-08:00</published><updated>2025-12-12T04:40:09-08:00</updated><id>https://hivedocs.info/tools/python/nectar/2025/12/12/24hr-sprint-hive-nectar-v020-still-in-the-oven</id><content type="html" xml:base="https://hivedocs.info/tools/python/nectar/2025/12/12/24hr-sprint-hive-nectar-v020-still-in-the-oven.html"><![CDATA[<div class="hive-post-embed" data-hive-author="thecrazygm" data-hive-permlink="24hr-sprint-hive-nectar-v020-still-in-the-oven">
+  <div id="content-thecrazygm-24hr-sprint-hive-nectar-v020-still-in-the-oven" class="hive-post-embed__content" data-hive-render-target="true">Hey everyone,
+
+The last 24 hours have been a sprint. While working on a separate project, I implemented no less than four critical fixes to the `hive-nectar` v0.2.0 branch. This is exactly why I haven't merged it to main yet.
+
+Here is what I tackled:
+
+- **Comment Options Fix:** I corrected the `comment_options` transaction logic. It was previously generating invalid operations when setting beneficiaries.
+- **ImageUploader Modernization:** I updated `ImageUploader` to use `httpx`, bringing it in line with the rest of the project. I thought I had already done this, but now it is confirmed.
+- **Upload Reliability:** Photography files have grown significantly in size over the years, causing timeout issues. I added a 3x retry mechanism and extended the timeout for `ImageUploader` to handle larger files reliably.
+- **Filename Correction:** `ImageUploader` now correctly returns the filename (e.g., `<hash>/filename.jpg`) instead of the generic `<hash>/upload`.
+- **Profile Metadata Update:** I fixed `update_json_metadata` to use the new v2 profile data structure. The library hadn't been updated in a while, and front-ends were failing to pick up profiles set with Nectar.
+
+![Still so much more to be done...](https://files.peakd.com/file/peakd-hive/thecrazygm/23t7AyQJhK1eUPPSciUrGHuD8n88V3zEkbRiSb3NGzKgWEdgVqN3Eo9ud5bfZTz6gtb8F.png)
+
+All unit tests are passing, but these edge cases prove that v0.2.0 needs a bit more time in the oven before I merge it to main.
+
+As always,
+Michael Garcia a.k.a. TheCrazyGM
+&lt;/div&gt;
+  <footer class="hive-post-embed__source">
+    <span class="hive-post-embed__source-label">Source:</span>
+    <a href="https://hive.blog/@thecrazygm/24hr-sprint-hive-nectar-v020-still-in-the-oven">24hr Sprint - hive-nectar v0.2.0 - still in the oven</a>
+    by
+    <a href="https://hive.blog/@thecrazygm">@thecrazygm</a>
+  </footer>
+&lt;/div&gt;
+
+</hash></hash></div></div>]]></content><author><name>thecrazygm</name></author><category term="tools" /><category term="python" /><category term="nectar" /><summary type="html"><![CDATA[While working on a separate project, I implemented no less than four critical fixes to the hive-nectar v0.2.0 branch]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://files.peakd.com/file/peakd-hive/thecrazygm/23t7AyQJhK1eUPPSciUrGHuD8n88V3zEkbRiSb3NGzKgWEdgVqN3Eo9ud5bfZTz6gtb8F.png" /><media:content medium="image" url="https://files.peakd.com/file/peakd-hive/thecrazygm/23t7AyQJhK1eUPPSciUrGHuD8n88V3zEkbRiSb3NGzKgWEdgVqN3Eo9ud5bfZTz6gtb8F.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Nectarengine v0.2.0 release candidate</title><link href="https://hivedocs.info/tools/python/nectar/2025/12/10/nectarengine-v020-release-candidate.html" rel="alternate" type="text/html" title="Nectarengine v0.2.0 release candidate" /><published>2025-12-10T05:07:45-08:00</published><updated>2025-12-10T05:07:45-08:00</updated><id>https://hivedocs.info/tools/python/nectar/2025/12/10/nectarengine-v020-release-candidate</id><content type="html" xml:base="https://hivedocs.info/tools/python/nectar/2025/12/10/nectarengine-v020-release-candidate.html"><![CDATA[<div class="hive-post-embed" data-hive-author="thecrazygm" data-hive-permlink="nectarengine-v020-release-candidate">
+  <div id="content-thecrazygm-nectarengine-v020-release-candidate" class="hive-post-embed__content" data-hive-render-target="true">Hey everyone,
+
+Following the `hive-nectar` update, I am also releasing a `nectarengine` v0.2.0 branch.
+
+![Tokens Script running v0.2.0!](https://files.peakd.com/file/peakd-hive/thecrazygm/23tGW1bef8ehgtTRmKjEA1CUkkzfXTB6RTpjEm4Pn9SCQQybqF9ym43WfKp3stkWRkDr5.png)
+
+I modernized the codebase to use `httpx` instead of `requests` and ran strict type checks (`ty` is brutal) until I cleared every error. Like `hive-nectar`, this is a work in progress. I will merge it to main in about a week unless I get some issues that need fixed.
+
+## Recent Changes
+
+### 0.2.1
+
+- Fixed type hinting errors in `cli.py`, `nfts.py`, and `tokenobject.py`.
+- Added defensive `None` checks for `nft.get_id()` in CLI to prevent runtime errors.
+- Cleaned up unused variables and imports identified by `ruff` and `ty`.
+
+### 0.2.0
+
+- Migrated network layer from `requests` to `httpx` for better performance.
+- Enhanced `find_all` pagination to use `last_id` based recursion.
+- Silenced noisy `httpx` logs by default.
+
+## Shoutout
+
+Special thanks to @themarkymark. His personal `hiveenginepy` inspired the `last_id` pagination logic, which handles tokens with more than 10k items.
 
 ## Installation
 
-1. Clone this repository:
+Test it via pip or uv:
+
 ```bash
-git clone https://github.com/louis-88/hive-fetcher-hafsql.git
-cd hive-hafsql-fetcher
+pip install -U git+https://github.com/thecrazygm/nectarengine@v0.2.0
+# or
+uv add "nectarengine @ git+https://github.com/thecrazygm/nectarengine@v0.2.0"
 ```
 
-2. Install dependencies:
-```bash
-npm install
-```
-
-3. Start the server:
-```bash
-node server.js
-```
-
-4. Open your browser and navigate to:
-```
-http://localhost:3000
-```
-
-## Usage
-
-1. Enter Hive usernames (one per line) or upload a text file containing usernames
-2. Configure settings:
-   - Days Back: How far back to look for posts (1-30 days)
-   - HBD Threshold: Minimum payout value to include
-   - Batch Size: Number of accounts to process at once
-   - Frontend: Choose between PeakD and Hive.blog links
-
-3. Click "Start Monitoring" to begin processing
-
-## Default HafSQL Connection
-
-The dashboard comes preconfigured to connect to the public HafSQL instance:
-
-```
-Host: hafsql.mahdiyari.info
-Port: 5432
-Database: haf_block_log
-Username: hafsql_public
-Password: hafsql_public
-```
-
-You can change these settings through the "Custom HAFSQL Credentials" section in the dashboard.
-
-
-![image.png](https://files.peakd.com/file/peakd-hive/louis88/23tkfFPebnaS9fgD6KQthvHJzffGtzCLLWArbggm9XrgtGegRGMHGPrxmsbp4FNFaaQ9X.png)
-
-
-## Tech Stack
-
-- Frontend: HTML, CSS, JavaScript
-- Backend: Node.js, Express
-- Database: PostgreSQL (HafSQL)
-- Additional: pg-pool for database connection management
-
-## API Endpoints
-
-- `GET /`: Serves the main dashboard
-- `POST /update-credentials`: Updates HafSQL connection settings
-- `POST /query`: Fetches post data for specified accounts
-
-## License
-
-MIT
-
----
-
-That's it for now - if you have any questions or suggestions, please write a message in the comments.</div>
+As always,
+Michael Garcia a.k.a. TheCrazyGM
+</div>
   <footer class="hive-post-embed__source">
     <span class="hive-post-embed__source-label">Source:</span>
-    <a href="https://hive.blog/@louis88/hive-analytics-dashboard-using-hafsql-next-version-crazy-fast-and-easy-to-use">Hive Analytics Dashboard (using HafSQL) - Next Version crazy fast and easy to use.</a>
+    <a href="https://hive.blog/@thecrazygm/nectarengine-v020-release-candidate">Nectarengine v0.2.0 release candidate</a>
     by
-    <a href="https://hive.blog/@louis88">@louis88</a>
+    <a href="https://hive.blog/@thecrazygm">@thecrazygm</a>
   </footer>
-</div>]]></content><author><name>louis88</name></author><category term="tools" /><category term="sql" /><category term="analytics" /><summary type="html"><![CDATA[A few days ago, I converted my original script, which is written in Python and only ran locally on my computer, into an application that can run in a browser with an interface]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://github.com/user-attachments/assets/499dbfe0-a55d-4489-b9a7-1fa51510917a" /><media:content medium="image" url="https://github.com/user-attachments/assets/499dbfe0-a55d-4489-b9a7-1fa51510917a" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">A single file Analytics Tool to find Post-Payouts from a List of Users</title><link href="https://hivedocs.info/tools/sql/analytics/2024/12/28/a-single-file-analytics-tool-to-find-post-payouts-from-a-list-of-users.html" rel="alternate" type="text/html" title="A single file Analytics Tool to find Post-Payouts from a List of Users" /><published>2024-12-28T09:39:48-08:00</published><updated>2024-12-28T09:39:48-08:00</updated><id>https://hivedocs.info/tools/sql/analytics/2024/12/28/a-single-file-analytics-tool-to-find-post-payouts-from-a-list-of-users</id><content type="html" xml:base="https://hivedocs.info/tools/sql/analytics/2024/12/28/a-single-file-analytics-tool-to-find-post-payouts-from-a-list-of-users.html"><![CDATA[<div class="hive-post-embed" data-hive-author="louis88" data-hive-permlink="a-single-file-analytics-tool-to-find-post-payouts-from-a-list-of-users">
-  <div id="content-louis88-a-single-file-analytics-tool-to-find-post-payouts-from-a-list-of-users" class="hive-post-embed__content" data-hive-render-target="true">At the end of October 2024, I became aware of a large-scale spam attack targeting Hive. Since then, I have been working consistently, together with @hivewatchers, to address the situation. This effort has been highly effective. Over the months, I’ve been analyzing over 18,000 accounts daily through various API endpoints to detect and highlight potential payouts linked to stolen content. With the essential collaboration of @themarkymark and @buildawhale, nearly, if not, all of these fraudulent payouts have been successfully intercepted and downvoted before they could be reaching the 7-days payout window.
+</div>]]></content><author><name>thecrazygm</name></author><category term="tools" /><category term="python" /><category term="nectar" /><summary type="html"><![CDATA[Following the hive-nectar update, I am also releasing a nectarengine v0.2.0 branch]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://files.peakd.com/file/peakd-hive/thecrazygm/23tGW1bef8ehgtTRmKjEA1CUkkzfXTB6RTpjEm4Pn9SCQQybqF9ym43WfKp3stkWRkDr5.png" /><media:content medium="image" url="https://files.peakd.com/file/peakd-hive/thecrazygm/23tGW1bef8ehgtTRmKjEA1CUkkzfXTB6RTpjEm4Pn9SCQQybqF9ym43WfKp3stkWRkDr5.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Updated! HiveKeyword(s)Fetcher just got better! Feedback welcome!</title><link href="https://hivedocs.info/tools/search/analytics/2025/12/08/updated-hivekeywordsfetcher-just-got-better-feedback-welcome.html" rel="alternate" type="text/html" title="Updated! HiveKeyword(s)Fetcher just got better! Feedback welcome!" /><published>2025-12-08T06:37:15-08:00</published><updated>2025-12-08T06:37:15-08:00</updated><id>https://hivedocs.info/tools/search/analytics/2025/12/08/updated-hivekeywordsfetcher-just-got-better-feedback-welcome</id><content type="html" xml:base="https://hivedocs.info/tools/search/analytics/2025/12/08/updated-hivekeywordsfetcher-just-got-better-feedback-welcome.html"><![CDATA[<div class="hive-post-embed" data-hive-author="louis88" data-hive-permlink="updated-hivekeywordsfetcher-just-got-better-feedback-welcome">
+  <div id="content-louis88-updated-hivekeywordsfetcher-just-got-better-feedback-welcome" class="hive-post-embed__content" data-hive-render-target="true">Hey everyone!
 
-This journey has been both challenging and deeply fulfilling, and it inspired me to enhance the tools I’ve been using. I decided to reimagine my analysis tool, which was previously a Python application running in Visual Studio Code. I rebuilt it as a more versatile single-file HTML document, integrating HTML, JavaScript, and CSS. Thanks to GitHub Copilot, I was able to convert from python to javascript and refine the tool into a more efficient and user-friendly version.
+I just released a new version of the Hive Keywords Fetcher Tool. This is a small project I have been working on to make it easier to search for content on the Hive blockchain. It is especially useful for curators or people who are trying to find posts about specific topics.
 
-The updated tool is now uploaded and ready for anyone to use. You can simply input a list of usernames and initiate an analysis. Beyond our collective efforts to combat spam on Hive, this tool could also serve as a helpful resource in other analytical scenarios.
+In this new version, I made a few important changes. One of the biggest updates is that you can now choose a time range for your search. Right now, you can select between 3, 5, 7, or 30 days. There is also an option to search through the past full year. I think this is a good range for most use cases.
 
-This initiative represents my commitment to preserving Hive as a trustworthy and vibrant platform. I’m confident this tool will further strengthen our ability to maintain a high standard for our community. Thank you all for your ongoing support and dedication!
+I decided not to include an “All Time” search because it is just too heavy on resources. I tested it a few times, but every time the connection broke after a while. It simply takes too much time and memory to search through all Hive posts ever created. So I left that option out for now to keep the tool fast and stable.
 
-Live-Version: https://raw.githack.com/louis-88/hive-account-postcheck/main/index.html
-Github: https://github.com/louis-88/hive-account-postcheck
+**You can use it and play around with it here**
 
-# Hive Analytics Dashboard
+### https://hive-keyword-search.onrender.com
 
-A real-time analytics dashboard for monitoring Hive blockchain accounts and their post payouts.
 
-## Live Version
-https://raw.githack.com/louis-88/hive-account-postcheck/main/index.html
+![571shots_so.png](https://files.peakd.com/file/peakd-hive/louis88/23vhVs3UZN6wrT3dtGVn6Ywi6joDprQqKC9LJj5JZQNZpvonY778yFJoF1xZ6V7Dzj29X.png)
 
-## Screenshots
+Another cool feature I added is a better filtering system for the search results. Now, when the results are shown, you can browse through all of them easily. On top of that, there is now a small input box where you can add a second keyword or phrase to filter the results even more. This additional filter works in real time. So as you type, the list updates immediately. I think this makes it much easier to find exactly what you are looking for, even if there are many posts in the results.
+
+
+### New Features
+
+- **Customizable Time Range**:
+Scan blockchain activity for the last **3, 5, 7, 30 days**, or even the **last year**. *(Sorry, All Time just takes to long for hafSQL Query!)*
+- **Advanced Results Management**:
+  - **Pagination**: Easily navigate through large sets of search results.
+  - **Instant Filtering**: Filter loaded results by Title, Author, or Content text in real-time.
+
+
+
+![20251208-1403-19.3746340-ezgif.com-video-to-gif-converter.gif](https://files.peakd.com/file/peakd-hive/louis88/Eo8LZPFL8MsffA2NhkBFiZk4Ro4TUtBW69EEVuEHUfEmjUHZm4Hv6CuY3yfHqZGDQU8.gif)
+
+![image.png](https://files.peakd.com/file/peakd-hive/louis88/23t79CBxVo9Auz3krzQ7FYW4Wm7w14gxaF5Di4ykKGcxro1maYsTecZhY7jeE4v4ntSFY.png)
+
+
+**Thank you all so much for your support!**
+
+It really means a lot to me when I see people using the tools and small projects I build. If you have any questions about the software, or if something is not working the way you expect, feel free to leave a comment. I will try my best to help you as quickly as possible.
+
+Also, if you have ideas or wishes for new features, please do not hesitate to share them. I am always open to feedback. If you feel that something is missing in the Hive ecosystem, some kind of tool or application that could make life easier for users, then let me know in the comments too. Sometimes it only takes a small idea to start something useful for many people.
+
+Many Hive tools have been created by community members who simply wanted to solve a small problem or improve something they were using every day. That is one of the great things about Hive... it is open, it is flexible, and it invites people to build together.
+
+So, I am looking forward to your ideas, your feedback, and your support. Let us build things together that help make Hive better, step by step.
+
+Thanks!
+louis
+
+Initial Release Post: https://peakd.com/hive-139531/@louis88/hivekeywordsfetcher-search-posts-on-hive-by-mentioned-words
+
+--- 
 
 <div class="pull-left"><div class="text-justify">
 
-![blank screen](https://github.com/user-attachments/assets/1ba9d814-fa60-4415-99eb-51708d6e9552)
+[![image.png](https://files.peakd.com/file/peakd-hive/louis88/23v4Zbq5TQyn3aFGQ7YcUyQJQCHhh556WQfTgmeR6EtVe1RWUURNc89oCX25ZFnUHAXww.png)](https://vote.hive.uno/@louis.witness)
+
+##### Vote for my Hive Witness
+U can vote for my Witness using Hive Keychain here:  https://vote.hive.uno/@louis.witness
 
 </div></div>
 <div class="pull-right"><div class="text-justify">
 
-![screenshot with data from my friends](https://github.com/user-attachments/assets/882ec42d-e2ff-4a88-bf5a-7929317b6e27)
 
+[![image.png](https://files.peakd.com/file/peakd-hive/louis88/24241zs2F4mEKWwVa9y2CkqHjUcR7Rh2EyRQEXZA5vfHdjEMnq8Ej8R4cWxT1jgAtXQHP.png)](https://primersion.com/he-witnesses)
+
+##### Vote for my Hive Engine Witness
+
+Vote for my Witness on Hive-Engine using Primersion Tool: https://primersion.com/he-witnesses <sup>Enter your Username and search for louis.witness</sup>
 </div></div>
-
----
-
-<div class="pull-left"><div class="text-justify">
-
-## Features
-
-- Real-time monitoring of multiple Hive accounts
-- Batch processing with configurable size
-- Multiple API endpoint support with load balancing
-- Post filtering by date and payout value
-- Sortable results table with live updates
-- Live progress tracking
-- Enhanced activity logging with search and clear functionality
-- Pause/Resume functionality
-- Reblog filtering (shows only original content)
-- Configurable frontend selection for post links
-
-
-## Activity Log Features
-
-- Real-time log updates
-- Search functionality for filtering log entries
-- Clear logs button
-- Color-coded log entries by type:
-  - Info (blue)
-  - Success (green)
-  - Error (red)
-  - Warning (yellow)
-  - API (purple)
-  - Fetch (light blue)
-  - Process (light green)
-
-
-## Usage
-
-1. Open `index.html` in a modern web browser
-2. Enter Hive accounts (one per line) or load from a text file
-3. Adjust settings as needed
-4. Click "Start Monitoring"
-5. View results in real-time as they're found
-
-## Results Table
-
-The results table shows:
-- Username
-- Post Date
-- Link to Post (opens in selected frontend)
-- HBD Value
-- Post Title (truncated with full title on hover)
-
-Click column headers to sort by that column.
-
-
-![image.png](https://files.peakd.com/file/peakd-hive/louis88/23t76y4yZfM62p8mxaynsE53cZSyTzrGh2pobX36PEynmGaKWAiXSy1eMb36K8V4m3rSy.png)
-
-
-</div></div>
-<div class="pull-right"><div class="text-justify">
-
-## Settings
-
-- **Days to Look Back**: Number of days to check for posts (1-365)
-- **Min HBD Threshold**: Minimum payout value to include (in HBD)
-- **Retry Limit**: Number of API retry attempts
-- **Timeout**: API call timeout in seconds
-- **Processes**: Number of concurrent processes
-- **API Call Delay**: Delay between API calls in seconds
-- **Batch Size**: Number of accounts to process in each batch
-- **Frontend**: Choose preferred frontend for post links
-  - PeakD (default)
-  - Hive.blog
-  - Ecency
-  - Inleo
-
-## API Endpoints
-
-Default endpoints included:
-- api.hive.blog (enabled)
-- api.deathwing.me (enabled)
-- api.openhive.network (enabled)
-- techcoderx.com (disabled)
-- api.c0ff33a.uk (disabled)
-- rpc.mahdiyari.info (disabled)
-
-You can add/remove endpoints and enable/disable them as needed. The system automatically checks endpoint status and uses only online endpoints.
-
-## Technical Details
-
-- Pure HTML/CSS/JavaScript implementation
-- No external dependencies
-- Supports large account lists through batch processing
-- Automatic API failover and load distribution
-- Real-time updates with sort preservation
-
-## Requirements
-
-- Modern web browser with JavaScript enabled
-- Internet connection to access Hive APIs
-
-## File Structure
-
-```
-/
-├── index.html      # Main application
-├── README.md       # Documentation
-```
-
-</div></div>
-
-
-## License
-
-MIT License - Feel free to use and modify as needed.
-
----
-
-I’m always open to feedback, questions, or suggestions... feel free to give the tool a try! If you have any ideas for improvements or additional features, don’t hesitate to share them in the comments. I’d love to hear your thoughts and explore ways to make this tool even better.</div>
+</div>
   <footer class="hive-post-embed__source">
     <span class="hive-post-embed__source-label">Source:</span>
-    <a href="https://hive.blog/@louis88/a-single-file-analytics-tool-to-find-post-payouts-from-a-list-of-users">A single file Analytics Tool to find Post-Payouts from a List of Users</a>
+    <a href="https://hive.blog/@louis88/updated-hivekeywordsfetcher-just-got-better-feedback-welcome">Updated! HiveKeyword(s)Fetcher just got better! Feedback welcome!</a>
     by
     <a href="https://hive.blog/@louis88">@louis88</a>
   </footer>
-</div>]]></content><author><name>louis88</name></author><category term="tools" /><category term="sql" /><category term="analytics" /><summary type="html"><![CDATA[At the end of October 2024, I became aware of a large-scale spam attack targeting Hive]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://github.com/user-attachments/assets/1ba9d814-fa60-4415-99eb-51708d6e9552" /><media:content medium="image" url="https://github.com/user-attachments/assets/1ba9d814-fa60-4415-99eb-51708d6e9552" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Clive Updates - changes in TUI interfaces</title><link href="https://hivedocs.info/news/wallet/clive/2024/12/21/clive-updates-changes-in-tui-interfaces.html" rel="alternate" type="text/html" title="Clive Updates - changes in TUI interfaces" /><published>2024-12-21T07:30:09-08:00</published><updated>2024-12-21T07:30:09-08:00</updated><id>https://hivedocs.info/news/wallet/clive/2024/12/21/clive-updates-changes-in-tui-interfaces</id><content type="html" xml:base="https://hivedocs.info/news/wallet/clive/2024/12/21/clive-updates-changes-in-tui-interfaces.html"><![CDATA[<div class="hive-post-embed" data-hive-author="thebeedevs" data-hive-permlink="clive-updates-changes-in-tui-interfaces">
-  <div id="content-thebeedevs-clive-updates-changes-in-tui-interfaces" class="hive-post-embed__content" data-hive-render-target="true">We are progressing towards our goals: making Clive more user-friendly and implementing encrypted profiles. Both goals are still in progress, but a lot of work has been done. We also did some Christmas cleaning - we resolved many small, but useful issues.
-
-### To make Clive more user-friendly
-
-At the beginning of our work on Clive, we thought we didn’t need buttons as actions can also be done from the bottom menu, but now we believe they can be useful for mouse users. So we are gradually adding them in many places.
-
-##### Changes in the top menu
-
-We have updated the top menu and added `Dashboard` and `Cart` buttons so now you can quickly navigate to the Dashboard and the Cart from almost anywhere. Additionally, you can always see how many operations are already in the cart.
-
- ![image2.png](https://images.hive.blog/DQmSmKkEBRJb4VohsWcFWCfpR9xSTLqRpLpzqLMHg74xTxy/image2.png) 
-
-##### A new button on the operation views
-
-
-We also added a new button, `Finalize transaction`, to views with operations:  transfer, transfer to/from savings, power up, power down, set the withdraw routes, and delegate.
-
-If you press the `Finalize transaction` button, the operation is added to the cart and you jump to the `Transaction summary` view - you can still use key bindings if it is more convenient for you.
-
- ![image1.png](https://images.hive.blog/DQmNvVLHCse9x1RbYMnHM72vdZZNk7sqJhUA2cA8gSCjbU9/image1.png) 
-
-##### Changes in the creating a new profile process
-
-
-We simplified the process of creating a new profile. We removed the node selection step (but you can always change it by clicking `Online` on the right corner) and added the `Next` and `Previous` buttons to make navigation easier. You can always quickly trigger the default screen action by pressing `Enter` when focused on the input.
-
- ![image3.png](https://images.hive.blog/DQmRw7WgmEpChCyHnDjZ88s3CFgozZL9AhvUdZppptpyXp2/image3.png) 
-
-### On the way to the encrypted profiles
-
-
-As I wrote in the [previous post](/@thebeedevs/clive-updates-the-first-step-to-an-encrypted-profile) we are working on the encrypted profile functionality. The next step was done - we made changes to the profile’s locking. You will not see any changes related to this in the user interface in TUI, but you will notice changes in CLI.
-
-When you run CLI, select a profile, and enter a password, you will see information that your profile is unlocked.  
-
- ![image4.png](https://images.hive.blog/DQmTh2srimBtRnhTZZDtMWuLoLTZanDNEkcotUo7525eyzX/image4.png) 
-
-The huge change is that after unlocking, you don’t need to add the options `--profile-name` or `--password` anymore. If it’s unlocked once, it will be kept in that state. You can lock your profile anytime. If you don’t do it manually, the profile will be locked automatically after a timeout (15 minutes).
-
-Example:
-
- ![image6.png](https://images.hive.blog/DQmbuSepbrSxT4gsutbn4df9C4avj6NRDxc3LEWmXZ9FyCP/image6.png) 
-
-The next planning steps are:
-
-- removal of the default profile as it might be a confusing feature after the latest lock/unlock changes
-- stored data encryption
-
-### Changes in CLI
-
-In the last releases, we were focused on changes in TUI which caused some inconsistencies in how working, watched, and tracked accounts work in TUI and CLI.
-
-After updates, you can add and remove tracked accounts in the CLI. It works like in the TUI - every tracked account is automatically added to known and the first tracked account is set as working.
-
-Example:
-
-Adding a new tracked account.
-
-`clive configure tracked-account add guest4test6`
- ![image7.png](https://images.hive.blog/DQmNeA3Xvpvfcyqv1ZDrfXb8ohywrZBCBRgderLuXGkQcXp/image7.png) 
-
-You can now also switch a working account the same way as in the TUI.
-
-
-Example:
-
-Switching a working account
-
-
-`clive configure working-account switch guest4test6`
-
- ![image5.png](https://images.hive.blog/DQmUCYBqs2S3b5EUzLCEBNHPQr2ACqDAJg8YFaCSEiQxeh3/image5.png) 
-
-[Complete list of corrected issues](https://gitlab.syncad.com/hive/clive/-/releases/v1.27.5.19)
-
-The scripts that allow you to run Clive are here: https://gtg.openhive.network/get/clive/
-
-More info about running Clive can be found here: [Clive - alpha release](/@thebeedevs/clive-alpha-release). Please make sure you are using the most recent version: **v1.27.5.19**
-
-## TL;DR
-
-```
-docker run -ti hiveio/clive:v1.27.5.19
-```
-
-### Your feedback is invaluable and always welcome.</div>
-  <footer class="hive-post-embed__source">
-    <span class="hive-post-embed__source-label">Source:</span>
-    <a href="https://hive.blog/@thebeedevs/clive-updates-changes-in-tui-interfaces">Clive Updates - changes in TUI interfaces</a>
-    by
-    <a href="https://hive.blog/@thebeedevs">@thebeedevs</a>
-  </footer>
-</div>]]></content><author><name>thebeedevs</name></author><category term="news" /><category term="wallet" /><category term="clive" /><summary type="html"><![CDATA[We are progressing towards our goals: making Clive more user-friendly and implementing encrypted profiles]]></summary></entry><entry><title type="html">Core dev meeting #64</title><link href="https://hivedocs.info/news/core/development/2024/12/14/core-dev-meeting-64.html" rel="alternate" type="text/html" title="Core dev meeting #64" /><published>2024-12-14T16:31:03-08:00</published><updated>2024-12-14T16:31:03-08:00</updated><id>https://hivedocs.info/news/core/development/2024/12/14/core-dev-meeting-64</id><content type="html" xml:base="https://hivedocs.info/news/core/development/2024/12/14/core-dev-meeting-64.html"><![CDATA[<div class="hive-post-embed" data-hive-author="howo" data-hive-permlink="core-dev-meeting-64">
-  <div id="content-howo-core-dev-meeting-64" class="hive-post-embed__content" data-hive-render-target="true">https://www.youtube.com/watch?v=8_M2Gtq08z0
-
-In a terrible twist of fate I missed this core dev meeting.
-
-If you're interested on my end:
-
-- Rosetta API is 99% done BUT fun news, they have changed it now it's called mesh api there's some changes here and there that I'm applying
-- Overall I'm in the phase where I talk with coinbase support to ask specific questions because the api is very broad so it's sometimes unclear how it would apply to us (eg: there's a whole step used to estimate fees which is useless for us)
-- Everything has been written with WAX, it works great and I needed zero support, hats off !
-- I expect to be done this month
-
-# @Blocktrades
-Okay, so I guess I'll get started with the stuff we've been working on. So I guess first let's talk about the release. Well, I'll go over what we've done and then I'll talk about release schedule. So we're making the final changes to HiveD right now. There are some changes to the authority staff, but that stuff, it's, so we'll have a new HiveD release out, I guess probably, maybe probably this week, I guess. And beyond that, so the hard fork, we're tentatively setting it for February the 8th, but that's probably not realistic for the real hard fork date or probably later. But that's, because in order to get that, we'd have to actually get a few more changes than that I'd like to get in, but I don't think we'll be able to do with those changes by February the 8th, but we'll see. Everything else is looking pretty good. The last things we're doing on Hive right now is working on improving the way you upgrade Hive. So sometimes it could be difficult if we've made major changes to Hive, doing an upgrade could be problematic. So we've added code to, we've basically changed our upgrade process to make it better at detecting and making sure that changes get broken during an update upgrade. The other thing we're looking at is, well, some of this is too technical, I don't want to even get into it. We've got one other change that we want to make to Hive right now, which is to allow other apps to register creation of indexes on the main Hive tables. We do that in a couple of Hive apps, and I'm sure other apps will find that useful too. I mean, you could do it, but it just wasn't great the way it was done before. There wasn't a central management of the process of adding indexes to the base Hive tables. Hive mine, a lot of work's been done there recently. I've mostly, I've been doing a lot of work there personally. So we've optimized a lot of the queries on the server side, and we've cut the loading to more than half of what it was before. So the loading has really dropped a lot. And this is in production tests. So what we've been doing is, I've set up a node called API.syncat.com, and you guys are probably familiar with it because I've mentioned it a bunch of times before, it was a great place to test the changes to the APIs and make them. It's also where we've been testing production HiveMine, I mean, the HiveMine release candidate. And so we've been sending production traffic from the API hive. blog to that so that we can test to be sure it's handled and loaded well. And initially, the load was pretty high, but it's quite low now. And the biggest change that impacts apps is that we've limited the number of posts that can be fetched, full posts that can be fetched now to 20. Previously, we saw some people that were fetching like 100 apps at once, but that was generating multiple megabytes of data being sent back. So it's not really something we really wanna do anyway, because if you have API calls where you can make very small calls and get megabyte-size responses, that also leaves you open to API, Amplify attacks or someone that basically uses a small amount of their own bandwidth to generate a large bandwidth on your side. So generally not a good idea for us to have APIs doing that. But that's all taken care of. So what I'd like to suggest is that everybody who's got an app, they point, they set up a copy, they point their API node at API soncat.com and start testing there looking for any problems. I don't expect anything except that one issue that I mentioned, which is the 20 posts. But nonetheless, it's well worth checking out your app against ansoncat.com. Let's see. On half API node, which is basically the set of scripts we used to set up an API server, made a bunch of small changes. One of the most notable things was again, in dealing with loading, we've improved the caching and drone a little bit. And this has just been customizing where we found that we could cache some specific API calls better, especially some of the API calls that were kind of costly. I have some ideas in the future for further improvement to how the caching works, but that'll be in the next release, not this one. Let's see. On Half Block Explorer, McFar had this would be interesting to you. We've been doing some work right now that should be finished, I think, this week also to speed up block searching. Block searching was kind of a halfway optional thing in an installation because it was kind of slow and required a bunch of extra indexes. But I guess with Postgres 17, we were able to use fewer indexes, so that should be a lot better now. And so that'll be a nice new interesting feature for half-block explorer. Let's see. Balance tracker, I made some optimizations there to speed up some of the queries that were used by actually half-block explorer. So that will also lower, that lowers loading of half block explorer. So half block explorer's load on the server is when it's sinking out as much, much less. So that'll also be nice. Let's see what else. Wax is getting, I guess, close to done. So we want to basically, just from a scheduling perspective, we plan on releasing all this stuff. And I'm really trying to make it done on, we're going for shooting for the 18th or 19th of this month. So that's why I really want to incentivize you guys to start testing on API.Since if you have an app because it'd be great if we know that there's a problem before we release, after. So anybody's running an API note, of course, this is also scheduled sometime near, it's kind of close to Christmas, I know, but it is a little bit before Christmas. So schedule some time to be ready to upgrade your API note. Let's see. So on the wax side, things that are remaining, we're adding some ability for updating accounting authority. Hold on just a second. Let's see. So wax is pretty, will be finished for, I guess, Python, I mean, for TypeScript, still doing work on Python. So I don't know if we'll have the Python done in time or not, we're still going to see if we can make that version ready for public release. Beekeepers done, we're doing a little work on the Python side with the package that interfaces the beekeeper, but that'll be done quite soon. Let's see, what else? We've fixed some problems in the CI test that cause random fails. So that's mainly useful for developers, but it's nice to have out of the way because it's annoying. Condenser, I think will probably also be releasing, denser rather. Again, I'm not 100% certain on that, but I'm reasonably certain we'll also release a version of Denser too. It will probably run it side by side with Hive blog for a bit before we switch over entirely, though. One other thing, we've been working on a health checker user interface, and this is a standalone component, a TypeScript component that can be included into any TypeScript app. So basically, I'd like to sort of have, if we can, get the app sort of standardized on using it, and of course, we'll take feedback into how to improve it and everything too. But I'm gonna look at that more after I've gonna review the latest version of that after the meeting, and then I'll probably post, once I think it's comfortable in every way, I'll post the link in the Core Dev channel so people can take a look at it and see if they'd like to integrate it in their app or not. So that's kind of a high-level overview. I guess the big thing I wanna announce is the scheduling. So if there's any questions about the scheduling for the releases, we're kind of doing it in the two phases, right? The first phase will be released of the half API node stuff, and there will be a new version of HiveD, but there's probably gonna be a later version of HiveD in the first quarter sometime that'll have yet further changes to it. But there is a HiveD update as part of the half API node release. And again, I won't do that on the 18th or 19th. Okay, any questions about any of that? Concerns?
-
-# @Arcane
-Yeah, so most API nodes are currently running version 27.5. Is there any benefit to running a new version right now or should we wait for the coming release?
-
-# @Blocktrades
-Well, the coming release is literally in a matter of days, so I would say wait literally a couple days.
-
-# @Arcane
-Okay, Any major change in disk space consumption with the new version and the one you are working on?
-
-# @Blocktrades
-Not really, but there is one issue that if you have a model, if you're probably gonna start with the model, I think a full-size block log in the new one automatically splits that up into individual one-megabyte pieces. So it's generally recommended, you can turn off that behavior, first of all. So there's an option to disable that so you can still work with one full-size block log. But if you wanted to split it up into multiple blocks, if you wanted to split up your full-size block log, so in other words, if you're not gonna do a sync, but if you're actually gonna take your existing monolithic block log and split it up, you're gonna need basically two X to space because you'll have the monolithic block log while it's splitting up into single pieces. So you'll temporarily need another 500 gigs during that process. So there's a couple ways you can do this. One way is if you have two file systems, you could probably put the block log on a slower disk and then have it split it onto your faster disk, for instance. Or if you really just don't have the space, you could just do a sync instead of having it split your existing block log.
-
-# @Arcane
-So I guess upgrading will require a replay.
-
-# @Blocktrades
-Yes, yeah, we're definitely planning this to be a replay, a replay of HiveD or replay of half.
-
-# @Arcane
-Okay, has there been any improvement in replay time?
-
-# @Blocktrades
-Yeah, I mean, everything has been improved to different levels. It especially helps if you have better hardware.
-
-# @Arcane
-That's the ultimate replay benefit. We just finished ours. So I will need to do another one. So I would like to know if.
-
-# @Blocktrades
-There certainly are some speed-ups and I'm going to try to make. I mean, but there's also more stuff, right? Because now half block explorer is now a standard part of the API stack, which that also means the reputation tracker and balance tracker are also new parts of the stack that didn't exist before. Hive mind sync time is the worst of it still. And I don't know that's been speeded up much. We didn't really focus too much on speeding that up. The other apps are faster, but if your total time is still going to be dominated by Hive Mind time, which I think on our fastest machine Hive Mind itself now syncs in about two and a half days, but for you guys, it's going to be longer. I would expect three to four days for a Hive-Mind sync.
-# @Arcane
-It's around three days, yeah. So we should be the same for that part.
-
-# @mcfarhat
-Yeah, I'm still syncing hive mind. And our machine is not, I mean, it's not anything short of powerful, but yeah, it takes time. So it's been two days now.
-
-# @Blocktrades
-I could do it in two and a half days.
-
-# @mcfarhat
-Yeah. Yeah, I had a question actually, Dan. So, you know, before doing all this replay stuff, I tried to grab a snapshot. I think you guys are hosting this on snapshot.hype.log for the full half, right, instead of doing the replay. I couldn't manage to really do the whole thing properly. There were a couple of files, one of them with blockchain, one of them full without blockchain and then the incremental stuff. The instructions on half API node are not pretty much clear how to do this proper restoration. So I couldn't figure it out. I don't know if, yeah.
-
-# @Blocktrades
-Okay, I'll check that. If you, maybe offline, if you can leave me any questions you had about it, because I haven't read that in so long. I don't remember what it says there. But if you could point out any particular issues you had, just offline, send them to me and I'll look over what's there.
-
-# @mcfarhat
-Yeah, it's just, yeah, you know.
-
-
-# @Blocktrades
-Yeah, I mean, that's a great point. We should probably, I also need to update that stuff for the new version. So, and so it'd be a good time to improve the documentation there as well.
-
-# @mcfarhat
-Yeah, absolutely, I agree. Because I mean, it's definitely not clear. Still the old instructions, it's have been there for like several months, but since the snapshots are now available, so it's not very clear whether to run the main file and then the incremental and what to do exactly. So even the URL, I mean, it says whatever.net, you know.
-# @Blocktrades
-Okay, like I said, I haven't even read that since it was written back ages, ages ago. So I don't even know what to say.
-
-# @mcfarhat
-Yeah, yeah, yeah.
-
-# @Blocktrades
-But okay, so that's, but it's good because you brought up an action item that I kind of forgotten about, which is we need to update the state of the state. 
-
-
-# @Gtg
-So, so instructions haven't changed, but the initial snapshot is for the old version and the incrementals are targeted at the original one. So it's a.
-
-# @Blocktrades
-Yeah, we got to update on this for the.
-
-# @Gtg
-Yeah, yeah, yeah. If you are familiar with the CFS snapshots, it should be clear, but for like, it's not really clear for just copy-pasting because nowadays there are a lot of those incremental and you can actually do the shortcuts because having frequent snapshots takes a lot of space and you can just skip them if you actually just need to go to the recent.
-
-# @mcfarhat
-Yeah, to be honest, I mean, I'm not very much familiar with how to restore CFS snapshots. The FS is, I mean, something that I recently started exploring once we set up our node, but I mean, I tried restoring the full version without blockchain and then it wouldn't work and then I tried the blockchain only, it wouldn't work. Try the incremental, it didn't work. I mean, I understand incremental need a base to start with, but I mean, nothing worked. So, I wanted to replay, I don't know why.
-
-# @Blocktrades
-We should have been able to do it without it. If you didn't, if you just did a full snapshot, that should have worked. So, I'm not sure what happened there.
-
-# @mcfarhat
-Yeah. Yeah, and you can. You know, I had the issue done with the environment file, so maybe.
-
-# @Blocktrades
-Oh, yes, that would have done you in for sure. With the wrong environment file, you weren't gonna get very far. So, I think this will be much better. Okay, so that in fact is almost certainly.
-
-# @Gtg
-Yeah, also if you're using like recent version.
-
-# @Blocktrades
-Yeah, that's what happened. He was using a recent environment file with the old stuff and they're just totally compatible.
-
-# @Gtg
-Also, I don't want to spoil the fun, but if you like. Probably the most useful is for those who has actually the fast infrastructure when it comes to the network. So, probably you will be faster to just replay your note instead of getting snapshots unless your network is really fast and certainly really slow.
-
-# @Blocktrades
-It sounds like we should work with him because it sounds like he's got a fast network connection. So, he can be a good test for that site.
-
-# @Gtg
-Oh, okay. So, once you're happy to try it out.
-
-# @Blocktrades
-The new snapshots and state files will. You'll be the first person to contact.
-
-# @Gtg
-One, second.Okay, but excellent.
-
-# @Blocktrades
-Well, you're probably doing the work setting it up. So, I don't think you count.
-
-# @mcfarhat
-Yeah. Yeah, I'm just bragging that my network is faster. So, don't worry. I don't know. I'm running on hats nerves. I don't know. It's quite a bulky machine. I'm not trying to be competitive.
-
-# @Blocktrades
-Yeah, no, no, no. So, the snapshots are really like, I stopped providing snapshots for the old style of hive mind and account history because it stopped making sense with the big files that you download and then you actually, when you start replaying and then I'm pressing if you're not paying attention, which is actually faster than, you can have like old style account history notes replayed faster than you can download it and load snapshots after I'm pressing. So, it's mostly very useful if you actually know if it will be faster for you. Because like some witnesses were trying to use my snapshots for witness purposes. And if it's the loading cloud, like 10 megabytes per second, it's not actually making it faster for them. It's better to just sync from scratch because of the same speed you will have just syncing.
-
-# @mcfarhat
-All right, all right, fair enough. You guys want me to, maybe I mean, I'm happy to give some updates on our app.
-
-# @Blocktrades
-Yes, absolutely. I think we got all the questions out of the way for the day because it looks like there's not a whole lot of people to ask questions. So, yeah, go ahead.
-
-# @mcfarhat
-All right, so yeah, I'll share some updates. I mean, regarding block explorer, so we've done several upgrades to different components that were being used in Block Explorer. We introduced a new search component that allows us to better utilize the autocomplete feature which was already available in our search bar where you have the auto-suggest for the account names. Now it's available in all the new sections of block search, account search, and a much more robust component that is better configurable and more responsive to keyboard actions and whatnot. We also switch the calendar component we're using that has also more functionality and allows us more meticulous configurations to prevent people putting a forward time in the future as a starting point and backward time in the past for the target date which was causing improper responses and incorrect data with more validation to the backend. There were some pagination issues all across the block explorer. So we also worked on fixing this. We improved the overall performance of the pagination, avoiding errors and whatnot. We're currently doing some refacting on the searches section as suggested by one of our team members. He said, it's too bulky. Let's try to break it down and improve the whole search code. So he's working on this. We updated some more witness details on the user page. So when you go to your user page, if the person is a witness previously, it just said it's a witness. If he is deactivated, you could not tell what is his user rank or witness rank. You could not tell what is the link to his announcement post or witness link. So all of these are now also available on the main user page. If you go to a person's profile or a witness profile, we did the revamped for our settings menu or the side menu on the mobile view. It becomes more user-friendly now.
-
-# @Blocktrades
-How does it feel about a mobile? Is it just the app okay for mobile in general?
-
-# @mcfarhat
-Yeah, I would say it's much nicer now. We've done a lot of enhancements, a lot of fixes on the mobile side of things. So yeah, I mean, I'm really happy with the progress. What else we created recently, we created kind of like how Hive Blocks used to have a single post page where you can see the JSON data of the single post with how it is by default, the whole data and the properties. Yeah, but I did not merge this yet because the dev used the old condenser code to fetch the query. I was not, I mean, eager to use this, but we couldn't find any other way at the moment to fetch the data. I don't know if you're aware, if there's a way to get the post content and post data other than using condenser at the moment. Is there some REST API? Is there some way via Wax which you can use to grab the data instead of a condenser API?
-
-# @Blocktrades
-That's essentially gonna be a, it's gonna be a HiveMind call.
-
-# @mcfarhat
-Okay.
-
-# @Blocktrades
-And usually if there's a denser version of it, there's a bridge version of it, which is usually the same thing. I mean, except it's better implemented. So it's probably, there's probably a bridge call, but if you just send me the specifics on the call, I can check it because I'm actually work, that's what I'm actually working on right now is HiveMind. So I'm more familiar than I normally am with those API calls. I can look it up pretty quick.
-
-# @mcfarhat
-Okay, I'll send you the, yeah, excellent. I'll send you the API calls we're currently using and see if we can use any alternative because I'm trying to also fade away from a condenser API.
-
-# @Blocktrades
-Okay, so another test I've kind of got for you guys too, actually is the new health checker. It's got the old health checker integrated, I'm ready, but I wanna update and use the new health checker. So like I said, I'm gonna check that after this meeting today. And if it looks good, I'll contact you. I'll create an issue for that for you.
-
-# @mcfarhat
-Okay, okay, excellent, excellent.
-
-# @Blocktrades
-I didn't mean to interrupt you too. I don't know if you had anything else.
-
-
-# @mcfarhat
-Oh, no, no, no, no problem. We've also made some fixes for the witnesses' schedule page. So there were some blocks being missed where witnesses are not being properly tracked for producing blocks. This was also fixed. We have better handling for no-result searches. We've done some GUI improvements. We introduced a couple of font-awesome icons on the witness page. We're starting to work on some more integration of balanced tracker data into the block explorer. We're trying to expand, to bring some cool functionality to block explorer seeing the history of the balance for the user. So we're starting to, yeah. So we're starting to work on a single page display of the history, but also we're looking to introduce some sort of a chart that on the user's page that shows his history of the balance and how his account is growing. So yeah, basically this is it for the last month.
-
-# @Blocktrades
-Okay.
-
-# @mcfarhat
-If you have any questions, I'm happy to answer.
-
-# @Blocktrades
-No, I don't. I think the one thing I gotta look up on the history is I can't remember how it's implemented right now. There's probably some improvement we might wanna do on the backend related to the history as well. I can't remember the history right now.
-
-# @mcfarhat
-Okay.
-
-# @Blocktrades
-So one of the things we found handy in another application where we had a similar thing with history was, internally it's got like a bunch of data points for all the changes, but then when you actually go to graph something like that, you just want the amount of points you want is basically relative to how far you're zoomed out, because you basically don't want more points than you have pixels. Otherwise, you're just getting data, that's just, you're just getting a larger than needed data response. And I don't know if the current API does that kind of work, but if not, we'd probably wanna have somebody assigned. Maybe Xander could do it eventually to basically do that kind of filtering on the backend side so that it cuts down the points to the amount of points you need.
-
-# @mcfarhat
-I see, I see, I see. Okay, that makes sense.
-
-# @Blocktrades
-That's really important. You can imagine easily, right? Because if you're zoomed out and you don't want 10 million points just because you're looking at a long period of time.
-
-# @mcfarhat
-Exactly, exactly. Yeah, yeah.
-
-# @Blocktrades
-So that might be a blocker for this issue too, for you right now, for that particular one.
-
-# @mcfarhat
-I'm just having one of the devs try to look into how we can properly implement this. So they'll probably run into this issue like you mentioned. I mean, they're just trying to capture the whole idea of what we can do, but.
-
-# @Blocktrades
-Yeah, and the UI and everything we specced out there too, right? You can have everything almost specced out except just the API call at the end. So it's not like it's a big deal. It's not a complete blocker. I just mean to final implementation, you'd need probably back at code changed most likely, I think. OK, anything else? I guess that's probably it.
-
-# @mcfarhat
-No, not from my end. Thank you, thank you.
-
-# @Blocktrades
-Arcane, did you have anything to report?
-
-# @Arcane
-No, nothing else. OK, I guess that's it for today then. Thanks, guys.
-
-# @mcfarhat
-Awesome, thank you guys. Have a good day.
-
-# @Arcane
-Yeah, goodbye next. Bye, bye. See you.
-</div>
-  <footer class="hive-post-embed__source">
-    <span class="hive-post-embed__source-label">Source:</span>
-    <a href="https://hive.blog/@howo/core-dev-meeting-64">Core dev meeting #64</a>
-    by
-    <a href="https://hive.blog/@howo">@howo</a>
-  </footer>
-</div>]]></content><author><name>howo</name></author><category term="news" /><category term="core" /><category term="development" /><summary type="html"><![CDATA[In a terrible twist of fate I missed this core dev meeting]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://hivedocs.info/assets/images/favicon.png" /><media:content medium="image" url="https://hivedocs.info/assets/images/favicon.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">HafSQL update 2.0.0-rc1 - Breaking changes</title><link href="https://hivedocs.info/tools/haf/sql/2024/12/14/hafsql-update-200-rc1-breaking-changes.html" rel="alternate" type="text/html" title="HafSQL update 2.0.0-rc1 - Breaking changes" /><published>2024-12-14T08:24:00-08:00</published><updated>2024-12-14T08:24:00-08:00</updated><id>https://hivedocs.info/tools/haf/sql/2024/12/14/hafsql-update-200-rc1-breaking-changes</id><content type="html" xml:base="https://hivedocs.info/tools/haf/sql/2024/12/14/hafsql-update-200-rc1-breaking-changes.html"><![CDATA[<div class="hive-post-embed" data-hive-author="mahdiyari" data-hive-permlink="hafsql-update-200-rc1-breaking-changes">
-  <div id="content-mahdiyari-hafsql-update-200-rc1-breaking-changes" class="hive-post-embed__content" data-hive-render-target="true"><center>![image.png](https://files.peakd.com/file/peakd-hive/mahdiyari/23uQJFstu9WELzuWhgKxFERDXiae9zBtBJJx6zGGZazUEzG3e3cpWPNaU1WQeMUWzE3x3.png)</center>
-HafSQL went through a big update. This is a release candidate and not a final release as HAF 1.27.6 is not released yet. This version of HafSQL is compatible with HAF 1.27.6-rc9.
-
-There are a lot of breaking changes. In terms of API usage, the REST APIs are replacing the JSON RPC methods.
-Database tables and views have been also changed.
-
-Notable features/changes:
-- `op_*` and `vo_*` have been removed and replaced with `operation_*_table` and `operation_*_view` - See documentations - Each replacing table might have a slightly different structure/data types
-- Useful HAF tables are now accessible under `haf_*`
-- Addition of HBD/HIVE savings balances
-- Addition of account information - In par with hivemind if not more
-- REST API integration into the main APP - the API repository has been dropped
-- Streamlined docker integration - Maintaining a docker compose repository
-- The code base is now Typescript with Deno
-- Database documentations: https://mahdiyari.gitlab.io/hafsql/
-- API documentations: https://hafsql-api.mahdiyari.info
-
-***
-The API documentation link is also the endpoint for the REST APIs. Every node running HafSQL will also serve that documentation. The APIs are not done yet and more will be added.
-
-The database documentation provides an easy way of searching the columns and the tables. It also includes the new endpoint of the public HafSQL node (`hafsql-sql.mahdiyari.info`).
-
-The switch to the breaking code will be after the official HAF 1.27.6 release. Until then the old node will work (hopefully). Test your codes and be ready for the official release as this is just a release candidate.
-
-The main repository and the documentations should have all you need for using HafSQL either locally or by the provided public node. I have tried to write only useful information there.
-
-Main repository: https://gitlab.com/mahdiyari/hafsql
-Docker hub: https://hub.docker.com/r/mahdiyari/hafsql
-
-***
-### Future work
-
-I will try to complete the API list as far as I can for the data already present in the database and have public API nodes run and provide HafSQL APIs.
-
-I will probably write another post after the above is done and discuss what comes next.
-
-
-</div>
-  <footer class="hive-post-embed__source">
-    <span class="hive-post-embed__source-label">Source:</span>
-    <a href="https://hive.blog/@mahdiyari/hafsql-update-200-rc1-breaking-changes">HafSQL update 2.0.0-rc1 - Breaking changes</a>
-    by
-    <a href="https://hive.blog/@mahdiyari">@mahdiyari</a>
-  </footer>
-</div>]]></content><author><name>mahdiyari</name></author><category term="tools" /><category term="haf" /><category term="sql" /><summary type="html"><![CDATA[This is a release candidate and not a final release as HAF 1.27.6 is not released yet]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://files.peakd.com/file/peakd-hive/mahdiyari/23uQJFstu9WELzuWhgKxFERDXiae9zBtBJJx6zGGZazUEzG3e3cpWPNaU1WQeMUWzE3x3.png" /><media:content medium="image" url="https://files.peakd.com/file/peakd-hive/mahdiyari/23uQJFstu9WELzuWhgKxFERDXiae9zBtBJJx6zGGZazUEzG3e3cpWPNaU1WQeMUWzE3x3.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Posting pictures to Hive and Snaps using Python</title><link href="https://hivedocs.info/howto/python/2024/12/12/posting-pictures-to-hive-and-snaps-using-python.html" rel="alternate" type="text/html" title="Posting pictures to Hive and Snaps using Python" /><published>2024-12-12T10:09:09-08:00</published><updated>2024-12-12T10:09:09-08:00</updated><id>https://hivedocs.info/howto/python/2024/12/12/posting-pictures-to-hive-and-snaps-using-python</id><content type="html" xml:base="https://hivedocs.info/howto/python/2024/12/12/posting-pictures-to-hive-and-snaps-using-python.html"><![CDATA[<div class="hive-post-embed" data-hive-author="makerhacks" data-hive-permlink="posting-pictures-to-hive-and-snaps-using-python">
-  <div id="content-makerhacks-posting-pictures-to-hive-and-snaps-using-python" class="hive-post-embed__content" data-hive-render-target="true">
-![Screenshot by Dropbox Capture.png](https://files.peakd.com/file/peakd-hive/makerhacks/23tvZrTE8f4zezR2GR8SCBAnwXATEUZtaqchvjnDv2Mk9UtSViVUbpZ9oimFXt14tL5cs.png)
-
-Previously I showed how you can automate some Snaps posting.
-
-You can see [that tutorial here](https://peakd.com/developers/@makerhacks/how-to-post-snaps-from-python).
-
-One thing missing from that code was the ability to post photographs.
-
-Pictures are a big use of Snaps, it lends itself well to that purpose, and especially due to the fact a lot of Hive folks are not happy when you post just an image and a caption as an actual post.
-
-Lots of dapps have come and gone that were Instagram replacements, I quite like photos as social media, so I am happy we have Snaps now for this.
-
-To keep things simple your photo needs to already exist in the local directory. I am not including any code for taking a photo or selecting the image using a finder!
-
-## Beem Image Upload Library
-
-Beem includes the feature for us, so it is a simple case of importing the appropriate classes with ```from beem.imageuploader import ImageUploader```
-
-You could of course use Imgur or whatever, but this keeps things "on the chain" as it were.
-
-## Uploading the Photo
-
-Next we create our object 
-```
-image_uploader = ImageUploader(hive_instance=hive)
-```
-
-You will note you have to authenticate first.
-
-Don't worry, the full code will be shared at the end of the article, just trying to keep to what is different.
-
-Now we can do the upload:
-
-```
-uploaded_image = image_uploader.upload(image_filename, account.name, image_name=image_filename)
-image_url = uploaded_image["url"]
-print("Uploaded your image as", image_url)
-```
-
-We get the URL back from the uploaded image in the ```['url']``` value, and for ease of sharing I just use that twice when I create the markdown text string:
-
-```
-picture_markdown = f"![{image_url}]({image_url})"
-```
-
-Really we should have proper alt text here but I am sure you can add that without my help.
-
-## Full Code for Posting Image Snaps
-
-Here is a full script for posting images to Snaps from your command line using Python:
-
-```
-
-# imports
-from beem import Hive
-from beem.discussions import Query, Discussions_by_blog as Discussions
-from beem.comment import Comment
-from beem.account import Account
-from beem.imageuploader import ImageUploader
-
-# Log in
-wif = input("Enter your posting key: ")
-hive = Hive(keys=wif)
-account = Account("makerhacks", blockchain_instance=hive)
-
-# Upload the pic
-image_uploader = ImageUploader(hive_instance=hive)
-image_filename = input("Enter the image filename")
-uploaded_image = image_uploader.upload(image_filename, account.name, image_name=image_filename)
-image_url = uploaded_image["url"]
-print("Uploaded your image as", image_url)
-
-
-# Snap container
-q = Query(limit=1, tag="peak.snaps")
-posts = Discussions(q)
-details = Comment(posts[0])
-
-
-# Post our snap!
-perm = details['authorperm']
-comment = Comment(perm, hive_instance=hive)
-picture_markdown = f"![{image_url}]({image_url})"
-comment.reply(picture_markdown + "This picture was posted via Python using the Beem library!", author=account.name)
-```</div>
-  <footer class="hive-post-embed__source">
-    <span class="hive-post-embed__source-label">Source:</span>
-    <a href="https://hive.blog/@makerhacks/posting-pictures-to-hive-and-snaps-using-python">Posting pictures to Hive and Snaps using Python</a>
-    by
-    <a href="https://hive.blog/@makerhacks">@makerhacks</a>
-  </footer>
-</div>]]></content><author><name>makerhacks</name></author><category term="howto" /><category term="python" /><summary type="html"><![CDATA[How to post images to Hive/Snaps]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://files.peakd.com/file/peakd-hive/makerhacks/23tvZrTE8f4zezR2GR8SCBAnwXATEUZtaqchvjnDv2Mk9UtSViVUbpZ9oimFXt14tL5cs.png" /><media:content medium="image" url="https://files.peakd.com/file/peakd-hive/makerhacks/23tvZrTE8f4zezR2GR8SCBAnwXATEUZtaqchvjnDv2Mk9UtSViVUbpZ9oimFXt14tL5cs.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">How to Post Snaps from Python</title><link href="https://hivedocs.info/howto/python/2024/12/09/how-to-post-snaps-from-python.html" rel="alternate" type="text/html" title="How to Post Snaps from Python" /><published>2024-12-09T05:28:42-08:00</published><updated>2024-12-09T05:28:42-08:00</updated><id>https://hivedocs.info/howto/python/2024/12/09/how-to-post-snaps-from-python</id><content type="html" xml:base="https://hivedocs.info/howto/python/2024/12/09/how-to-post-snaps-from-python.html"><![CDATA[<div class="hive-post-embed" data-hive-author="makerhacks" data-hive-permlink="how-to-post-snaps-from-python">
-  <div id="content-makerhacks-how-to-post-snaps-from-python" class="hive-post-embed__content" data-hive-render-target="true">
-![Screenshot by Dropbox Capture.png](https://files.peakd.com/file/peakd-hive/makerhacks/23tGXZj6d5r9tUAuaUNX9SZydumip8Vri7jm2q2gM8yzpHtjajx5tET9taAW4VTNHLN8Q.png)
-
-
-The other day I wrote about how you can interact with Bluesky via your own Python code.
-
-My goal behind that was to be able to cross-post between social media networks and from my own automations.
-
-For example, perhaps on my retro games account I could post a "game of the day" which would pull details such as Computer and Video Games score, best sales rank, etc.
-
-On Peakd, the site I mainly do my Hive blogging, these micro posts are called Snaps.
-
-How they work is each day (or whenever there are enough posts) a new parent post is created. Each of our posts are then actually created as replies to that core post. We are really commenting rather than posting, and this is how they are preventing the Hive blog feeds from getting cluttered with an image and a comment that says "LOL" :)
-
-We all love a good sh'tpost but we don't want them on the main feed, right!
-
-This means although there is no official API that I can see, we can use the trusty Beem library that has been humming along since the steem days.
-
-These are the imports we will need, starting with Hive because to post our reply we need to be authenticated.
-
-```
-from beem import Hive
-from beem.discussions import Query, Discussions_by_blog as Discussions
-from beem.comment import Comment
-from beem.account import Account
-```
-
-Next we need to log in. If we are running interactively we can just ask for the Hive posting key:
-
-```
-wif = input("Enter your posting key: ")
-hive = Hive(keys=wif)
-account = Account("YOUR USER NAME HERE", blockchain_instance=hive)
-```
-
-If you are wanting to not interact then you will need some combination of environment variables or ```hive.wallet.unlock("YOUR WALLET PASSPHRASE")```
-
-You can see if you authenticated correctly and the information that gives you with a simple ```for each``` loop:
-
-```
-for accountdetail in account:
-  print(accountdetail)
-```
-
-For our purposes just the name will suffice:
-
-```
-print(account.name)
-```
-
-(This comes in handy later)
-
-Now, how to get the Snaps Container post?
-
-Well, unofficially, I guess the next container will be the most recent post for the account that they use ('@peak.snaps'), right?
-
-This does run the small risk that they might be creating a new container right as we are posting but I think we can live with that.
-
-```
-q = Query(limit=1, tag="peak.snaps")
-posts = Discussions(q)
-details = Comment(posts[0])
-
-print('Title: ' + str(details.title))
-print('Author: ' + details.author)
-print('Category: ' + details.category)
-print('Body: ' + details.body)
-```
-
-This gets the most recent post and outputs the details.
-
-Of course once you know this is working you don't need to output all this stuff, it is just handy to ensure you are not replying to some random Hive users blog articles!
-
-These are the info we actually need:
-
-```
-perm = details['authorperm']
-comment = Comment(perm, hive_instance=hive)
-comment.reply("Test from Beem",title="Test from Beem", author=account.name)
-```
-
-In order to reply, Hive needs a permalink of the post we are replying to.
-
-For our reply to post, that is write to the blockchain, we also need an authenticated account, which is what we got earlier. 
-
-Finally we set the text of our Snap (though the title is not used in Snaps view), and we pull in our account name as the author.
-
-That is it! We can post (text) to Snaps, hurrah!
-</div>
-  <footer class="hive-post-embed__source">
-    <span class="hive-post-embed__source-label">Source:</span>
-    <a href="https://hive.blog/@makerhacks/how-to-post-snaps-from-python">How to Post Snaps from Python</a>
-    by
-    <a href="https://hive.blog/@makerhacks">@makerhacks</a>
-  </footer>
-</div>]]></content><author><name>makerhacks</name></author><category term="howto" /><category term="python" /><summary type="html"><![CDATA[Hive microblogging via your own Python scripts]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://files.peakd.com/file/peakd-hive/makerhacks/23tGXZj6d5r9tUAuaUNX9SZydumip8Vri7jm2q2gM8yzpHtjajx5tET9taAW4VTNHLN8Q.png" /><media:content medium="image" url="https://files.peakd.com/file/peakd-hive/makerhacks/23tGXZj6d5r9tUAuaUNX9SZydumip8Vri7jm2q2gM8yzpHtjajx5tET9taAW4VTNHLN8Q.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Clive Updates - the first step to an encrypted profile</title><link href="https://hivedocs.info/news/wallet/clive/2024/11/27/clive-updates-the-first-step-to-an-encrypted-profile.html" rel="alternate" type="text/html" title="Clive Updates - the first step to an encrypted profile" /><published>2024-11-27T05:35:36-08:00</published><updated>2024-11-27T05:35:36-08:00</updated><id>https://hivedocs.info/news/wallet/clive/2024/11/27/clive-updates-the-first-step-to-an-encrypted-profile</id><content type="html" xml:base="https://hivedocs.info/news/wallet/clive/2024/11/27/clive-updates-the-first-step-to-an-encrypted-profile.html"><![CDATA[<div class="hive-post-embed" data-hive-author="thebeedevs" data-hive-permlink="clive-updates-the-first-step-to-an-encrypted-profile">
-  <div id="content-thebeedevs-clive-updates-the-first-step-to-an-encrypted-profile" class="hive-post-embed__content" data-hive-render-target="true">The two main goals described in the previous post are still valid: making Clive more user-friendly and implementing encrypted profiles. Both goals are in progress - you can read about them below. Additionally, we prepared a script that runs the CLI (command-line interface) more easily.
-
-### Changes towards encrypted profiles
-
-To improve security we are working on the encrypted profile functionality. Therefore, before you start working with Clive you must enter a password - log in to your profile. All data stored in your profile, such as working and tracked accounts, and key aliases will be stored in an encrypted profile file. This requires many changes to both the CLI (command line interface) and TUI (text-based user interface):
-
-- TUI - new screen allowing profile selection and creation when logging in,
-- TUI/CLI - changes in locking and unlocking the profile,
-- TUI/CLI - stored data encryption.
-
-The functionality will be delivered in two main parts: the first part - TUI-related changes, but without encryption, and the second part - CLI-related changes with profile data encryption.
-
-We are changing the way we store data so if you have already created a profile, you will have to recreate it. This inconvenience is related to changes in the next release.
-
-We have finished the first part of the work:
-
-- While starting Clive you have to select a profile and enter the password.
-
- ![image2.png](https://images.hive.blog/DQmd4ngtrEFcZ3DeMqz9ZGAEWN2ozqDbfJEjbCFdzRtEM9Z/image2.png) 
-
-- When you click on the wallet state indicator presenting: i.e. UNLOCKED status, your profile will be locked and you will have to enter a password to unlock a profile. The dashboard is no longer accessible without entering a password
-
- ![image4.png](https://images.hive.blog/DQmQ6QSFX9fUB7hxQFYoJsHmATzCshSjYccrrD5qhRTtrSd/image4.png) 
-
-Additionally, you can now easily switch between multiple profiles in the TUI:
-
- ![image3.png](https://images.hive.blog/DQmazL3KA1s2uPcLDzTPHZuGEJA6Faa9mcnLicaUMnFLvM8/image3.png) 
-
-### To make Clive more user-friendly
-
-
-We are still working on making Clive more user-friendly. In this release we changed behavior on views with operations: transfer, transfer to/from savings, power up, power down, set the withdraw routes, and delegate. There are the following changes:
-
-- The fast broadcast was removed - it is unnecessary now as the cart and transaction summary were combined into a single page.
-- We added an `Add to cart` button, but you can still use bindings if it is more convenient for you.
-- If you press the `Add to cart` button or Enter, the operation is:
-  - added to cart
-  - the application remains on the same operation screen
-  - all data like values entered into input fields is set to default values, also the receiver of transfer and power up/down is automatically set to your working account
-  - the `The operation was added to the cart` notification is displayed.
-
- ![image1.png](https://images.hive.blog/DQmfW3pHiM9yJm7q7mMBfHCvkPEDSPek6Th2hpdqWu4Qysp/image1.png) 
-
-### A new script to run the CLI Clive easier
-
-
-We created a custom Bash script to launch the Clive CLI more easily in a dockerized environment. The script for running the TUI is already available and [I wrote about it here](/@thebeedevs/clive-updates-more-useful-dashboard-in-the-tui)
-
-Just like the previous script, this script also maps host directories to the Docker container and allows for persistent storage of user profiles. It allows for easy use of the CLI.
-
- ![image5.png](https://images.hive.blog/DQmTZujrdez5KQhJ6At2zYfRanoMJZpwUpsknXh7oxrXajG/image5.png) 
-
-You can find the scripts here: https://gtg.openhive.network/get/clive/
-
-[Complete list of corrected issues](https://gitlab.syncad.com/hive/clive/-/releases/v1.27.5.18)
-
-More info about running Clive can be found here: [Clive - alpha release](/@thebeedevs/clive-alpha-release). Please make sure you are using the most recent version: **v1.27.5.18**
-
-## TL;DR
-
-```
-docker run -ti hiveio/clive:v1.27.5.18
-```
-or `./start_clive.sh` (from the link above)
-
-### Your feedback is invaluable and always welcome.
-</div>
-  <footer class="hive-post-embed__source">
-    <span class="hive-post-embed__source-label">Source:</span>
-    <a href="https://hive.blog/@thebeedevs/clive-updates-the-first-step-to-an-encrypted-profile">Clive Updates - the first step to an encrypted profile</a>
-    by
-    <a href="https://hive.blog/@thebeedevs">@thebeedevs</a>
-  </footer>
-</div>]]></content><author><name>thebeedevs</name></author><category term="news" /><category term="wallet" /><category term="clive" /><summary type="html"><![CDATA[The two main goals described in the previous post are still valid: making Clive more user-friendly and implementing encrypted profiles]]></summary></entry><entry><title type="html">Hive Keychain Mobile 2.4.3 + Extension production release : Multisig and 2FA</title><link href="https://hivedocs.info/news/hive-keychain/multisig/2024/11/25/hive-keychain-mobile-243-extension-production-release-multisig-and-2fa.html" rel="alternate" type="text/html" title="Hive Keychain Mobile 2.4.3 + Extension production release : Multisig and 2FA" /><published>2024-11-25T21:52:09-08:00</published><updated>2024-11-25T21:52:09-08:00</updated><id>https://hivedocs.info/news/hive-keychain/multisig/2024/11/25/hive-keychain-mobile-243--extension-production-release--multisig-and-2fa</id><content type="html" xml:base="https://hivedocs.info/news/hive-keychain/multisig/2024/11/25/hive-keychain-mobile-243-extension-production-release-multisig-and-2fa.html"><![CDATA[<div class="hive-post-embed" data-hive-author="keychain" data-hive-permlink="hive-keychain-mobile-243--extension-production-release--multisig-and-2fa">
-  <div id="content-keychain-hive-keychain-mobile-243--extension-production-release--multisig-and-2fa" class="hive-post-embed__content" data-hive-render-target="true">
-![New Hive Multisign Proposal.png](https://files.peakd.com/file/peakd-hive/keychain/23wByQ9g5ZZJRA9UJToNaPHKmcPKbJ1oMmcikNHSbZERcjyAzp124unhJHEyyS2s5GWy7.png)
-
-
-The extensions spent a little while in Beta after the introduction of the 2FA features, and was ready after a few tweaks. We kept it in Beta longer, waiting for the same feature to be released on mobile. If the 2FA is required for an account, you should be able to use it on every platform, and that is now the case, starting with Keychain mobile v2.4.3! 
-
-<div id="multisig"><h1>Multisig</h1></div>
-Keychain mobile can now automatically detect when a transaction needs several signatures and process the operation through Hive Multisig when needed:
-
-
-https://images.hive.blog/500x700/https://files.peakd.com/file/peakd-hive/keychain/23xyGTni4yxV12z7eTrFwtAErr772yDJFSyN8cVqk5HSbByQmtqK7GsD6EAKkERKR61hZ.png
-
-
-Accounts can also be set to listen for Multisig requests in Menu &gt; Settings &gt; Multisig:
-
-
-https://images.hive.blog/500x700/https://files.peakd.com/file/peakd-hive/keychain/23wWTFGjZUN5u4VEf5D8WbL77DEHYvVeaLq1PqwHBz4sqvprjSjV1UAsG3Bp2k6T3f4pQ.png https://images.hive.blog/500x700/https://files.peakd.com/file/peakd-hive/keychain/23xV8FpGzXUCX21RJWevxPod3jbWQkKrbTnSXsbraB8iFxng3FbMjUAGZmC7nCkZZRqH7.png
-
-<div id="twofa"><h1>2FA</h1></div>
-
-Keychain Mobile also automatically detects the need for 2FA, will prompt the user to enter their One Time Password, and then send the transaction through Hive Multisig:
-
-
-https://images.hive.blog/500x700/https://files.peakd.com/file/peakd-hive/keychain/23xouiLvt4PMKJENVEKso31k2iLZN9vbP5oNirC24vKvWSCUwQp6wxwQGkTUX7uWz6Wyf.png
-
-### To setup 2FA on your account, follow the instructions on [this post](https://peakd.com/multisig/@stoodkev/multisig-2fa-bot-beta).
-
-
-
-## Download the Apps / Extensions
-
-The download links for our mobile Apps and extensions are available on our [landing page](https://hive-keychain.com)
-
-## Discord
-
-To communicate with us, report an issue or become a Beta tester, join our Discord by following this link :
-https://discord.gg/3EM6YfRrGv
-
-Or scanning this QR Code : 
-
-![image.png](https://files.peakd.com/file/peakd-hive/keychain/BRNgvm9y-image.png)
-
-#### Team
-
-
-@stoodkev : CEO - [Witness](https://hivesigner.com/sign/account-witness-vote?witness=stoodkev&amp;approve=1)
-@cedricguillas : CTO - [Witness](https://hivesigner.com/sign/account-witness-vote?witness=cedricguillas&amp;approve=1)
-@manuphotos : Community Manager - [Witness](https://hivesigner.com/sign/account-witness-vote?witness=hivecuba&amp;approve=1)
-@yabapmatt : Advisor - [Witness](https://hivesigner.com/sign/account-witness-vote?witness=yabapmatt&amp;approve=1)
-
-
----
-
-
-### Support Hive Keychain development by voting for [our proposal](https://peakd.com/hive/@keychain/hive-keychain-proposal-2024) on [PeakD](https://peakd.com/proposals/306) or with [HiveSigner](https://hivesigner.com/sign/update-proposal-votes?proposal_ids=%5B306%5D&amp;approve=true).
-</div>
-  <footer class="hive-post-embed__source">
-    <span class="hive-post-embed__source-label">Source:</span>
-    <a href="https://hive.blog/@keychain/hive-keychain-mobile-243--extension-production-release--multisig-and-2fa">Hive Keychain Mobile 2.4.3 + Extension production release :  Multisig and 2FA </a>
-    by
-    <a href="https://hive.blog/@keychain">@keychain</a>
-  </footer>
-</div>]]></content><author><name>keychain</name></author><category term="news" /><category term="hive-keychain" /><category term="multisig" /><summary type="html"><![CDATA[The extensions spent a little while in Beta after the introduction of the 2FA features, and was ready after a few tweaks]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://files.peakd.com/file/peakd-hive/keychain/23wByQ9g5ZZJRA9UJToNaPHKmcPKbJ1oMmcikNHSbZERcjyAzp124unhJHEyyS2s5GWy7.png" /><media:content medium="image" url="https://files.peakd.com/file/peakd-hive/keychain/23wByQ9g5ZZJRA9UJToNaPHKmcPKbJ1oMmcikNHSbZERcjyAzp124unhJHEyyS2s5GWy7.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Core dev meeting #63</title><link href="https://hivedocs.info/news/core/development/2024/11/25/core-dev-meeting-63.html" rel="alternate" type="text/html" title="Core dev meeting #63" /><published>2024-11-25T11:44:06-08:00</published><updated>2024-11-25T11:44:06-08:00</updated><id>https://hivedocs.info/news/core/development/2024/11/25/core-dev-meeting-63</id><content type="html" xml:base="https://hivedocs.info/news/core/development/2024/11/25/core-dev-meeting-63.html"><![CDATA[<div class="hive-post-embed" data-hive-author="howo" data-hive-permlink="core-dev-meeting-63">
-  <div id="content-howo-core-dev-meeting-63" class="hive-post-embed__content" data-hive-render-target="true">Apologies for the delay It's been a busy few weeks
-
-https://www.youtube.com/watch?v=oIEnoDzcXlI
-
-# @mcfarhat
-Okay, we're recording. If you guys want to start, it's up to you.
-
-# @blocktrades
-Okay, awesome. Okay. Well, since we think how possibly is not going to make it today, because of the time zone change, this is Dan, our otherwise known as block trades. So I'll start off the meeting discussing what we've been doing lately. 
-
-I guess, first of all, on the Hive D front, the basically the blockchain node software, we've been doing a couple of things of interest, I think, to everyone. First, there was a request to increase the transaction expiration time, which previously, basically transaction would only last for like an hour, once it was broadcast. 
-
-And this was a problem for people who wanted to do multi-signing, because we often do multi-signing out of band, and you might have to contact some people and wait for them to sign and then sort of pass it around to get all the signatures. So it was requested to increase the transaction expiration time to like a day. 
-
-And in theory, that looks pretty easy to do is just a few lines change in the code. But we also wanted to be sure that this didn't cause any kind of problems, because obviously the time it only was set to an hour for some reason, presumably. And so we looked into it, and we did find that there were cases where this could increase in transaction expiration time could allow for someone to attack the network easier by creating a huge amount of transactions that add up space and specifically memory on people's nodes. So just to figure that out, of course, it was a lot of work, because we had to basically set up a test where we basically could literally do that kind of, I guess, flooding of the network, which isn't diseases it sounds even do. 
-
-We had to write special versions of HiveD that were capable of generating more transactions and processing more transactions than than HiveDs do right normally right now. But we were already been kind of working on that for some of our other testing for like future performance. 
-
-So we basically got all that working, and we're able to see that indeed, basically by flooding, you could increase the amount of memory that was used on a HiveD node by several gigabytes. And so to sort of resolve that problem, we made some changes the way RC calculations are performed under flooding conditions so that the transactions get progressively more expensive temporarily and under a flooding condition, and therefore they'll get dropped by the node so that they don't eat up memory. 
-
-And we also set limits of where these kind of triggers happen. This doesn't affect the actual final RC cost when it gets put into the blockchain, but there's like, when you first process a transaction, there's an RC cost that's temporarily, basically, it's only calculated on the node, it's not actually done as far as, oh, okay. Okay, Gandalf said he's having some problems with sound, but I don't think it's impacting any of us. So
-
-# @mcfarhat
-No, I can't hear you well.
-
-# @blocktrades
-Yeah, okay. Good. So basically, this is really a change to the RC calculations. It's just a temporary one at the nodes themselves so that they don't eat up too much memory under these flooding conditions. And again, this was very speculative. 
-
-I don't know that we would have this problem happen anytime soon, because it took us even a while to be able to generate the conditions, but we want to be safe as possible as we make changes like this. So it's sort of future proof just against flooding attacks in the future. 
-
-So I think that's another positive for this change. So this change will happen as part of the next hard fork. I've been planning the next hard fork for December, and that's where it's currently set. But there's one more change I really want to get in. So what I'm thinking to do right now is everything else. 
-
-So we've got two sort of separate sets of changes. We've got the hard fork changes, and we've got all the changes related to the API nodes. And the API node changes are things like updates to HiveMind, update to the block explorer, balance tracker, all these half the account history, all these kind of things. And so those are quite separate changes, and they can be deployed separately. So I'm thinking, as of basically today, I started thinking about it. 
-
-I still want to keep a December timeframe for upgrading all the nodes. So I think we should do the upgrade to all the nodes in December. Everything looks to be coming together as far as testing goes that will be ready in December for that. But then I want to push out the release, the hard fork date, so that we can make some more changes to HiveD prior to the hard fork. 
-
-So I'm thinking first quarter for the hard fork itself, but API node release in December. It shouldn't put any more real trouble as far as node people running nodes, because basically, there won't be any kind of replay once they upgrade to the hard fork version. So basically, everybody will have to do a replay for it in December, and then there shouldn't be anything required in the first quarter to do the upgrade to the hard fork version of HiveD itself. 
-
-And the main thing I'm looking at, the reason I'm sort of delaying the HiveD is because I want to make some changes to the signing. There's been some requests for changes, and I also want to make some changes of my own to the signing. And also, as part of that, I also want to release another half app, which can be basically deployed later, which is the Light Accounts app. And that one's a little behind, because the guy who had planned to work on that has been tied up with another project, and he's just finally coming free now. 
-
-So I've already made some posts, which kind of cover what we've done lately, but I just want to give a few more overview quick highlights, and also sort of update since that post. So like I said, there's not a lot in the hard fork right now, changes that I think are too caused to many issues or potential concerns. The biggest one is going to be this increased expiration time, and again, that'll be first quarter. 
-
-But we've done quite a bit on the half side of things. And so we basically rewrote the loop for how half apps work, and that was done in order to make it more difficult to make an app that had problems. One of the things when we were developing half apps, we noticed it was possible that if you committed, if you made commits to the database at the wrong time, and then your process was interrupted for some reason, your app got, you know, say it crashed or something like that, then it might have a problem being an improper state when it relaunched. 
-
-So we redesigned the loop that half uses so that it's very difficult for someone now to write a main loop in their app that will have that kind of problem anymore. And as part of that, we've tested this on all our half apps, the new loop, and it works great. We haven't had any more problems of that sort since that change. Another thing we've done recently is we're currently making tests to switch to Postgres 17 from 16. And so I'm running tests on that right now, and I'm doing benchmarks, and so far the speed looks, it's the same. 
-
-So we don't have any problems, as far as I can tell so far. The only thing I still, I'm still replaying Highbind, but once Highbind's replayed, the last thing I'll need to do as far as benchmarking is we'll test it with the production data on the query side to be sure none of the queries themselves are slower. But the replaying, the sync time, all seems to be quite good so far with Postgres 17. 
-
-So I don't anticipate any problems with the move to Postgres 17. Another change I'm also testing in half, which I guess is the other big final change I think we would like to get in half before the release, is we've shifted the data that's stored in half into a separate schema called half D. 
-
-So basically all the data and all the code, the sort of API, we're all stuck in this one schema called Hive before. And now we separated it into two different schemas. One contains the data and one contains the API. And we did this to make it easier for us to generate upgrades between versions of half so that it would, because it's been sort of troublesome sometimes to do an upgrade between two different versions of half, at least easily. And this should simplify that process of making an upgradeable version. 
-
-Let's see, so that's kind of most of what's going on in half. The other, I guess one other project we've been working on for quite a while, which I've mentioned in passing, I guess it's been about two or three months now, is we've been basically rewriting the server side of highmind. It currently uses a combination of SQL and Python code to respond to queries. 
-
-And that had a couple of disadvantages. One SQL code just tends to be more efficient on a database server than Python code. And two, it made it difficult for us to use a Postgres T server to serve up the API calls. And for all our other half apps, we're basically using Postgres T servers now instead of Python based servers, because the performance of Postgres T servers is much better. 
-
-So we've finally, just as I guess today, finished the conversion of all those apps to pure SQL API calls. So next, we're going to be benchmarking that specifically with Postgres T and seeing, you know, checking the new performance of everything. This was also important for another reason, not just for the performance advantage we'd get, but also because we're also making a move, as a lot of you guys know from the JSON API, JSON based API to REST based API. And so in order to, our preferred way of doing those REST APIs is using Postgres T. 
-
-So we really needed to switch the server to Postgres T in order to start the move to using a REST based API for HiveMind itself. We kind of completed the REST API for all the other apps. We've done it for reputation tracker. We've done it for balance tracker. We've done it for half. And we've done it for the block explorer. 
-
-But we still haven't done, we still don't have a REST API yet for, for HiveMind. But now we're, we're finally in the position where we can start on that work as well. We're also going to, I guess as part of that do some analysis of all the API calls that we've been working on the existing ones for HiveMind and see if we can make, make some of it a little bit more logical as we make the move to REST. So that's kind of what's going on in HiveMind. 
-
-The other apps I mentioned, like I said, the other thing we've really been doing is getting all the REST API calls for those apps that we previously had JSON RPC based calls as well. And so we've, I've tested and I've published that and we've got a server up now where anybody can test the new REST API calls. It's all doc, it's the move to REST is also allowed for us to document the API in a sort of interactive way using swagger. 
-
-So now it's really easy if somebody, if a dev wants to come along and see what the API works like, they can basically just go to those pages and actually make interactive calls and just test and see what the calls do. And you know, what happens if you make a change without having to write a lot of code, they can just sit there and tinker within the pages of the swagger, which is really nice, I think.
-
-
-# @mcfarhat
-You know, not to interrupt you, Dan, funny enough, one of my new devs. I did not mention swagger. I don't know how they were researching something and they just brought me saying, okay, this is how we call this thing. And I said, how did you come up on swagger? He said, they're just Google things and I found it online. It was, it was amazing. I love this.
-
-
-# @blocktrades	
-Oh, so he found it, he found it online.
-
-
-# @mcfarhat	
-Yeah, yeah, yeah, found it online while Google is stuff. Yeah, that was amazing.
-
-
-# @blocktrades
-Oh, that's cool. That's quite cool. So yeah, I think that's the switch to swagger is really, I think, going to make a big leap forward for our documentation process for the whole hive API. And it kind of forces everybody to do it too. 
-
-And then in the semis, this is the idea is now ever all the documentation will have a kind of standardized format, which I think is, you know, really important, especially as we get more devs working on different projects. 
-
-And I guess it's a good time to mention this was also the past past little bit, we've also been slowly transitioning development effort for Block Explorer over to McFarhat's group. We're still doing a little bit work on our side, but we're in the process of finishing up and finalizing the head off of all that code to his team, which I think is great. 
-
-It gets another group that's be very familiar with the half development process, and also just allows us to free up to work on some other projects as well. 
-
-Let's see what else. There's a, we've been done a bunch of work on the front end side as well. And I've kind of covered that also in my post, so I don't want to get into that much detail. 
-
-But I guess I'm trying to think what should really cover there. Maybe actually, before I go to that, I guess the other thing I want to talk about a little bit is the state of Wax. Wax is also getting quite close to release, and that's still time for December release as well. And Wax is basically our new library for using all these APIs, the new REST APIs especially. 
-
-And so the most recent thing we're doing in Wax is we've been building a health checker. And in fact, I've actually, if Bartek's able to talk, I might ask him to cover the current state of the health checker, because I haven't had a chance to check with him on the current state of it. 
-
-But basically, I'll just sort of describe what it's for first. The health checker is basically a sort of some code inside Wax that allows you to chest the state of the various API servers you're using and select which API servers you're using. 
-
-And so it can basically allow you to switch back and forth between the ones that can be the best performance. But I'll let Bartek speak and sort of describe the features more.
-
-
-# @BW
-Yes, actually, this is some part of library and let's say a class which allows you to register API end points and some servers which we want to examine with such calls. 
-
-It is possible to register using this tool, some custom validators. So a programmer which would like to integrate this tool in its application can write some validators and check that responses received from given servers are matching the expectations. 
-
-And this tool is periodically calling registered and defined and requests to specified servers and calculate some score over given endpoint. And next notifies parent application about some changes in scores in best end point, worst, etc. Actually, exact today, we completed another stage and improved internals of this tool and added finally added support also for REST calls. 
-
-So both types of calls can be examined by this tool. And one of our guys working still on Block Explorer is trying to write some UI components which integrate this tool and will be first used at Block Explorer site. As I know, works are progressing quite good. Probably tomorrow we could have seen some UI of such help checker component and maybe we will publish some results about it. 
-
-Our idea is to share this component to other applications, especially developed also here, for example, Dancer. And maybe actually every application using Hive Calls could use it to verify end points and have some common support for that. 
-
-This component also uses Wax support for making API calls in an object call style because Wax allows to define some object structure and then use API calls as a regular object method. So that mostly simplifies using of that. And actually that's most of information about it. Maybe you have some questions.
-
-
-# @blocktrades
-Yeah, actually I do have a few other guys made too. So first just correct me if I'm wrong about any of it of anything. As far as I know, you can basically specify a node that you want to talk to for either a set of APIs or even maybe a specific API that calls.
-
-# @BW
-Yes, it is possible to define a set of APIs for given node and single one also. Then results are collected for given API method and the best node is selected based on set of methods.
-
-# @blocktrades
-Okay, and so what's the metric it's using for best node? Is it terms of latency? Like how fast?
-
-# @BW
-Yes, the tool is analyzing response times and actually we're quite limited here because we can only use APIs available in web browser which drops most of the internal support in network communication. 
-
-But it was possible to collect some time metrics specific to making calls. And of course also important part of such metric is correctness of given node and actually support for given API method. That part is covered by registered validators which are defined by programmer. 
-
-So we can, for example, register, find the account call and verify that specified node, recognize, for example, block trades account or GTG or everything needed and accept and allow to select such node only if it can correctly respond to that. 
-
-I hope it is quite nicely designed and easy of use. It uses standard patterns commonly used in front-end development like event emitters and so on. What more?
-
-# @blocktrades
-I guess I had a question. So it's basically verifying a node is working based on passing a validation. Is that periodically performed and if so, how often?
-
-# @BW	
-Yes, it is periodically performed and probably the calls are made once per few seconds.
-
-# @blocktrades	
-Okay.
-
-# @BW
-Actually, this is some configuration parameter specified as constant. So we can easily check frequency of such verification. Chests are also made concurrently. So in every method is concurrently called. So whole check of set is not so time consuming.
-
-# @blocktrades
-Nice. Okay,
-
-# @Brian of London (Dr)
-I get that. A quick question. Can I jump in with one? Sure. It's Brian. I'm just about to rewrite my back-end Python stuff. How close is wax and these kinds of things being to a module I can just, you know, pip install like a replacement for Beeman for Lighthide. Are we close to a release or is there a pre-release? Is anybody putting it on PyPy yet?
-
-# @BW
-We are progressing to make Python wax possible to release. Hopefully we, actually, we lately completed some important parts to that and there was developed some module called Bikipy. 
-
-And that's Python wrapper over our Bikipy tool, which is required to sign transactions. And it was first part needed to start working on object definition of Python interface in wax. I hope we can start designing this interface, maybe even this week. It depends on other works specific to our tool clive, which uses a lot of our Python resources. 
-
-But I'm still very focused on starting that work because I know it is very important for developers. And we will try to prepare some initial version of that, maybe even in this year. 
-
-So probably most definitions, most design of this Python object interface will be similar to Type Script version, which was designed quite long and actually tested already by several applications. And I hope Python users patterns can be really close to that users and we can try to design this interface in similar way and avoid reinventing the wheel in this part. 
-
-So I hope that's only specific to implementation, not too much time needed for design of this interface.
-
-
-# @Brian of London (Dr)
-Thanks for that. If I can help at all, send me a direct message or something. I don't know if my skills are up to it, but because when I looked at wax itself, it kind of isn't in a format that I could figure out how to call it or just make any use of it. 
-
-So if I can help, if someone can write a scaffolding, I'll fill bits in as needed. I can maybe put some time into that. So thanks. Okay.
-
-
-# @blocktrades
-So just to clarify that for I guess probably everybody knows this, but basically there's two versions of wax. There's the Type Script version and the Python version. And the Type Script version has definitely been our higher focus of the two because it's the web version. 
-
-And there's just so many more web apps in the based apps than Python based apps for in the hive environment. So, but we are, we do have a wax version of Python as well. It's just, as Bartek's mentioned, the object oriented face isn't really that there to this level that is like in the Type Script form. And we are testing both versions of the of wax. 
-
-We've been using Denser, which is a replacement for condenser. And we've been using the half block explorer to test the Type Script version. And we've been using Clive, which is the Python base wallet we've been developing to replace the old command line wallet. And that's the one that's testing the Python version of wax. 
-
-Okay. So, yeah, we don't, we are a bit behind on the Python version of wax. And so that's basically, you know, we only can guess at this point, but we, we would certainly like to be at a release it in December if possible. So we'll keep our fingers crossed that that process goes smoothly. 
-
-And Brian, thanks for your offer of help that certainly may come along as we get further into it. Uh, let's see. What else? Covered wax, I guess, just briefly on the UI stuff. Clive, which is the command line wallet, it's been going pretty radical changes, a lot of it based on my request for changes the way the UI works and everything. 
-
-And it looks to me like progress is going pretty reasonably fast. So I think Clive itself is likely to be releasable in December, but I'm not going to guarantee that one yet. But certainly I know a lot of the changes that I've asked for look like there should be finished sometime this month. 
-
-So then I'll start testing it more personally again. Uh, I don't know, Bartek, anything else you could think of I should mention or share. We want somebody else.
-
-
-# @BW
-Actually, as the UI work, we can mention that Dancer guys say that actually only a few features are missing in the wallet.
-
-# @blocktrades	
-Oh, that's good to hear.
-
-# @BW
-To complete to complete whole functionality of the application. And I hope such missing features will be completed soon. I hope in this month. So we can be ready to try to switch at the beginning of the year or even during this December release to Dancer too. 
-
-So probably that's also a good news. And actually, what more high vent work we have covered. We are also working on using Python version of Bikipie and parts of Python wax. That can be interesting for Brian in our internal testing where we massively are running a test on CI. 
-
-And that also shows us some problems on bugs which are fixed. Of course. So after completing that, what also What also was done in last week, some big step, some milestone was done in this part makes us closer to to Python version of wax and her process being done to start creating transactions and sign them. So I also hope it is important information. Yes, I think we covered most of things. I don't have.
-
-# @blocktrades
-Okay, I guess I thought of one thing which was we've also I've been testing. It's not a new thing for us, but it's kind of new for everybody else still I've been testing the block log split stuff. And that all seems to be working just fine. So I'm running all the nodes. I'm running a but I'm basically doing a lot of half API node testing right now. 
-
-It's primarily thing I've been doing lately. And it's by default it now splits the block log. And so I wound up with basically one block log part for every million blocks. So I've got like 81 or 90, 90 files in there now, each one of the million blocks long and all that seems to be working smooth. So no problems there. 
-
-And I'll probably start testing with some of the lighter net ones, where I reduce the number of blocks as well, just see how that works out as well. But I assume we're not going to have any issues there. But anyways, that that functionality seems to be just fine. So I guess anybody else want to cover any work to do in right now? Make far hat you want to go?
-
-
-# @mcfarhat
-Yeah, sure. Thank you. Thank you for the updates. Alright, so as many of you are aware, we've been helping out with a lot of work on block explorer UI for the past few months. And we're trying to put more effort now with more resources assigned. So I'll share maybe a few updates on some of the things we've been doing. Mainly we've been focused on more functionality available on the user profile page, things like adding the account value in dollars, delegations count, adding sorting by RC delegations by HP delegations for the recipients of delegations, fixing few UI changes like the date picker, light dark mode, which was introduced recently. 
-
-There was a bug that we just detected on vesting ratio values, which I think one of my devs just fixed. A feature suggested recently about transaction differentiator, like having a perspective view if you are on user profile, I think Lucas just finished working on this today. We're also my other dev, I think, is almost done with also displaying when you have a user who has proxy. 
-
-So we're just displaying now the votes that the proxy actually votes for, you know, in a kind of differentiated manner, just to say, okay, if you go to this user profile and you see this guy is voting for this, uses this person as a proxy, then you'll actually see who the proxy votes for. 
-
-And even if you go like three layers of proxy, which is the blockchain's limit, you can actually see this proxy has this proxy has this proxy, and eventually these are the persons who this guy's votes for. So I think this is helpful if you want to see directly if you are voting for someone and you want to actually perceive what are the who this person votes for, this will make it much easier. Where we also started working on, we recently introduced the witness schedule. 
-
-I think Lucas worked on this, or maybe Jacob, the witness schedule, but it was missing the backup schedule. So Lucas is trying to look into how we can actually integrate this, if it's possible, if there is an API endpoint, so that we could make this happen. Otherwise, we're going to delve into the backend work to maybe introduce this functionality. 
-
-So kind of like how other witness schedule sites display. So we want to display what is the schedule for all the backup witnesses, you know, in order.
-
-
-# @blocktrades
-Yeah, I think just as information that I think that's probably information is probably coming from HiveD rather than half. So there probably needs to be, there might have been some modified call to a new API call on the HiveD side for that. I don't know if Bartek, do you remember about any chance? If not, I can look it up after the meeting.
-
-# @BW
-Yes, I think a witness schedule can be received from HiveD, not from Block Explorer APIs.
-
-
-# @blocktrades	
-So yeah
-
-# @mcfarhat	
-we're talking about the...
-
-
-# @BW	
-I can check which API it is, but if we see that.
-
-# @mcfarhat	
-Yeah, just to leave you, this is the backup witness schedule, right? Not the current witness schedule.
-
-
-# @blocktrades	
-Yes, yeah, yeah, so yeah.
-
-
-# @BW	
-Yes, but there is probably some parameter to specify which instance of witness schedule you want to get.
-
-
-# @mcfarhat	
-Okay, okay, great, great. Yeah, if you have an insight into this, I'll just share it with you.
-
-
-# @BW
-Yes, and this, sorry, I break you. This parameter is called include future and that's Boolean value. So get witness schedule, it's a call name and include future is parameter. I will push to hear some information as some comment.
-
-
-# @mcfarhat
-Okay, excellent, excellent. So another thing was that we had a pending task also to display the last block produced by the witness and the witnesses page. I saw a comment a while ago from you, Dan, that this was maybe finished on the back end, I'm not sure. So if it is available, maybe we can look into adding this now. Do you remember?
-
-
-# @blocktrades
-Yeah, I don't, honestly. I mean, it certainly should be calculatable from the back end, that's for sure. But I don't remember these, I'll look on it after the meeting though.
-
-
-# @mcfarhat
-Okay, okay, excellent, excellent. So on another end, I mean, we're starting to work to move more on balance tracker also, thanks to Michael, he's helping out my new resource also was working on the back end. I had also another question about the half BE development version, the half BE API. There was a change done three weeks ago about fetching the witness list. 
-
-And if you're using the current 0.6 version, it doesn't work because the change is on development, I think it hasn't been pushed on any public API. So is there a development API that my devs can query or?
-
-
-# @blocktrades
-Yeah, sure. Yeah, that's sempia.com is one.
-
-
-# @BW
-We have internally in the company some instance which is supporting this new version. But I'm not sure if instance which Dan is publishing is upgraded to that version. So probably it will be soon because Dan is running some new tests there. So probably it will be switched soon.
-
-
-# @blocktrades	
-Yeah, but we did upgrade api.syncad.com relatively recently. I don't remember exactly how long ago it was. 
-
-
-# @BW
-Maybe it was not upgraded yet because it would break our official instance of block explorer because our public instance available at url explore open hive network is using still old calls. And the testing version is using new ones. So maybe that's reason why this api.syncad.com is still supporting old version.
-
-
-# @blocktrades	
-So is explorers using api.syncad.com?
-
-
-# @BW	
-Yes, by default.
-
-
-# @blocktrades	
-I think. I thought it would have been using, I thought it'd been using hive.blog, api.hive.blog. 
-
-
-# @BW	
-But we are talking about REST APIs. api.blog, they're not support.
-
-
-# @blocktrades	So it looks like to me, so no, I mean, I'm looking at the explore.open hive.network right now and it's using half b open hive.network and api.hive.blog.
-
-
-# @Arcange	
-That's what I'm seeing as well. Yeah, true.
-
-
-# @blocktrades
-It's not using api.syncad.com. I don't know if api.syncad.com is even exposed properly for this kind of calls. I mean, I know it is for this all the swagger stuff, but I don't know if it's up for serving data, but we can work this off. We can work this offline together.
-
-
-# @Arcange
-Okay. Okay, great. Let me see what else I have. Okay, there were actually a couple of questions I was chatting to Voltec recently and he was asking if the multi-six support for BLS is coming anytime soon. Do you have any update on plans for this, Dan?
-
-
-# @blocktrades
-So, yeah, I mean, I think I mentioned it somewhere in my post, but this is all part of the stuff that I want to push into the first quarter. That's basically all the key signing stuff needs to be looked at. 
-
-It's in more detail, so that's probably going to be first quarter when we do the hard fork release. Any such change will be then. It's not going to be in, certainly not going to be the December release.
-
-# @mcfarhat
-Yeah, yeah, okay. Fantastic. Fantastic. And another thing I heard in your update that the wallet on Dancer is coming close to completion. He did ask me about adding maybe support for VSC transaction data on Dancer wallet, kind of like what Pik did. Do you think this would make sense to have this soon?
-
-
-# @blocktrades	
-Sure. I mean, I don't really know what's involved because I haven't, this is for VSC transactions. 
-
-
-# @mcfarhat	
-Yeah, I asked him to give us more details because I don't know what's involved.
-
-
-# @blocktrades	 
-Yeah, I don't know either.
-
-
-# @mcfarhat
-Yeah, I think maybe it's some kind of like the tokens created there, or I don't know if it's anything about the smart contracts. I did inquire about further details, but yeah, I think it might make sense once everything is done, maybe to start introducing some of these.
-
-
-# @blocktrades
-Well, I mean, it sounds like it can be done on the side, right? So I think that can be separate here. So yeah, I think it's pretty much an independent feature. Yeah, if you want to look into that, that sounds great.
-
-
-# @mcfarhat	
-Okay, excellent, excellent. Yeah, and I guess this is really it from my side.
-
-
-# @blocktrades	
-Okay, anyone else want to go?
-
-
-# @Arcange
-I have a quick question. I created an issue more than one year ago about emptying savings. When you have HPD in your savings, you want to empty it, then you make a withdrawal, but you still have interest to claim. So later, if your saving is empty, you cannot claim your interest because you need to change the balance to make it possible. 
-
-So it's quite complicated. I onboarded a few users for them to store HPD, a few HPD in their savings, and they all come back to me saying it's a bit annoying because I need someone to make a transfer. Then I get some interest, but the interest is in the saving, and it starts to generate new interest. And then when I empty it, they are still interested to claim. 
-
-So actually, it could be really easy to just say, okay, when someone withdraws everything from the savings, just claims the interest and make it empty, and it's done. I've checked the code. So the Hive code, it doesn't look very complicated. I would like to know if it's worth for me to spend time to maybe make a change and pull requests?
-
-
-# @blocktrades
-We don't want to do. I don't have any strong objection to it, I guess. I just didn't think it was... I'd think I saw this issue, but I just figured it was such a small amount that would be involved that it just wasn't that significant. Because presumably, you're not going to leave a lot of interest there, no matter what you do.
-
-
-# @Arcange	
-Yeah, it's not a lot.
-
-
-# @blocktrades
-I just didn't figure it was worth dealing with, but if you want to make the change, and you think it's pretty straightforward to clean up the change, I've got no objection to you doing it. Okay, you know, it's just to make the change clean.
-
-
-# @Arcange
-I know it's not about the amount.
-
-
-# @blocktrades
-Yeah, whatever. I have to measure work. I always say, what's it worth?
-
-
-# @Arcange
-Yeah, so my idea was do it, and then what's the better? I never did things like that. So what's the best way to... what's the procedure to do? I'm not used to Gitlabs, so I think it's a bit different from Gitlabs.
-
-
-# @blocktrades
-It's like a merger quest. So what I'd do first is you've already got an issue, you've already created it, it sounds like. So if you just describe your solution and the issue, if you haven't already, and then just make the... once you make a... you basically check out the code into a branch, and then you make the change, and then you push the branch.
-
-
-# @Arcange	
-I push a branch.
-
-
-# @blocktrades	
-And then you do a create a merger quest.
-
-
-# @Arcange	
-Okay, so the thing is to create a separate branch.
-
-
-# @blocktrades
-Yeah, so you'll have a branch, you push your branch, and then you create a merger quest, and that'll basically attach to your branch. So anything... and if you're in the middle of the branch, you can create a merger quest that's called a draft, which means you're not finished, but you want people to be able to look at it while you're still working on it. 
-
-You're finished, you think it's ready to go, you can just mark it as... you can remove the draft, which means it's now ready for a final review, and then, you know, it'll get reviewed and merged, I think, okay.
-
-
-# @Arcange	
-Okay, cool. I'm going to give it a try.
-
-
-# @blocktrades	
-And you'll... it's part of that, you'll want to create a test too, you'll want to make the change, but you'll also probably want to
-
-
-# @Arcange	
-Okay. Okay, thank you.
-
-
-# @blocktrades	
-Sure. Anyone else? create a test to verify the change. Brian, did you want to make any updates, or you just have questions mostly today?
-
-
-# @Brian of London (Dr)	
-I'm good, I'm good. 
-
-
-# @blocktrades	
-Okay, sounds good. I guess we're good to go with... it was good we decided to go without Hawo, because apparently he did get the time zone changed wrong.
-
-
-# @mcfarhat	
-It would have been a long wait. 
-
-
-# @Brian of London (Dr)	
-He's going to show up in 10 minutes. Okay, thanks guys. See you next time.
-
-
-# @Everyone	
-Thanks, take care. Bye. Thanks, bye.</div>
-  <footer class="hive-post-embed__source">
-    <span class="hive-post-embed__source-label">Source:</span>
-    <a href="https://hive.blog/@howo/core-dev-meeting-63">Core dev meeting #63</a>
-    by
-    <a href="https://hive.blog/@howo">@howo</a>
-  </footer>
-</div>]]></content><author><name>howo</name></author><category term="news" /><category term="core" /><category term="development" /><summary type="html"><![CDATA[Apologies for the delay It's been a busy few weeks]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://hivedocs.info/assets/images/favicon.png" /><media:content medium="image" url="https://hivedocs.info/assets/images/favicon.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>
+</div>]]></content><author><name>louis88</name></author><category term="tools" /><category term="search" /><category term="analytics" /><summary type="html"><![CDATA[I just released a new version of the Hive Keywords Fetcher Tool]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://files.peakd.com/file/peakd-hive/louis88/23vhVs3UZN6wrT3dtGVn6Ywi6joDprQqKC9LJj5JZQNZpvonY778yFJoF1xZ6V7Dzj29X.png" /><media:content medium="image" url="https://files.peakd.com/file/peakd-hive/louis88/23vhVs3UZN6wrT3dtGVn6Ywi6joDprQqKC9LJj5JZQNZpvonY778yFJoF1xZ6V7Dzj29X.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>

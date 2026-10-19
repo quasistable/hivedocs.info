@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta property="og:image" content="/assets/images/sticker.png" />
+  <meta name="apple-mobile-web-app-title" content="Hive Docs" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" /><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Nectarflower-rs, using nectar without hive-nectar part 3 | Hive Chain Documentation</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Nectarflower-rs, using nectar without hive-nectar part 3" />
+<meta name="author" content="thecrazygm" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Following up on my previous libraries like nectarflower-js (which I wrote about here) and the more recent nectarflower-go (written about here), I wanted to tackle this useful concept from yet another language" />
+<meta property="og:description" content="Following up on my previous libraries like nectarflower-js (which I wrote about here) and the more recent nectarflower-go (written about here), I wanted to tackle this useful concept from yet another language" />
+<link rel="canonical" href="https://hive.blog/hive-186392/@thecrazygm/nectarflower-rs-using-nectar-without-hive-nectar-part-3" />
+<meta property="og:url" content="https://hive.blog/hive-186392/@thecrazygm/nectarflower-rs-using-nectar-without-hive-nectar-part-3" />
+<meta property="og:site_name" content="Hive Chain Documentation" />
+<meta property="og:image" content="https://files.peakd.com/file/peakd-hive/thecrazygm/23tRqtSRaWxH9MQusscZeMU9YJTFr9fnRmTWuNhpxT8Q3ao931znNoVQ7zxAkctFz1bXN.png" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2025-04-18T10:11:30-07:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="https://files.peakd.com/file/peakd-hive/thecrazygm/23tRqtSRaWxH9MQusscZeMU9YJTFr9fnRmTWuNhpxT8Q3ao931znNoVQ7zxAkctFz1bXN.png" />
+<meta property="twitter:title" content="Nectarflower-rs, using nectar without hive-nectar part 3" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"thecrazygm"},"dateModified":"2025-04-18T10:11:30-07:00","datePublished":"2025-04-18T10:11:30-07:00","description":"Following up on my previous libraries like nectarflower-js (which I wrote about here) and the more recent nectarflower-go (written about here), I wanted to tackle this useful concept from yet another language","headline":"Nectarflower-rs, using nectar without hive-nectar part 3","image":"https://files.peakd.com/file/peakd-hive/thecrazygm/23tRqtSRaWxH9MQusscZeMU9YJTFr9fnRmTWuNhpxT8Q3ao931znNoVQ7zxAkctFz1bXN.png","mainEntityOfPage":{"@type":"WebPage","@id":"https://hive.blog/hive-186392/@thecrazygm/nectarflower-rs-using-nectar-without-hive-nectar-part-3"},"url":"https://hive.blog/hive-186392/@thecrazygm/nectarflower-rs-using-nectar-without-hive-nectar-part-3"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://hivedocs.info/feed.xml" title="Hive Chain Documentation" /><script>
+if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNotTrack === "yes" || navigator.msDoNotTrack === "1")) {
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-161692811-1', 'auto');
+  ga('send', 'pageview');
+}
+</script>
+  
+<script src='https://unpkg.com/steem-content-renderer'></script>
+  <script src="/assets/javascript/universal-bridge-against-phishing.js"></script>
+  <script src="/assets/javascript/lazysizes.min.js" async=""></script>
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet" />
+  <link rel="shortcut icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="152x152" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="167x167" href="/assets/images/favicon-80x80.png" />
+</head>
+<body><header class="site-header" role="banner">
+  <div class="wrapper site-header-inner">
+    <a class="site-title" rel="author" href="/">Hive Chain Documentation</a>
+
+    <nav class="site-nav" aria-label="Primary">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/news/">News</a><a class="page-link" href="/howto/">How To</a><a class="page-link" href="/links/">Useful Links</a><a class="page-link" href="/authors/">Authors</a><a class="page-link" href="/topics/">Topics</a><a class="page-link" href="/search/">Search</a></div>
+    </nav>
+  </div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper page-layout has-search-panel">
+        <div class="page-main">
+          <article class="post h-entry post-article" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header post-hero">
+    <div class="post-hero-main">
+      <p class="post-kicker">Archive post</p>
+      <h1 class="post-title p-name" itemprop="name headline">Nectarflower-rs, using nectar without hive-nectar part 3 </h1>
+      <p class="post-meta">
+        <time class="dt-published" datetime="2025-04-18T10:11:30-07:00" itemprop="datePublished">Apr 18, 2025
+        </time>• <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">
+            <a href="/authors/#author-thecrazygm">thecrazygm</a>
+          </span></span></p><p class="post-summary">Following up on my previous libraries like nectarflower-js (which I wrote about here) and the more recent nectarflower-go (written about here), I wanted to tackle this useful concept from yet another language</p></div><aside class="post-author-card">
+      <img src="https://images.hive.blog/u/thecrazygm/avatar" width="128" height="128" class="lazyload post-author-avatar" alt="Avatar for @thecrazygm" />
+      <div class="post-author-name">@thecrazygm</div>
+    </aside></header>
+
+  <div class="post-content e-content post-body" itemprop="articleBody">
+    <div class="hive-post-embed" data-hive-author="thecrazygm" data-hive-permlink="nectarflower-rs-using-nectar-without-hive-nectar-part-3">
+  <div id="content-thecrazygm-nectarflower-rs-using-nectar-without-hive-nectar-part-3" class="hive-post-embed__content" data-hive-render-target="true">Following up on my previous libraries like [`nectarflower-js`](https://github.com/TheCrazyGM/nectarflower-js) (which I wrote about [here](/@thecrazygm/use-nectar-without-using-hive-nectar)) and the more recent [`nectarflower-go`](https://github.com/TheCrazyGM/nectarflower-go) (written about [here](/@thecrazygm/nectarflower-go-nectar-without-nectar-2)), I wanted to tackle this useful concept from yet another language perspective, probably the most difficult, imho. 
+
+It's Rust's turn! 
+
+The main point I keep wanting to demonstrate is just how **incredibly useful** it is that `@nectarflower` keeps their Hive node benchmark data updated hourly and stores it right in their account's JSON metadata. Seriously, having this reliable list of passing nodes available on-chain is an amazing thing for developers. It makes getting good API endpoints so much easier, no matter what language you're building with.
+
+So, here's my attempt at making this accessible for Rust developers: [`nectarflower-rs`](https://github.com/TheCrazyGM/nectarflower-rs). The goal is the same: provide a simple way to fetch and use that valuable node data stored in the metadata.
+
+Getting the list of passing nodes within your Rust code is pretty straightforward:
+
+```rust
+use nectarflower_rs::Client;
+
+fn main() {
+    // Create a client just to fetch nodes
+    let client = Client::new();
+
+    // Get nodes from account
+    match client.get_nodes_from_account("nectarflower") {
+        Ok(node_data) =&gt; {
+            // Display passing nodes
+            println!("Passing nodes:");
+            for node in node_data.nodes {
+                println!("{}", node);
+            }
+            
+            // Display failing nodes
+            println!("\nFailing nodes:");
+            if node_data.failing_nodes.is_empty() {
+                println!("None");
+            } else {
+                for (node, reason) in node_data.failing_nodes {
+                    println!("{} - Reason: {}", node, reason);
+                }
+            }
+        },
+        Err(e) =&gt; eprintln!("Error fetching nodes: {}", e),
+    }
+}
+```
+
+![Rust makes fetching node data simple too!](https://files.peakd.com/file/peakd-hive/thecrazygm/23tRqtSRaWxH9MQusscZeMU9YJTFr9fnRmTWuNhpxT8Q3ao931znNoVQ7zxAkctFz1bXN.png)
+
+Now, just like the Go version, to actually pull the account info containing the metadata, the library needs some basic Hive client functionality baked in. It's fairly minimal right now, but it gets the job done. Here’s a quick example of the client part fetching something basic, like a block near the head block:
+
+```rust
+//! Example usage for nectarflower-rs
+use nectarflower_rs::Client;
+use serde_json::Value;
+
+fn main() {
+    // Create a new Hive client with default node
+    let mut client = Client::new();
+    println!("Default client initialized with: {:?}", client.nodes);
+
+    // Account to fetch nodes from
+    let account_name = "nectarflower";
+
+    // Get nodes from account
+    println!("\nFetching nodes from account {}...", account_name);
+    match client.get_nodes_from_account(account_name) {
+        Ok(node_data) =&gt; {
+            println!("Found {} nodes in account metadata", node_data.nodes.len());
+            println!("Nodes: {:?}", node_data.nodes);
+            if !node_data.failing_nodes.is_empty() {
+                println!(
+                    "Found {} failing nodes in account metadata\nFailing nodes: {:?}",
+                    node_data.failing_nodes.len(),
+                    node_data.failing_nodes
+                );
+            }
+
+            // Update client with new nodes
+            println!("\nUpdating client with new nodes...");
+            client.set_nodes(node_data.nodes.clone(), node_data.failing_nodes.clone());
+            println!("Updated client initialized with: {:?}", client.nodes);
+        }
+        Err(e) =&gt; {
+            eprintln!("Error fetching nodes: {e}");
+            return;
+        }
+    }
+
+    // Test the updated client with a simple query
+    println!("\nTesting updated client with a query...");
+    let props: Result&lt;Value, _&gt; =
+        client.call::&lt;(), Value&gt;("database_api.get_dynamic_global_properties", ());
+    match props {
+        Ok(props) =&gt; {
+            let block_num = props.get("head_block_number").and_then(|v| v.as_i64());
+            if let Some(num) = block_num {
+                println!("Query successful! Current block number: {}", num);
+            } else {
+                println!(
+                    "Query successful! Current block number: {:?}",
+                    props.get("head_block_number")
+                );
+            }
+        }
+        Err(e) =&gt; {
+            eprintln!("Error fetching global properties: {e}");
+            return;
+        }
+    }
+
+    // Demonstrate the all-in-one function
+    println!("\nDemonstrating the all-in-one UpdateNodesFromAccount function...");
+    let mut new_client = Client::new();
+    match new_client.update_nodes_from_account(account_name) {
+        Ok(()) =&gt; println!(
+            "One-step update complete. Client initialized with: {:?}",
+            new_client.nodes
+        ),
+        Err(e) =&gt; {
+            eprintln!("Error updating nodes: {e}");
+            return;
+        }
+    }
+
+    // Example: Fetch a recent block
+    println!("\nFetching a recent block...");
+    // First get the current block number
+    let block_props: Result&lt;Value, _&gt; =
+        client.call::&lt;(), Value&gt;("database_api.get_dynamic_global_properties", ());
+    let current_block_num = match block_props {
+        Ok(props) =&gt; props.get("head_block_number").and_then(|v| v.as_i64()),
+        Err(_) =&gt; None,
+    };
+
+    if let Some(block_num) = current_block_num {
+        // Fetch a block that's a few blocks behind the head to ensure it's available
+        let target_block_num = block_num - 10;
+        println!("Fetching block #{}", target_block_num);
+
+        // Create parameters for get_block method
+        let block_params = serde_json::json!({
+            "block_num": target_block_num
+        });
+
+        // Fetch the block
+        let block: Result&lt;Value, _&gt; = client.call("block_api.get_block", block_params);
+        match block {
+            Ok(block) =&gt; {
+                // Extract block data
+                if let Some(block_data) = block.get("block") {
+                    // Print block details
+                    println!("Block details:");
+                    println!(
+                        "  Block ID: {}",
+                        block_data
+                            .get("block_id")
+                            .and_then(|v| v.as_str())
+                            .unwrap_or("N/A")
+                    );
+                    println!(
+                        "  Previous: {}",
+                        block_data
+                            .get("previous")
+                            .and_then(|v| v.as_str())
+                            .unwrap_or("N/A")
+                    );
+                    println!(
+                        "  Timestamp: {}",
+                        block_data
+                            .get("timestamp")
+                            .and_then(|v| v.as_str())
+                            .unwrap_or("N/A")
+                    );
+
+                    // Print transaction count
+                    if let Some(transactions) =
+                        block_data.get("transactions").and_then(|v| v.as_array())
+                    {
+                        println!("  Transaction count: {}", transactions.len());
+
+                        // If there are transactions, print details of the first one
+                        if !transactions.is_empty() {
+                            let tx_ids =
+                                block_data.get("transaction_ids").and_then(|v| v.as_array());
+                            let tx_id = tx_ids
+                                .and_then(|ids| ids.get(0))
+                                .and_then(|id| id.as_str())
+                                .unwrap_or("unknown");
+
+                            println!("\nFirst transaction details:");
+                            println!("  Transaction ID: {}", tx_id);
+
+                            // Pretty print the first transaction
+                            if let Some(tx) = transactions.get(0) {
+                                let tx_json = serde_json::to_string_pretty(tx)
+                                    .unwrap_or_else(|_| "Error formatting transaction".to_string());
+                                println!("  Transaction data:\n{}", tx_json);
+                            }
+                        }
+                    }
+                } else {
+                    eprintln!("Error extracting block data");
+                }
+            }
+            Err(e) =&gt; eprintln!("Error fetching block: {e}"),
+        }
+    } else {
+        eprintln!("Could not determine current block number");
+    }
+}
+```
+
+![Rust handling the raw Hive data retrieval.](https://files.peakd.com/file/peakd-hive/thecrazygm/23t72p6hrtPGvLcp6HV1nTWH7fv6Mv9AiZJofHjvFwZHqq4xhyuLU3pB7nbAn1NThW9oa.png)
+
+-----
+
+You can check out the full example code and the library itself over in the [GitHub repository](https://github.com/TheCrazyGM/nectarflower-rs).
+
+It's really cool how this approach of storing benchmark data directly in account metadata lowers the barrier for developers across different ecosystems. Hopefully, this Rust version proves useful to someone out there exploring Hive development with Rust. Plus, any excuse to dive deeper into Rust is always fun, right?
+
+As usual,
+Michael Garcia a.k.a. TheCrazyGM</div>
+  <footer class="hive-post-embed__source">
+    <span class="hive-post-embed__source-label">Source:</span>
+    <a href="https://hive.blog/@thecrazygm/nectarflower-rs-using-nectar-without-hive-nectar-part-3">Nectarflower-rs, using nectar without hive-nectar part 3 </a>
+    by
+    <a href="https://hive.blog/@thecrazygm">@thecrazygm</a>
+  </footer>
+</div>
+
+
+  </div><a class="u-url" href="/tools/python/nectar/2025/04/18/nectarflower-rs-using-nectar-without-hive-nectar-part-3.html" hidden></a>
+</article>
+
+        </div>
+
+        
+        <aside class="page-sidebar" aria-label="Search and browse">
+          <section class="sidebar-section sidebar-search">
+            <h2 class="sidebar-heading">Search posts</h2>
+            <p class="sidebar-copy">Search the locally indexed post archive.</p>
+            <input type="text" id="search-input" placeholder="Search posts" autocomplete="off" />
+            <ul id="results-container"></ul>
+          </section>
+
+          <section class="sidebar-section sidebar-topics">
+            <h2 class="sidebar-heading">Browse topics</h2>
+            <p class="sidebar-copy">Jump into curated topic landing pages.</p>
+            <ul class="topic-list topic-list-sidebar"><li><a class="page-link" href="/account-recovery/">Account Recovery</a></li><li><a class="page-link" href="/core-development/">Core Development</a></li><li><a class="page-link" href="/dapps/">Dapps</a></li><li><a class="page-link" href="/docker/">Docker</a></li><li><a class="page-link" href="/hardfork/">Hardfork</a></li><li><a class="page-link" href="/hivemind/">Hivemind</a></li><li><a class="page-link" href="/javascript/">Javascript</a></li><li><a class="page-link" href="/multisig/">Multisig</a></li><li><a class="page-link" href="/python/">Python</a></li><li><a class="page-link" href="/ruby/">Ruby</a></li><li><a class="page-link" href="/testnet/">Testnet</a></li><li><a class="page-link" href="/tools/">Tools</a></li><li><a class="page-link" href="/witness/">Witness</a></li></ul>
+          </section>
+        </aside>
+        
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading"><a rel="author" href="/">Hive Chain Documentation</a></h2>
+    
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">site curated by: @inertia</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>Your resource for various levels of Hive Documentation.</p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+<script src="/assets/javascript/search.js"></script>
+    <script>
+      (function () {
+        var input = document.getElementById('search-input');
+        var results = document.getElementById('results-container');
+        if (input && results && typeof SimpleJekyllSearch !== 'undefined') {
+          SimpleJekyllSearch({
+            searchInput: input,
+            resultsContainer: results,
+            json: '/search.json'
+          });
+        }
+
+        if (typeof SteemContentRenderer === 'undefined') return;
+
+        var targets = document.querySelectorAll('[data-hive-render-target="true"]');
+        if (!targets.length) return;
+
+        var renderer = new SteemContentRenderer.DefaultRenderer({
+          baseUrl: 'https://hive.blog/',
+          breaks: true,
+          skipSanitization: false,
+          allowInsecureScriptTags: false,
+          addNofollowToLinks: true,
+          doNotShowImages: false,
+          ipfsPrefix: '',
+          assetsWidth: 640,
+          assetsHeight: 480,
+          imageProxyFn: function (url) { return url; },
+          usertagUrlFn: function (account) { return '/@' + account; },
+          hashtagUrlFn: function (hashtag) { return '/tags/#' + hashtag; },
+          isLinkSafeFn: function () { return true; }
+        });
+
+        targets.forEach(function (target) {
+          try {
+            var inputHtml = target.innerHTML;
+            target.innerHTML = renderer.render(inputHtml);
+          } catch (e) {
+            console.log(e);
+          }
+        });
+      })();
+    </script>
+
+  </body>
+
+</html>

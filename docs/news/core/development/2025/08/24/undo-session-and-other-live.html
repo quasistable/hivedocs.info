@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta property="og:image" content="/assets/images/sticker.png" />
+  <meta name="apple-mobile-web-app-title" content="Hive Docs" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" /><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Undo session and other live mode optimizations | Hive Chain Documentation</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Undo session and other live mode optimizations" />
+<meta name="author" content="andablackwidow" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="After unplanned health related delay here comes third article of the series about recent optimizations that started with pool allocator and followed with comment archive" />
+<meta property="og:description" content="After unplanned health related delay here comes third article of the series about recent optimizations that started with pool allocator and followed with comment archive" />
+<link rel="canonical" href="https://hive.blog/hive-139531/@andablackwidow/undo-session-and-other-live" />
+<meta property="og:url" content="https://hive.blog/hive-139531/@andablackwidow/undo-session-and-other-live" />
+<meta property="og:site_name" content="Hive Chain Documentation" />
+<meta property="og:image" content="https://images.ecency.com/DQmQKBYvMFH9aVWFPoC9zE6mcBMFHMz3kWZLzR6j9T54qmh/bees_crowd.jpg" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2025-08-24T18:48:51-07:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="https://images.ecency.com/DQmQKBYvMFH9aVWFPoC9zE6mcBMFHMz3kWZLzR6j9T54qmh/bees_crowd.jpg" />
+<meta property="twitter:title" content="Undo session and other live mode optimizations" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"andablackwidow"},"dateModified":"2025-08-24T18:48:51-07:00","datePublished":"2025-08-24T18:48:51-07:00","description":"After unplanned health related delay here comes third article of the series about recent optimizations that started with pool allocator and followed with comment archive","headline":"Undo session and other live mode optimizations","image":"https://images.ecency.com/DQmQKBYvMFH9aVWFPoC9zE6mcBMFHMz3kWZLzR6j9T54qmh/bees_crowd.jpg","mainEntityOfPage":{"@type":"WebPage","@id":"https://hive.blog/hive-139531/@andablackwidow/undo-session-and-other-live"},"url":"https://hive.blog/hive-139531/@andablackwidow/undo-session-and-other-live"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://hivedocs.info/feed.xml" title="Hive Chain Documentation" /><script>
+if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNotTrack === "yes" || navigator.msDoNotTrack === "1")) {
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-161692811-1', 'auto');
+  ga('send', 'pageview');
+}
+</script>
+  
+<script src='https://unpkg.com/steem-content-renderer'></script>
+  <script src="/assets/javascript/universal-bridge-against-phishing.js"></script>
+  <script src="/assets/javascript/lazysizes.min.js" async=""></script>
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet" />
+  <link rel="shortcut icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="152x152" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="167x167" href="/assets/images/favicon-80x80.png" />
+</head>
+<body><header class="site-header" role="banner">
+  <div class="wrapper site-header-inner">
+    <a class="site-title" rel="author" href="/">Hive Chain Documentation</a>
+
+    <nav class="site-nav" aria-label="Primary">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/news/">News</a><a class="page-link" href="/howto/">How To</a><a class="page-link" href="/links/">Useful Links</a><a class="page-link" href="/authors/">Authors</a><a class="page-link" href="/topics/">Topics</a><a class="page-link" href="/search/">Search</a></div>
+    </nav>
+  </div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper page-layout has-search-panel">
+        <div class="page-main">
+          <article class="post h-entry post-article" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header post-hero">
+    <div class="post-hero-main">
+      <p class="post-kicker">Archive post</p>
+      <h1 class="post-title p-name" itemprop="name headline">Undo session and other live mode optimizations</h1>
+      <p class="post-meta">
+        <time class="dt-published" datetime="2025-08-24T18:48:51-07:00" itemprop="datePublished">Aug 24, 2025
+        </time>• <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">
+            <a href="/authors/#author-andablackwidow">andablackwidow</a>
+          </span></span></p><p class="post-summary">After unplanned health related delay here comes third article of the series about recent optimizations that started with pool allocator and followed with comment archive</p></div><aside class="post-author-card">
+      <img src="https://images.hive.blog/u/andablackwidow/avatar" width="128" height="128" class="lazyload post-author-avatar" alt="Avatar for @andablackwidow" />
+      <div class="post-author-name">@andablackwidow</div>
+    </aside></header>
+
+  <div class="post-content e-content post-body" itemprop="articleBody">
+    <div class="hive-post-embed" data-hive-author="andablackwidow" data-hive-permlink="undo-session-and-other-live">
+  <div id="content-andablackwidow-undo-session-and-other-live" class="hive-post-embed__content" data-hive-render-target="true">## Recent optimizations
+
+After unplanned health related delay here comes third article of the series about recent optimizations that started with [pool allocator](https://hive.blog/hive-139531/@andablackwidow/pool-allocator-optimization-for-node) and followed with [comment archive](https://hive.blog/hive-139531/@andablackwidow/comment-archive-for-node-operators). This time there won't be any charts, sorry. Also, node operators won't find anything super interesting either, because the optimization(s) I'm going to describe are focused on live mode and with current traffic levels they change `99% waiting for work` into maybe `99.4% waiting for work`, not very sexy, right? It is only at times of saturated traffic with big blocks where the impact of the changes is helping nodes in processing transactions in timely manner (that also means it helps in survival during flood attacks).
+
+Most of you probably feel Hive won't be needing to allow 2MB blocks any time soon, and you are most likely right, so live focused optimizations seem like a wasted effort, but there are practical consequences. As you had an example in [previous article](https://hive.blog/hive-139531/@andablackwidow/comment-archive-for-node-operators) some optimizations are trade-offs - you sacrifice something to gain more in another area. Speeding up transaction processing leaves us with more wiggle room for such trade-offs.
+
+The description might be a bit chaotic, because that's how the development went. Code is unruly sometimes, refusing to cooperate :o)
+
+![](https://images.ecency.com/DQmQKBYvMFH9aVWFPoC9zE6mcBMFHMz3kWZLzR6j9T54qmh/bees_crowd.jpg)
+<sub>[image source](https://tillerytimes.blogspot.com/2014/05/keeping-bees-waggle-dance.html)</sub>
+
+The optimizations described here are contained in [MR!1526](https://gitlab.syncad.com/hive/hive/-/merge_requests/1526) and cover [point 11 of my dream list for Hive](https://gitlab.syncad.com/hive/hive/-/issues/675#note_159293). That merge request comes with extra changes.
+
+---
+
+<a id="cycle" />
+## Measurement method
+
+If the effects of the optimizations are so elusive, how do I know that there is any performance gain in the first place? The answer is **"colony+queen cycle"**. It is a cooperative work of two plugins, one for creating large amount of transactions, the other for producing blocks out of them. Yes, I have plans to describe those plugins in detail, but for now only some points are important:
+ - when talking about "colony+queen cycle", unless otherwise noted, I'll mean 2MB blocks filled to the brim with typical mix of spammable transactions (mostly custom jsons with some articles/replies, votes and transfers)
+ - `queen` provides statistics once test ends - average timing of `full block cycle` means that much time was spent on producing, signing and processing enough transactions by `colony` to fill up block to desired level (full 2MB in our case), and subsequent production and application of that block by `queen`
+ - each test produces over 14.5M transactions and packs them in a bit over 2000 blocks, most of the time I've run at least 5 such tests for each version to get average timing
+ - the test is run with SHM on RAM disk and since comment archive was introduced it also uses `comment-archive = MEMORY`
+ - the optimizations from this article were mostly done before pool allocator and comment archive, but certain changes made it hard to rebase, so in the end they were introduced to `develop` as almost last (but before application of [pool allocator to undo state](https://hive.blog/hive-139531/@andablackwidow/pool-allocator-optimization-for-node#undo))
+ - neither `colony` nor `queen` are meant to run benchmarks - both plugins use every shortcut available to run fast, so the numbers I'll present below do not reflect timings that you might see in real mainnet work (`hived` in mainnet live mode has more work to do, because it cannot make the same assumptions that the plugins here do); however the changes in those numbers reflect impact of particular optimizations on performance
+ - the test uses `single_sign_universal_block_log` as its base
+
+&gt; To get above mentioned block log you can run [CI script](https://gitlab.syncad.com/hive/hive/-/blob/6a81899a5e4365ecbbc294ad7d69e9d8304c760e/tests/python/functional/util/universal_block_logs/generate_universal_block_logs.py) locally (takes a while). You can also extract it from CI job:
+&gt; - go to some recently passed CI pipeline and locate `build_combined_testing_block_logs_image`
+&gt; - open it and look for name of the image, f.e. `registry.gitlab.syncad.com/hive/hive/testing-block-logs:combined-2a21975c00aa845c24a01c343c3ea2a4fc4d7f5b9cc09b1f9ea45b0fdb457475`
+&gt; - supplement variables with proper values and execute the following script (also correct path to the extraction script - the following assumes you are at the root of `hive` sources):
+```
+#!/bin/bash
+
+IMAGE="" # f.e. "registry.gitlab.syncad.com/hive/hive/testing-block-logs:combined-2a21975c00aa845c24a01c343c3ea2a4fc4d7f5b9cc09b1f9ea45b0fdb457475"
+SAVE_TO_DIR="" # full path to where you want to extract block logs, f.e. "/home/myusername/block_logs/"
+IN_CONTAINER_DIR="/usr/share/nginx/html/testing_block_logs/" # full path to block logs inside docker image
+
+docker pull "${IMAGE}"
+./scripts/ci-helpers/export-data-from-docker-image.sh "${IMAGE}" "${SAVE_TO_DIR}" --image-path="${IN_CONTAINER_DIR}"
+```
+
+![](https://images.ecency.com/DQmNhC2TbXsX2ppS7KoAn6Yi7ims2Q8NAQR4AbkKE7FFgk5/block_log.png)
+
+I've also added specialized unit tests to check and [one to measure just pure execution of undo sessions](https://gitlab.syncad.com/hive/hive/-/blob/6a81899a5e4365ecbbc294ad7d69e9d8304c760e/tests/unit/tests/undo_tests.cpp#L1405) without any other work.
+
+With disclaimer out of the way, let's see some data:
+ - the base timings were 748ms for full cycle with 182ms spent on processing block (version from [checkpoint optimization](https://hive.blog/hive-139531/@andablackwidow/checkpoints-for-node-operators))
+ - tests repeated on develop right before I started applying changes gave almost 750ms for full cycle with 184ms in block processing
+
+---
+
+<a id="undo_session" />
+## First stage: undo session simplification
+
+I had some general idea on what I was going to change and I've even made some rough tests on how much I can expect to gain. However when I started looking into the code to make sure I'm not missing anything, I was quite surprised. There are two layers of undo mechanism:
+ - the core consists of [stacks of `undo_state` structures](https://gitlab.syncad.com/hive/hive/-/blob/6a81899a5e4365ecbbc294ad7d69e9d8304c760e/libraries/chainbase/include/chainbase/chainbase.hpp#L345), each index having its own version specialized to keep data on created/modified/removed elements of the type that the index holds
+ - the purpose of second layer is to control when undo is to be applied and when to prevent its application
+
+The second layer turned out to be complicated. It consisted of an abstract interface for an individual index's `session`, then another class named `session` (yes, the same, in different namespace) gathered all individual sessions from known indexes. Its implementation was basically walking over list of subsessions to trigger desired command and that command was then passed to the stack of `undo_state` in each index. I've noticed that some commands were incorrectly implemented, but with the way they were used turned out it made no difference. Long story short I ended up removing it all and replacing it with just [a single flag wrapped in automation code](https://gitlab.syncad.com/hive/hive/-/blob/6a81899a5e4365ecbbc294ad7d69e9d8304c760e/libraries/chainbase/include/chainbase/chainbase.hpp#L1053) - either apply undo (default), or not (when code run to the end without issue and the flag was reset with call to `push()` or `squash()`). The class didn't need to keep track of indexes, because `database` has the list. [Here is the commit with whole simplification](https://gitlab.syncad.com/hive/hive/-/merge_requests/1526/diffs?commit_id=8988909bac97b530ff73674f6540dafa24a0c982).
+
+The above unexpected simplification helped, but the main idea was to prevent reallocation of `undo_state` containers. The thing is, transactions are processed in four stages:
+ - when they arrive individually from p2p or local API (or from `colony` like in case of cycle benchmark)
+ - when they are reapplied before being included in the block (during block production on witness enabled node)
+ - when they are reapplied from list of pending
+ - when they are part of block application
+
+With the exception of last case, each transaction opens its own undo session and in case of error `undo()` is called automatically, otherwise explicit `squash()` to integrate changes made by transaction into underlying common undo session. The individual transaction session is closed and destroyed, and what does next transaction do? Opens its own new session! And it happens in tight loop. To prevent constant allocation and releasing of undo session containers, [I've added `keep_alive` parameter](https://gitlab.syncad.com/hive/hive/-/merge_requests/1526/diffs?commit_id=e036931480452d27e53e9e48d4c1da74bd98f294) to both `undo()` and `squash()` (actual use of new flag is in [separate commit](https://gitlab.syncad.com/hive/hive/-/merge_requests/1526/diffs?commit_id=d488db402deb95790818d9ba69a2581e230ce2dc)). When the flag is set, containers still need to be cleaned, but session itself stays alive and can be used by subsequent transaction.
+&gt; You can check results of that step of optimization yourself by running
+`./testnet_build/tests/unit/chain_test --run_test=undo_tests/empty_undo_benchmark`
+and looking in log for two lines that start with *"Total time for undo session handling"* - first one is a measurement for the flag set to false (previous behavior) and second is for flag set to true (optimized).
+
+Specialized unit test benchmark showed quite good result. But of course in full cycle the difference is not that big. `queen` guarantees that there is at most one pending transaction that could not fit into block, it also produces block directly from transactions without reapplying them, which leaves only first transaction processing mode that is affected by the change during "colony+queen cycle". Both simplification of undo sessions and introduction of `keep_alive` flag reduced full cycle average time from 750ms to 667ms (with block processing time unchanged at 183ms).
+
+---
+
+<a id="tx_index" />
+## Second stage: volatile transaction index
+
+Not entirely satisfied with the result, I thought about introducing two more optimizations. First, what is common for all transactions? Deduplication index. Each transaction that is accepted as valid is included in `transaction_index`, so in case its exact copy arrives, the node knows that it has already seen it and drop it as a duplicate. However that index includes slight inconsistency. It contains both transactions that were already part of blocks as well as transactions that are on the list of pending. The index is part of state, but list of pending is just a local member of database. In case node is restarted the latter disappears, but its effects in form of data in `transaction_index` remain. It works because when node is restarted, first thing that happens is the call to `undo_all()`, so all reversible data is cleaned, including entries in deduplication index on pending transactions. But what if we split deduplication index into two separate parts - the `transaction_index` would contain transactions known from blocks, while pending transactions would have their own in new local member of database. Of course check if transaction is a duplicate would have to ask two containers, but the very frequent changes related to pending transactions would no longer touch `transaction_index`.
+
+[New `_pending_tx_index` was introduced](https://gitlab.syncad.com/hive/hive/-/merge_requests/1526/diffs?commit_id=36f796ecaa0fb75339447fd3598fbc9fd5d0416f) parallel to `_pending_tx` vector of pending transactions. Hashset, lighter and faster than `transaction_index`, was now filled, checked and reset in the same contexts as `_pending_tx`.
+&gt; Note: `database::is_known_transaction` routine checks in `transaction_index` first, because it is unlikely to get the same transaction into pending twice (because p2p has its own way of preventing duplicates and in case of API call someone would have to actually send the same transaction twice in short succession). It is more probable that we'll get transaction late after it was already included in some block, and then it will be registered in `transaction_index`. 
+
+The measurements were awful. The average cycle timing only dropped to 638ms (from 667ms). But I've noticed something. Main [writer loop in `chain_plugin`](https://gitlab.syncad.com/hive/hive/-/blob/6a81899a5e4365ecbbc294ad7d69e9d8304c760e/libraries/plugins/chain/chain_plugin.cpp#L503) - the one that processes all blocks and transactions under common write lock - occasionally prints statistics on how much each type of activity took: `waiting for work: A%, waiting for locks: B%, processing transactions: C%, processing blocks: D%, unknown: X%`. The loop is actually two nested loops with plenty of conditional exits, temporary breaks, shutdown logic etc. It also contains a lot of time measurements. The "unknown" part is a difference between all known measurements and the total time spent in the loop. The actual work is in one place though, so it is precisely measured. Same with locks. So "unknown", whatever is causing it, is still "not working", and should be considered addition to "waiting for work". The optimization of deduplication index caused "unknown" to grow, depending on other parameters, even up to 30%. I knew the problem has to be with `colony` and/or the main loop itself. Here started the series of experimental changes in both areas of the code. I'll describe final result in article about the plugin, but here are some observations I've made during the process:
+ - running too many threads producing transactions is actually detrimental - on my computer two is enough to surpass speed of processing of those transactions, running more only slows down the process (I don't know actually why, because time spent in locks didn't increase with number of threads).
+ - when production of transactions is faster than their consumption, we need some way to prevent main queue from growing indefinitely. The "proper" implementation of queue size limiting (with conditional variables and locks on both "empty" and "full" ends of the spectrum) is very slow. I ended up adding safety rate limiter to `colony`'s "infinite mode".
+ - lockless queues are possible, but I didn't actually try any of such solutions I've found on the internet, because they operate under assumptions on CPU architecture. Considering we actually want `hived` to run on different lightweight hardware and ultimately maybe even on old smartphones, having important piece of code that might not work reliably on such hardware is not desirable.
+ - the problem disappeared when I stopped using `async()` and implemented "fire-and-forget" way of handling transactions. Normally when transaction is passed to the queue, the thread that sent it there is stopped and forced to wait [until promise is fulfilled](https://gitlab.syncad.com/hive/hive/-/blob/6a81899a5e4365ecbbc294ad7d69e9d8304c760e/libraries/plugins/chain/chain_plugin.cpp#L1981). For that reason the thread usually wraps all the work related to preparing and reacting on return from transaction processing into async task, so it can continue work on something else while that task waits until transaction is fully consumed. That mechanism is used in p2p and `colony` was also using it, however when number of "concurrently" processed transactions (number of tasks awaiting return from processing) exceeds certain amount, the mechanism of async tasks starts to behave weird, sometimes apparently running in circles without checking if any of the tasks can be run already. The ["fire-and-forget" method](https://gitlab.syncad.com/hive/hive/-/blob/6a81899a5e4365ecbbc294ad7d69e9d8304c760e/libraries/plugins/chain/chain_plugin.cpp#L2021) that I've introduced just puts transaction in the queue and forgets about it. If any action is to be taken after transaction is consumed, it needs to be coded into `transaction_flow_control` object. The drawback is that that action takes processing time from main writer thread (the one running writer loop), but `colony` didn't need to do much "cleanup" after transaction is consumed, so in the end that solution turned out to be proper one.
+ 
+In the end, after serious changes in `colony` and some in main writer loop, plus adjustment of default `colony` parameters, the average measurement on full cycle went down to 412ms. That's more like it! Though, it is hard to unambiguously attribute the speedup to either optimization of deduplication index or changes in `colony` and main loop.
+
+&gt; There is one more piece of state that is changed by every incoming transaction - RC manabar. It could also be optimized in similar way, and the potential speedup is even bigger, because RC resides in `account_object`, which is bigger and more complicated than `transaction_object`. However such changes could turn out to be in conflict with [account related optimization](https://hive.blog/hive-139531/@andablackwidow/comment-archive-for-node-operators#todo) that Mariusz already started. It is a task to consider though, so sooner or later it's going to be done as well.
+
+---
+
+<a id="custom" />
+## Third stage: custom operation counter
+
+I've mentioned that I considered two more optimizations. First was described above. Second touches only custom operations, but since one of them, namely `custom_json_operation` is the most common operation, optimizing it has to have an impact. Witness enabled nodes (not necessarily active witnesses) had a soft limit on how many custom operations can a single user put inside single block. That mechanism consisted of separate `witness_custom_op_index` where accounts involved in custom operations were associated with counters keeping number of such operations already put in block (or list of pending). The counters reset every block. I've [moved that mechanism to common code](https://gitlab.syncad.com/hive/hive/-/merge_requests/1526/diffs?commit_id=ede64ede0eb23f5fe4448487a93a7bedbaba73e3), so now all nodes are executing it (meaning the transactions that push beyond that limit won't propagate through the network). The limit did actively relied on undo mechanism though: we want to catch limit violation early, so to not waste time on processing transaction that will be dropped, but if the transaction turns out to not violate the limit, but be faulty for other reasons, we want the counter values to go back to the state they were in prior to execution. To account for dropping of use of `witness_custom_op_index` (replaced with local database member `_pending_tx_custom_op_count` - a hashmap mapping account name to counter value) the mechanism works in two stages. First it checks the limit adding to copies of the counters, and only after transaction is about to be put in list of pending (that is, it was found to be correct), the local copies are rewritten to `_pending_tx_custom_op_count`. In case transaction was faulty for any reason, the counters affected by transaction would just disappear and no trance of transaction would be in `_pending_tx_custom_op_count`.
+
+Since custom operation counters were reset with every block, we never had to worry about that data being moved from state to local member that won't survive node restart.
+
+That optimization reduced full cycle time from 412ms to 372ms.
+
+---
+
+<a id="pool" />
+## Fourth stage: rebase and pool allocator applied to undo sessions
+
+I've mentioned before that all those optimizations were done prior to even pool allocator, but ended up being introduced to `develop` almost as last. After rebase I've checked how introduction of pool allocator changed the timing. Turned out the 372ms was reduced to 321ms - nice!
+
+At that moment only [application of pool allocator to undo sessions](https://hive.blog/hive-139531/@andablackwidow/pool-allocator-optimization-for-node#undo) remained to be done. Once it was over, the timing went down a little, to 312ms. I was a bit disappointed on how little we gained on that, but after making specialized unit test benchmark, it turned out it might actually be justified.
+
+---
+
+<a id="todo" />
+## TODO
+
+Other than above mentioned potential to treat RC manabar to the same optimization as deduplication index, there are no known things that could still be done. I consider [point 11 of my dream list for Hive](https://gitlab.syncad.com/hive/hive/-/issues/675#note_159293) to be complete.
+
+I've mentioned that p2p uses `async()` to pass individual transactions to the main queue. When I was running flood tests before, I've noticed that at certain traffic levels p2p starts to choke and drop incoming transactions (and sometimes blocks), which is undesirable. I've not repeated those tests after optimization, because they are real pain to setup, but I expect some improvement. However I still think it would be beneficial if p2p could also drop use of async tasks for processing transactions. Unfortunately when I looked into the code, the change won't be as easy as I initially thought.
+
+There is one immediate practical effect of above optimizations. I've started working on [RC scale - point 17 of the list](https://gitlab.syncad.com/hive/hive/-/issues/675#note_159311). I've actually implemented it already (although without full set of tests it is probably still filled with bugs), and all that remains is to determine proper values of RC parameters at maximum scale. That however requires running typical mix of transactions with expected traffic intensity for extended periods of time (like a million blocks at least) and observing how RC pools behave, adjusting parameters as needed - they should stabilize, neither growing nor depleting. The ability to produce blocks really fast comes in handy, and optimizations described above cut the full cycle from initial 750ms to 312ms. Moreover smaller blocks are actually produced faster than you'd expect from linear relation (64kB blocks that are 32 times smaller than 2MB ones are produced in a bit above 7ms rather than almost 10ms as would be expected from size difference).</div>
+  <footer class="hive-post-embed__source">
+    <span class="hive-post-embed__source-label">Source:</span>
+    <a href="https://hive.blog/@andablackwidow/undo-session-and-other-live">Undo session and other live mode optimizations</a>
+    by
+    <a href="https://hive.blog/@andablackwidow">@andablackwidow</a>
+  </footer>
+</div>
+
+
+  </div><a class="u-url" href="/news/core/development/2025/08/24/undo-session-and-other-live.html" hidden></a>
+</article>
+
+        </div>
+
+        
+        <aside class="page-sidebar" aria-label="Search and browse">
+          <section class="sidebar-section sidebar-search">
+            <h2 class="sidebar-heading">Search posts</h2>
+            <p class="sidebar-copy">Search the locally indexed post archive.</p>
+            <input type="text" id="search-input" placeholder="Search posts" autocomplete="off" />
+            <ul id="results-container"></ul>
+          </section>
+
+          <section class="sidebar-section sidebar-topics">
+            <h2 class="sidebar-heading">Browse topics</h2>
+            <p class="sidebar-copy">Jump into curated topic landing pages.</p>
+            <ul class="topic-list topic-list-sidebar"><li><a class="page-link" href="/account-recovery/">Account Recovery</a></li><li><a class="page-link" href="/core-development/">Core Development</a></li><li><a class="page-link" href="/dapps/">Dapps</a></li><li><a class="page-link" href="/docker/">Docker</a></li><li><a class="page-link" href="/hardfork/">Hardfork</a></li><li><a class="page-link" href="/hivemind/">Hivemind</a></li><li><a class="page-link" href="/javascript/">Javascript</a></li><li><a class="page-link" href="/multisig/">Multisig</a></li><li><a class="page-link" href="/python/">Python</a></li><li><a class="page-link" href="/ruby/">Ruby</a></li><li><a class="page-link" href="/testnet/">Testnet</a></li><li><a class="page-link" href="/tools/">Tools</a></li><li><a class="page-link" href="/witness/">Witness</a></li></ul>
+          </section>
+        </aside>
+        
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading"><a rel="author" href="/">Hive Chain Documentation</a></h2>
+    
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">site curated by: @inertia</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>Your resource for various levels of Hive Documentation.</p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+<script src="/assets/javascript/search.js"></script>
+    <script>
+      (function () {
+        var input = document.getElementById('search-input');
+        var results = document.getElementById('results-container');
+        if (input && results && typeof SimpleJekyllSearch !== 'undefined') {
+          SimpleJekyllSearch({
+            searchInput: input,
+            resultsContainer: results,
+            json: '/search.json'
+          });
+        }
+
+        if (typeof SteemContentRenderer === 'undefined') return;
+
+        var targets = document.querySelectorAll('[data-hive-render-target="true"]');
+        if (!targets.length) return;
+
+        var renderer = new SteemContentRenderer.DefaultRenderer({
+          baseUrl: 'https://hive.blog/',
+          breaks: true,
+          skipSanitization: false,
+          allowInsecureScriptTags: false,
+          addNofollowToLinks: true,
+          doNotShowImages: false,
+          ipfsPrefix: '',
+          assetsWidth: 640,
+          assetsHeight: 480,
+          imageProxyFn: function (url) { return url; },
+          usertagUrlFn: function (account) { return '/@' + account; },
+          hashtagUrlFn: function (hashtag) { return '/tags/#' + hashtag; },
+          isLinkSafeFn: function () { return true; }
+        });
+
+        targets.forEach(function (target) {
+          try {
+            var inputHtml = target.innerHTML;
+            target.innerHTML = renderer.render(inputHtml);
+          } catch (e) {
+            console.log(e);
+          }
+        });
+      })();
+    </script>
+
+  </body>
+
+</html>

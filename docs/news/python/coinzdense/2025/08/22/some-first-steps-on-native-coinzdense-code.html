@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta property="og:image" content="/assets/images/sticker.png" />
+  <meta name="apple-mobile-web-app-title" content="Hive Docs" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" /><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Some first steps on native CoinZdense code | Hive Chain Documentation</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Some first steps on native CoinZdense code" />
+<meta name="author" content="pibara" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Why (for now) I’m picking C++ over rust for native CoinZdense code, plus some first snippets of code" />
+<meta property="og:description" content="Why (for now) I’m picking C++ over rust for native CoinZdense code, plus some first snippets of code" />
+<link rel="canonical" href="https://hive.blog/hive-169321/@pibara/some-first-steps-on-native-coinzdense-code" />
+<meta property="og:url" content="https://hive.blog/hive-169321/@pibara/some-first-steps-on-native-coinzdense-code" />
+<meta property="og:site_name" content="Hive Chain Documentation" />
+<meta property="og:image" content="https://hivedocs.info/assets/images/favicon.png" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2025-08-22T19:18:39-07:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="https://hivedocs.info/assets/images/favicon.png" />
+<meta property="twitter:title" content="Some first steps on native CoinZdense code" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"pibara"},"dateModified":"2025-08-22T19:18:39-07:00","datePublished":"2025-08-22T19:18:39-07:00","description":"Why (for now) I’m picking C++ over rust for native CoinZdense code, plus some first snippets of code","headline":"Some first steps on native CoinZdense code","image":"https://hivedocs.info/assets/images/favicon.png","mainEntityOfPage":{"@type":"WebPage","@id":"https://hive.blog/hive-169321/@pibara/some-first-steps-on-native-coinzdense-code"},"url":"https://hive.blog/hive-169321/@pibara/some-first-steps-on-native-coinzdense-code"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://hivedocs.info/feed.xml" title="Hive Chain Documentation" /><script>
+if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNotTrack === "yes" || navigator.msDoNotTrack === "1")) {
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-161692811-1', 'auto');
+  ga('send', 'pageview');
+}
+</script>
+  
+<script src='https://unpkg.com/steem-content-renderer'></script>
+  <script src="/assets/javascript/universal-bridge-against-phishing.js"></script>
+  <script src="/assets/javascript/lazysizes.min.js" async=""></script>
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet" />
+  <link rel="shortcut icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="152x152" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="167x167" href="/assets/images/favicon-80x80.png" />
+</head>
+<body><header class="site-header" role="banner">
+  <div class="wrapper site-header-inner">
+    <a class="site-title" rel="author" href="/">Hive Chain Documentation</a>
+
+    <nav class="site-nav" aria-label="Primary">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/news/">News</a><a class="page-link" href="/howto/">How To</a><a class="page-link" href="/links/">Useful Links</a><a class="page-link" href="/authors/">Authors</a><a class="page-link" href="/topics/">Topics</a><a class="page-link" href="/search/">Search</a></div>
+    </nav>
+  </div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper page-layout has-search-panel">
+        <div class="page-main">
+          <article class="post h-entry post-article" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header post-hero">
+    <div class="post-hero-main">
+      <p class="post-kicker">Archive post</p>
+      <h1 class="post-title p-name" itemprop="name headline">Some first steps on native CoinZdense code</h1>
+      <p class="post-meta">
+        <time class="dt-published" datetime="2025-08-22T19:18:39-07:00" itemprop="datePublished">Aug 22, 2025
+        </time>• <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">
+            <a href="/authors/#author-pibara">pibara</a>
+          </span></span></p><p class="post-summary">Why (for now) I'm picking C++ over rust for native CoinZdense code, plus some first snippets of code</p></div><aside class="post-author-card">
+      <img src="https://images.hive.blog/u/pibara/avatar" width="128" height="128" class="lazyload post-author-avatar" alt="Avatar for @pibara" />
+      <div class="post-author-name">@pibara</div>
+    </aside></header>
+
+  <div class="post-content e-content post-body" itemprop="articleBody">
+    <div class="hive-post-embed" data-hive-author="pibara" data-hive-permlink="some-first-steps-on-native-coinzdense-code">
+  <div id="content-pibara-some-first-steps-on-native-coinzdense-code" class="hive-post-embed__content" data-hive-render-target="true">It's been a while since I've written C++ template code, and it's been a while since I've worked on CoinZdense, but recently I have been doing both at once. As a reminder, so far CoiZdense has been mostly proof of concept and demonstrator level code written purely in Python, and while Python on it's own isn't ideal from a performance perspective, it is great for testing out concepts ang getting a feel for stuff.
+
+Because Python was showing it's performance limitation, especialy in CoinZdense post-quantum hash-based key generation, and because Python won't be my only target language, I have been learning Rust, and untill recently was planning on rewriting my Python efforts and more in Rust to target multiple languages including Python, C++ and Web languages like TypeScript and ClojureScript through WASM. My recent Rust learning effords were focused on just that. Writing a small Rust core and building it into something that could be used from most of my target languages so I don't have to rewrite as much code as I was originally planning.
+
+As a recap, the languages I intent to support with CoinZdense are divided into four tiers:
+
+### tier 1 languages
+
+Tier One languages are the languages needed for showing the world things are serious with the project. A performant Python implementation for scripting, and a C++ implementation so there is at least potential to move things into a C++ based blockchain like HIVE. 
+
+* Python
+* C++
+
+### tier 2 languages
+
+Still very high priority are the tier 2 languages. These are needed to branch out to web frontends and to branch out to the posibility of reaching a wider range of Web3 and Web3-like blockchains. Chains and blockchain tech that I'm really interested in are [FlureeDB](https://flur.ee/), [Agoric](https://agoric.com/), [Rune](https://thorchain.org/rune) and [Atom](https://cosmos.network/). To get at least one foot in towards porentialy providing enough to create signing infrastructure migration incentive, the tier 2 languages need to come in.
+
+* JavaScript (and potentially [SES](https://github.com/endojs/endo/tree/master/packages/ses#readme))
+* [ClojureScript](https://clojurescript.org/)
+* [Rust](https://www.rust-lang.org/)
+* [Clojure](https://clojure.org/)
+* [Monte](https://monte.readthedocs.io/en/latest/index.html)
+ 
+### tier 3 languages
+
+These languages are languages I have harly used myself, but I probably should learn them enough to support them because they play an important role in some Web 3.o ecosystems at least:
+
+* TypeScript
+* Go
+* C
+
+### tier 4 languages
+
+The final tier are languages that I am not going to write any libs for myself, but for that I want to commit to supporting any developer in getting things working.
+
+* Ruby
+* PHP
+* Java
+* Swift
+
+## Rust or C++ or both
+
+After experimenting with Rust code and making bindings for different languages in the list above, I discovered Rusnt isn't as mature in interoperability tooling and possibilities as I would like it to be. Next to that, my experience with C++ is almost two decades and thus an order of magnitude greater than my experience with Rust so far. As such I recently had to make the choice to give up on the idea of building everything from Rust. I still want to learn more Rust and do some actual open source work, so it is likely I'll eventualy write a Rust port of the C++ code. Because one thing is clear, Rust is too great a language to limit the CoinZdense API in Rust to just what a C style inter-language interface allows for. I'm going full C++ for the C++ API with plenty of template code for type and memory safety and native code flexability.
+
+### First bits of C++ code
+
+So far things are moving both bottom up and top down, both with [libsodium](https://libsodium.gitbook.io/doc) at the core. On one end I'm playing with the libsodium key-derivation functionality, shaping it into a static least-authority template API. At the other end I'm optimizing the dual-chain WOTS code that relies on the libsodium generic hash function. Eventualy the two will meet in the middle, but I'm still far from that point so far.
+
+Let me share some of the code.
+
+```c++
+#pragma once
+// Copyright (c) 2025, Rob J Meijer
+// Licensed under the BSD 3-Clause License. See LICENSE
+// file in the project root for full license information.
+#include <sodium.h>
+#include <memory>
+#include <stdexcept>
+#include <string>
+#include "value.hpp"
+namespace coinzdense {
+namespace sodium {
+struct SodiumInitException : std::runtime_error {
+  explicit SodiumInitException(const std::string&amp; message):
+        std::runtime_error("Sodium initialization failed: " + message) {}
+};
+struct KdfDeriveException : std::runtime_error {
+  explicit KdfDeriveException(const std::string&amp; message):
+        std::runtime_error("Key derivation failed: " + message) {}
+};
+}  // namespace sodium
+namespace entropy {
+template <uint8_t S="">
+struct AbstractEntropy {
+  virtual ~AbstractEntropy() = default;
+  virtual std::array&lt;uint8_t, S&gt; operator () (uint64_t subkey_id) = 0;
+};
+
+template <uint8_t S="">
+struct SecretEntropy: AbstractEntropy<S> {
+    explicit SecretEntropy(std::array&lt;uint8_t, crypto_kdf_KEYBYTES&gt; masterkey):
+        mContext{'C', 'o', 'i', 'n', 'Z', 'd', 'n', 's'}, mMasterKey(
+            masterkey) {
+      if (sodium_init() == -1) {
+        throw coinzdense::sodium::SodiumInitException(
+            "Failed to initialize libsodium");
+      }
+    }
+    std::array&lt;uint8_t, S&gt; operator () (uint64_t subkey_id) {
+      uint8_t subkey[S];
+      if (crypto_kdf_derive_from_key(subkey, S, subkey_id, mContext.data(),
+                                     mMasterKey.data()) == -1) {
+        throw coinzdense::sodium::KdfDeriveException(
+            "Invalid parameters or system error");
+      }
+      return std::to_array(subkey);
+    }
+ private:
+    std::array&lt;char, crypto_kdf_CONTEXTBYTES&gt; mContext;
+    std::array&lt;uint8_t, crypto_kdf_KEYBYTES&gt; mMasterKey;
+};
+
+template <uint8_t S="">
+coinzdense::value::ValueSemantics&lt;AbstractEntropy<S>, uint64_t, S&gt;
+    make_secret_entropy(std::array&lt;uint8_t, 32&gt; masterkey) {
+  return coinzdense::value::ValueSemantics&lt;AbstractEntropy<S>,
+                                           uint64_t, S&gt;(
+        std::make_unique&lt;SecretEntropy<S>&gt;(masterkey));
+}
+}  // namespace entropy
+}  // namespace coinzdense
+```
+
+The code starts with the definition of two exceptions that we'll need in case libsodium C functions fail. Then comes an abstract baseclass AbstractEntropy. Finaly we have the real implementation in the SecretEntropy class, followed by a builder function that wraps the implementation class in a ValueSemantics wrapper (that we will discuss later).
+
+The **make_secret_entropy** takes a 32 bytes master key to build a  wrapped **SecretEntropy** object that will return an **S** bytes long derived key for any 64 bit integer provided to it's call operator.
+
+We can create and invoke our deterministic entropy source like this:
+
+```c++
+std::array&lt;uint8_t, 32&gt; key{0,1,2,3,4,5,6,7,8,9,0,1,2,3,4,5,6,7,8,9,0,1,2,3,4,5,6,7,8,9,0,1};
+auto entropy = coinzdense::entropy::make_secret_entropy&lt;20&gt;(key);
+auto sub = entropy(1234567);
+```
+
+Ignore the fact that the 32 byte key is a silly hardcoded array for now. Note how we create our entropy object with the master key, providing the subkey size (in bytes) as a static template parameter.
+In this case 20 is the minimum size libsodium recomends for a safe full 64 bit addressable subkey space. The last line shows how we can request a subkey.
+
+This is all fine and dandy, but access to **all**  subkeys isn't exactly safe according to the principle of least authority. 
+
+We fix this with a second bit of C++ code:
+
+```c++
+#pragma once
+// Copyright (c) 2025, Rob J Meijer
+// Licensed under the BSD 3-Clause License. See LICENSE
+// file in the project root for full license information.
+#include <array>
+#include <stdexcept>
+#include <memory>
+#include <type_traits>
+#include <limits>
+#include <utility>
+namespace coinzdense {
+namespace value {
+template &lt;typename Abstract, typename I, uint8_t S, I Min, I Max&gt;
+struct Ranged: Abstract {
+  static_assert(std::is_integral_v<i>, "I must be an integral type");
+    explicit Ranged(std::weak_ptr<Abstract> ptr): pImpl(ptr) {}
+    std::array&lt;uint8_t, S&gt; operator () (I id) {
+      if (id &lt; 0 || id + Min &gt; Max) {
+        throw std::out_of_range("Ranged invocation outside of defined range");
+      }
+      auto sp = pImpl.lock();  //  Convert weak_ptr to shared_ptr
+      if (!sp) {
+        throw std::runtime_error("Ranged: Underlying object no longer exists");
+      }
+      return (*sp)(id+Min);
+    }
+    template&lt;I Start, I End&gt;
+    Ranged&lt;Abstract, I, S, Min + Start, Min + End&gt; ranged() {
+      static_assert(
+         Start &gt;= 0 &amp;&amp; Start + Min &lt; Max &amp;&amp; End &gt; 0 &amp;&amp;
+             End + Min &lt;= Max &amp;&amp; End &gt; Start,
+         "Ranged decomposition outside of defined range");
+      return Ranged&lt;Abstract, I, S, Min + Start, Min + End&gt;(pImpl);
+    }
+ private:
+    std::weak_ptr<Abstract> pImpl;
+};
+template &lt;typename Abstract, typename I, uint8_t S&gt;
+struct ValueSemantics: Abstract {
+  static_assert(std::is_integral_v<i>, "I must be an integral type");
+    explicit ValueSemantics(std::unique_ptr<Abstract> ptr):
+          pImpl(std::move(ptr)) {}
+    std::array&lt;uint8_t, S&gt; operator () (I id) {
+      return (*pImpl)(id);
+    }
+    template&lt;I Start, I End&gt;
+    Ranged&lt;Abstract, I, S, Start, End&gt; ranged() {
+      static_assert(End &gt; Start &amp;&amp; End &lt;= std::numeric_limits<i>::max() &amp;&amp;
+                      Start &gt;= std::numeric_limits<i>::min(),
+                      "Ranged decomposition outside of type limits");
+      return Ranged&lt;Abstract, I, S, Start, End&gt;(pImpl);
+    }
+ private:
+    std::shared_ptr<Abstract> pImpl;
+};
+}  // namespace value
+}  // namespace coinzdense
+```
+
+Here we see a nice bit of templae library magic. Remember how before the implemmentation got wrapped in a **ValueSemantics** wrapper. Here we see that wrapper template at is base provides just a [Pointer To Implementation](https://en.cppreference.com/w/cpp/language/pimpl.html) or pImpl pattern. But it does so with a tiny twist. A template function **ranged** allows the user to create a proxy to the deterministic entropy source that limits access to only a subset ot the full 64 bit index space. So now we can do something like this:
+
+```c++
+auto range1 = entropy.ranged&lt;4000, 8000&gt;();
+auto sub2 = range1(1500);
+try {
+  auto sub2b = range1(5000);
+  throw std::runtime_error("Failure in first range test");
+}
+catch (std::out_of_range const &amp;e) {}
+```
+
+We statically get a proxy to the deterministic entropy source that will only give us access to the subkeys from id 4000 upto 8000. Note that this range is maped to zero based, so the proxy will allow indices from 0 upto 2000 that will get mapped to 4000 upto 8000 on usage. In this sample code, range1(1500) should succeed, but range1(5000) will raise an out of range exception.
+
+This can be done in a nested way because the **Ranged** template has a ranged method too:
+
+```c++
+auto range2 = range1.ranged&lt;50, 150&gt;();
+auto sub3 = range2(75);
+try {
+      auto sub3b = range2(110);
+      throw std::runtime_error("Failure in second range test");
+}
+catch (std::out_of_range const &amp;e) {}
+```
+This does the same thing on the next level. Note that 0 at this second level will first get mapped to 50 at level 1, what then will get mapped to 4050 at level 0.
+This nesting allows us to first divide the whole index space up into prime key-space and POLA subkey-space. Then to divide prime key-space into per level-key key-space, then divide  per level-key key-space into per onetime-key keyspace. Then divide per onetime-key keyspace into the low level WOTS keyspace chunks.
+
+So far the failure was runtime, but a lot should get cought at compiletime already. Let's shange the first line:
+
+```
+auto range2 = range1.ranged&lt;50, 8150&gt;();
+```
+
+This code won't compile because static asserts will cause compile errors:
+
+```
+coinzdense/value.hpp:31:24: error: static assertion failed: Ranged decomposition outside of defined range
+```
+
+I'll post more about the progress on the C++ code as things progress. For now this is a sample of the humble beginnings of where I'm heading with this. If you want to keep up with things, please star or watch [the project on github](https://github.com/pibara/libcoinzdense/tree/main).&lt;/div&gt;
+  <footer class="hive-post-embed__source">
+    <span class="hive-post-embed__source-label">Source:</span>
+    <a href="https://hive.blog/@pibara/some-first-steps-on-native-coinzdense-code">Some first steps on native CoinZdense code</a>
+    by
+    <a href="https://hive.blog/@pibara">@pibara</a>
+  </footer>
+&lt;/div&gt;
+
+</Abstract></i></i></Abstract></i></Abstract></Abstract></i></utility></limits></type_traits></memory></stdexcept></array></S></S></S></uint8_t></S></uint8_t></uint8_t></string></stdexcept></memory></sodium.h></div></div>
+
+  </div><a class="u-url" href="/news/python/coinzdense/2025/08/22/some-first-steps-on-native-coinzdense-code.html" hidden></a>
+</article>
+
+        </div>
+
+        
+        <aside class="page-sidebar" aria-label="Search and browse">
+          <section class="sidebar-section sidebar-search">
+            <h2 class="sidebar-heading">Search posts</h2>
+            <p class="sidebar-copy">Search the locally indexed post archive.</p>
+            <input type="text" id="search-input" placeholder="Search posts" autocomplete="off" />
+            <ul id="results-container"></ul>
+          </section>
+
+          <section class="sidebar-section sidebar-topics">
+            <h2 class="sidebar-heading">Browse topics</h2>
+            <p class="sidebar-copy">Jump into curated topic landing pages.</p>
+            <ul class="topic-list topic-list-sidebar"><li><a class="page-link" href="/account-recovery/">Account Recovery</a></li><li><a class="page-link" href="/core-development/">Core Development</a></li><li><a class="page-link" href="/dapps/">Dapps</a></li><li><a class="page-link" href="/docker/">Docker</a></li><li><a class="page-link" href="/hardfork/">Hardfork</a></li><li><a class="page-link" href="/hivemind/">Hivemind</a></li><li><a class="page-link" href="/javascript/">Javascript</a></li><li><a class="page-link" href="/multisig/">Multisig</a></li><li><a class="page-link" href="/python/">Python</a></li><li><a class="page-link" href="/ruby/">Ruby</a></li><li><a class="page-link" href="/testnet/">Testnet</a></li><li><a class="page-link" href="/tools/">Tools</a></li><li><a class="page-link" href="/witness/">Witness</a></li></ul>
+          </section>
+        </aside>
+        
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading"><a rel="author" href="/">Hive Chain Documentation</a></h2>
+    
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">site curated by: @inertia</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>Your resource for various levels of Hive Documentation.</p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+<script src="/assets/javascript/search.js"></script>
+    <script>
+      (function () {
+        var input = document.getElementById('search-input');
+        var results = document.getElementById('results-container');
+        if (input && results && typeof SimpleJekyllSearch !== 'undefined') {
+          SimpleJekyllSearch({
+            searchInput: input,
+            resultsContainer: results,
+            json: '/search.json'
+          });
+        }
+
+        if (typeof SteemContentRenderer === 'undefined') return;
+
+        var targets = document.querySelectorAll('[data-hive-render-target="true"]');
+        if (!targets.length) return;
+
+        var renderer = new SteemContentRenderer.DefaultRenderer({
+          baseUrl: 'https://hive.blog/',
+          breaks: true,
+          skipSanitization: false,
+          allowInsecureScriptTags: false,
+          addNofollowToLinks: true,
+          doNotShowImages: false,
+          ipfsPrefix: '',
+          assetsWidth: 640,
+          assetsHeight: 480,
+          imageProxyFn: function (url) { return url; },
+          usertagUrlFn: function (account) { return '/@' + account; },
+          hashtagUrlFn: function (hashtag) { return '/tags/#' + hashtag; },
+          isLinkSafeFn: function () { return true; }
+        });
+
+        targets.forEach(function (target) {
+          try {
+            var inputHtml = target.innerHTML;
+            target.innerHTML = renderer.render(inputHtml);
+          } catch (e) {
+            console.log(e);
+          }
+        });
+      })();
+    </script>
+
+  </body>
+
+</html>

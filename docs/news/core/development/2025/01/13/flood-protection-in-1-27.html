@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta property="og:image" content="/assets/images/sticker.png" />
+  <meta name="apple-mobile-web-app-title" content="Hive Docs" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" /><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Flood protection in 1.27.7 | Hive Chain Documentation</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Flood protection in 1.27.7" />
+<meta name="author" content="andablackwidow" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="New features in 1.27.7 protecting against flood attacks on Hive network for witnesses and node operators" />
+<meta property="og:description" content="New features in 1.27.7 protecting against flood attacks on Hive network for witnesses and node operators" />
+<link rel="canonical" href="https://hive.blog/hive-139531/@andablackwidow/flood-protection-in-1-27" />
+<meta property="og:url" content="https://hive.blog/hive-139531/@andablackwidow/flood-protection-in-1-27" />
+<meta property="og:site_name" content="Hive Chain Documentation" />
+<meta property="og:image" content="https://images.ecency.com/DQmTMFKkzFgVGZgJaUk6FCcfN4GucvQBs9kpywdiG5GRoJf/spillway.jpeg" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2025-01-13T18:18:12-08:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="https://images.ecency.com/DQmTMFKkzFgVGZgJaUk6FCcfN4GucvQBs9kpywdiG5GRoJf/spillway.jpeg" />
+<meta property="twitter:title" content="Flood protection in 1.27.7" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"andablackwidow"},"dateModified":"2025-01-13T18:18:12-08:00","datePublished":"2025-01-13T18:18:12-08:00","description":"New features in 1.27.7 protecting against flood attacks on Hive network for witnesses and node operators","headline":"Flood protection in 1.27.7","image":"https://images.ecency.com/DQmTMFKkzFgVGZgJaUk6FCcfN4GucvQBs9kpywdiG5GRoJf/spillway.jpeg","mainEntityOfPage":{"@type":"WebPage","@id":"https://hive.blog/hive-139531/@andablackwidow/flood-protection-in-1-27"},"url":"https://hive.blog/hive-139531/@andablackwidow/flood-protection-in-1-27"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://hivedocs.info/feed.xml" title="Hive Chain Documentation" /><script>
+if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNotTrack === "yes" || navigator.msDoNotTrack === "1")) {
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-161692811-1', 'auto');
+  ga('send', 'pageview');
+}
+</script>
+  
+<script src='https://unpkg.com/steem-content-renderer'></script>
+  <script src="/assets/javascript/universal-bridge-against-phishing.js"></script>
+  <script src="/assets/javascript/lazysizes.min.js" async=""></script>
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet" />
+  <link rel="shortcut icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="152x152" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="167x167" href="/assets/images/favicon-80x80.png" />
+</head>
+<body><header class="site-header" role="banner">
+  <div class="wrapper site-header-inner">
+    <a class="site-title" rel="author" href="/">Hive Chain Documentation</a>
+
+    <nav class="site-nav" aria-label="Primary">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/news/">News</a><a class="page-link" href="/howto/">How To</a><a class="page-link" href="/links/">Useful Links</a><a class="page-link" href="/authors/">Authors</a><a class="page-link" href="/topics/">Topics</a><a class="page-link" href="/search/">Search</a></div>
+    </nav>
+  </div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper page-layout has-search-panel">
+        <div class="page-main">
+          <article class="post h-entry post-article" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header post-hero">
+    <div class="post-hero-main">
+      <p class="post-kicker">Archive post</p>
+      <h1 class="post-title p-name" itemprop="name headline">Flood protection in 1.27.7</h1>
+      <p class="post-meta">
+        <time class="dt-published" datetime="2025-01-13T18:18:12-08:00" itemprop="datePublished">Jan 13, 2025
+        </time>• <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">
+            <a href="/authors/#author-andablackwidow">andablackwidow</a>
+          </span></span></p><p class="post-summary">New features in 1.27.7 protecting against flood attacks on Hive network for witnesses and node operators</p></div><aside class="post-author-card">
+      <img src="https://images.hive.blog/u/andablackwidow/avatar" width="128" height="128" class="lazyload post-author-avatar" alt="Avatar for @andablackwidow" />
+      <div class="post-author-name">@andablackwidow</div>
+    </aside></header>
+
+  <div class="post-content e-content post-body" itemprop="articleBody">
+    <div class="hive-post-embed" data-hive-author="andablackwidow" data-hive-permlink="flood-protection-in-1-27">
+  <div id="content-andablackwidow-flood-protection-in-1-27" class="hive-post-embed__content" data-hive-render-target="true">Since version with the features I'm going to present here was already officially released, I though it is high time to describe them.
+
+<a id="tldr" />
+# TL:DR
+
+If you are a witness or a node operator, it would be nice if you knew what some new configuration options do, but in the unlikely event of a flood attack on the network new features will protect your node just fine on default settings.
+
+---
+<a id="definitions" />
+# Definitions
+
+ - **Normal traffic** is when transactions that are included in blocks consume at most as many resources as there are allocated in the budget parameters. In such case RC costs stabilize on certain level.
+ - **High traffic** is when transactions on average consume more than the budget allows, which leads to RC costs escalating indefinitely. Well, not indefinitely, because once particular resource pool dries out, RC cost associated with that resource no longer increases, but by the time that happens the cost is so high, it prevents big portion of users from being able to transact.
+&gt; The resource that is most prone to being exhausted is `execution time`, since its pool is very shallow compared to other resources. On the flip side it also comes back to normal much quicker than other pools after traffic gets lower.
+ - **Saturated traffic** is a border case of high traffic, when blocks are constantly full, but still all valid transactions eventually are included in blocks. The level when traffic becomes saturated depends on max size of blocks which is decided by witnesses.
+&gt; For pretty much all history witnesses only allowed blocks of size 64kB
+ - **Flood** is when traffic is more than saturated in a sustained way, that is, for every block there is more **new** valid transactions coming than the block can contain. Excess transactions populate mempool in hope to be included (and at first they actually live to see the block), but later they have to wait longer than their expiration time allows. When such situation is caused deliberately we have a **flood attack**.
+&gt; ***Isn't it a DDoS?*** - Yes, pretty similar, but no. Attacker might choke any API node by overcrowding it with calls, however it would have no effect on the network, especially since witness nodes usually don't have any APIs enabled (or even if they do, it is for local network, not the world). The flood attack is more complicated, because attacker needs to use valid transactions that will propagate through the network and reach witness nodes in order to increase size of mempool so much, that the hardware limits are reached and the node won't be able to process or produce blocks in time, leading to constant missed blocks, forks and eventually even to node shutdown. If attacker manages to finish enough witnesses, it might even stop the whole network. It is actually better for the attacker to bypass API with its limitations altogether and inject transactions from own nodes, because p2p allows for flooding multiple peers at once, increasing the chance of success.
+
+To put it differently... I'm sure everyone heard about bots that copy-paste old posts trying to milk rewards. There is supposedly 17k+ of such accounts belonging to single user. Imagine each of those accounts sending one transaction for every single block for hours. Of course they don't have RC for that, there are other limitations in place as well, but it should help visualize the scale of traffic when talking about flood.
+
+Let's continue. You might want to read that [old article about process of handling transactions](https://hive.blog/hive-139531/@andablackwidow/processing-new-transactions-and-blocks) for more details, however here are selected definitions relevant in the context of this article:
+ - **Pending transaction** - when transaction is accepted by the node for the first time, it is added to mempool. Transactions in mempool are called pending transactions. State of the node reflects changes made by executing all new valid transactions, until next block arrives.
+&gt; Hive nodes are super fast when it comes to processing transactions (and we have not said the last word yet) - a node can validate far more transactions between blocks than can fit even in biggest allowed block. That speed is necessary, since it influences time needed for replay or synchronization, and during normal processing affects fork handling as well as simply leaves more time for answering API calls.
+ - **Reapplied transaction vs postponed transaction** - when new block is processed, all state is reverted first to the point where it reflects only changes made by applying blocks. After the process is completed, transactions from mempool are reapplied. However it would not be ok for the node to spend too much time on that work, therefore it is limited to 200ms - only transactions that execute within the time limit (cumulative) are actually reapplied, rest of them are postponed - rewritten to new mempool without actually executing. After that process state of the node reflects reapplied transactions but not postponed. Remember which transactions are postponed, because they are the most relevant for this article - they take memory (are part of mempool), but state does not reflect them in any way.
+
+---
+<a id="why_now" />
+# Why it became the topic?
+
+Everything started with [issue #709](https://gitlab.syncad.com/hive/hive/-/issues/709). I wanted to have practical evidence to support the claim that we can't simply increase maximum allowed expiration time for transactions. That's why I've forced our dear admin to make me isolated mirrornet that I could run over with the attack.
+&gt; By the way, preparation of such mirrornet takes far too much time. It would be hard to close the process in a script, given various parameters decided by the purpose of such mirronet, but we should at least have a list of steps to take, if only to avoid basic mistakes.
+
+---
+<a id="setup" />
+# Test setup and how it differs from actual attack
+
+The mirrornet I was attacking was deployed on **fast local network**, three **beefy** servers hosting two witness nodes each. The attack was performed by three to eight `colony` enabled nodes hosted on my development machine (I could run more, but the effects I was looking for were showing already, so there was no point). I've checked situations with blocks of different sizes, from currently used 64kB to maximal allowed 2MB, also by changing the block size while the attack was ongoing.
+&gt; Setup drastically changes behavior of the network. When at the start only three witness nodes were used, I could reach **catastrophic network split** when nodes stop talking to each other and go their separate merry ways (due to lowered required witness participation parameter needed to allow proper start of such network, but still). It is actually understandable - the more witnesses is on the same node, the chance for long forks when the node can keep producing without effectively communicating with other nodes also increases.
+
+I suspect if the test was done in more realistic environment, the results could be different.
+ - Network - real attacker might need to face a problem of network throughput. For that reason attacking nodes would need to be located in different locations, with different ISPs, to spread as many transactions as possible throughout the network (of course symmetric connections could be used, but those are more expensive).
+ - Servers - I suspect real witness nodes are hosted on a hardware that is much weaker than the servers I've used in the test, therefore potentially easier to kill.
+ - Attacking nodes - *why there is need for more than one in the first place?* - It stems from first limitation that needs to be worked around - p2p won't allow more than 1k transactions per second from single peer. That is enough for flooding 64kB blocks, but big blocks can swallow over 7k normal sized transactions. On top of that attacker needs to produce and propagate as many transactions as possible, to quickly overwhelm the nodes before any witness can even think about the ways to react. Because of network constraints mentioned earlier, it is likely attacker would need to use many separate computers, hosting single node each, so the problem won't be as severe, however as you can imagine, when you are attacking the network, the network attacks you back - all the transactions that the attacker sends from all their nodes have a chance to be propagated back to attacking nodes.
+&gt; Observant reader will ask here about my development computer - is it some blade server monstrosity for me to be able to run 8 nodes at once during attack? Not at all. The nodes were not normal though. I did some heavy changes (as in impact of modifications, not actual amount of code that I've changed) so to avoid above mentioned problems. Also the `colony` plugin had to be modified, because in its normal state it self regulates precisely to avoid flooding. ***What is `colony` again?*** - I'll write about it some day, but for the purpose of this article it is enough to know that it is a plugin that automatically produces set amount of random spammable transactions. There are some conditions that have to be met for it to work, and most important one is described below.
+ - Accounts - I was using mirrornet, which means I was able to use all accounts in the network to act towards attack. For `colony` to work properly, it needs enough accounts that it can use (it detects them automatically). Attacker on mainnet would need to have their own accounts in suitable amount (and I can tell you here that 100k+ is needed for proper attack, the more the better, because even spammable transactions have their limits, and if you try to use only those with no limits, you are drastically increasing severity of next problem).
+ - RC - for transaction to be valid and propagated through the network, payer needs to have enough RC. A lot is needed for flood attack, but not as much as you might initially think. Attacker only needs to cover all transactions that they can push out between blocks, plus for all reapplied transactions. Postponed transactions are not reflected in state though, which also means they do not consume RC. Of course during attack RC costs will increase due to resource pools being exhausted fast, but that effect is unlikely enough to stop the attack, plus it is undesirable in and of itself, because it negatively affects big chunk of user base.
+&gt; ***Considering number of accounts and RC needed to perform the attack, doesn't that mean the attacker is playing against their own stake?*** - No, attacker only needs to be able to sign for that many accounts, not to own/have full control over them. There are currently at least three applications on Hive that have access to enough accounts of other users through authority redirections. I'm not suggesting any of them would actually abuse their position, however the mechanism is clear - attacker needs that many accounts and that much RC, but neither has to be theirs.
+
+---
+## Quick summary so far:
+
+Flood attack consists of sending large amount of valid transactions to the network to accumulate **postponed** transactions in mempools on nodes in order to cause excessive RAM allocation and related effects once physical RAM is exhausted. Preventive measures introduced in 1.27.7 are described below.
+
+---
+![](https://images.ecency.com/DQmTMFKkzFgVGZgJaUk6FCcfN4GucvQBs9kpywdiG5GRoJf/spillway.jpeg)
+
+<a id="size_limit" />
+# Limit size of mempool.
+
+The first and easiest solution is to limit size of mempool. The option for that is not surprisingly named `max-mempool-size`. Default is `100M`. It used to be bigger, but first, the value is only related to cumulative size of raw transactions (the amount of space they take in blocks), not their whole memory footprint (pending transactions are wrapped with extra data, f.e. precomputed invariants), and second, after further protection mechanisms were introduced, it is actually hard to even reach that value.
+
+When pending transactions are rewritten to new mempool after block is applied, node accumulates size of transactions. The reapplied transactions are always processed normally. Only when there is more pending transactions than the node can handle within 200ms time limit, it starts to look at size limit. All transactions that are left after configured size limit is exceeded are dropped completely. The amount of dropped transactions is reflected in `block stats` under new field `.after.drop`. Also the size of mempool after optional drop is given in new field `.after.size`. Because only postponed transactions are ever dropped, even the `0` is a legitimate value for `max-mempool-size` (the node is not dropping transactions that it can immediately reflect in state). Such setting is not recommended though, because it changes little in terms of memory allocation compared to default, while the node will definitely be dropping transactions that would otherwise be included in future blocks (even as soon as next block in case of 2MB blocks).
+
+You can observe mechanism in action (with mempool set to 0) by running `plugin_test --run_test=witness_tests/colony_basic_test`. When test switches from 1MB blocks to 64kB blocks at block 85, `colony` overshoots with transaction generation before it self restricts for further blocks. All postponed transactions are dropped and the remaining reapplied transactions are enough to fill next nine blocks.
+```
+2025-01-13T16:39:50.801642 p2p_plugin.cpp:579            broadcast_block      ] Broadcasting block #84 with 3813 transactions
+2025-01-13T16:39:50.864914 witness_plugin.cpp:473        block_production_loo ] Generated block #84 with timestamp 2025-01-13T16:39:51 at time 2025-01-13T16:39:51
+2025-01-13T16:39:50.877205 block_flow_control.cpp:113    on_worker_done       ] Block stats:{"num":84,"lib":84,"type":"gen","id":"0000005430eae9a19da9203e5eb771ffc40fa017","ts":"2025-01-13T16:39:51","bp":"initminer","txs":3813,"size":1048517,"offset":-192868,"before":{"inc":3832,"ok":3832,"auth":0,"rc":0},"after":{"exp":0,"fail":0,"appl":177,"post":0,"drop":0,"size":47526},"exec":{"offset":-399946,"pre":65,"work":207013,"post":69938,"all":277016}}
+2025-01-13T16:39:51.407240 witness_tests.cpp:1814        operator()           ] Tx count for block #84 is 3813
+2025-01-13T16:39:53.631009 block_producer.cpp:190        apply_pending_transa ] 3767 transactions could not fit in newly produced block (0 failed/expired)
+2025-01-13T16:39:53.632602 p2p_plugin.cpp:579            broadcast_block      ] Broadcasting block #85 with 238 transactions
+2025-01-13T16:39:53.640959 witness_plugin.cpp:473        block_production_loo ] Generated block #85 with timestamp 2025-01-13T16:39:54 at time 2025-01-13T16:39:54
+2025-01-13T16:39:53.842203 block_flow_control.cpp:113    on_worker_done       ] Block stats:{"num":85,"lib":85,"type":"gen","id":"0000005570545aded1fb47f364a015097944a76a","ts":"2025-01-13T16:39:54","bp":"initminer","txs":238,"size":65433,"offset":-363926,"before":{"inc":3828,"ok":3828,"auth":0,"rc":0},"after":{"exp":0,"fail":0,"appl":2197,"post":0,"drop":1570,"size":609500},"exec":{"offset":-399943,"pre":60,"work":35957,"post":204914,"all":240931}}
+2025-01-13T16:39:54.407674 witness_tests.cpp:1814        operator()           ] Tx count for block #85 is 238
+2025-01-13T16:39:56.632240 block_producer.cpp:190        apply_pending_transa ] 1971 transactions could not fit in newly produced block (0 failed/expired)
+2025-01-13T16:39:56.633724 p2p_plugin.cpp:579            broadcast_block      ] Broadcasting block #86 with 226 transactions
+2025-01-13T16:39:56.642236 witness_plugin.cpp:473        block_production_loo ] Generated block #86 with timestamp 2025-01-13T16:39:57 at time 2025-01-13T16:39:57
+2025-01-13T16:39:56.709327 block_flow_control.cpp:113    on_worker_done       ] Block stats:{"num":86,"lib":86,"type":"gen","id":"00000056c314159c7f2a0231faf6401396e396dd","ts":"2025-01-13T16:39:57","bp":"initminer","txs":226,"size":65435,"offset":-362102,"before":{"inc":0,"ok":0,"auth":0,"rc":0},"after":{"exp":0,"fail":0,"appl":1971,"post":0,"drop":0,"size":544187},"exec":{"offset":-399945,"pre":62,"work":37781,"post":71315,"all":109158}}
+2025-01-13T16:39:57.408108 witness_tests.cpp:1814        operator()           ] Tx count for block #86 is 226
+```
+
+---
+![](https://images.ecency.com/DQmcqKQ1C9dzkBpjThzMWhDxxK7ZKnNASLnFch2NCHTLzLZ/surcharge.jpeg)
+
+<a id="surcharge" />
+# Show me your wealth.
+
+Above preventive measure is enough to protect against main effect of flood attack, but there is also problem of RC. Flood leads to overconsumption of resources and that leads to increase of RC costs. As a result weak accounts might be priced out of transacting or simple transactions will cost them solid chunk of their manabar.
+&gt; That is actually the real problem, because weak account that consumed all their mana won't be able to transact for long time even after attack stops.
+
+Full prevention is not possible, but we can lessen the impact to a degree by taking advantage of the difference between normal accounts and attacker accounts during flood.
+
+Normal users, even if they have a burst of activity (f.e. reading and then voting on many articles in short succession), from the blockchain perspective will have considerable gap between transactions. Attacker accounts on the other hand might be sending new transactions while their previous ones are still in mempool even among reapplied (depending on intensity of the attack and amount of accounts that take part in it). What if the node demanded them to have 10, 20 or more times the RC required to pay for transaction? If normally a transaction costs let's say 100M RC, even the free account should be able to "afford" a surcharge of 50 times (when at full mana). But attacker accounts will be burning through their RC, so they are guaranteed to be far from full. Moreover with potentially couple of transactions pending from the same account, drastic increase of RC cost will accumulate and burden their manabars.
+
+But we can't actually consume more RC. First, we wanted to prevent/reduce that very effect the increased RC costs have on weak accounts. Second, flood is not guaranteed to affect all nodes in the network with exact same intensity. The mechanism used here works only on new transactions and partially on pending ones, when state is still not part of consensus. Once the transaction reaches block, it consumes normal amount of RC, same for all nodes. So, normal account will be temporarily charged exorbitant amount of RC, but once transaction reaches block, the cost will be normal, so they can continue to transact. Even if the temporary cost is too high, they can wait a bit for the attack to lessen and then resend their transaction. In other words either everything is normal or a mild inconvenience. 
+&gt; Ok, I've oversimplified a lot. Of course the main effect of flood is that transactions that users send have to wait a lot in mempool before they are included in the block or dropped due to expiration (which is typically quite short - depends on wallet settings). But that can only be addressed by increasing block size.
+
+On the other hand attacker accounts will need to afford exorbitant cost of multiple transactions that they spam, which at some point should prevent them from spamming more. Some of their transactions will be bounced back due to lack of RC, which is what the network wants - less spam propagated through. Even if they resend the very same transactions, the intensity of the attack is lessened.
+
+There are two new configuration options for this mechanism:
+ - `rc-flood-level` - default 20. It regulates how many full blocks worth of transactions can be present in mempool before the mechanism turns on. F.e. with default 20 and 64kB blocks it means the mechanism will only start charging extra when there is over 1.25MB in mempool.
+ - `rc-flood-surcharge` - default 10000 (100%). It tells how much extra to charge for each block worth of transactions in mempool. F.e. with default values when there is 22*64kB in mempool, each transaction RC cost will be multipled by 3 (2 blocks above flood level times 100% extra plus normal cost).
+
+Here is how it works. When new transaction is validated, node already knows its current size of mempool, in particular how many full blocks would it take to empty pending transactions. When RC is about to be charged for new transaction, surcharge is calculated and the normal cost plus extra is taken out of RC payer's manabar. When the account is of a normal user, unless they are running on fumes (in which case they could use some cooldown, especially during flood), they won't notice anything (maybe if they read their manabar state immediately after transacting). If they can't afford the surcharge, the message will be clear, something like:
+```
+Account: freeaccount has 3049953790 RC, needs 81266164 RC with 4063308200 flood prevention surcharge. Please wait to transact, power up HIVE or ask your witnesses to increase block size to deal with increased traffic.
+```
+On the other hand, the attacker account will likely have some of their previous transactions in pending, if those are reapplied (or just added to pending as new for the same block) they will still be affected by the surcharge on them.
+
+When transaction finally reaches block surcharge is not applied, only normal RC cost.
+
+Surcharge can occasionally affect transactions that are already in pending, although that should rarely happen. Since list of pending transactions typically shortens from the front after each block (mainly by those that were included in block, but also those that expired while waiting or became invalid due to changes in state), transactions that survived certain level of surcharge, when reapplied they are facing smaller surcharge (because size of mempool is calculated anew from zero and accumulated size will be smaller with less transactions in front). Only in case of drastic changes in RC costs (that can happen when some pool is near exhaustion) or after fork switch when significant portion of transactions that were popped from the outgoing fork happened to not be included in incoming fork (popped transactions are effectively pushed to the front of pending list). In case the payer cannot afford surcharge for transactions reapplied from pending, those transactions will be dropped.
+
+---
+
+![](https://images.ecency.com/DQmWsYPREDfyRqEh1VNketWZFJhv2rDAqiD7472TmiYaphJ/staff_only.jpeg)
+
+<a id="staff_only" />
+# Privilege top witness transactions.
+
+So, we've already prevented main effect of spam on RAM consumption and reduced rate of spam with RC surcharge. There is one more way the attacker could potentially use the attack - to prevent witnesses from sending out witness parameters such as change in allowed block size (increasing block size, even if only temporary, can help to unload pending transactions) or price feed (so attacker could aim to get better price on their pending conversions).
+&gt; Increasing block size does help to process more transactions and makes the attack harder, but it is a double edged sword. If the attack succeeds in causing forks, then a fork of a single 2MB block is bigger than very long fork of 64kB blocks and switching fork takes proportionally longer making the impact stronger. Also big blocks mean more transactions will consume resources budgeted for single block, having stronger impact on RC costs.
+
+Preventing problem of witnesses not being able to transact is quite simple - since there is small set of operations that can affect blockchain parameters (`feed_publish`, `witness_update` and `witness_set_properties`) and they are all relevant when sent by top witnesses, let's privilege them, that is, in case of flood put them in front of pending list (and also don't apply surcharge).
+ - ***Why only top witnesses?*** - becoming a witness is easy, nothing stops attacker from making all their accounts into witnesses and try to use those operations for flooding (ok, it requires active authority, so in some scenarios it would be impossible). Besides, we don't need to privilege backup witnesses, because their changes in parameters won't actually make a difference.
+ - ***Why only witness specific operations?*** - same story. The mechanism has a specific purpose, to allow witnesses to effectively react and keep doing their work even during ongoing flood attack. There is no need to privilege all transactions from top witnesses.
+ - ***If the mechanism is in place, won't it make it easier for someone to modify their node to make all their transactions privileged?*** - Yes, but it does not matter, because it was always allowed to make such modifications, only they have no impact on other nodes, in particular on other witnesses that will process those transactions in normal order. In other words node modification that changes order of transactions to prioritize certain ones only has effect when the modified node is a witness that is actively producing. On top of that, technically the mechanism reuses popped transaction queue, normally used during forking. It does not put transaction in front of pending list directly, only once some block is applied, the popped queue is processed first when new mempool is formed by reapplying transactions from old mempool. That means the transactions privileged that way are actually delayed by one block - it is not a big deal during harsh conditions of flood, but if someone used it outside of those conditions, they'd be getting the effect opposite of what they wanted. Last but not least, the mechanism puts transactions in popped queue in reverse order (because it pushes new transaction to front of popped queue) - not a problem when there is one such transaction and also mainly state independent, but if used for other transactions in some situations it might actually cause transactions that were valid when new to become invalid when reapplied.
+
+---
+
+## That concludes description of new mechanisms for flood protection.
+
+During testing I've also noticed that before we start thinking about really increasing allowed block sizes, I mean to at least 1MB (which we don't need currently, but who knows what the future will bring), we have to have a good look at internal p2p parameters and make them more dynamic. F.e. during syncing when the network has partially filled 64kB blocks, we want to load several thousand of them all at once, but it is not a good idea when those blocks are 2MB each :o)
+
+<sub>Images generated with [Ideogram](https://ideogram.ai)</sub></div>
+  <footer class="hive-post-embed__source">
+    <span class="hive-post-embed__source-label">Source:</span>
+    <a href="https://hive.blog/@andablackwidow/flood-protection-in-1-27">Flood protection in 1.27.7</a>
+    by
+    <a href="https://hive.blog/@andablackwidow">@andablackwidow</a>
+  </footer>
+</div>
+
+
+  </div><a class="u-url" href="/news/core/development/2025/01/13/flood-protection-in-1-27.html" hidden></a>
+</article>
+
+        </div>
+
+        
+        <aside class="page-sidebar" aria-label="Search and browse">
+          <section class="sidebar-section sidebar-search">
+            <h2 class="sidebar-heading">Search posts</h2>
+            <p class="sidebar-copy">Search the locally indexed post archive.</p>
+            <input type="text" id="search-input" placeholder="Search posts" autocomplete="off" />
+            <ul id="results-container"></ul>
+          </section>
+
+          <section class="sidebar-section sidebar-topics">
+            <h2 class="sidebar-heading">Browse topics</h2>
+            <p class="sidebar-copy">Jump into curated topic landing pages.</p>
+            <ul class="topic-list topic-list-sidebar"><li><a class="page-link" href="/account-recovery/">Account Recovery</a></li><li><a class="page-link" href="/core-development/">Core Development</a></li><li><a class="page-link" href="/dapps/">Dapps</a></li><li><a class="page-link" href="/docker/">Docker</a></li><li><a class="page-link" href="/hardfork/">Hardfork</a></li><li><a class="page-link" href="/hivemind/">Hivemind</a></li><li><a class="page-link" href="/javascript/">Javascript</a></li><li><a class="page-link" href="/multisig/">Multisig</a></li><li><a class="page-link" href="/python/">Python</a></li><li><a class="page-link" href="/ruby/">Ruby</a></li><li><a class="page-link" href="/testnet/">Testnet</a></li><li><a class="page-link" href="/tools/">Tools</a></li><li><a class="page-link" href="/witness/">Witness</a></li></ul>
+          </section>
+        </aside>
+        
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading"><a rel="author" href="/">Hive Chain Documentation</a></h2>
+    
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">site curated by: @inertia</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>Your resource for various levels of Hive Documentation.</p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+<script src="/assets/javascript/search.js"></script>
+    <script>
+      (function () {
+        var input = document.getElementById('search-input');
+        var results = document.getElementById('results-container');
+        if (input && results && typeof SimpleJekyllSearch !== 'undefined') {
+          SimpleJekyllSearch({
+            searchInput: input,
+            resultsContainer: results,
+            json: '/search.json'
+          });
+        }
+
+        if (typeof SteemContentRenderer === 'undefined') return;
+
+        var targets = document.querySelectorAll('[data-hive-render-target="true"]');
+        if (!targets.length) return;
+
+        var renderer = new SteemContentRenderer.DefaultRenderer({
+          baseUrl: 'https://hive.blog/',
+          breaks: true,
+          skipSanitization: false,
+          allowInsecureScriptTags: false,
+          addNofollowToLinks: true,
+          doNotShowImages: false,
+          ipfsPrefix: '',
+          assetsWidth: 640,
+          assetsHeight: 480,
+          imageProxyFn: function (url) { return url; },
+          usertagUrlFn: function (account) { return '/@' + account; },
+          hashtagUrlFn: function (hashtag) { return '/tags/#' + hashtag; },
+          isLinkSafeFn: function () { return true; }
+        });
+
+        targets.forEach(function (target) {
+          try {
+            var inputHtml = target.innerHTML;
+            target.innerHTML = renderer.render(inputHtml);
+          } catch (e) {
+            console.log(e);
+          }
+        });
+      })();
+    </script>
+
+  </body>
+
+</html>

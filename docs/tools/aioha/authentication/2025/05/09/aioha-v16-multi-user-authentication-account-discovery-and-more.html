@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta property="og:image" content="/assets/images/sticker.png" />
+  <meta name="apple-mobile-web-app-title" content="Hive Docs" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" /><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Aioha v1.6: Multi-User Authentication, Account Discovery and more! | Hive Chain Documentation</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Aioha v1.6: Multi-User Authentication, Account Discovery and more!" />
+<meta name="author" content="aioha" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Aioha v1.6 released" />
+<meta property="og:description" content="Aioha v1.6 released" />
+<link rel="canonical" href="https://hive.blog/aioha/@aioha/aioha-v16-multi-user-authentication-account-discovery-and-more" />
+<meta property="og:url" content="https://hive.blog/aioha/@aioha/aioha-v16-multi-user-authentication-account-discovery-and-more" />
+<meta property="og:site_name" content="Hive Chain Documentation" />
+<meta property="og:image" content="https://files.peakd.com/file/peakd-hive/aioha/23tkoyQ8PScnYXaWtoLnJQHAkosfsMrX7nTQ8n62x8JYJ7q8v5z83cuToJJErov651Jdx.png" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2025-05-09T08:19:21-07:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="https://files.peakd.com/file/peakd-hive/aioha/23tkoyQ8PScnYXaWtoLnJQHAkosfsMrX7nTQ8n62x8JYJ7q8v5z83cuToJJErov651Jdx.png" />
+<meta property="twitter:title" content="Aioha v1.6: Multi-User Authentication, Account Discovery and more!" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"aioha"},"dateModified":"2025-05-09T08:19:21-07:00","datePublished":"2025-05-09T08:19:21-07:00","description":"Aioha v1.6 released","headline":"Aioha v1.6: Multi-User Authentication, Account Discovery and more!","image":"https://files.peakd.com/file/peakd-hive/aioha/23tkoyQ8PScnYXaWtoLnJQHAkosfsMrX7nTQ8n62x8JYJ7q8v5z83cuToJJErov651Jdx.png","mainEntityOfPage":{"@type":"WebPage","@id":"https://hive.blog/aioha/@aioha/aioha-v16-multi-user-authentication-account-discovery-and-more"},"url":"https://hive.blog/aioha/@aioha/aioha-v16-multi-user-authentication-account-discovery-and-more"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://hivedocs.info/feed.xml" title="Hive Chain Documentation" /><script>
+if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNotTrack === "yes" || navigator.msDoNotTrack === "1")) {
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-161692811-1', 'auto');
+  ga('send', 'pageview');
+}
+</script>
+  
+<script src='https://unpkg.com/steem-content-renderer'></script>
+  <script src="/assets/javascript/universal-bridge-against-phishing.js"></script>
+  <script src="/assets/javascript/lazysizes.min.js" async=""></script>
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet" />
+  <link rel="shortcut icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="152x152" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="167x167" href="/assets/images/favicon-80x80.png" />
+</head>
+<body><header class="site-header" role="banner">
+  <div class="wrapper site-header-inner">
+    <a class="site-title" rel="author" href="/">Hive Chain Documentation</a>
+
+    <nav class="site-nav" aria-label="Primary">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/news/">News</a><a class="page-link" href="/howto/">How To</a><a class="page-link" href="/links/">Useful Links</a><a class="page-link" href="/authors/">Authors</a><a class="page-link" href="/topics/">Topics</a><a class="page-link" href="/search/">Search</a></div>
+    </nav>
+  </div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper page-layout has-search-panel">
+        <div class="page-main">
+          <article class="post h-entry post-article" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header post-hero">
+    <div class="post-hero-main">
+      <p class="post-kicker">Archive post</p>
+      <h1 class="post-title p-name" itemprop="name headline">Aioha v1.6: Multi-User Authentication, Account Discovery and more!</h1>
+      <p class="post-meta">
+        <time class="dt-published" datetime="2025-05-09T08:19:21-07:00" itemprop="datePublished">May 9, 2025
+        </time>• <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">
+            <a href="/authors/#author-aioha">aioha</a>
+          </span></span></p><p class="post-summary">Aioha v1.6 released</p></div><aside class="post-author-card">
+      <img src="https://images.hive.blog/u/aioha/avatar" width="128" height="128" class="lazyload post-author-avatar" alt="Avatar for @aioha" />
+      <div class="post-author-name">@aioha</div>
+    </aside></header>
+
+  <div class="post-content e-content post-body" itemprop="articleBody">
+    <div class="hive-post-embed" data-hive-author="aioha" data-hive-permlink="aioha-v16-multi-user-authentication-account-discovery-and-more">
+  <div id="content-aioha-aioha-v16-multi-user-authentication-account-discovery-and-more" class="hive-post-embed__content" data-hive-render-target="true"><center>![](https://files.peakd.com/file/peakd-hive/aioha/23tkoyQ8PScnYXaWtoLnJQHAkosfsMrX7nTQ8n62x8JYJ7q8v5z83cuToJJErov651Jdx.png)</center>
+
+<hr />
+
+Today we are announcing the release of Aioha [v1.6](https://github.com/aioha-hive/aioha/releases) for our core, React provider and UI libraries. This is a major non-breaking update from [v1.5](https://github.com/aioha-hive/aioha/releases/tag/v1.5.6).
+
+# What's new?
+
+#### New wallet request events
+
+Starting in v1.6, the following events will be emitted whenever a request has been sent to the wallet provider that may require user action:
+
+- `login_request`
+- `memo_request`
+- `sign_msg_request`
+- `sign_tx_request`
+- `hiveauth_challenge_request`
+- `hiveauth_sign_request`
+
+Apps may listen to these events by registering the event listener using `aioha.on(eventName, callback)`. Refer to the [docs](https://aioha.dev/docs/core/jsonrpc#events) for more info.
+
+#### Multi-user authentication
+
+Aioha now supports multiple concurrent wallet connections to different accounts which may be using a variety of providers and switch between them.
+
+Adding another user is as simple as calling `aioha.login()` again for the other user, as long as the same user is not already connected. Switching to an already connected user may be done using `aioha.switchUser('user2')`, and disconnecting a currently inactive account may be done using `aioha.removeOtherLogin('user2')`.
+
+These additional connections persists in the browser (when applicable) besides the active connected account.
+
+#### Account discovery
+
+This searches the selected wallet provider for available accounts. It may be used to save an extra step of typing in the username, and instead a list of discovered accounts will be listed for the user to select.
+
+Account discovery is currently available on Ledger provider only at this moment. More details on usage may be found [here](https://aioha.dev/docs/core/usage#discover-accounts).
+
+#### Other features
+
+* Updated VSC functions for mainnet with Keychain specific implementation ([Usage](https://aioha.dev/docs/core/usage#vsc-call))
+* Method to sign and broadcast a [hive-uri](https://gitlab.syncad.com/hive/hive-uri) encoded transaction ([Usage](https://aioha.dev/docs/core/usage#sign-and-broadcast-hive-uri))
+
+# React UI
+
+The ready-made [UI library](https://aioha.dev/docs/react/ui) has been updated to handle the necessary frontend logic to implement the new features.
+
+|![](https://files.peakd.com/file/peakd-hive/aioha/23t79CFT3cNagdjuYz2C9RkZwP9kuAh6ReW62z7tDZ9giiJm1oZDMBMUyrhtkevErkfAh.png)|![](https://files.peakd.com/file/peakd-hive/aioha/23tGXT1xTUqURdrfE2t311iS1enXK6jZwVDsc5QKPNbd1JfBGZSif2UauLCr47FCwMs3A.png)|
+|-|-|
+|<center>**Account Switcher**</center>|<center>**Discovered Accounts**</center>|
+
+Additionally, a new grid provider selection layout has been added as a built-in option that apps may choose to use.
+
+|![](https://files.peakd.com/file/peakd-hive/aioha/23tGbvpULM1LjzBwtoZuz5JBDx1turCrJRCyQesTaPJkmURiHJWD4qkHdaoJHxm1HV58n.png)|![](https://files.peakd.com/file/peakd-hive/aioha/Eo1wxQn1JFgKXFZt61tSMPVDSHJfo6Fcw8eKv2YV3BcCKWj8DmcXPHCV87ByeapVPT8.png)|
+|-|-|
+|<center>**List View**</center>|<center>**(New) Grid View**</center>|
+
+## Links
+Landing page and docs: https://aioha.dev
+Github: https://github.com/aioha-hive
+NPM: https://www.npmjs.com/package/@aioha/aioha
+Sting: https://chat.peakd.com/t/hive-134220/1
+</div>
+  <footer class="hive-post-embed__source">
+    <span class="hive-post-embed__source-label">Source:</span>
+    <a href="https://hive.blog/@aioha/aioha-v16-multi-user-authentication-account-discovery-and-more">Aioha v1.6: Multi-User Authentication, Account Discovery and more!</a>
+    by
+    <a href="https://hive.blog/@aioha">@aioha</a>
+  </footer>
+</div>
+
+
+  </div><a class="u-url" href="/tools/aioha/authentication/2025/05/09/aioha-v16-multi-user-authentication-account-discovery-and-more.html" hidden></a>
+</article>
+
+        </div>
+
+        
+        <aside class="page-sidebar" aria-label="Search and browse">
+          <section class="sidebar-section sidebar-search">
+            <h2 class="sidebar-heading">Search posts</h2>
+            <p class="sidebar-copy">Search the locally indexed post archive.</p>
+            <input type="text" id="search-input" placeholder="Search posts" autocomplete="off" />
+            <ul id="results-container"></ul>
+          </section>
+
+          <section class="sidebar-section sidebar-topics">
+            <h2 class="sidebar-heading">Browse topics</h2>
+            <p class="sidebar-copy">Jump into curated topic landing pages.</p>
+            <ul class="topic-list topic-list-sidebar"><li><a class="page-link" href="/account-recovery/">Account Recovery</a></li><li><a class="page-link" href="/core-development/">Core Development</a></li><li><a class="page-link" href="/dapps/">Dapps</a></li><li><a class="page-link" href="/docker/">Docker</a></li><li><a class="page-link" href="/hardfork/">Hardfork</a></li><li><a class="page-link" href="/hivemind/">Hivemind</a></li><li><a class="page-link" href="/javascript/">Javascript</a></li><li><a class="page-link" href="/multisig/">Multisig</a></li><li><a class="page-link" href="/python/">Python</a></li><li><a class="page-link" href="/ruby/">Ruby</a></li><li><a class="page-link" href="/testnet/">Testnet</a></li><li><a class="page-link" href="/tools/">Tools</a></li><li><a class="page-link" href="/witness/">Witness</a></li></ul>
+          </section>
+        </aside>
+        
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading"><a rel="author" href="/">Hive Chain Documentation</a></h2>
+    
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">site curated by: @inertia</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>Your resource for various levels of Hive Documentation.</p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+<script src="/assets/javascript/search.js"></script>
+    <script>
+      (function () {
+        var input = document.getElementById('search-input');
+        var results = document.getElementById('results-container');
+        if (input && results && typeof SimpleJekyllSearch !== 'undefined') {
+          SimpleJekyllSearch({
+            searchInput: input,
+            resultsContainer: results,
+            json: '/search.json'
+          });
+        }
+
+        if (typeof SteemContentRenderer === 'undefined') return;
+
+        var targets = document.querySelectorAll('[data-hive-render-target="true"]');
+        if (!targets.length) return;
+
+        var renderer = new SteemContentRenderer.DefaultRenderer({
+          baseUrl: 'https://hive.blog/',
+          breaks: true,
+          skipSanitization: false,
+          allowInsecureScriptTags: false,
+          addNofollowToLinks: true,
+          doNotShowImages: false,
+          ipfsPrefix: '',
+          assetsWidth: 640,
+          assetsHeight: 480,
+          imageProxyFn: function (url) { return url; },
+          usertagUrlFn: function (account) { return '/@' + account; },
+          hashtagUrlFn: function (hashtag) { return '/tags/#' + hashtag; },
+          isLinkSafeFn: function () { return true; }
+        });
+
+        targets.forEach(function (target) {
+          try {
+            var inputHtml = target.innerHTML;
+            target.innerHTML = renderer.render(inputHtml);
+          } catch (e) {
+            console.log(e);
+          }
+        });
+      })();
+    </script>
+
+  </body>
+
+</html>

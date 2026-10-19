@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta property="og:image" content="/assets/images/sticker.png" />
+  <meta name="apple-mobile-web-app-title" content="Hive Docs" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" /><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Tutorial: Autenticación Hive con Hive Keychain React + Vite + TypeScript english/español | Hive Chain Documentation</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Tutorial: Autenticación Hive con Hive Keychain React + Vite + TypeScript english/español" />
+<meta name="author" content="theghost1980" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Tutorial para logueo de vite + blockchain" />
+<meta property="og:description" content="Tutorial para logueo de vite + blockchain" />
+<link rel="canonical" href="https://hive.blog/hive-186392/@theghost1980/tutorial-autenticacion-hive-con-hive-keychain-react--vite--typescript-englishespanol" />
+<meta property="og:url" content="https://hive.blog/hive-186392/@theghost1980/tutorial-autenticacion-hive-con-hive-keychain-react--vite--typescript-englishespanol" />
+<meta property="og:site_name" content="Hive Chain Documentation" />
+<meta property="og:image" content="https://images.hive.blog/p/FUkUE5bzkAZT3HzV5tJDiU2ik81PCd4JCyhWnRcDN8XJsVFY3UNB8DCcsjxLxgmDcvyjdvurZid1c9mp4Wca92ST3HcgssEfPcpKkrGtCMnaHT7UkAJeAtPaEfEc1wjoaCb4RGMzRwdthEaSxT7qFqT9yxC3uGEKSg9t?format=match&amp;mode=fit" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2025-05-12T16:58:48-07:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="https://images.hive.blog/p/FUkUE5bzkAZT3HzV5tJDiU2ik81PCd4JCyhWnRcDN8XJsVFY3UNB8DCcsjxLxgmDcvyjdvurZid1c9mp4Wca92ST3HcgssEfPcpKkrGtCMnaHT7UkAJeAtPaEfEc1wjoaCb4RGMzRwdthEaSxT7qFqT9yxC3uGEKSg9t?format=match&amp;mode=fit" />
+<meta property="twitter:title" content="Tutorial: Autenticación Hive con Hive Keychain React + Vite + TypeScript english/español" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"theghost1980"},"dateModified":"2025-05-12T16:58:48-07:00","datePublished":"2025-05-12T16:58:48-07:00","description":"Tutorial para logueo de vite + blockchain","headline":"Tutorial: Autenticación Hive con Hive Keychain React + Vite + TypeScript english/español","image":"https://images.hive.blog/p/FUkUE5bzkAZT3HzV5tJDiU2ik81PCd4JCyhWnRcDN8XJsVFY3UNB8DCcsjxLxgmDcvyjdvurZid1c9mp4Wca92ST3HcgssEfPcpKkrGtCMnaHT7UkAJeAtPaEfEc1wjoaCb4RGMzRwdthEaSxT7qFqT9yxC3uGEKSg9t?format=match&amp;mode=fit","mainEntityOfPage":{"@type":"WebPage","@id":"https://hive.blog/hive-186392/@theghost1980/tutorial-autenticacion-hive-con-hive-keychain-react--vite--typescript-englishespanol"},"url":"https://hive.blog/hive-186392/@theghost1980/tutorial-autenticacion-hive-con-hive-keychain-react--vite--typescript-englishespanol"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://hivedocs.info/feed.xml" title="Hive Chain Documentation" /><script>
+if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNotTrack === "yes" || navigator.msDoNotTrack === "1")) {
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-161692811-1', 'auto');
+  ga('send', 'pageview');
+}
+</script>
+  
+<script src='https://unpkg.com/steem-content-renderer'></script>
+  <script src="/assets/javascript/universal-bridge-against-phishing.js"></script>
+  <script src="/assets/javascript/lazysizes.min.js" async=""></script>
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet" />
+  <link rel="shortcut icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="152x152" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="167x167" href="/assets/images/favicon-80x80.png" />
+</head>
+<body><header class="site-header" role="banner">
+  <div class="wrapper site-header-inner">
+    <a class="site-title" rel="author" href="/">Hive Chain Documentation</a>
+
+    <nav class="site-nav" aria-label="Primary">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/news/">News</a><a class="page-link" href="/howto/">How To</a><a class="page-link" href="/links/">Useful Links</a><a class="page-link" href="/authors/">Authors</a><a class="page-link" href="/topics/">Topics</a><a class="page-link" href="/search/">Search</a></div>
+    </nav>
+  </div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper page-layout has-search-panel">
+        <div class="page-main">
+          <article class="post h-entry post-article" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header post-hero">
+    <div class="post-hero-main">
+      <p class="post-kicker">Archive post</p>
+      <h1 class="post-title p-name" itemprop="name headline">Tutorial: Autenticación Hive con Hive Keychain React + Vite + TypeScript english/español</h1>
+      <p class="post-meta">
+        <time class="dt-published" datetime="2025-05-12T16:58:48-07:00" itemprop="datePublished">May 12, 2025
+        </time>• <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">
+            <a href="/authors/#author-theghost1980">theghost1980</a>
+          </span></span></p><p class="post-summary">Tutorial para logueo de vite + blockchain</p></div><aside class="post-author-card">
+      <img src="https://images.hive.blog/u/theghost1980/avatar" width="128" height="128" class="lazyload post-author-avatar" alt="Avatar for @theghost1980" />
+      <div class="post-author-name">@theghost1980</div>
+    </aside></header>
+
+  <div class="post-content e-content post-body" itemprop="articleBody">
+    <div class="hive-post-embed" data-hive-author="theghost1980" data-hive-permlink="tutorial-autenticacion-hive-con-hive-keychain-react--vite--typescript-englishespanol">
+  <div id="content-theghost1980-tutorial-autenticacion-hive-con-hive-keychain-react--vite--typescript-englishespanol" class="hive-post-embed__content" data-hive-render-target="true">![](https://images.hive.blog/p/FUkUE5bzkAZT3HzV5tJDiU2ik81PCd4JCyhWnRcDN8XJsVFY3UNB8DCcsjxLxgmDcvyjdvurZid1c9mp4Wca92ST3HcgssEfPcpKkrGtCMnaHT7UkAJeAtPaEfEc1wjoaCb4RGMzRwdthEaSxT7qFqT9yxC3uGEKSg9t?format=match&amp;mode=fit)
+Saludos *hivers* espero de todo corazón que todos esten muy contentos y felices. Un saludo especial para los programadores que dia a dia mejoran el ecosistema web3.
+
+Para seguir ayudando en la formación de futuras estrellas de la programación en HIVE, les traigo un tutorial basico pero lleno de algo que es y deberia ser vital.
+
+### Objetivo
+Este tutorial te guiará para implementar la autenticación de usuarios en la blockchain de Hive utilizando Hive Keychain en una aplicación React configurada con Vite y TypeScript.
+
+### Requisitos previos
+- [Node.js](https://nodejs.org/es) v16+
+- [Vite](https://vite.dev/)
+- React
+- TypeScript
+- Extensión [Hive Keychain](https://hive-keychain.com/) instalada en tu navegador
+
+![](https://www.luisllamas.es/wp-content/uploads/2017/08/node.js_logo.png)
+###### fuente [link](https://www.luisllamas.es/wp-content/uploads/2017/08/node.js_logo.png)
+
+---
+## Pasos
+- Crear el proyecto con Vite
+Ejecuta el siguiente comando en tu terminal:
+```
+npm create vite@latest hive-login-app -- --template react-ts
+cd hive-login-app
+npm install
+npm run dev
+```
+- Instalar dependencias necesarias
+   -Instala la biblioteca @hiveio/dhive para interactuar con la blockchain de Hive
+```
+npm install @hiveio/dhive
+```
+
+- Crear el componente de autenticación
+   - Crea un nuevo archivo `src/components/HiveLogin.tsx` con el siguiente contenido:
+```
+import React, { useState } from 'react';
+
+declare global {
+  interface Window {
+    hive_keychain: any;
+  }
+}
+
+const HiveLogin: React.FC = () =&gt; {
+  const [username, setUsername] = useState('');
+  const [loggedInUser, setLoggedInUser] = useState('');
+
+  const handleLogin = () =&gt; {
+    if (window.hive_keychain) {
+      window.hive_keychain.requestSignBuffer(
+        username,
+        'Autenticación en Hive',
+        'Posting',
+        (response: any) =&gt; {
+          if (response.success) {
+            setLoggedInUser(username);
+            alert('¡Autenticación exitosa!');
+          } else {
+            alert('Error en la autenticación.');
+          }
+        }
+      );
+    } else {
+      alert('Hive Keychain no está instalado.');
+    }
+  };
+
+  return (
+    <div>
+      <h2>Iniciar sesión con Hive</h2>
+      &lt;input
+        type="text"
+        placeholder="Nombre de usuario"
+        value={username}
+        onChange={(e) =&gt; setUsername(e.target.value)}
+      /&gt;
+      &lt;button onClick={handleLogin}&gt;Iniciar sesión&lt;/button&gt;
+      {loggedInUser &amp;&amp; <p>Usuario autenticado: {loggedInUser}</p>}
+    </div>
+  );
+};
+
+export default HiveLogin;
+```
+- Integrar el componente en la aplicación principal
+   - Modifica el archivo `src/App.tsx` para incluir el componente de autenticación:
+```
+import React from 'react';
+import HiveLogin from './components/HiveLogin';
+
+const App: React.FC = () =&gt; {
+  return (
+    <div>
+      <h1>Aplicación Hive + React</h1>
+      <HiveLogin />
+    </div>
+  );
+};
+
+export default App;
+```
+
+- Probar la aplicación
+
+&gt;Inicia la aplicación con npm run dev y abre `http://localhost:5173` en tu navegador. Ingresa tu nombre de usuario de Hive y haz clic en "Iniciar sesión". Se solicitará la firma a través de Hive Keychain.
+
+---
+
+### Resultado
+Has implementado con éxito la autenticación de usuarios en Hive utilizando Hive Keychain en una aplicación React con Vite y TypeScript.
+
+¡Claro! A continuación, te presento un documento en formato Markdown que aborda:
+
+1. **¿Qué puedes hacer después de implementar el inicio de sesión en Hive?**
+2. **Ideas de aplicaciones que podrías desarrollar.**
+3. **Ventajas de utilizar un frontend con Hive.**
+4. **Una tabla con algunos de los tutoriales que ya has creado, incluyendo enlaces a tu repositorio de GitHub.**
+
+---
+
+## 🔐 ¿Qué puedes hacer después de implementar el inicio de sesión en Hive?
+
+Una vez que has integrado la autenticación con Hive (por ejemplo, utilizando Hive Keychain), puedes expandir las funcionalidades de tu aplicación para interactuar plenamente con la blockchain. Algunas acciones posibles incluyen:
+
+* **Publicar contenido**: Permitir a los usuarios crear publicaciones, comentarios o blogs que se almacenan en la blockchain.
+* **Votar contenido**: Implementar sistemas de votación para que los usuarios puedan apoyar publicaciones de otros.
+* **Transferencias de tokens**: Facilitar el envío y recepción de tokens HIVE o HBD entre usuarios.
+* **Delegación de poder**: Permitir a los usuarios delegar su Hive Power a otros usuarios o proyectos.
+* **Participación en gobernanza**: Integrar funciones para que los usuarios voten por testigos o propuestas en el Decentralized Hive Fund (DHF).
+* **Gestión de NFTs**: Crear, comprar o vender tokens no fungibles (NFTs) utilizando plataformas como NFT Showroom.([Hive Projects][1], [Wikipedia][2], [Moralis Academy][3], [The Dapp List][4])
+
+---
+
+## 💡 Ideas de aplicaciones que podrías desarrollar
+
+Con tus conocimientos en React, Vite, TypeScript y Hive, puedes emprender diversos proyectos. Algunas ideas incluyen:
+
+* **Plataforma de blogging descentralizada**: Donde los usuarios puedan publicar y monetizar contenido sin intermediarios.
+* **Mercado de NFTs**: Para artistas y coleccionistas que deseen intercambiar arte digital.
+* **Aplicación de votaciones**: Para encuestas comunitarias o decisiones descentralizadas.
+* **Juego basado en blockchain**: Que utilice tokens y activos digitales únicos.
+* **Red social temática**: Focalizada en nichos específicos, como música, deportes o educación.
+* **Herramienta de análisis de datos**: Que visualice estadísticas y métricas de la blockchain de Hive.
+
+Para más inspiración, puedes explorar [Hive Projects](https://hiveprojects.io/) y [Awesome Hive](https://github.com/openhive-network/awesome-hive), donde encontrarás una amplia gama de aplicaciones y herramientas desarrolladas por la comunidad.([GitHub][5])
+
+---
+
+## ⚙️ Ventajas de utilizar un frontend con Hive
+
+Integrar Hive en el frontend de tus aplicaciones ofrece múltiples beneficios:
+
+* **Transacciones sin comisiones**: Hive permite realizar operaciones sin tarifas, lo que mejora la experiencia del usuario.
+* **Rapidez**: Las transacciones en Hive se confirman en aproximadamente 3 segundos.
+* **Descentralización**: Almacena datos de forma inmutable y accesible sin depender de servidores centralizados.
+* **Identidades legibles**: Los nombres de usuario en Hive son fáciles de recordar y utilizar.
+* **Ecosistema activo**: Hive cuenta con una comunidad vibrante y una amplia gama de aplicaciones descentralizadas (dApps).([Hive][6])
+
+---
+
+## 📚 Tabla de tutoriales existentes
+
+A continuación, se presenta una tabla con algunos de los tutoriales que has desarrollado, incluyendo enlaces a tu repositorio de GitHub:
+
+| Título del Tutorial              | Descripción breve                                       | Enlace al repositorio                                                                                   |   |
+| -------------------------------- | ------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- | - |
+| Multiples Tutoriales   | Aprende a integrar React con la blockchain de Hive.     | [Ver en GitHub](https://github.com/theghost1980/react-hive-tutorials/tree/main)        |   |
+
+---
+
+[1]: https://hiveprojects.io/?utm_source=chatgpt.com "Hive Projects : Apps, sites and tools built by Hive community"
+[2]: https://es.wikipedia.org/wiki/Hive_%28criptomoneda%29?utm_source=chatgpt.com "Hive (criptomoneda)"
+[3]: https://academy.moralis.io/blog/exploring-the-hive-blockchain-and-hive-coin?utm_source=chatgpt.com "Exploring the Hive Blockchain and Hive Coin - Moralis Academy"
+[4]: https://thedapplist.com/chain/hive?utm_source=chatgpt.com "Hive Ecosystem: Explore 18 Projects &amp; Dapps | The Dapp List"
+[5]: https://github.com/openhive-network/awesome-hive?utm_source=chatgpt.com "A curated list of awesome Hive resources. - GitHub"
+[6]: https://hive.io/?utm_source=chatgpt.com "Hive - The Blockchain &amp; Cryptocurrency for Web3"
+
+---
+Aquí tienes una tabla en formato Markdown que resume tus proyectos actuales en Hive, incluyendo una breve descripción de cada uno y enlaces a sus respectivos repositorios en GitHub:
+
+---
+
+## 🚧 Proyectos en marcha en Hive
+
+| Proyecto                                                                   | Descripción                                                                                                                                                                                                         |   |
+| -------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | - |
+| [hive-sbi-onboarding](https://github.com/theghost1980/hive-sbi-onboarding) | Aplicación sencilla para identificar nuevos usuarios de Hive y facilitar su incorporación al programa Hive SBI.                                                                                                     |   |
+| [be-hive-sql](https://github.com/theghost1980/be-hive-sql)                 | Servidor backend que permite ejecutar consultas SQL en la blockchain de Hive, proporcionando una API segura mediante Hive Keychain y tokens JWT para acceder a datos de cuentas y transacciones.                    |   |
+| [keychain-helper](https://github.com/theghost1980/keychain-helper)         | Librería ligera y amigable para TypeScript y JavaScript que facilita la interacción con Hive Keychain, permitiendo realizar firmas de operaciones y logins seguros de forma sencilla en aplicaciones Web3 modernas. |   |
+
+---
+
+<details>
+<summary>ENGLISH <img src="https://files.peakd.com/file/peakd-hive/theghost1980/AKREjL6d1fMvN5UvkUDGL8Lc4RP2in8voDTZuwGcyRbFNUkSP2zQC8HZwnEd4kg.png" alt="mini logo" style="height: 3em; vertical-align: middle; margin-left: 5px;" /></summary>
+
+## Tutorial: Hive Authentication with Hive Keychain React + Vite + TypeScript english / Spanish
+
+![](https://images.hive.blog/p/FUkUE5bzkAZT3HzV5tJDiU2ik81PCd4JCyhWnRcDN8XJsVFY3UNB8DCcsjxLxgmDcvyjdvurZid1c9mp4Wca92ST3HcgssEfPcpKkrGtCMnaHT7UkAJeAtPaEfEc1wjoaCb4RGMzRwdthEaSxT7qFqT9yxC3uGEKSg9t?format=match\&amp;mode=fit)Greetings*hivers*i sincerely hope that everyone will be very happy and happy. A special greeting for programmers that day by day improve the web ecosystem 3.
+
+To continue to help in the formation of future programming stars in HIVE, I bring you a basic tutorial but full of something that is and should be vital.
+
+### Objective
+
+This tutorial will guide you to implement user authentication in the Hive blockchain using Hive Keychain in a React application configured with Vite and TypeScript.
+
+### Previous requirements
+
+- [Node.js](https://nodejs.org/es)v16 +
+- [Vite](https://vite.dev/)
+- Reform
+- TypeScript
+- Extension[Hive Keychain](https://hive-keychain.com/)installed in your browser
+
+![](https://www.luisllamas.es/wp-content/uploads/2017/08/node.js_logo.png)
+
+###### source[link](https://www.luisllamas.es/wp-content/uploads/2017/08/node.js_logo.png)
+
+***
+
+## Steps
+
+- Create the project with Vite
+  Run the following command on your terminal:
+
+```
+npm create vite@latest hive-login-app -- --template react-ts
+cd hive-login-app
+npm install
+npm run dev
+```
+
+- Install required units
+  -Install the library
+
+```
+npm install @hiveio/dhive
+```
+
+- Create the authentication component
+  - Create a new file`src/components/HiveLogin.tsx`with the following content:
+
+```
+import React, { useState } from 'react';
+
+declare global {
+  interface Window {
+    hive_keychain: any;
+  }
+}
+
+const HiveLogin: React.FC = () =&gt; {
+  const [username, setUsername] = useState('');
+  const [loggedInUser, setLoggedInUser] = useState('');
+
+  const handleLogin = () =&gt; {
+    if (window.hive_keychain) {
+      window.hive_keychain.requestSignBuffer(
+        username,
+        'Autenticación en Hive',
+        'Posting',
+        (response: any) =&gt; {
+          if (response.success) {
+            setLoggedInUser(username);
+            alert('¡Autenticación exitosa!');
+          } else {
+            alert('Error en la autenticación.');
+          }
+        }
+      );
+    } else {
+      alert('Hive Keychain no está instalado.');
+    }
+  };
+
+  return (
+    <div>
+      <h2>Iniciar sesión con Hive</h2>
+      &lt;input
+        type="text"
+        placeholder="Nombre de usuario"
+        value={username}
+        onChange={(e) =&gt; setUsername(e.target.value)}
+      /&gt;
+      &lt;button onClick={handleLogin}&gt;Iniciar sesión&lt;/button&gt;
+      {loggedInUser &amp;&amp; <p>Usuario autenticado: {loggedInUser}</p>}
+    </div>
+  );
+};
+
+export default HiveLogin;
+```
+
+- Integrate the component into the main application
+  - Modify the file`src/App.tsx`to include the authentication component:
+
+```
+import React from 'react';
+import HiveLogin from './components/HiveLogin';
+
+const App: React.FC = () =&gt; {
+  return (
+    <div>
+      <h1>Aplicación Hive + React</h1>
+      <HiveLogin />
+    </div>
+  );
+};
+
+export default App;
+```
+
+- Test implementation
+
+&gt; Start the application with npm run dev and open`http://localhost:5173`in your browser. Enter your Hive user name and click "Login." The signature will be requested through Hive Keychain.
+
+***
+
+### Outcome
+
+You have successfully implemented the Hive user authentication using Hive Keychain in a React with Vite and TypeScript application.
+
+Sure! Here is a Markdown document that addresses:
+
+1. **What can you do after implementing the Hive login?**
+2. **Ideas of applications you could develop.**
+3. **Advantages of using a front with Hive.**
+4. **A table with some of the tutorials you've already created, including links to your GitHub repository.**
+
+***
+
+## - What can you do after implementing the Hive login?
+
+Once you have integrated the Hive authentication (for example, using Hive Keychain), you can expand the functionality of your application to fully interact with the blockchain. Some possible actions include:
+
+- **Publish content**: Allow users to create publications, comments or blogs that are stored in the lockchain.
+- **Voting**: Implement voting systems to enable users to support publications from others.
+- **Tokens transfers**: Facilitate the sending and reception of HIVE or HBD tokens between users.
+- **Delegation of power**: Allow users to delegate their Hive Power to other users or projects.
+- **Participation in governance**: Integrate functions for users to vote for witnesses or proposals in the Decentralized Hive Fund (DHF).
+- **NFTs management**: Create, buy or sell non-expendable tokens (NFTs) using platforms such as NFT Showroom. ([Hive Projects][1],[Wikipedia][2],[Moralis Academy][3],[The Dapp List][4])
+
+***
+
+## Ideas of applications you could develop
+
+With your knowledge in React, Vite, TypeScript and Hive, you can undertake various projects. Some ideas include:
+
+- **Decentralized blogging platform**: Where users can publish and monetize content without intermediaries.
+- **NFTs market**: For artists and collectors who wish to exchange digital art.
+- **Voting**For community surveys or decentralized decisions.
+- **Blockchain-based game**: Use tokens and unique digital assets.
+- **Thematic social network**: Focused on specific niches, such as music, sports or education.
+- **Data analysis tool**: To visualize statistics and metrics of Hive's blockchain.
+
+For more inspiration, you can explore[Hive Projects](https://hiveprojects.io/)and[Awesome Hive](https://github.com/openhive-network/awesome-hive)where you will find a wide range of applications and tools developed by the community. ([GitHub][5])
+
+***
+
+## Advantages of using a front with Hive
+
+Integrating Hive into the front of your applications offers multiple benefits:
+
+- **Transactions without commissions**: Hive allows free operations, which improves the user's experience.
+- **Rapidity**: Hive transactions are confirmed in approximately 3 seconds.
+- **Decentralization**: Stores data in an unchanging and accessible way without relying on centralized servers.
+- **Eligible entities**: The user names in Hive are easy to remember and use.
+- **Active ecosystem**: Hive has a vibrant community and a wide range of decentralized applications (dApps). ([Hive][6])
+
+***
+
+## Table of existing tutorials
+
+Below is a table with some of the tutorials you have developed, including links to your GitHub repository:
+
+| Title of the tutorial | Short description                                | Link to the repository                                                          |   |
+| --------------------- | ------------------------------------------------ | ------------------------------------------------------------------------------- | - |
+| Multiple tutorials    | Learn to integrate React with Hive's blockchain. | [See in GitHub](https://github.com/theghost1980/react-hive-tutorials/tree/main) |   |
+
+***
+
+[1]: https://hiveprojects.io/?utm_source=chatgpt.com "Hive Projects : Apps, sites and tools built by Hive community"
+
+[2]: https://es.wikipedia.org/wiki/Hive_%28criptomoneda%29?utm_source=chatgpt.com "Hive (criptomoneda)"
+
+[3]: https://academy.moralis.io/blog/exploring-the-hive-blockchain-and-hive-coin?utm_source=chatgpt.com "Exploring the Hive Blockchain and Hive Coin - Moralis Academy"
+
+[4]: https://thedapplist.com/chain/hive?utm_source=chatgpt.com "Hive Ecosystem: Explore 18 Projects &amp; Dapps | The Dapp List"
+
+[5]: https://github.com/openhive-network/awesome-hive?utm_source=chatgpt.com "A curated list of awesome Hive resources. - GitHub"
+
+[6]: https://hive.io/?utm_source=chatgpt.com "Hive - The Blockchain &amp; Cryptocurrency for Web3"
+
+</details></div>
+  <footer class="hive-post-embed__source">
+    <span class="hive-post-embed__source-label">Source:</span>
+    <a href="https://hive.blog/@theghost1980/tutorial-autenticacion-hive-con-hive-keychain-react--vite--typescript-englishespanol">Tutorial: Autenticación Hive con Hive Keychain React + Vite + TypeScript english/español</a>
+    by
+    <a href="https://hive.blog/@theghost1980">@theghost1980</a>
+  </footer>
+</div>
+
+
+  </div><a class="u-url" href="/howto/javascript/tutorials/2025/05/12/tutorial-autenticacion-hive-con-hive-keychain-react-vite-typescript-englishespanol.html" hidden></a>
+</article>
+
+        </div>
+
+        
+        <aside class="page-sidebar" aria-label="Search and browse">
+          <section class="sidebar-section sidebar-search">
+            <h2 class="sidebar-heading">Search posts</h2>
+            <p class="sidebar-copy">Search the locally indexed post archive.</p>
+            <input type="text" id="search-input" placeholder="Search posts" autocomplete="off" />
+            <ul id="results-container"></ul>
+          </section>
+
+          <section class="sidebar-section sidebar-topics">
+            <h2 class="sidebar-heading">Browse topics</h2>
+            <p class="sidebar-copy">Jump into curated topic landing pages.</p>
+            <ul class="topic-list topic-list-sidebar"><li><a class="page-link" href="/account-recovery/">Account Recovery</a></li><li><a class="page-link" href="/core-development/">Core Development</a></li><li><a class="page-link" href="/dapps/">Dapps</a></li><li><a class="page-link" href="/docker/">Docker</a></li><li><a class="page-link" href="/hardfork/">Hardfork</a></li><li><a class="page-link" href="/hivemind/">Hivemind</a></li><li><a class="page-link" href="/javascript/">Javascript</a></li><li><a class="page-link" href="/multisig/">Multisig</a></li><li><a class="page-link" href="/python/">Python</a></li><li><a class="page-link" href="/ruby/">Ruby</a></li><li><a class="page-link" href="/testnet/">Testnet</a></li><li><a class="page-link" href="/tools/">Tools</a></li><li><a class="page-link" href="/witness/">Witness</a></li></ul>
+          </section>
+        </aside>
+        
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading"><a rel="author" href="/">Hive Chain Documentation</a></h2>
+    
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">site curated by: @inertia</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>Your resource for various levels of Hive Documentation.</p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+<script src="/assets/javascript/search.js"></script>
+    <script>
+      (function () {
+        var input = document.getElementById('search-input');
+        var results = document.getElementById('results-container');
+        if (input && results && typeof SimpleJekyllSearch !== 'undefined') {
+          SimpleJekyllSearch({
+            searchInput: input,
+            resultsContainer: results,
+            json: '/search.json'
+          });
+        }
+
+        if (typeof SteemContentRenderer === 'undefined') return;
+
+        var targets = document.querySelectorAll('[data-hive-render-target="true"]');
+        if (!targets.length) return;
+
+        var renderer = new SteemContentRenderer.DefaultRenderer({
+          baseUrl: 'https://hive.blog/',
+          breaks: true,
+          skipSanitization: false,
+          allowInsecureScriptTags: false,
+          addNofollowToLinks: true,
+          doNotShowImages: false,
+          ipfsPrefix: '',
+          assetsWidth: 640,
+          assetsHeight: 480,
+          imageProxyFn: function (url) { return url; },
+          usertagUrlFn: function (account) { return '/@' + account; },
+          hashtagUrlFn: function (hashtag) { return '/tags/#' + hashtag; },
+          isLinkSafeFn: function () { return true; }
+        });
+
+        targets.forEach(function (target) {
+          try {
+            var inputHtml = target.innerHTML;
+            target.innerHTML = renderer.render(inputHtml);
+          } catch (e) {
+            console.log(e);
+          }
+        });
+      })();
+    </script>
+
+  </body>
+
+</html>
