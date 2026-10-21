@@ -20,7 +20,13 @@ operational lessons for agents working the curation tooling.
 - HAFBE `comment-permlinks` date filters can leak posts from outside the
   window. Filter by `created` again after fetching.
 - Authors sometimes blank posts by editing title and body to `.`. Treat that
-  as a removal and do not import the post.
+  as a removal and do not import the post. If the post is already curated,
+  pin it: replace the `{% hive %}` tag with the cached embed from
+  `.jekyll-hive-cache/` wrapped in `{% raw %}`.
+- HAFBE `comment-permlinks` windows match the latest edit, not creation. A
+  mass edit (@emrebeyler blanked ~880 posts on 2026-10-18) floods the window,
+  and the sweep fetches every one before the `created` filter drops it. A slow
+  badge-member scan usually means this, not a hang.
 
 ## Sweep and grab
 
