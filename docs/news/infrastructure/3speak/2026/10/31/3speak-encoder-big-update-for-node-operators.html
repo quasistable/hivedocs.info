@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta property="og:image" content="/assets/images/sticker.png" />
+  <meta name="apple-mobile-web-app-title" content="Hive Docs" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" /><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>3Speak Encoder: big update for node operators 🎬 | Hive Chain Documentation</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="3Speak Encoder: big update for node operators 🎬" />
+<meta name="author" content="mantequilla-soft" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="3Speak encoder installation and upgrade guidance, with IPFS upload recovery, dashboard access controls, diagnostics and Docker fixes." />
+<meta property="og:description" content="3Speak encoder installation and upgrade guidance, with IPFS upload recovery, dashboard access controls, diagnostics and Docker fixes." />
+<link rel="canonical" href="https://hive.blog/dev/@mantequilla-soft/3speak-encoder-big-update-for-node-operators" />
+<meta property="og:url" content="https://hive.blog/dev/@mantequilla-soft/3speak-encoder-big-update-for-node-operators" />
+<meta property="og:site_name" content="Hive Chain Documentation" />
+<meta property="og:image" content="https://files.peakd.com/file/peakd-hive/mantequilla-soft/23wWwQmgLtrubjegAvbwjFrqsT9xTAqgeUaL5ign8R6bfNrJ4RAky1xtQwpZ56VDPYtSj.jpg" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2026-10-31T11:36:57-07:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="https://files.peakd.com/file/peakd-hive/mantequilla-soft/23wWwQmgLtrubjegAvbwjFrqsT9xTAqgeUaL5ign8R6bfNrJ4RAky1xtQwpZ56VDPYtSj.jpg" />
+<meta property="twitter:title" content="3Speak Encoder: big update for node operators 🎬" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"mantequilla-soft"},"dateModified":"2026-10-31T11:36:57-07:00","datePublished":"2026-10-31T11:36:57-07:00","description":"3Speak encoder installation and upgrade guidance, with IPFS upload recovery, dashboard access controls, diagnostics and Docker fixes.","headline":"3Speak Encoder: big update for node operators 🎬","image":"https://files.peakd.com/file/peakd-hive/mantequilla-soft/23wWwQmgLtrubjegAvbwjFrqsT9xTAqgeUaL5ign8R6bfNrJ4RAky1xtQwpZ56VDPYtSj.jpg","mainEntityOfPage":{"@type":"WebPage","@id":"https://hive.blog/dev/@mantequilla-soft/3speak-encoder-big-update-for-node-operators"},"url":"https://hive.blog/dev/@mantequilla-soft/3speak-encoder-big-update-for-node-operators"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://hivedocs.info/feed.xml" title="Hive Chain Documentation" /><script>
+if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNotTrack === "yes" || navigator.msDoNotTrack === "1")) {
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-161692811-1', 'auto');
+  ga('send', 'pageview');
+}
+</script>
+  
+<script src='https://unpkg.com/steem-content-renderer'></script>
+  <script src="/assets/javascript/universal-bridge-against-phishing.js"></script>
+  <script src="/assets/javascript/lazysizes.min.js" async=""></script>
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet" />
+  <link rel="shortcut icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="152x152" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="167x167" href="/assets/images/favicon-80x80.png" />
+</head>
+<body><header class="site-header" role="banner">
+  <div class="wrapper site-header-inner">
+    <a class="site-title" rel="author" href="/">Hive Chain Documentation</a>
+
+    <nav class="site-nav" aria-label="Primary">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/news/">News</a><a class="page-link" href="/howto/">How To</a><a class="page-link" href="/links/">Useful Links</a><a class="page-link" href="/authors/">Authors</a><a class="page-link" href="/topics/">Topics</a><a class="page-link" href="/search/">Search</a></div>
+    </nav>
+  </div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper page-layout has-search-panel">
+        <div class="page-main">
+          <article class="post h-entry post-article" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header post-hero">
+    <div class="post-hero-main">
+      <p class="post-kicker">Archive post</p>
+      <h1 class="post-title p-name" itemprop="name headline">3Speak Encoder: big update for node operators 🎬</h1>
+      <p class="post-meta">
+        <time class="dt-published" datetime="2026-10-31T11:36:57-07:00" itemprop="datePublished">Oct 31, 2026
+        </time>• <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">
+            <a href="/authors/#author-mantequilla-soft">mantequilla-soft</a>
+          </span></span></p><p class="post-summary">3Speak encoder installation and upgrade guidance, with IPFS upload recovery, dashboard access controls, diagnostics and Docker fixes.</p></div><aside class="post-author-card">
+      <img src="https://images.hive.blog/u/mantequilla-soft/avatar" width="128" height="128" class="lazyload post-author-avatar" alt="Avatar for @mantequilla-soft" />
+      <div class="post-author-name">@mantequilla-soft</div>
+    </aside></header>
+
+  <div class="post-content e-content post-body" itemprop="articleBody">
+    <div class="hive-post-embed" data-hive-author="mantequilla-soft" data-hive-permlink="3speak-encoder-big-update-for-node-operators">
+  <div id="content-mantequilla-soft-3speak-encoder-big-update-for-node-operators" class="hive-post-embed__content" data-hive-render-target="true">
+Greetings and Salutations Hiveans! 👋
+
+Over the last few days we've shipped the biggest batch of changes the 3Speak encoder has had in a while: **20 updates** covering installation, the dashboard, uploads and reliability. If you run an encoder for the community, this post is for you. There's a short **"How to upgrade"** section at the end.
+
+
+![image.png](https://files.peakd.com/file/peakd-hive/mantequilla-soft/23wWwQmgLtrubjegAvbwjFrqsT9xTAqgeUaL5ign8R6bfNrJ4RAky1xtQwpZ56VDPYtSj.jpg)
+
+
+---
+
+## 🚀 Installing is now one line
+
+New operators can get going with a single command:
+
+**Linux / Mac**
+```
+curl -fsSL https://raw.githubusercontent.com/Mantequilla-Soft/3speakencoder/main/install.sh | bash
+```
+
+**Windows (PowerShell)**
+```
+iwr -useb https://raw.githubusercontent.com/Mantequilla-Soft/3speakencoder/main/install.ps1 | iex
+```
+
+The installer works out what's missing and installs it: Git, Node.js, FFmpeg and IPFS. Then it downloads the encoder, sets it up from a few questions and checks that everything works before it finishes. Every change is tested by installing on fresh Windows, Mac and Linux machines (Ubuntu, Debian, Fedora and Arch).
+
+What got fixed along the way:
+
+- **Windows: "FFmpeg not found" is gone.** The old installer needed an administrator window. Without one it failed quietly and still said everything was fine. It now uses winget, which comes with Windows 10 and 11 and needs no admin rights. It checks that FFmpeg actually runs and saves its location, so the encoder always finds it.
+- **Mac:** works out of the box on Apple Silicon Macs.
+- **Linux:** Fedora and Arch are supported, and older systems like Ubuntu 22.04 get a recent Node.js automatically.
+- **Start automatically (optional):** the installer can make IPFS and the encoder start whenever the computer boots (Linux) or you log in (Mac, Windows). No more forgetting to restart your node after a reboot.
+- **New `npm run doctor` command:** checks Node.js, FFmpeg and IPFS and tells you in plain words what's missing. If something's off, run this first.
+
+⚠️ **Important for people who installed a while ago:** an old installer option ("Gateway mode") set up encoders that **never received any jobs**. If your encoder has sat idle for a long time, that may be why. The encoder now warns at startup with `No job source enabled`. The fix is three lines in your `.env`:
+```
+EMBED_SYSTEM_ENABLED=true
+EMBED_SYSTEM_MODE=community
+EMBED_GATEWAY_URL=https://embed.3speak.tv
+```
+
+---
+
+## 🖥️ A brand new dashboard
+
+
+![Screenshot 2026-10-31 at 1.35.27 PM.png](https://files.peakd.com/file/peakd-hive/mantequilla-soft/23swe5kv3u8AuRLjDoSN95hkNEZ57cbkw4gzbx2qeWRdCVPVrRUg8UofrzdwjZCMgyR7A.png)
+
+
+
+The local dashboard at `http://localhost:3001` got a full redesign, inspired by the tiling-desktop look of Tokyo Night colours theme.
+
+- **Easier to read at a glance:** the current job, encoder health, recent jobs, anything that needs your attention, and the live log.
+- **Accurate status:** the dashboard used to show "Offline" while the encoder was busy and perfectly fine. It now tells apart *Encoding*, *Not responding* (frozen), *Unreachable* (stopped, or the port is blocked) and *Offline* (shutting down).
+- **Health numbers:** how responsive the encoder process is, and how long it's been up.
+- **Install it as an app:** on your phone or computer, the dashboard can be installed like an app with its own icon. Use **Install app** in the top bar in Chrome, Edge or Android, or **Add to Home Screen** in Safari. This needs the dashboard on HTTPS, so it's for operators who reach their node through a domain name.
+- **Optional password and safer defaults:** you can now set a dashboard password, or limit the dashboard to your own machine. It also blocks a class of attacks where another website open in your browser tries to control your encoder.
+
+---
+
+## 🔄 Updates and versions
+
+- **Know when you're behind:** the dashboard shows which version you run and how many updates you're missing, with a link to what changed. **Check for updates** checks right away.
+- **One-click updates (optional):** turn it on with `SELF_UPDATE_ENABLED=true` and an `UPDATE_PASSWORD`, and you can update from the dashboard. The encoder finishes its current jobs first, updates, and restarts itself. If anything goes wrong, it rolls back to the version that was working. It's off by default, works on git installs (not Docker), and needs the encoder started with the included start script, which the installer's shortcuts use.
+- **No more half-updated nodes:** if the encoder can't build after an update (most often because files belong to another user after a `sudo` command), it now stops with a clear message instead of starting on a mix of old and new code.
+- **Your version, visible to 3Speak:** encoders now report which version they run and how far behind they are, so we can see at a glance who needs to update and reach out. It's only the version: no personal data, and nothing changes about the jobs you get.
+
+---
+
+## 📦 Uploads: simpler and more honest
+
+- **Uploads go to 3Speak's hotnodes only.** The old upload path to the "supernode" has been removed for good.
+- **When an upload fails:** by default the job is reported as failed, so 3Speak knows and can give it to another encoder. Before, the encoder fell back to the old supernode.
+- **Optional local backup (`ENABLE_LOCAL_FALLBACK=true`):** if the upload fails, your node keeps the video on its own IPFS node and keeps trying to move it to a hotnode in the background. The video keeps the same address, so viewers never notice. Only recommended for operators with fast and reliable internet connections. 
+- **See where every backed-up video stands:** the dashboard's storage section lists each one as *waiting to move*, *moved*, *removed* or *deleted*, with dates and the video's owner and link. One click checks the video is reachable before you do anything by hand.
+
+---
+
+## 🛠️ Under the hood
+
+- **FFmpeg 8 support:** the encoder failed to start on FFmpeg 8 and newer (`Input format lavfi is not available`). Fixed.
+- **Docker:** the production Docker image and compose file wouldn't build or run. Both are fixed; the compose file runs the encoder together with its own IPFS node.
+- **Steadier startup:** the encoder waits up to 90 seconds for IPFS instead of giving up at once, which matters when both start together at boot.
+- **Automatic tests:** every change now runs through automatic tests on Linux and Windows, plus the full install on Windows, Mac and several Linux distributions.
+- **Documentation:** the README and install guides have been rewritten to match how things work today.
+
+---
+
+## ✅ How to upgrade
+
+**Requirement:** Node.js **20 or newer**. Check with `node -v`. If you have 18 or older, update Node.js first from https://nodejs.org (the LTS version), or let the installer do it.
+
+**Option A: you installed with git (most operators)**
+
+In your encoder folder (usually `~/3speak-encoder`, or `C:\Users\<you>\3speak-encoder` on Windows):
+```
+git pull
+npm ci
+npm run doctor
+```
+Then restart the encoder the way you normally start it. Your settings and your encoder identity stay as they are.
+
+**Option B: run the installer again**
+
+Run the one-line command from the top of this post. It keeps your encoder identity and saves your old settings as `.env.bak`. If you had changed extra settings (a dashboard password, local backup, and so on), copy them back from `.env.bak` into `.env`.
+
+**Option C: Docker**
+```
+git pull
+GIT_COMMIT=$(git rev-parse HEAD) docker compose -f docker-compose.production.yml up -d --build
+```
+
+**Good to know after upgrading:**
+- **Opening the dashboard by a name** (like `encoder.mydomain.com` instead of an IP address)? Add that name to `.env` as `DASHBOARD_ALLOWED_HOSTS=encoder.mydomain.com` and restart. Otherwise the dashboard answers "Host not allowed". This is part of the new protection against malicious websites.
+- **Don't use `sudo`** for `git pull`, `npm` or starting the encoder. It leaves files the encoder can't update later. If you did in the past, fix it once on Linux or Mac with `sudo chown -R $(whoami): .` in the encoder folder.
+- **Something not working?** Run `npm run doctor` first. It points at the problem in plain words.
+
+---
+
+Thanks to everyone running an encoder: you're the ones keeping 3Speak videos flowing. 🙌 If you hit a problem, open an issue on [GitHub](https://github.com/Mantequilla-Soft/3speakencoder/issues) or find us on Discord.
+
+<center>
+
+[![Mantequilla Soft](https://images.hive.blog/DQmSCTXSSRQ4R5Xq2pGTTiiMuSsTcJYAy1ozfkb35M7jVzB/mantequilla-soft-logo.png)](https://www.mantequilla-soft.com)
+
+**[GitHub](https://github.com/Mantequilla-Soft) · [Website](https://www.mantequilla-soft.com) · [Snapie](https://snapie.io) · [3Speak](https://3speak.tv)**
+
+</center>
+
+&lt;/div&gt;
+
+
+*— The Mantequilla Soft team*&lt;/div&gt;
+  <footer class="hive-post-embed__source">
+    <span class="hive-post-embed__source-label">Source:</span>
+    <a href="https://hive.blog/@mantequilla-soft/3speak-encoder-big-update-for-node-operators">3Speak Encoder: big update for node operators 🎬</a>
+    by
+    <a href="https://hive.blog/@mantequilla-soft">@mantequilla-soft</a>
+  </footer>
+&lt;/div&gt;
+
+</you></div></div>
+
+  </div><a class="u-url" href="/news/infrastructure/3speak/2026/10/31/3speak-encoder-big-update-for-node-operators.html" hidden></a>
+</article>
+
+        </div>
+
+        
+        <aside class="page-sidebar" aria-label="Search and browse">
+          <section class="sidebar-section sidebar-search">
+            <h2 class="sidebar-heading">Search posts</h2>
+            <p class="sidebar-copy">Search the locally indexed post archive.</p>
+            <input type="text" id="search-input" placeholder="Search posts" autocomplete="off" />
+            <ul id="results-container"></ul>
+          </section>
+
+          <section class="sidebar-section sidebar-topics">
+            <h2 class="sidebar-heading">Browse topics</h2>
+            <p class="sidebar-copy">Jump into curated topic landing pages.</p>
+            <ul class="topic-list topic-list-sidebar"><li><a class="page-link" href="/api-nodes/">API Nodes</a></li><li><a class="page-link" href="/account-recovery/">Account Recovery</a></li><li><a class="page-link" href="/authentication/">Authentication & Keys</a></li><li><a class="page-link" href="/core-development/">Core Development</a></li><li><a class="page-link" href="/dapps/">Dapps</a></li><li><a class="page-link" href="/docker/">Docker</a></li><li><a class="page-link" href="/haf/">HAF & HafSQL</a></li><li><a class="page-link" href="/hardfork/">Hardfork</a></li><li><a class="page-link" href="/hive-engine/">Hive-Engine</a></li><li><a class="page-link" href="/hivemind/">Hivemind</a></li><li><a class="page-link" href="/javascript/">Javascript</a></li><li><a class="page-link" href="/multisig/">Multisig</a></li><li><a class="page-link" href="/python/">Python</a></li><li><a class="page-link" href="/ruby/">Ruby</a></li><li><a class="page-link" href="/testnet/">Testnet</a></li><li><a class="page-link" href="/tools/">Tools</a></li><li><a class="page-link" href="/wallets/">Wallets & Clive</a></li><li><a class="page-link" href="/witness/">Witness</a></li></ul>
+          </section>
+        </aside>
+        
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading"><a rel="author" href="/">Hive Chain Documentation</a></h2>
+    
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">site curated by: @inertia</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>Your resource for various levels of Hive Documentation.</p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+<script src="/assets/javascript/search.js"></script>
+    <script>
+      (function () {
+        var input = document.getElementById('search-input');
+        var results = document.getElementById('results-container');
+        if (input && results && typeof SimpleJekyllSearch !== 'undefined') {
+          SimpleJekyllSearch({
+            searchInput: input,
+            resultsContainer: results,
+            json: '/search.json'
+          });
+        }
+
+        if (typeof SteemContentRenderer === 'undefined') return;
+
+        var targets = document.querySelectorAll('[data-hive-render-target="true"]');
+        if (!targets.length) return;
+
+        var renderer = new SteemContentRenderer.DefaultRenderer({
+          baseUrl: 'https://hive.blog/',
+          breaks: true,
+          skipSanitization: false,
+          allowInsecureScriptTags: false,
+          addNofollowToLinks: true,
+          doNotShowImages: false,
+          ipfsPrefix: '',
+          assetsWidth: 640,
+          assetsHeight: 480,
+          imageProxyFn: function (url) { return url; },
+          usertagUrlFn: function (account) { return '/@' + account; },
+          hashtagUrlFn: function (hashtag) { return '/tags/#' + hashtag; },
+          isLinkSafeFn: function () { return true; }
+        });
+
+        targets.forEach(function (target) {
+          try {
+            var inputHtml = target.innerHTML;
+            target.innerHTML = renderer.render(inputHtml);
+          } catch (e) {
+            console.log(e);
+          }
+        });
+      })();
+    </script>
+
+  </body>
+
+</html>

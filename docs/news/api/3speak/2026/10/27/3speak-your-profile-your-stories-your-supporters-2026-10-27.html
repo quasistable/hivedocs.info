@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta property="og:image" content="/assets/images/sticker.png" />
+  <meta name="apple-mobile-web-app-title" content="Hive Docs" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" /><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>3Speak: Your Profile, Your Stories, Your Supporters | Hive Chain Documentation</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="3Speak: Your Profile, Your Stories, Your Supporters" />
+<meta name="author" content="mantequilla-soft" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="3Speak development update covering API failover, feed caching, IPFS storage fixes, open-source tooling and new frontend features." />
+<meta property="og:description" content="3Speak development update covering API failover, feed caching, IPFS storage fixes, open-source tooling and new frontend features." />
+<link rel="canonical" href="https://hive.blog/hive-139531/@mantequilla-soft/3speak-your-profile-your-stories-your-supporters-2026-10-27" />
+<meta property="og:url" content="https://hive.blog/hive-139531/@mantequilla-soft/3speak-your-profile-your-stories-your-supporters-2026-10-27" />
+<meta property="og:site_name" content="Hive Chain Documentation" />
+<meta property="og:image" content="https://images.hive.blog/DQmRj62mF3en5JzJe277aYdPVWHQ3TSn97e89iL81ZaTf6G/thumbnail.png" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2026-10-27T17:35:48-07:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="https://images.hive.blog/DQmRj62mF3en5JzJe277aYdPVWHQ3TSn97e89iL81ZaTf6G/thumbnail.png" />
+<meta property="twitter:title" content="3Speak: Your Profile, Your Stories, Your Supporters" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"mantequilla-soft"},"dateModified":"2026-10-27T17:35:48-07:00","datePublished":"2026-10-27T17:35:48-07:00","description":"3Speak development update covering API failover, feed caching, IPFS storage fixes, open-source tooling and new frontend features.","headline":"3Speak: Your Profile, Your Stories, Your Supporters","image":"https://images.hive.blog/DQmRj62mF3en5JzJe277aYdPVWHQ3TSn97e89iL81ZaTf6G/thumbnail.png","mainEntityOfPage":{"@type":"WebPage","@id":"https://hive.blog/hive-139531/@mantequilla-soft/3speak-your-profile-your-stories-your-supporters-2026-10-27"},"url":"https://hive.blog/hive-139531/@mantequilla-soft/3speak-your-profile-your-stories-your-supporters-2026-10-27"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://hivedocs.info/feed.xml" title="Hive Chain Documentation" /><script>
+if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNotTrack === "yes" || navigator.msDoNotTrack === "1")) {
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-161692811-1', 'auto');
+  ga('send', 'pageview');
+}
+</script>
+  
+<script src='https://unpkg.com/steem-content-renderer'></script>
+  <script src="/assets/javascript/universal-bridge-against-phishing.js"></script>
+  <script src="/assets/javascript/lazysizes.min.js" async=""></script>
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet" />
+  <link rel="shortcut icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="152x152" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="167x167" href="/assets/images/favicon-80x80.png" />
+</head>
+<body><header class="site-header" role="banner">
+  <div class="wrapper site-header-inner">
+    <a class="site-title" rel="author" href="/">Hive Chain Documentation</a>
+
+    <nav class="site-nav" aria-label="Primary">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/news/">News</a><a class="page-link" href="/howto/">How To</a><a class="page-link" href="/links/">Useful Links</a><a class="page-link" href="/authors/">Authors</a><a class="page-link" href="/topics/">Topics</a><a class="page-link" href="/search/">Search</a></div>
+    </nav>
+  </div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper page-layout has-search-panel">
+        <div class="page-main">
+          <article class="post h-entry post-article" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header post-hero">
+    <div class="post-hero-main">
+      <p class="post-kicker">Archive post</p>
+      <h1 class="post-title p-name" itemprop="name headline">3Speak: Your Profile, Your Stories, Your Supporters</h1>
+      <p class="post-meta">
+        <time class="dt-published" datetime="2026-10-27T17:35:48-07:00" itemprop="datePublished">Oct 27, 2026
+        </time>• <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">
+            <a href="/authors/#author-mantequilla-soft">mantequilla-soft</a>
+          </span></span></p><p class="post-summary">3Speak development update covering API failover, feed caching, IPFS storage fixes, open-source tooling and new frontend features.</p></div><aside class="post-author-card">
+      <img src="https://images.hive.blog/u/mantequilla-soft/avatar" width="128" height="128" class="lazyload post-author-avatar" alt="Avatar for @mantequilla-soft" />
+      <div class="post-author-name">@mantequilla-soft</div>
+    </aside></header>
+
+  <div class="post-content e-content post-body" itemprop="articleBody">
+    <div class="hive-post-embed" data-hive-author="mantequilla-soft" data-hive-permlink="3speak-your-profile-your-stories-your-supporters-2026-10-27">
+  <div id="content-mantequilla-soft-3speak-your-profile-your-stories-your-supporters-2026-10-27" class="hive-post-embed__content" data-hive-render-target="true"><div class="text-justify">
+
+![3Speak dev update, October 21 to 27, 2026](https://images.hive.blog/DQmRj62mF3en5JzJe277aYdPVWHQ3TSn97e89iL81ZaTf6G/thumbnail.png)
+
+**The short version**
+
+- **24-hour Stories** are live for everyone: post your own, and watch them on the home page and first in the Shorts feed.
+- A new **leaderboard** for Videos, Shorts, Stories and Tags, and a **Customize profile** editor.
+- Comments got sorting, creator pins, images and a preview tab.
+- **Supporters**: every tip on a video is now recorded and shown.
+- Reshare is now called **Hype**, and there is a real Hive **Reblog** button next to it.
+- Hive-style addresses like `3speak.tv/@yourname`, and a preview image for every shared link.
+- Faster home feeds, fewer stalls when a Hive node goes down, and much better visibility on Google and Bing.
+- Ads play quieter, fill portrait videos properly and adapt to slow connections.
+- Under the hood: hot storage node fixes, a smarter encoder and a new Snapie release.
+
+---
+
+## 🌐 3speak.tv website
+
+[new-3speak-tv](https://github.com/Mantequilla-Soft/new-3speak-tv) · 9 releases, all live
+
+<hr />
+
+### 24-hour Stories are here
+
+<div class="pull-right">
+
+![A 24-hour story playing on 3Speak](https://images.hive.blog/DQmTMrRJ8EvGPjtpbHD6ZUZZwNzQLSVKDrKWCtzWHeiqu5C/stories-live.png)
+
+</div>
+
+**Stories** are short videos that disappear after 24 hours. They lead the [home page](https://3speak.tv) in a row with a countdown ring, come first in the [Shorts feed](https://3speak.tv/shorts) with a "time left" badge, and your followers get a notification when you post one. They are open to everyone: anyone with a Hive account can post a story, and everyone can watch them.
+
+- **Two taps to post** a story.
+- **Seen by:** see who watched your story.
+- **Keep as short:** turn a story into a normal short before it runs out.
+- **Streaks:** count the days in a row you posted a story, with its own spot on the [leaderboard](https://3speak.tv/leaderboard).
+
+![Stories lead the 3Speak home page](https://images.hive.blog/DQmPkpU8nzGJnEo7M3YgSNDLX6pFXnDuqvT7mjfaWW12FHr/stories-row.png)
+
+([#534](https://github.com/Mantequilla-Soft/new-3speak-tv/pull/534))
+
+<hr />
+
+### A leaderboard for every kind of video
+
+<div class="pull-right">
+
+![The new 3Speak leaderboard](https://images.hive.blog/DQmbrQFK7798ListQ2UamzkkDWQcTaQELefaxBchY1YKTK7/leaderboard.png)
+
+</div>
+
+The [leaderboard](https://3speak.tv/leaderboard) now has chips for Videos, Shorts, Stories and Tags. Rank creators by watch time or by count, and pick the time range right in the header: 7 days, 30 days, a year or all time. ([#534](https://github.com/Mantequilla-Soft/new-3speak-tv/pull/534))
+
+<hr />
+
+### Customize your profile
+
+<div class="pull-right">
+
+![The profile layout editor on 3Speak](https://images.hive.blog/DQmNzeFBimJqKduB8mafJAQUyYWAmFNfGQ67iBWtev18aiH/profile-editor.png)
+
+</div>
+
+On your own profile, **Customize profile** lets you drag the Overview sections into the order you like, resize them, hide the ones you don't need and set up a separate layout for phones. Nothing changes for your visitors until you press Save. ([#534](https://github.com/Mantequilla-Soft/new-3speak-tv/pull/534))
+
+<hr />
+
+### Titles for Shorts
+
+[Shorts](https://3speak.tv/shorts) can now carry a title, set when you upload or edit them. ([#534](https://github.com/Mantequilla-Soft/new-3speak-tv/pull/534))
+
+<hr />
+
+### Remix chains share the rewards
+
+A remix of a remix used to pay and credit only the video it came from directly. Now every earlier creator in the chain, up to six videos back, gets a share of the rewards and a link in the post. ([#534](https://github.com/Mantequilla-Soft/new-3speak-tv/pull/534))
+
+<hr />
+
+### Comments: sort, pin, add images, preview
+
+<div class="pull-right">
+
+![The new comment tools on a 3Speak watch page](https://images.hive.blog/DQmbqa6ce976udUEkMM84ccxvPCbVCbwRvLVz8PyQogrk58/comments.png)
+
+</div>
+
+Comments on [videos](https://3speak.tv/@enraizar/richard-avedon-in-the-ameri-475) and [Shorts](https://3speak.tv/shorts) can now be sorted, and creators can pin up to three comments to the top of their video. You can add images to a comment, and a Write / Preview tab shows how it will look before you send it. ([#525](https://github.com/Mantequilla-Soft/new-3speak-tv/pull/525))
+
+<hr />
+
+### Supporters: every tip counts
+
+<div class="pull-right">
+
+![The Supporters tab on a 3Speak profile](https://images.hive.blog/DQmeGvW6AXkYaHfsny5cekGesW6cY359A3NK1rkE2LKmXzT/supporters.png)
+
+</div>
+
+Every tip sent to a video's creator is now recorded, after checking the real transfer on Hive, so nobody can fake one. Profiles show tips received and given, and a [Supporters tab](https://3speak.tv/@enraizar?tab=supporters) lists who supported whom, with their memos. A tip can also be hidden, and tip memos now link to the video or audio post you tipped. ([#525](https://github.com/Mantequilla-Soft/new-3speak-tv/pull/525), [#534](https://github.com/Mantequilla-Soft/new-3speak-tv/pull/534))
+
+<hr />
+
+### Hype, and a real Hive Reblog
+
+<div class="pull-right">
+
+![Hype and Reblog buttons on the watch page](https://images.hive.blog/DQmXUrqHog5MVRyndownb9jdnBKbGfsXozCperTGy5WKabE/hype-reblog.png)
+
+</div>
+
+Many people took our "Reshare" button for a Hive reblog. It isn't one, so it is now called **Hype** and has a flame icon. Next to it there is now a real **Reblog** button that reblogs the post on Hive, on the [watch page](https://3speak.tv/@enraizar/richard-avedon-in-the-ameri-475) and the post page. It asks for a second tap to confirm, and doesn't show on your own posts. ([#529](https://github.com/Mantequilla-Soft/new-3speak-tv/pull/529))
+
+<hr />
+
+### "For Hive post" in the share menu
+
+<div class="pull-right">
+
+![The share menu with the new For Hive post option](https://images.hive.blog/DQmZYjquB22n1tGigU37ACRBFTKwoGvCK4w1YW52m9wN5Ss/share-menu.png)
+
+</div>
+
+The [share menu](https://3speak.tv/@enraizar/richard-avedon-in-the-ameri-475) on the watch page has a new option that copies the classic `3speak.tv/watch?v=` link, the one that works in every Hive frontend when you put it in a post. ([#529](https://github.com/Mantequilla-Soft/new-3speak-tv/pull/529))
+
+<hr />
+
+### Autoplay you can stop
+
+Before the next video starts you now see a 3, 2, 1 countdown you can cancel, and it waits while you're away from the player. Autoplay also no longer skips past a video that is still processing: it checks again every 20 seconds and plays it once it's ready. ([#524](https://github.com/Mantequilla-Soft/new-3speak-tv/pull/524), [#525](https://github.com/Mantequilla-Soft/new-3speak-tv/pull/525))
+
+<hr />
+
+### Hive-style addresses: /@user and /@author/permlink
+
+<div class="pull-right">
+
+![A 3Speak profile at its new /@ address](https://images.hive.blog/DQmT9nwp6zNdS3BVKTayK7ynhSmRJW5TD39Wvuf1vNzk15C/profile-address.png)
+
+</div>
+
+Profiles and videos now live at the same kind of address you know from other Hive apps. Take a Hive link, swap the domain for 3speak.tv, and you land on the same [profile](https://3speak.tv/@enraizar) or [video](https://3speak.tv/@enraizar/richard-avedon-in-the-ameri-475).
+
+Your old links still work: `/user/...`, `/p/...` and `/watch?v=...` open the same page and move you to the new address. Links that 3Speak writes into your Hive posts stay as `watch?v=`, so they keep working everywhere. ([#532](https://github.com/Mantequilla-Soft/new-3speak-tv/pull/532))
+
+<hr />
+
+### A preview image for every link you share
+
+<div class="pull-right">
+
+![Share card of the Threespeak community](https://images.hive.blog/DQmSeUuMpgv7J5L9twJrMfv9Vhu3yxnog29RDVLWJq34vQB/share-card.png)
+
+</div>
+
+Paste a 3Speak link into Discord, Telegram, X or a chat app and you get a picture card instead of a bare link. Every channel and every [Hive community](https://3speak.tv/communities) now has its own card with its picture and name, and tags, [badges](https://3speak.tv/badges), playlists, [audio posts](https://3speak.tv/audio), invite links and the main feeds got cards too. The homepage got a proper wide banner instead of a stretched square logo. ([#529](https://github.com/Mantequilla-Soft/new-3speak-tv/pull/529), [#532](https://github.com/Mantequilla-Soft/new-3speak-tv/pull/532))
+
+<hr />
+
+### Easier to find on Google and Bing
+
+Search engines used to see only about 3,600 of our videos. Now:
+
+- the [sitemap](https://3speak.tv/sitemap.xml) lists about **123,000 videos and shorts**, and every channel with a video (about 6,500, up from 249)
+- every watch page tells search engines it holds a video, with the player, chapters and links to the channel and tags, so videos can appear in video search results
+- each page has one clear address, and pages that don't exist answer with a real "not found"
+- new uploads are announced to Bing and the other IndexNow search engines every 10 minutes
+
+The same work fixed a slow network lookup that had stopped Discord from showing inline video previews. ([#530](https://github.com/Mantequilla-Soft/new-3speak-tv/pull/530))
+
+<hr />
+
+### Shared playlist links open the playlist
+
+When someone sends you a link to a video inside a playlist, you now get the playlist bar next to the video, the same as when you click through the playlist yourself. Private playlists stay private. ([#533](https://github.com/Mantequilla-Soft/new-3speak-tv/pull/533))
+
+<hr />
+
+### Smaller fixes
+
+- **[Discover](https://3speak.tv/discover) Spotlight** no longer disappears when you hide AI videos. It now just skips the AI-flagged ones.
+- [Discover](https://3speak.tv/discover) shows one community snap per creator, so one busy account can't fill the row.
+- Members-only videos now say "Members".
+- The share menu got wider rows with short descriptions and a Playlist shortcut, and opens as a sheet from the bottom on phones.
+- [Discover](https://3speak.tv/discover) Spotlight loads sooner and keeps its place while it loads.
+- Thumbnails stored on IPFS load again, through 3Speak's own gateway.
+- Warm-up videos: the Follow feed shows only warm-up creators you follow, and [New](https://3speak.tv/new) places their videos by date.
+- Switching between Butter Auth and a Hive wallet login now asks whether to reuse or replace the wallet login.
+- Calmer buttons, and one consistent header on every pop-up.
+- Spotlight link icons show the right logo again (Dropbox and Netflix links had been getting the X icon), plus a few other bugs our new test suite caught.
+- A round of security fixes for the site's API.
+- Warm-up accounts get a clear message, in all 21 languages, when they try to post the same comment twice.
+
+([#525](https://github.com/Mantequilla-Soft/new-3speak-tv/pull/525), [#527](https://github.com/Mantequilla-Soft/new-3speak-tv/pull/527), [#531](https://github.com/Mantequilla-Soft/new-3speak-tv/pull/531), [#532](https://github.com/Mantequilla-Soft/new-3speak-tv/pull/532), [#534](https://github.com/Mantequilla-Soft/new-3speak-tv/pull/534))
+
+<hr />
+
+### For developers
+
+The site's code got unit, API and browser test suites, a rewritten README, contributing docs and an MIT license. ([#527](https://github.com/Mantequilla-Soft/new-3speak-tv/pull/527))
+
+---
+
+## ⚡ Feeds and API
+
+[3speakchecks](https://github.com/Mantequilla-Soft/3speakchecks) · 12 changes
+
+The "checker" is the service behind 3Speak's feeds, ads, the [leaderboard](https://3speak.tv/leaderboard) and many other features. It also got the server side of comment pins and Supporters ([#80](https://github.com/Mantequilla-Soft/3speakchecks/pull/80)).
+
+<hr />
+
+### Home feeds load faster
+
+<div class="pull-right">
+
+![Feed load times before and after](https://images.hive.blog/DQmbo3vXTkw5oByzpnJWYa34C3sTJLi85vpzS1pSEZxjtMj/feeds.png)
+
+</div>
+
+[Trending](https://3speak.tv/trend), [New](https://3speak.tv/new) and [Shorts](https://3speak.tv/shorts) used to rebuild the same list of candidate videos for every visitor, waiting on the database and on Hive each time. Now that list is built once, kept fresh in the background and shared. Your personal touches (creators you follow, your interests, hidden and watched videos) are still applied on every visit.
+
+The trade-off: a brand new upload can take a minute or two longer to show up in these three feeds. ([#82](https://github.com/Mantequilla-Soft/3speakchecks/pull/82))
+
+<hr />
+
+### No more 10-second waits when a Hive node is down
+
+When a Hive API node stops answering, the checker now moves on after 3 seconds instead of 10, and lets that node sit out for a minute while the next one takes over. On October 25 one node failed 135 times in a day. In a test with a dead node first in line, the first request took 3.4 seconds and the ones after it less than 0.1 seconds. ([#83](https://github.com/Mantequilla-Soft/3speakchecks/pull/83))
+
+<hr />
+
+### Ads that fit the video
+
+![Ad changes before and after](https://images.hive.blog/DQmZtNkp4kgdzHUWByYiKNQ4KzYVVrbqU9BEVWDHLEGvtmN/ads.png)
+
+- **Quieter.** Every ad now plays 2 dB below its original level, the same on every playback.
+- **Landscape ads fill portrait videos.** A landscape ad inside a portrait video used to play as a tiny letterboxed picture (268x151 pixels in one real case). It now plays as a proper landscape video that fills the player.
+- **Ads between [Shorts](https://3speak.tv/shorts) adapt to your connection.** They used to play only in 1080p and could stall on a phone. Now they start near 720p and adapt like any other video.
+
+([#76](https://github.com/Mantequilla-Soft/3speakchecks/pull/76), [#78](https://github.com/Mantequilla-Soft/3speakchecks/pull/78))
+
+<hr />
+
+### Warm-up posts
+
+Warm-up accounts are new people trying 3Speak before they have their own Hive account. Their posts get a few slots in [Discover](https://3speak.tv/discover).
+
+- **More variety:** one very active account was filling most of those slots, so each account now gets at most one post per load. ([#81](https://github.com/Mantequilla-Soft/3speakchecks/pull/81))
+- **No doubles:** people who already made their own Hive account under their warm-up name no longer show up twice. ([#79](https://github.com/Mantequilla-Soft/3speakchecks/pull/79))
+- **Announcements arrive:** personal announcements sent to a warm-up user by name now reach them. ([#84](https://github.com/Mantequilla-Soft/3speakchecks/pull/84))
+
+<hr />
+
+### 24-hour Stories, behind the scenes
+
+The checker does the server side of Stories, live since this week's release:
+
+- a Stories row with the creators you follow first, and a "seen" state
+- live stories lead the [shorts feed](https://3speak.tv/shorts) and disappear everywhere once they expire
+- **Keep as short**: turn a story into a normal short before it runs out
+- **Seen by**: see who watched your story
+- **Streaks**: the number of days in a row you posted a story
+- two new [leaderboard](https://3speak.tv/leaderboard) metrics, story uploads and story streak
+
+([#85](https://github.com/Mantequilla-Soft/3speakchecks/pull/85), [#86](https://github.com/Mantequilla-Soft/3speakchecks/pull/86), [#87](https://github.com/Mantequilla-Soft/3speakchecks/pull/87), [#88](https://github.com/Mantequilla-Soft/3speakchecks/pull/88))
+
+---
+
+## ▶️ Video player
+
+[snapievideoplayer](https://github.com/Mantequilla-Soft/snapievideoplayer) · 3 changes
+
+![The expired-story screen in the player](https://images.hive.blog/DQmdwCCaMo1zjUqAgjf3Cw7ognjC2279xEojpRA7nmQAmdF/story.png)
+
+- **No ads on notice videos.** When a video is still processing, deleted or failed, the player shows a short notice instead. Ads no longer play on top of those, so [advertisers](https://3speak.tv/advertise) don't pay for an empty view. ([#51](https://github.com/Mantequilla-Soft/snapievideoplayer/pull/51))
+- **Portrait stays portrait.** A landscape ad at the start of a portrait video no longer makes the player treat the whole video as landscape. ([#52](https://github.com/Mantequilla-Soft/snapievideoplayer/pull/52))
+- **Expired stories.** Once a story's 24 hours are up, the player shows a short "This story has expired" clip instead, in embeds too. On 3speak.tv an expired story already gets its own screen; embeds get this clip with the next player update. ([#53](https://github.com/Mantequilla-Soft/snapievideoplayer/pull/53))
+
+---
+
+## 🎞️ Encoder
+
+[3speakencoder](https://github.com/Mantequilla-Soft/3speakencoder) · 1 change
+
+Some uploads are small in resolution but huge in file size, like a 480p video of about 700 MB. The encoder used to pass those through untouched. Now it only skips re-encoding when a video is already at or below the normal size for its resolution, so oversized uploads get brought down to the usual quality settings like every other video. ([#39](https://github.com/Mantequilla-Soft/3speakencoder/pull/39))
+
+---
+
+## 🤖 AI check and leaderboard jobs
+
+[3speak-subtitle-generator](https://github.com/Mantequilla-Soft/3speak-subtitle-generator) · 1 change
+
+This project runs background jobs for 3Speak, including the AI-content check and the [leaderboard](https://3speak.tv/leaderboard) numbers.
+
+- Leaderboard numbers for Stories: story uploads and story streaks.
+- The AI-content check now also covers videos from warm-up accounts.
+- A video with broken or unusual details no longer stops a whole batch.
+- Copying video files to the storage nodes is more reliable.
+
+([#2](https://github.com/Mantequilla-Soft/3speak-subtitle-generator/pull/2))
+
+---
+
+## ✂️ Video editor
+
+[3speak-editor-suite](https://github.com/Mantequilla-Soft/3speak-editor-suite) · 5 changes
+
+The editor opens when you [upload](https://3speak.tv/upload) a Short or make a remix on 3speak.tv. Its code is now public on GitHub.
+
+![The editor's sound fixes, before and after](https://images.hive.blog/DQmQuXM3VQ3TB7i8RFsVb4R9bbnL8vP6WCVsn2L5jps9EvD/editor-audio.png)
+
+- **Teleprompter follows your voice in any browser.** "Follow voice" used to work only in Chrome-based browsers. It now works in Firefox and others too. ([#7](https://github.com/Mantequilla-Soft/3speak-editor-suite/pull/7))
+- **Volume 0 means silent.** A clip set to volume 0 used to play and render at full volume. Muted tracks, hidden tracks and clips with sound turned off now stay out of the final video, just like in the preview. ([#8](https://github.com/Mantequilla-Soft/3speak-editor-suite/pull/8))
+- **The mix sounds like the preview.** With music and several clips together, the final video came out much quieter than the preview (four sources each played at a quarter). Each source now keeps its own volume. ([#8](https://github.com/Mantequilla-Soft/3speak-editor-suite/pull/8))
+- **Remixing never touches your draft.** Opening a remix used to ask "Replace your saved draft?". Remixes no longer autosave, so your saved draft stays exactly as it was. ([#13](https://github.com/Mantequilla-Soft/3speak-editor-suite/pull/13))
+- **Cropped overlays render like the preview.** In a camera-overlay remix, a freely placed and cropped clip came out zoomed and shifted in the final video. It now lands where the preview shows it. ([#14](https://github.com/Mantequilla-Soft/3speak-editor-suite/pull/14))
+- **Sign-in to upload and render.** Uploading and rendering in the editor now needs a 3Speak sign-in. ([#10](https://github.com/Mantequilla-Soft/3speak-editor-suite/pull/10))
+
+---
+
+## 💾 Hot storage node
+
+[hotnode](https://github.com/Mantequilla-Soft/hotnode) · 6 changes
+
+![Hot node pin lookups before and after](https://images.hive.blog/DQmRQLTSnxE5xujFDzWvoJA6t13o2xHLnZYjqaFf785xRqC/hotnode.png)
+
+The hot node keeps fresh uploads on fast IPFS storage so they start quickly, before they move to long-term storage.
+
+- **Popular videos stay on fast storage.** A video used to leave the hot node as soon as it was old enough and copied to long-term storage. Now it also has to go quiet: a video watched in the last 7 days keeps its place, however old it is. ([#2](https://github.com/Mantequilla-Soft/hotnode/pull/2))
+- **No more crashes while finding new videos.** Each lookup loaded about 150,000 video records into memory and ran out of it. It now asks the database for just the one it needs. ([#6](https://github.com/Mantequilla-Soft/hotnode/pull/6))
+- **Fewer false "copy failed" errors.** Checking that a video arrived on long-term storage now gets 2 minutes instead of 30 seconds, because that node can be slow under load. ([#1](https://github.com/Mantequilla-Soft/hotnode/pull/1))
+- **Deploys itself.** Once set up on the server, a merge goes live within about two minutes, and a failed deploy rolls back on its own. ([#5](https://github.com/Mantequilla-Soft/hotnode/pull/5))
+- **A stats page you can trust.** Fixed daily counters that reset to empty, migration sizes that always read 0, freed storage that was counted twice, and CPU numbers that showed 0% most of the time. ([#9](https://github.com/Mantequilla-Soft/hotnode/pull/9), [#10](https://github.com/Mantequilla-Soft/hotnode/pull/10))
+
+---
+
+## 📱 Snapie
+
+[snapie-io](https://github.com/Mantequilla-Soft/snapie-io) · 1 release · live on [snapie.io](https://snapie.io)
+
+- **Games:** floating touch controls for Rush, Puff Quest and Blocks, and Blocks fits fullscreen. Jump's title no longer overlaps in landscape.
+- **Feed:** when your mute list hides most of a page, the feed keeps loading instead of looking stuck.
+- **Images:** a missing Hivemoji no longer shows up as a server error.
+- **Composer:** the emoji picker no longer covers the Post button.
+
+([#313](https://github.com/Mantequilla-Soft/snapie-io/pull/313))
+
+---
+
+## 🚦 Traffic director
+
+[trafficdirector](https://github.com/Mantequilla-Soft/trafficdirector) · 1 change
+
+Cleanup: an unused example endpoint is gone, so there is less code facing the internet. ([#2](https://github.com/Mantequilla-Soft/trafficdirector/pull/2))
+
+---
+
+That's it for this week. Most of our code is open on GitHub at [github.com/Mantequilla-Soft](https://github.com/Mantequilla-Soft). Questions, bug reports or ideas? Drop them in the comments below.
+
+<hr />
+
+<center>
+
+[![Mantequilla Soft](https://images.hive.blog/DQmSCTXSSRQ4R5Xq2pGTTiiMuSsTcJYAy1ozfkb35M7jVzB/mantequilla-soft-logo.png)](https://www.mantequilla-soft.com)
+
+**[GitHub](https://github.com/Mantequilla-Soft) · [Website](https://www.mantequilla-soft.com) · [Snapie](https://snapie.io) · [3Speak](https://3speak.tv)**
+
+</center>
+
+</div>
+</div>
+  <footer class="hive-post-embed__source">
+    <span class="hive-post-embed__source-label">Source:</span>
+    <a href="https://hive.blog/@mantequilla-soft/3speak-your-profile-your-stories-your-supporters-2026-10-27">3Speak: Your Profile, Your Stories, Your Supporters</a>
+    by
+    <a href="https://hive.blog/@mantequilla-soft">@mantequilla-soft</a>
+  </footer>
+</div>
+
+
+  </div><a class="u-url" href="/news/api/3speak/2026/10/27/3speak-your-profile-your-stories-your-supporters-2026-10-27.html" hidden></a>
+</article>
+
+        </div>
+
+        
+        <aside class="page-sidebar" aria-label="Search and browse">
+          <section class="sidebar-section sidebar-search">
+            <h2 class="sidebar-heading">Search posts</h2>
+            <p class="sidebar-copy">Search the locally indexed post archive.</p>
+            <input type="text" id="search-input" placeholder="Search posts" autocomplete="off" />
+            <ul id="results-container"></ul>
+          </section>
+
+          <section class="sidebar-section sidebar-topics">
+            <h2 class="sidebar-heading">Browse topics</h2>
+            <p class="sidebar-copy">Jump into curated topic landing pages.</p>
+            <ul class="topic-list topic-list-sidebar"><li><a class="page-link" href="/api-nodes/">API Nodes</a></li><li><a class="page-link" href="/account-recovery/">Account Recovery</a></li><li><a class="page-link" href="/authentication/">Authentication & Keys</a></li><li><a class="page-link" href="/core-development/">Core Development</a></li><li><a class="page-link" href="/dapps/">Dapps</a></li><li><a class="page-link" href="/docker/">Docker</a></li><li><a class="page-link" href="/haf/">HAF & HafSQL</a></li><li><a class="page-link" href="/hardfork/">Hardfork</a></li><li><a class="page-link" href="/hive-engine/">Hive-Engine</a></li><li><a class="page-link" href="/hivemind/">Hivemind</a></li><li><a class="page-link" href="/javascript/">Javascript</a></li><li><a class="page-link" href="/multisig/">Multisig</a></li><li><a class="page-link" href="/python/">Python</a></li><li><a class="page-link" href="/ruby/">Ruby</a></li><li><a class="page-link" href="/testnet/">Testnet</a></li><li><a class="page-link" href="/tools/">Tools</a></li><li><a class="page-link" href="/wallets/">Wallets & Clive</a></li><li><a class="page-link" href="/witness/">Witness</a></li></ul>
+          </section>
+        </aside>
+        
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading"><a rel="author" href="/">Hive Chain Documentation</a></h2>
+    
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">site curated by: @inertia</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>Your resource for various levels of Hive Documentation.</p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+<script src="/assets/javascript/search.js"></script>
+    <script>
+      (function () {
+        var input = document.getElementById('search-input');
+        var results = document.getElementById('results-container');
+        if (input && results && typeof SimpleJekyllSearch !== 'undefined') {
+          SimpleJekyllSearch({
+            searchInput: input,
+            resultsContainer: results,
+            json: '/search.json'
+          });
+        }
+
+        if (typeof SteemContentRenderer === 'undefined') return;
+
+        var targets = document.querySelectorAll('[data-hive-render-target="true"]');
+        if (!targets.length) return;
+
+        var renderer = new SteemContentRenderer.DefaultRenderer({
+          baseUrl: 'https://hive.blog/',
+          breaks: true,
+          skipSanitization: false,
+          allowInsecureScriptTags: false,
+          addNofollowToLinks: true,
+          doNotShowImages: false,
+          ipfsPrefix: '',
+          assetsWidth: 640,
+          assetsHeight: 480,
+          imageProxyFn: function (url) { return url; },
+          usertagUrlFn: function (account) { return '/@' + account; },
+          hashtagUrlFn: function (hashtag) { return '/tags/#' + hashtag; },
+          isLinkSafeFn: function () { return true; }
+        });
+
+        targets.forEach(function (target) {
+          try {
+            var inputHtml = target.innerHTML;
+            target.innerHTML = renderer.render(inputHtml);
+          } catch (e) {
+            console.log(e);
+          }
+        });
+      })();
+    </script>
+
+  </body>
+
+</html>
