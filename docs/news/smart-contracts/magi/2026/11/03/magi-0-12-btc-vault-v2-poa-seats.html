@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta property="og:image" content="/assets/images/sticker.png" />
+  <meta name="apple-mobile-web-app-title" content="Hive Docs" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" /><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Magi 0.12: BTC Vault v2, POA seats. | Hive Chain Documentation</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Magi 0.12: BTC Vault v2, POA seats." />
+<meta name="author" content="magi.network" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Magi protocol and operator updates covering Bitcoin vault rotation, witness admission, signing resilience and the node rollout sequence." />
+<meta property="og:description" content="Magi protocol and operator updates covering Bitcoin vault rotation, witness admission, signing resilience and the node rollout sequence." />
+<link rel="canonical" href="https://hive.blog/magi/@magi.network/magi-0-12-btc-vault-v2-poa-seats" />
+<meta property="og:url" content="https://hive.blog/magi/@magi.network/magi-0-12-btc-vault-v2-poa-seats" />
+<meta property="og:site_name" content="Hive Chain Documentation" />
+<meta property="og:image" content="https://hivedocs.info/assets/images/favicon.png" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2026-11-03T08:55:30-08:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="https://hivedocs.info/assets/images/favicon.png" />
+<meta property="twitter:title" content="Magi 0.12: BTC Vault v2, POA seats." />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"magi.network"},"dateModified":"2026-11-03T08:55:30-08:00","datePublished":"2026-11-03T08:55:30-08:00","description":"Magi protocol and operator updates covering Bitcoin vault rotation, witness admission, signing resilience and the node rollout sequence.","headline":"Magi 0.12: BTC Vault v2, POA seats.","image":"https://hivedocs.info/assets/images/favicon.png","mainEntityOfPage":{"@type":"WebPage","@id":"https://hive.blog/magi/@magi.network/magi-0-12-btc-vault-v2-poa-seats"},"url":"https://hive.blog/magi/@magi.network/magi-0-12-btc-vault-v2-poa-seats"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://hivedocs.info/feed.xml" title="Hive Chain Documentation" /><script>
+if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNotTrack === "yes" || navigator.msDoNotTrack === "1")) {
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-161692811-1', 'auto');
+  ga('send', 'pageview');
+}
+</script>
+  
+<script src='https://unpkg.com/steem-content-renderer'></script>
+  <script src="/assets/javascript/universal-bridge-against-phishing.js"></script>
+  <script src="/assets/javascript/lazysizes.min.js" async=""></script>
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet" />
+  <link rel="shortcut icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="152x152" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="167x167" href="/assets/images/favicon-80x80.png" />
+</head>
+<body><header class="site-header" role="banner">
+  <div class="wrapper site-header-inner">
+    <a class="site-title" rel="author" href="/">Hive Chain Documentation</a>
+
+    <nav class="site-nav" aria-label="Primary">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/news/">News</a><a class="page-link" href="/howto/">How To</a><a class="page-link" href="/links/">Useful Links</a><a class="page-link" href="/authors/">Authors</a><a class="page-link" href="/topics/">Topics</a><a class="page-link" href="/search/">Search</a></div>
+    </nav>
+  </div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper page-layout has-search-panel">
+        <div class="page-main">
+          <article class="post h-entry post-article" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header post-hero">
+    <div class="post-hero-main">
+      <p class="post-kicker">Archive post</p>
+      <h1 class="post-title p-name" itemprop="name headline">Magi 0.12: BTC Vault v2, POA seats.</h1>
+      <p class="post-meta">
+        <time class="dt-published" datetime="2026-11-03T08:55:30-08:00" itemprop="datePublished">Nov 3, 2026
+        </time>• <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">
+            <a href="/authors/#author-magi.network">magi.network</a>
+          </span></span></p><p class="post-summary">Magi protocol and operator updates covering Bitcoin vault rotation, witness admission, signing resilience and the node rollout sequence.</p></div><aside class="post-author-card">
+      <img src="https://images.hive.blog/u/magi.network/avatar" width="128" height="128" class="lazyload post-author-avatar" alt="Avatar for @magi.network" />
+      <div class="post-author-name">@magi.network</div>
+    </aside></header>
+
+  <div class="post-content e-content post-body" itemprop="articleBody">
+    <div class="hive-post-embed" data-hive-author="magi.network" data-hive-permlink="magi-0-12-btc-vault-v2-poa-seats">
+  <div id="content-magi.network-magi-0-12-btc-vault-v2-poa-seats" class="hive-post-embed__content" data-hive-render-target="true"> ![image.png](https://images.hive.blog/DQmbuDK3H8pZo3Zv4VtoCrPYipYxs3viM4nppVviyL6vPPZ/image.png) 
+
+
+The biggest Magi upgrade so far is rolling out. Mainnet moves from consensus 0.3 straight to 0.12 in one step, covering Bitcoin custody, how the witness committee is formed, how HIVE is staked behind nodes, and how the network's threshold keys are kept healthy.
+
+## Why this release
+
+- **Bitcoin custody stays with the current committee.** After every election the vault key's shares are reshared to the new committee. Vault v2 adds full key rotation: a brand-new key is generated by the current committee and proven, then the coins move to it on-chain automatically, so key shares from former members end up guarding an empty vault.
+- **POA.** Witnesses now hold ratified seats, admitted by a vote of the existing seats, with equal weight per seat and collateral that stays bonded after a witness leaves for 3 days.
+- **Steadier threshold signing.** Key resharing and signing keep going when a node is slow or unreachable: an unresponsive node is left out of the next attempt instead of stalling the rest.
+
+## At a glance
+
+| | Node (go-vsc-node) | BTC contract (utxo-mapping) |
+|---|---|---|
+| Range | main (consensus 0.3) -&gt; develop b10d0fab | vault v2 (#29) -&gt; main 23ff9b8 |
+| Commits | 361 | 21 |
+| Code | +22,787 / -2,422 lines, 181 files | +7,036 / -386 lines, 19 files |
+| Tests | +56,143 / -982 lines, 372 files | +10,317 / -64 lines, 64 files |
+| Files changed | 563 | 88 |
+
+Together that is about **29,800 lines of code** and **66,500 lines of tests** added, more than two lines of tests for every line of code.
+
+| Consensus version | Theme |
+|---|---|
+| 0.4 | Election safety and ledger fixes |
+| 0.7 | Proof-of-Authority seats, TSS session and key lifecycle rules, BTC signing safety halts |
+| 0.8 | BTC Vault v2, BLS and commitment hardening |
+| 0.9 | POA and TSS refinements, gateway weights, reward scoring |
+| 0.10 | Proof verification pricing, block apply hardening |
+| 0.11 | Vault key custody |
+| 0.12 | New vault keys reshared into the committee before activation, peer identity proofs, deposit memo improvements |
+
+## BTC Vault v2
+
+The vault can now move to a brand-new key. The contract owner starts a rotation, the current committee generates the new key, and the previous vault keeps serving until the new one is ready. A new key goes live only after it has produced a verified signature, and coins move to it only after it has been reshared into the committee, so every new vault is shown to work before it holds funds. The mapping bot then sweeps the coins from the old vault to the new one in batches that run in parallel, older coins included. Miner fees for the migration come from a dedicated fee reserve, so user balances are not touched, and small coins are swept at a fee that fits their size. A withdrawal that cannot be built right away, for example mid-rotation, is queued in order and paid once the vault can build it. Deposits to a previous vault address keep being credited for about 30 days after that vault is emptied, and an old vault is retired only once it is empty. A retiring vault key can only sign transfers to its successor vault. If anyone proves that a vault coin moved outside the contract's own spends, vault signing pauses, and governance can pause it as well.
+
+
+| Feature | What it does |
+|---|---|
+| Key rotation | The contract owner starts a rotation and the current committee generates a new vault key. The previous vault keeps serving until the new one is ready. |
+| Proven before activation | A new key goes live only after it has produced a verified signature and been reshared into the committee, so every new vault is shown to work before any funds move to it. |
+| Automatic migration | The mapping bot sweeps coins from the old vault to the new one in parallel batches, older coins included. |
+| Fee reserve | Migration miner fees come from a dedicated fee reserve. User balances are never touched. |
+| Adaptive sweep fees | Small coins are swept at a fee that fits their size instead of holding up the migration. |
+| Withdrawal queue | A withdrawal that cannot be built right away, for example mid-rotation, is queued in order and paid automatically. |
+| Deposit grace period | Deposits to a previous vault address keep being credited for about 30 days after that vault is emptied. |
+| Retirement only when empty | An old vault is retired only once it is empty. |
+| Scoped signing | A retiring vault key can only sign transfers to its successor vault. |
+| Safety halt | Vault signing pauses if a vault coin is shown to have moved outside the contract's own spends, and governance can pause it as well. |
+
+## Proof-of-Authority witness seats
+
+This is about who gets to run the network and hold a share of the vault key. Until now, the committee was formed mostly by stake weight: put up enough HIVE and you could be voted in. For a system guarding real Bitcoin, that is risky — a well-funded newcomer could buy their way onto the committee quickly. Proof-of-Authority replaces that with "seats." A seat is an approved spot on the committee, and you only get one if the witnesses who already hold seats vote you in (two thirds have to agree). Every seat counts equally in elections, no matter how much HIVE is behind it, so no one can dominate by sheer size. Just as important, leaving is not instant: your collateral stays bonded for a few days after you step down, and stays locked entirely while any vault you helped guard still holds funds. That means a witness cannot grab a key share and immediately walk away — their money is on the line until the coins they were trusted with are safe. Proof of authority is a transitional step and will be loosened over time. 
+
+| Feature | What it does |
+|---|---|
+| Seats | Only witnesses holding a ratified seat can be elected to the committee. |
+| Admission vote | New seats are admitted by two thirds of existing seats (`vsc.admit_vote`). |
+| Equal weight | Every seat carries the same election weight. |
+| Churn cap | Limits how many new members can join in a single election. |
+| Exit halt | A departing witness's collateral stays bonded for 3 days after it leaves the committee. |
+| Bond backs custody | A witness's bond stays locked while a vault it holds a key share of still holds funds, and is released once that vault has been emptied. |
+| Smooth transition | Founding seats are seeded from the current committee, and each founding member proves its consensus and gateway keys. |
+
+
+
+
+## TSS and consensus hardening
+
+TSS (threshold signature scheme) is the technology behind the shared vault key. The key is split into pieces held by the committee members, and a signature needs enough of them to cooperate, so no single member, and no small group, can sign alone. Consensus is the separate process by which nodes agree on the state of the chain. Both are plumbing most users never see, but they matter in different ways. If consensus stalls, everything on Magi waits. If TSS stalls, BTC withdrawals wait for their signature, while deposits keep being credited, because crediting a deposit needs consensus, not a signature. 
+This release is a batch of reliability and safety fixes for that plumbing. The headline: a key reshare no longer stalls when one or two nodes fail to take part. A reshare needs every listed member to answer, so a single silent node fails the attempt for everyone. Now, when at least two thirds of the committee confirm that a node did not take part, the next attempt goes ahead without it, up to two nodes per attempt, and never so many that the committee drops below its minimum. 
+
+The rest are guardrails against dangerous edge cases. A reshare can never produce a key that less than a majority of the committee can sign. An election can never shrink the committee below its safe minimum. Holders of the live vault key stay available to sign after they leave the election, so the key keeps its signers while the committee changes. A node banned for repeated failures is let back in when a session would otherwise be short of members, so a ban alone never leaves a key unable to sign. Several ways to game the committee are closed off.
+
+
+| Feature | What it does |
+|---|---|
+| Unresponsive nodes skipped | If one or two nodes fail a key reshare, the committee leaves them out of the retry so the reshare completes. A key is never reshared below its signing threshold. |
+| Signing threshold kept | A reshare never leaves a key that less than a majority of the committee can sign. |
+| Quorum first | Bans yield when a session would otherwise lack the members it needs. |
+| Committee floor | An election can never produce a committee below the minimum size. |
+| Key holders stay available | Holders of the active vault key can still sign after leaving the election. |
+| Peer identity proofs | A witness announcing a P2P identity must prove it owns that key. |
+| BLS weight dedup | Duplicate keys in a committee count once. |
+| Commitment size cap | Oversized TSS commitment bundles are rejected up front. |
+| Safer version upgrades | A forced consensus version floor still needs the outgoing committee's quorum. |
+| Duplicate-safe block apply | A transaction already handled by an earlier block is never applied twice. |
+| Proof verification pricing | SP1 Groth16 verification is charged by the work it does, ready for proof-based bridges. |
+
+
+## Gateway, ledger and API
+
+These are the parts users actually touch. The gateway is how value moves in and out — deposits and withdrawals between Hive and Magi. The ledger is the running record of everyone's balances. The API is the set of queries that wallets, dashboards and apps read from. The fixes here are smaller and more concrete than the deep protocol work above: unstaking HBD from savings now releases the stake the way you would expect, deposit memos accept a `to=hive:<name>` tag for any valid Hive account, and when a transaction fails it now keeps a readable reason that apps can show you instead of a silent error. Nothing here changes how the network is secured — it just makes the everyday experience smoother and clearer.
+
+| Feature | What it does |
+|---|---|
+| HBD savings unstake | Unstaking HBD from savings releases the stake as expected. |
+| Deposit memos | `to=hive:<name>` memos are accepted for every valid Hive account name. |
+| Gateway weights | Gateway multisig keys get equal weight under POA. |
+| Clearer errors | A failed transaction keeps its reason, visible through the API. |
+| Reward scoring | Pendulum rewards score only fully closed block slots. |
+
+## How it was tested
+
+- About 66,500 lines of new tests, including full-network devnet scenarios covering rotation, seats, staking and fault conditions.
+- Repeated live BTC vault rotations on testnet. After 12 of them, a full funds audit found every vault coin on chain and matching the books, and HIVE and HBD gateway balances reconciled against Hive L1.
+- The first mainnet migration was rehearsed in tests shaped on the live mainnet vault.
+- Delegations, races between concurrent transactions, deposit memos, withdrawals and invalid inputs were all exercised live on testnet.
+
+## Rollout
+
+1. Node operators update to the new build. Nodes on watchtower update automatically; manual operators pull the new image and restart (stop, wait a minute, start).
+2. Once the committee runs the new build, consensus 0.12 is proposed and activates on-chain.
+3. The BTC contract is upgraded. Contract updates take effect 48 hours after submission, a built-in safety window.
+4. The first vault rotation moves the BTC to a new key generated by the current committee.
+
+## Next: EVM
+
+Ethereum is next. The EVM bridge is built on the same committee-secured model, and its mapping bot is already part of this build, waiting for launch. Proof verification pricing in 0.10 is part of that groundwork. More soon.
+
+Thanks to every witness operator and tester who ran the testnet builds. This release is the foundation for bringing more chains to Magi.
+
+---
+*Posted via Lumen*&lt;/div&gt;
+  <footer class="hive-post-embed__source">
+    <span class="hive-post-embed__source-label">Source:</span>
+    <a href="https://hive.blog/@magi.network/magi-0-12-btc-vault-v2-poa-seats">Magi 0.12: BTC Vault v2, POA seats.</a>
+    by
+    <a href="https://hive.blog/@magi.network">@magi.network</a>
+  </footer>
+&lt;/div&gt;
+
+</name></name></div></div>
+
+  </div><a class="u-url" href="/news/smart-contracts/magi/2026/11/03/magi-0-12-btc-vault-v2-poa-seats.html" hidden></a>
+</article>
+
+        </div>
+
+        
+        <aside class="page-sidebar" aria-label="Search and browse">
+          <section class="sidebar-section sidebar-search">
+            <h2 class="sidebar-heading">Search posts</h2>
+            <p class="sidebar-copy">Search the locally indexed post archive.</p>
+            <input type="text" id="search-input" placeholder="Search posts" autocomplete="off" />
+            <ul id="results-container"></ul>
+          </section>
+
+          <section class="sidebar-section sidebar-topics">
+            <h2 class="sidebar-heading">Browse topics</h2>
+            <p class="sidebar-copy">Jump into curated topic landing pages.</p>
+            <ul class="topic-list topic-list-sidebar"><li><a class="page-link" href="/api-nodes/">API Nodes</a></li><li><a class="page-link" href="/account-recovery/">Account Recovery</a></li><li><a class="page-link" href="/authentication/">Authentication & Keys</a></li><li><a class="page-link" href="/core-development/">Core Development</a></li><li><a class="page-link" href="/dapps/">Dapps</a></li><li><a class="page-link" href="/docker/">Docker</a></li><li><a class="page-link" href="/haf/">HAF & HafSQL</a></li><li><a class="page-link" href="/hardfork/">Hardfork</a></li><li><a class="page-link" href="/hive-engine/">Hive-Engine</a></li><li><a class="page-link" href="/hivemind/">Hivemind</a></li><li><a class="page-link" href="/javascript/">Javascript</a></li><li><a class="page-link" href="/multisig/">Multisig</a></li><li><a class="page-link" href="/python/">Python</a></li><li><a class="page-link" href="/ruby/">Ruby</a></li><li><a class="page-link" href="/testnet/">Testnet</a></li><li><a class="page-link" href="/tools/">Tools</a></li><li><a class="page-link" href="/wallets/">Wallets & Clive</a></li><li><a class="page-link" href="/witness/">Witness</a></li></ul>
+          </section>
+        </aside>
+        
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading"><a rel="author" href="/">Hive Chain Documentation</a></h2>
+    
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">site curated by: @inertia</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>Your resource for various levels of Hive Documentation.</p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+<script src="/assets/javascript/search.js"></script>
+    <script>
+      (function () {
+        var input = document.getElementById('search-input');
+        var results = document.getElementById('results-container');
+        if (input && results && typeof SimpleJekyllSearch !== 'undefined') {
+          SimpleJekyllSearch({
+            searchInput: input,
+            resultsContainer: results,
+            json: '/search.json'
+          });
+        }
+
+        if (typeof SteemContentRenderer === 'undefined') return;
+
+        var targets = document.querySelectorAll('[data-hive-render-target="true"]');
+        if (!targets.length) return;
+
+        var renderer = new SteemContentRenderer.DefaultRenderer({
+          baseUrl: 'https://hive.blog/',
+          breaks: true,
+          skipSanitization: false,
+          allowInsecureScriptTags: false,
+          addNofollowToLinks: true,
+          doNotShowImages: false,
+          ipfsPrefix: '',
+          assetsWidth: 640,
+          assetsHeight: 480,
+          imageProxyFn: function (url) { return url; },
+          usertagUrlFn: function (account) { return '/@' + account; },
+          hashtagUrlFn: function (hashtag) { return '/tags/#' + hashtag; },
+          isLinkSafeFn: function () { return true; }
+        });
+
+        targets.forEach(function (target) {
+          try {
+            var inputHtml = target.innerHTML;
+            target.innerHTML = renderer.render(inputHtml);
+          } catch (e) {
+            console.log(e);
+          }
+        });
+      })();
+    </script>
+
+  </body>
+
+</html>

@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta property="og:image" content="/assets/images/sticker.png" />
+  <meta name="apple-mobile-web-app-title" content="Hive Docs" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" /><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>My Honey Pot: The Tech Behind It | Hive Chain Documentation</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="My Honey Pot: The Tech Behind It" />
+<meta name="author" content="barddev" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="My Honey Pot’s Hive blog architecture and deployment guide, using Wax and WorkerBee, on-chain configuration, server rendering and RPC failover." />
+<meta property="og:description" content="My Honey Pot’s Hive blog architecture and deployment guide, using Wax and WorkerBee, on-chain configuration, server rendering and RPC failover." />
+<link rel="canonical" href="https://hive.blog/hive-139531/@barddev/my-honey-pot-the-tech-behind-it" />
+<meta property="og:url" content="https://hive.blog/hive-139531/@barddev/my-honey-pot-the-tech-behind-it" />
+<meta property="og:site_name" content="Hive Chain Documentation" />
+<meta property="og:image" content="https://images.hive.blog/DQmUxSETsuYZP59uUomb7BacoPGNALZuiAFxpS1HscAwhQ3/image.png" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2026-02-09T03:17:15-08:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="https://images.hive.blog/DQmUxSETsuYZP59uUomb7BacoPGNALZuiAFxpS1HscAwhQ3/image.png" />
+<meta property="twitter:title" content="My Honey Pot: The Tech Behind It" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"barddev"},"dateModified":"2026-02-09T03:17:15-08:00","datePublished":"2026-02-09T03:17:15-08:00","description":"My Honey Pot’s Hive blog architecture and deployment guide, using Wax and WorkerBee, on-chain configuration, server rendering and RPC failover.","headline":"My Honey Pot: The Tech Behind It","image":"https://images.hive.blog/DQmUxSETsuYZP59uUomb7BacoPGNALZuiAFxpS1HscAwhQ3/image.png","mainEntityOfPage":{"@type":"WebPage","@id":"https://hive.blog/hive-139531/@barddev/my-honey-pot-the-tech-behind-it"},"url":"https://hive.blog/hive-139531/@barddev/my-honey-pot-the-tech-behind-it"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://hivedocs.info/feed.xml" title="Hive Chain Documentation" /><script>
+if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNotTrack === "yes" || navigator.msDoNotTrack === "1")) {
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-161692811-1', 'auto');
+  ga('send', 'pageview');
+}
+</script>
+  
+<script src='https://unpkg.com/steem-content-renderer'></script>
+  <script src="/assets/javascript/universal-bridge-against-phishing.js"></script>
+  <script src="/assets/javascript/lazysizes.min.js" async=""></script>
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet" />
+  <link rel="shortcut icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="152x152" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="167x167" href="/assets/images/favicon-80x80.png" />
+</head>
+<body><header class="site-header" role="banner">
+  <div class="wrapper site-header-inner">
+    <a class="site-title" rel="author" href="/">Hive Chain Documentation</a>
+
+    <nav class="site-nav" aria-label="Primary">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/news/">News</a><a class="page-link" href="/howto/">How To</a><a class="page-link" href="/links/">Useful Links</a><a class="page-link" href="/authors/">Authors</a><a class="page-link" href="/topics/">Topics</a><a class="page-link" href="/search/">Search</a></div>
+    </nav>
+  </div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper page-layout has-search-panel">
+        <div class="page-main">
+          <article class="post h-entry post-article" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header post-hero">
+    <div class="post-hero-main">
+      <p class="post-kicker">Archive post</p>
+      <h1 class="post-title p-name" itemprop="name headline">My Honey Pot: The Tech Behind It</h1>
+      <p class="post-meta">
+        <time class="dt-published" datetime="2026-02-09T03:17:15-08:00" itemprop="datePublished">Feb 9, 2026
+        </time>• <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">
+            <a href="/authors/#author-barddev">barddev</a>
+          </span></span></p><p class="post-summary">My Honey Pot's Hive blog architecture and deployment guide, using Wax and WorkerBee, on-chain configuration, server rendering and RPC failover.</p></div><aside class="post-author-card">
+      <img src="https://images.hive.blog/u/barddev/avatar" width="128" height="128" class="lazyload post-author-avatar" alt="Avatar for @barddev" />
+      <div class="post-author-name">@barddev</div>
+    </aside></header>
+
+  <div class="post-content e-content post-body" itemprop="articleBody">
+    <div class="hive-post-embed" data-hive-author="barddev" data-hive-permlink="my-honey-pot-the-tech-behind-it">
+  <div id="content-barddev-my-honey-pot-the-tech-behind-it" class="hive-post-embed__content" data-hive-render-target="true"># Under the Hood: How My Honey Pot Works
+
+Last time I showed you what My Honey Pot can do - templates, themes, layout editor, all that good stuff. Now let's peek **under the hood** and see how it all comes together. 🔧
+
+The whole thing is open source: [github.com/KKocot/my-honey-pot](https://github.com/KKocot/my-honey-pot)
+
+![image.png](https://images.hive.blog/DQmUxSETsuYZP59uUomb7BacoPGNALZuiAFxpS1HscAwhQ3/image.png)
+
+---
+
+## Tech Stack
+
+Here's what's running behind the scenes:
+
+| | Technology | Role |
+|--|------------|------|
+| ![Astro](https://avatars.githubusercontent.com/u/44914786?s=64) | **Astro 5** | Main framework - server-side rendering |
+| ![SolidJS](https://avatars.githubusercontent.com/u/79226042?s=64) | **SolidJS 1.9** | Interactive UI components |
+| ![Tailwind](https://avatars.githubusercontent.com/u/67109815?s=64) | **Tailwind CSS 4** | Styling with CSS variables |
+| ![TanStack](https://avatars.githubusercontent.com/u/72518640?s=64) | **TanStack Query** | Data fetching, caching, SSR hydration |
+| ![Hive](https://avatars.githubusercontent.com/u/62291009?s=64) | **@hiveio/wax + workerbee** | Hive blockchain SDK |
+| ![TypeScript](https://images.hive.blog/64x64/https://logo.svgcdn.com/logos/typescript-icon.png) | **TypeScript** | Type safety across the whole codebase |
+
+The big thing here: **there is no database**. Zero. Posts, profile, settings, comments - everything comes straight from the Hive blockchain. One container, no database to manage, no backups to worry about. 🍯
+
+---
+
+## How It Works
+
+When someone visits your blog, this is what happens:
+
+1. **Browser requests the page** - Astro handles it on the server
+2. **Server fetches from Hive** - your posts, profile, and blog config
+3. **Full HTML is generated** - fast, SEO-friendly, works without JavaScript
+4. **Interactive parts hydrate** - SolidJS picks up tabs, infinite scroll, admin panel
+
+TanStack Query makes sure data fetched on the server is reused in the browser - no duplicate API calls.
+
+### Config on the blockchain
+
+Your blog settings live as a **comment on Hive** under `@barddev/my-blog-configs`. Just JSON in a markdown code block - **transparent**, **decentralized**, and **versioned** with every save.
+
+![image.png](https://images.hive.blog/DQmWtp2uddc8TUwGkaEf7YFYhB62pGkYRqYUL91Cr5VZ9AK/image.png) 
+ 
+By default all configs go under my post - feel free to use it. But if you want full independence, create your own post and set two env variables:
+
+```bash
+CONFIG_PARENT_AUTHOR=your-hive-username
+CONFIG_PARENT_PERMLINK=your-config-post-permlink
+```
+
+### Rendering posts
+
+The app uses the same markdown renderer as **Condenser** and **Denser** - the official Hive frontends. Embedded media, image proxying, link sanitization, security checks - all handled out of the box.
+
+### API failover
+
+The app connects to 3 Hive API nodes. If one is down, it automatically switches to the next:
+
+```typescript
+export const HIVE_API_ENDPOINTS = [
+  "https://api.openhive.network",
+  "https://api.hive.blog",
+  "https://api.syncad.com",
+];
+```
+
+---
+
+## Deployment &amp; Self-hosting
+
+The app runs in two places right now:
+
+- **VPS (Docker):** [myhoneypot.bard-dev.com](https://myhoneypot.bard-dev.com)
+- **Vercel:** [my-honey-pot.vercel.app](https://my-honey-pot.vercel.app)
+
+No database = one container. Want to run your own? Here you go:
+
+```bash
+git clone https://github.com/KKocot/my-honey-pot
+cd my-honey-pot
+npm install
+
+# Set your Hive username
+echo "HIVE_USERNAME=your-hive-username" &gt; .env
+
+# Option A: Docker
+docker build -t my-honey-pot .
+docker run -p 4321:4321 --env-file .env my-honey-pot
+
+# Option B: Run directly
+npm run build
+node ./dist/server/entry.mjs
+```
+
+Or just deploy to Vercel for free - connect the repo, set `HIVE_USERNAME`, done.
+
+---
+
+## Open source - and I take requests 💡
+
+Full code on GitHub: [github.com/KKocot/my-honey-pot](https://github.com/KKocot/my-honey-pot)
+
+Want a new feature? Different layout, new widget, better mobile experience - whatever it is, just ask. Drop a comment, DM me, or open a GitHub issue. I'm actively building this and happy to make what the community needs. Let's build something great together 🚀
+</div>
+  <footer class="hive-post-embed__source">
+    <span class="hive-post-embed__source-label">Source:</span>
+    <a href="https://hive.blog/@barddev/my-honey-pot-the-tech-behind-it">My Honey Pot: The Tech Behind It</a>
+    by
+    <a href="https://hive.blog/@barddev">@barddev</a>
+  </footer>
+</div>
+
+
+  </div><a class="u-url" href="/howto/javascript/astro/2026/02/09/my-honey-pot-the-tech-behind-it.html" hidden></a>
+</article>
+
+        </div>
+
+        
+        <aside class="page-sidebar" aria-label="Search and browse">
+          <section class="sidebar-section sidebar-search">
+            <h2 class="sidebar-heading">Search posts</h2>
+            <p class="sidebar-copy">Search the locally indexed post archive.</p>
+            <input type="text" id="search-input" placeholder="Search posts" autocomplete="off" />
+            <ul id="results-container"></ul>
+          </section>
+
+          <section class="sidebar-section sidebar-topics">
+            <h2 class="sidebar-heading">Browse topics</h2>
+            <p class="sidebar-copy">Jump into curated topic landing pages.</p>
+            <ul class="topic-list topic-list-sidebar"><li><a class="page-link" href="/api-nodes/">API Nodes</a></li><li><a class="page-link" href="/account-recovery/">Account Recovery</a></li><li><a class="page-link" href="/authentication/">Authentication & Keys</a></li><li><a class="page-link" href="/core-development/">Core Development</a></li><li><a class="page-link" href="/dapps/">Dapps</a></li><li><a class="page-link" href="/docker/">Docker</a></li><li><a class="page-link" href="/haf/">HAF & HafSQL</a></li><li><a class="page-link" href="/hardfork/">Hardfork</a></li><li><a class="page-link" href="/hive-engine/">Hive-Engine</a></li><li><a class="page-link" href="/hivemind/">Hivemind</a></li><li><a class="page-link" href="/javascript/">Javascript</a></li><li><a class="page-link" href="/multisig/">Multisig</a></li><li><a class="page-link" href="/python/">Python</a></li><li><a class="page-link" href="/ruby/">Ruby</a></li><li><a class="page-link" href="/testnet/">Testnet</a></li><li><a class="page-link" href="/tools/">Tools</a></li><li><a class="page-link" href="/wallets/">Wallets & Clive</a></li><li><a class="page-link" href="/witness/">Witness</a></li></ul>
+          </section>
+        </aside>
+        
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading"><a rel="author" href="/">Hive Chain Documentation</a></h2>
+    
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">site curated by: @inertia</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>Your resource for various levels of Hive Documentation.</p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+<script src="/assets/javascript/search.js"></script>
+    <script>
+      (function () {
+        var input = document.getElementById('search-input');
+        var results = document.getElementById('results-container');
+        if (input && results && typeof SimpleJekyllSearch !== 'undefined') {
+          SimpleJekyllSearch({
+            searchInput: input,
+            resultsContainer: results,
+            json: '/search.json'
+          });
+        }
+
+        if (typeof SteemContentRenderer === 'undefined') return;
+
+        var targets = document.querySelectorAll('[data-hive-render-target="true"]');
+        if (!targets.length) return;
+
+        var renderer = new SteemContentRenderer.DefaultRenderer({
+          baseUrl: 'https://hive.blog/',
+          breaks: true,
+          skipSanitization: false,
+          allowInsecureScriptTags: false,
+          addNofollowToLinks: true,
+          doNotShowImages: false,
+          ipfsPrefix: '',
+          assetsWidth: 640,
+          assetsHeight: 480,
+          imageProxyFn: function (url) { return url; },
+          usertagUrlFn: function (account) { return '/@' + account; },
+          hashtagUrlFn: function (hashtag) { return '/tags/#' + hashtag; },
+          isLinkSafeFn: function () { return true; }
+        });
+
+        targets.forEach(function (target) {
+          try {
+            var inputHtml = target.innerHTML;
+            target.innerHTML = renderer.render(inputHtml);
+          } catch (e) {
+            console.log(e);
+          }
+        });
+      })();
+    </script>
+
+  </body>
+
+</html>

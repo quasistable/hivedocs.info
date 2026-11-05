@@ -1,0 +1,1738 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta property="og:image" content="/assets/images/sticker.png" />
+  <meta name="apple-mobile-web-app-title" content="Hive Docs" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" /><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Hive Census: Building a Geographical Map of the Hive Community [DOCUMENTATION] | Hive Chain Documentation</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Hive Census: Building a Geographical Map of the Hive Community [DOCUMENTATION]" />
+<meta name="author" content="jocieprosza" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Hive Census implementation documentation covering irreversible-block indexing, resumable imports, Keychain authentication, public APIs and background-job coordination." />
+<meta property="og:description" content="Hive Census implementation documentation covering irreversible-block indexing, resumable imports, Keychain authentication, public APIs and background-job coordination." />
+<link rel="canonical" href="https://hive.blog/hive-139531/@jocieprosza/hive-census-building-a-geographical-map-of-the-hive-community-documentation" />
+<meta property="og:url" content="https://hive.blog/hive-139531/@jocieprosza/hive-census-building-a-geographical-map-of-the-hive-community-documentation" />
+<meta property="og:site_name" content="Hive Chain Documentation" />
+<meta property="og:image" content="https://files.peakd.com/file/peakd-hive/jocieprosza/23tv8Et3ZtrzA1Gf9f7Rnt35Ls12DdfyhAFhZ5SoXuRAgRmUMum2v6NesF3hsDPZrUz7F.png" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2026-10-13T05:12:39-07:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="https://files.peakd.com/file/peakd-hive/jocieprosza/23tv8Et3ZtrzA1Gf9f7Rnt35Ls12DdfyhAFhZ5SoXuRAgRmUMum2v6NesF3hsDPZrUz7F.png" />
+<meta property="twitter:title" content="Hive Census: Building a Geographical Map of the Hive Community [DOCUMENTATION]" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"jocieprosza"},"dateModified":"2026-10-13T05:12:39-07:00","datePublished":"2026-10-13T05:12:39-07:00","description":"Hive Census implementation documentation covering irreversible-block indexing, resumable imports, Keychain authentication, public APIs and background-job coordination.","headline":"Hive Census: Building a Geographical Map of the Hive Community [DOCUMENTATION]","image":"https://files.peakd.com/file/peakd-hive/jocieprosza/23tv8Et3ZtrzA1Gf9f7Rnt35Ls12DdfyhAFhZ5SoXuRAgRmUMum2v6NesF3hsDPZrUz7F.png","mainEntityOfPage":{"@type":"WebPage","@id":"https://hive.blog/hive-139531/@jocieprosza/hive-census-building-a-geographical-map-of-the-hive-community-documentation"},"url":"https://hive.blog/hive-139531/@jocieprosza/hive-census-building-a-geographical-map-of-the-hive-community-documentation"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://hivedocs.info/feed.xml" title="Hive Chain Documentation" /><script>
+if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNotTrack === "yes" || navigator.msDoNotTrack === "1")) {
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-161692811-1', 'auto');
+  ga('send', 'pageview');
+}
+</script>
+  
+<script src='https://unpkg.com/steem-content-renderer'></script>
+  <script src="/assets/javascript/universal-bridge-against-phishing.js"></script>
+  <script src="/assets/javascript/lazysizes.min.js" async=""></script>
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet" />
+  <link rel="shortcut icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="152x152" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="167x167" href="/assets/images/favicon-80x80.png" />
+</head>
+<body><header class="site-header" role="banner">
+  <div class="wrapper site-header-inner">
+    <a class="site-title" rel="author" href="/">Hive Chain Documentation</a>
+
+    <nav class="site-nav" aria-label="Primary">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/news/">News</a><a class="page-link" href="/howto/">How To</a><a class="page-link" href="/links/">Useful Links</a><a class="page-link" href="/authors/">Authors</a><a class="page-link" href="/topics/">Topics</a><a class="page-link" href="/search/">Search</a></div>
+    </nav>
+  </div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper page-layout has-search-panel">
+        <div class="page-main">
+          <article class="post h-entry post-article" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header post-hero">
+    <div class="post-hero-main">
+      <p class="post-kicker">Archive post</p>
+      <h1 class="post-title p-name" itemprop="name headline">Hive Census: Building a Geographical Map of the Hive Community [DOCUMENTATION]</h1>
+      <p class="post-meta">
+        <time class="dt-published" datetime="2026-10-13T05:12:39-07:00" itemprop="datePublished">Oct 13, 2026
+        </time>• <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">
+            <a href="/authors/#author-jocieprosza">jocieprosza</a>
+          </span></span></p><p class="post-summary">Hive Census implementation documentation covering irreversible-block indexing, resumable imports, Keychain authentication, public APIs and background-job coordination.</p></div><aside class="post-author-card">
+      <img src="https://images.hive.blog/u/jocieprosza/avatar" width="128" height="128" class="lazyload post-author-avatar" alt="Avatar for @jocieprosza" />
+      <div class="post-author-name">@jocieprosza</div>
+    </aside></header>
+
+  <div class="post-content e-content post-body" itemprop="articleBody">
+    <div class="hive-post-embed" data-hive-author="jocieprosza" data-hive-permlink="hive-census-building-a-geographical-map-of-the-hive-community-documentation">
+  <div id="content-jocieprosza-hive-census-building-a-geographical-map-of-the-hive-community-documentation" class="hive-post-embed__content" data-hive-render-target="true">
+
+## Architecture, Development Challenges, Technical Solutions and Lessons Learned
+
+**Project:** Hive Census  
+**Application:** https://app.hive-census.workers.dev/  
+**Core Worker version documented:** 0.9.11  
+**Administrator API version reviewed:** 0.2.3  
+**Documentation date:** 12 October 2026  
+**Status:** Active development
+
+
+![image.png](https://files.peakd.com/file/peakd-hive/jocieprosza/23tv8Et3ZtrzA1Gf9f7Rnt35Ls12DdfyhAFhZ5SoXuRAgRmUMum2v6NesF3hsDPZrUz7F.png)
+
+
+---
+
+## 1. Introduction
+
+<div class="text-justify">
+Where in the world are Hive users?
+
+That sounds like a relatively straightforward question. In practice, answering it requires solving several problems involving blockchain data, account metadata, geographical ambiguity, external APIs, background processing, database consistency and application security.
+
+Hive Census is an experimental application designed to build a geographical representation of the Hive community.
+
+The motivation is practical. Knowing where Hive users are located could help community members organise meetings, identify regional concentrations of users, plan events and better understand the geographical distribution of the ecosystem.
+
+For example, geographical data might help evaluate whether a future HiveFest, HiveBeeCon or another community event could attract sufficient interest in a particular country or region.
+
+The application is not intended to identify the precise physical location of individual users. It works with information voluntarily published through Hive accounts and the Hive Census protocol.
+
+It is also important to recognise that a geographical map of Hive accounts is not equivalent to a census of real people.
+
+A person may control several accounts, an account may represent an organisation, and profile information may be incomplete, outdated or deliberately fictional.
+
+Consequently, Hive Census should be understood as an experimental geographical representation of publicly available account information, rather than a comprehensive demographic survey.
+
+This article documents how the application works, the technical decisions behind it, the problems encountered during development and the solutions implemented so far, so that others might jump over issues I have met.
+
+It also identifies issues that remain unresolved or require further verification.
+
+</div>
+
+![hive-census-evolution.gif](https://files.peakd.com/file/peakd-hive/jocieprosza/23swc1NZZDDE5F6bekutwqYmU3qej7fNjGwjfr1gqX1E8qbQhpRBBuenCLrByW1XQa8aP.gif)
+
+---
+
+## 2. Design Principles
+
+Several principles guided the development of Hive Census.
+
+### 2.1. Low operating costs
+<div class="text-justify">
+The application is intended to run on Cloudflare infrastructure, preferably without exceeding the free-plan limits.
+
+This makes database efficiency, background-job scheduling and careful API usage particularly important.
+<div>
+
+### 2.2. Incremental processing
+<div class="text-justify">
+Hive contains a large number of accounts and an extensive blockchain history.
+
+Attempting to retrieve and process everything in a single request would be impractical.
+
+Instead, Hive Census uses incremental processing, persistent cursors and scheduled jobs.
+</div>
+
+### 2.3. Recoverability
+
+Long-running operations must be able to resume after interruptions.
+
+A failed request should not require the application to start importing all accounts again.
+
+### 2.4. Human review where automation is unreliable
+
+Geographical names are frequently ambiguous.
+
+Automated classification can identify many locations, but some require human judgement.
+
+Hive Census therefore includes administrative tools for reviewing and correcting uncertain results.
+
+### 2.5. Separation of public and administrative functionality
+
+The public application exposes geographical information and processing statistics.
+
+Administrative operations require authentication and must not be available to arbitrary visitors.
+
+### 2.6. Preservation of existing data
+
+As the project evolves, updates should avoid unnecessary database resets, repeated full imports or destructive migrations.
+
+This becomes increasingly important as the amount of processed data grows.
+
+---
+
+## 3. Technology Stack
+
+The current implementation uses the following principal components.
+
+| Component | Technology | Purpose |
+|---|---|---|
+| Application backend | Cloudflare Workers | HTTP API and background processing |
+| Database | Cloudflare D1 | Persistent application data |
+| Scheduled execution | Cloudflare Cron Triggers | Incremental processing |
+| Blockchain data | Hive RPC API | Blocks, accounts and account metadata |
+| Location classification | Application classifier | Interpretation of profile locations |
+| Geocoding | GeoNames integration | Resolving geographical names |
+| Administrator authentication | Hive Keychain | Hive-account-based authentication |
+| Public interface | Web frontend | Geographical presentation |
+| Administration interface | Web frontend | Review and management operations |
+
+The application separates several responsibilities into dedicated modules.
+
+The reviewed core Worker imports:
+
+```javascript
+import {
+  classifyLocation,
+  getClassifierVersion
+} from "./location-classifier.js";
+
+import {
+  geocodeLocation,
+  getGeocoderVersion
+} from "./location-geocoder.js";
+```
+
+The administrative API is implemented separately and imports authentication utilities from `admin-auth.js`.
+
+This separation makes it easier to modify geographical interpretation, external geocoding and administrator authentication without placing every responsibility inside a single function.
+
+---
+
+## 4. High-Level Architecture
+
+The application processes two distinct sources of geographical information.
+
+### 4.1. Explicit Hive Census declarations
+
+The first source consists of operations published on the Hive blockchain using the Hive Census protocol.
+
+The indexer retrieves blockchain data, identifies relevant operations, validates their contents and updates the current census state.
+
+### 4.2. Public Hive profile locations
+
+<div class="text-justify">
+The second source consists of geographical information published in account profiles.
+
+These locations are retrieved through Hive RPC, normalised, classified and, where appropriate, geocoded.
+
+The two sources must not be treated as equivalent.
+
+An explicit census declaration is a deliberate protocol-level action, whereas a profile location is free-form account metadata.
+</div>
+
+
+### 4.3. Simplified data flow
+
+```text
+                     HIVE BLOCKCHAIN
+                           |
+                 Hive RPC endpoints
+                           |
+              +------------+------------+
+              |                         |
+        Block indexer             Account importer
+              |                         |
+        Census protocol           Profile metadata
+              |                         |
+        Validation                Location extraction
+              |                         |
+        census_current            Normalisation
+              |                         |
+              |                  location_matches
+              |                         |
+              |                 Automatic classifier
+              |                         |
+              |                    Geocoder
+              |                         |
+              |                 Administrator review
+              |                         |
+              +------------+------------+
+                           |
+                       Cloudflare D1
+                           |
+                    Public API / UI
+                           |
+                    Geographical map
+```
+
+The diagram describes the principal logical flow, not every database relationship or execution detail.
+
+---
+
+## 5. Blockchain Indexing
+
+Hive Census contains a blockchain indexer responsible for processing Hive Census protocol operations.
+
+The reviewed Worker uses:
+
+```javascript
+const HIVE_RPC = "https://api.hive.blog";
+const CENSUS_ID = "hive_census";
+const PROTOCOL_VERSION = 1;
+```
+
+The indexer identifies `custom_json` operations whose identifier matches `hive_census`.
+
+Relevant payloads are parsed and validated before their effects are applied.
+
+### 5.1. Processing irreversible blocks
+
+The indexer reads Hive's last irreversible block number and limits processing accordingly.
+
+The purpose is to avoid treating potentially reversible blockchain state as final.
+
+The relevant logic is:
+
+```javascript
+const irreversible = Number(
+  props.last_irreversible_block_num
+);
+
+const endBlock = Math.min(
+  irreversible,
+  initialCursor + requestedBlocks
+);
+```
+
+### 5.2. Processing blocks in batches
+
+The reviewed configuration includes:
+
+```javascript
+const SCHEDULED_SCAN_BLOCKS = 250;
+const BLOCK_BATCH_SIZE = 100;
+```
+
+A scheduled scan targets up to 250 blocks, while individual block-range requests are limited to batches of 100.
+
+This avoids requesting the entire remaining blockchain history at once.
+
+### 5.3. Validating retrieved data
+<div class="text-justify">
+The indexer checks whether the returned block range contains the expected number of blocks.
+
+It also validates the basic structure of each block before processing its transactions.
+
+An incomplete block-range response causes an error rather than being silently accepted as complete.
+
+This is important because advancing the cursor after processing incomplete data could permanently omit relevant blockchain operations.
+</div>
+
+### 5.4. Set and unset operations
+<div class="text-justify">
+The protocol supports operations that establish or remove an account's census declaration.
+
+The Worker validates payloads before calling the corresponding database update functions.
+
+The current public census endpoint is:
+
+```text
+GET /api/census
+```
+
+It returns the current census records, including geographical fields and blockchain-related metadata.
+</div>
+
+### 5.5. Remaining concern: indexer concurrency
+<div class="text-justify">
+The reviewed version also exposes a manual indexer endpoint:
+
+```text
+GET /api/indexer/scan
+```
+
+The indexer can therefore potentially be invoked through both scheduled and manual execution.
+
+The reviewed code does not establish an equivalent atomic lease mechanism for the indexer itself.
+
+Concurrent cursor updates and overlapping scans should be assessed before treating manual and scheduled execution as fully concurrency-safe.
+
+This is a separate issue from the profile-rescan protections introduced in version 0.9.11.
+</div>
+
+---
+
+## 6. Importing Hive Account Profiles
+
+The profile importer retrieves public Hive account metadata and extracts the location field where available.
+
+This is one of the most time-consuming parts of the project.
+
+### 6.1. Incremental account enumeration
+
+The importer uses an account-name cursor.
+
+Its principal metadata includes:
+
+```text
+last_account
+accounts_scanned
+accounts_with_location
+last_import_run
+last_import_error
+import_complete
+```
+
+Instead of beginning with the first account every time, the importer continues from the previously recorded account name.
+
+### 6.2. Batch configuration
+
+The reviewed configuration is:
+
+```javascript
+const PROFILE_ACCOUNTS_PER_RUN = 100;
+const PROFILE_LOOKUP_BATCH_SIZE = 100;
+const PROFILE_FETCH_BATCH_SIZE = 100;
+```
+
+This limits the amount of account processing attempted in one importer run.
+
+### 6.3. Extracting profile locations
+<div class="text-justify">
+For each retrieved account, the importer attempts to extract a geographical location from its profile metadata.
+
+Accounts without a usable location do not generate a profile-location record during the initial import.
+
+Accounts with locations are passed through the storage and matching process.
+</div>
+
+### 6.4. Progress tracking
+
+As of 12 October 2026, the live API reported:
+
+| Metric | Value |
+|---|---:|
+| Accounts scanned | 61,300 |
+| Accounts with locations | 8,757 |
+| Stored profile locations | 8,757 |
+| Unique location strings | 3,276 |
+| Pending location matches | 0 |
+| Initial import complete | No |
+
+Approximately 14.3% of the accounts processed at that point had a stored location.
+
+This percentage should not be interpreted as a statistically representative estimate for the entire Hive ecosystem.
+
+### 6.5. A deliberate trade-off: progress durability versus database writes
+<div class="text-justify">
+In version 0.9.11, the importer updates its account cursor after processing each account.
+
+For example:
+
+```javascript
+scanned++;
+lastAccount = name;
+
+await setProfileMeta(
+  env,
+  "last_account",
+  lastAccount
+);
+```
+
+This approach provides fine-grained progress persistence.
+
+However, it also generates frequent database writes.
+
+A future optimisation could checkpoint progress after processing a group of accounts.
+
+Such a change must preserve consistency between saved profile records and the importer cursor.
+
+Otherwise, an interrupted run could skip accounts or produce inconsistent counters.
+
+This optimisation has been identified but has not yet been implemented in the reviewed version.
+</div>
+
+---
+
+![image.png](https://files.peakd.com/file/peakd-hive/jocieprosza/23wBXPTWUUxPaAUkq3boMU8zQbiBUTKrzkdtXohXjuZ9s3Tu8MANok7dADWMES3ikBCk8.png)
+
+## 7. Location Normalisation and Matching
+
+Profile locations are free-form strings.
+
+Unlike a structured geographical database, Hive does not require users to provide a country code, administrative region or standardised city identifier.
+
+Users may enter:
+
+- A country name.
+- A city name.
+- A city and country.
+- A region or province.
+- An abbreviation.
+- A nickname.
+- A fictional location.
+- A phrase unrelated to geography.
+
+For example:
+
+```text
+Poland
+Katowice
+Silesia
+London
+Springfield
+Somewhere on Earth
+```
+
+These examples illustrate the problem; they are not a list of actual Hive Census records.
+
+### 7.1. Normalisation
+<div class="text-justify">
+The application normalises location strings before using them as matching keys.
+
+The objective is to reduce unnecessary duplication caused by superficial differences in how users enter locations.
+
+The exact normalisation rules should be documented alongside the classifier source, because excessive normalisation can accidentally merge distinct geographical names.
+
+### 7.2. Shared location matches
+
+The application stores account-specific location information separately from geographical matching results.
+
+The reviewed code uses:
+
+```text
+profile_locations
+location_matches
+```
+
+This permits multiple accounts using the same normalised location to share one geographical interpretation.
+
+The benefit is significant.
+
+If hundreds of accounts use the same location string, the application does not need to geocode that string independently for every account.
+
+### 7.3. Location states
+
+The matching process distinguishes several states:
+
+```text
+pending
+matched
+ambiguous
+rejected
+```
+
+Their practical meaning is:
+
+| State | Meaning |
+|---|---|
+| pending | Awaiting classification |
+| matched | A geographical interpretation has been accepted |
+| ambiguous | More than one interpretation is plausible |
+| rejected | The location has not been accepted as a usable geographical match |
+
+A location should not be displayed as a confidently identified place merely because an automated service returned a result.
+
+---
+
+## 8. The Problem of Ambiguous Locations
+
+Geographical ambiguity is one of the central challenges of Hive Census.
+
+Many place names exist in several countries or regions.
+
+A profile containing only a city name may not provide enough information to identify the correct location.
+
+### 8.1. Why automatic matching is insufficient
+
+A geocoder may return a technically valid result that is nevertheless wrong for the account concerned.
+
+Selecting the first search result is therefore not a reliable general solution.
+
+The most popular city with a particular name is not necessarily the one intended by a Hive user.
+
+### 8.2. Automatic classification
+
+Hive Census first attempts to interpret locations using its classifier.
+
+The classifier can produce matched, ambiguous or rejected results.
+
+The core Worker processes pending locations in scheduled batches.
+
+The reviewed configuration is:
+
+```javascript
+const LOCATION_CLASSIFY_PER_RUN = 100;
+```
+
+### 8.3. Geocoding
+
+Locations requiring further geographical resolution can be processed through the GeoNames integration.
+
+The reviewed configuration includes:
+
+```javascript
+const GEOCODE_PER_RUN = 10;
+const GEOCODE_ERROR_RETRY_HOURS = 24;
+```
+
+Limiting geocoding requests reduces the risk of excessive external API usage.
+
+The retry interval also prevents immediate repeated attempts following certain errors.
+
+### 8.4. Administrative review
+
+Some locations require manual intervention.
+
+The administrative interface supports reviewing ambiguous locations and assigning or rejecting geographical interpretations.
+
+This is already an operational feature of the project.
+
+Manual review is not merely a temporary workaround.
+
+For free-form geographical data, human judgement can be an appropriate part of the data-quality process.
+
+### 8.5. Protecting manual decisions
+
+A particularly important design requirement is ensuring that later automated processing does not silently overwrite administrative decisions.
+
+The reviewed code contains explicit checks involving:
+
+```sql
+COALESCE(source, '') != 'admin_manual'
+```
+
+The project also includes account-specific override handling.
+
+These mechanisms are intended to preserve manual resolutions while automated classification continues.
+
+Their interaction should remain covered by regression tests as the importer and rescan mechanisms evolve.
+
+---
+
+## 9. GeoNames Integration
+
+Hive Census uses GeoNames as an external geographical reference.
+
+The geocoding component is responsible for attempting to convert a location description into structured geographical information.
+
+Potential output fields include:
+
+```text
+country
+country_name
+region
+region_name
+city
+lat
+lon
+location_type
+```
+
+### 9.1. Why geocoding needs safeguards
+
+External geographical APIs do not understand the personal intentions behind an account's profile text.
+
+They may return a plausible geographical result for an ambiguous name.
+
+The application therefore includes additional checks before accepting certain geocoding results.
+
+### 9.2. Retry behaviour
+
+External services can fail because of network problems, unavailable endpoints or request limits.
+
+The reviewed code includes a configurable retry interval for geocoding errors.
+
+This avoids repeatedly retrying the same unsuccessful operation in rapid succession.
+
+### 9.3. Cost and request management
+
+Geocoding is processed in relatively small batches.
+
+This reduces pressure on the external service and makes the operation suitable for scheduled execution.
+
+### 9.4. Known limitation
+
+No automated geocoder can reliably resolve every location entered by users.
+
+Some records will continue to require administrative review, and others may remain unresolved.
+
+A smaller but more reliable geographical dataset is preferable to a larger map containing systematically incorrect locations.
+
+---
+
+## 10. Scheduled Background Processing
+
+Hive Census uses Cloudflare Cron Triggers to continue processing without requiring a continuously running server.
+
+The reviewed Worker defines three auxiliary jobs:
+
+```javascript
+const auxiliaryJobs = [
+  {
+    name: "classifier",
+    run: () =&gt; runScheduledLocationClassifier(env)
+  },
+  {
+    name: "geocoder",
+    run: () =&gt; runScheduledGeocoder(env)
+  },
+  {
+    name: "profiles",
+    run: () =&gt; runScheduledProfileImporter(env)
+  }
+];
+```
+
+The scheduled indexer runs first.
+
+After successful indexer execution, one auxiliary job is selected according to the scheduled time slot.
+
+### 10.1. Rotating background jobs
+
+The rotation avoids executing every auxiliary workload on every Cron invocation.
+
+Assuming a five-minute Cron interval and uninterrupted execution, each auxiliary job is selected approximately once every fifteen minutes.
+
+For the profile importer, the nominal processing capacity is therefore:
+
+```text
+100 accounts per importer run
+4 importer runs per hour
+400 accounts per hour
+9,600 accounts per day
+```
+
+These figures are theoretical.
+
+Actual throughput depends on successful RPC requests, execution time, scheduled-job completion and other operational factors.
+
+### 10.2. Dependency on indexer success
+
+In the reviewed implementation, an indexer failure causes the auxiliary job to be skipped.
+
+This means that a persistent blockchain-indexing problem could also delay profile importing, classification and geocoding.
+
+The dependency is worth reconsidering.
+
+In principle, these workloads perform different tasks and could be scheduled independently, provided that concurrency and resource limits are properly managed.
+
+### 10.3. Future improvement
+
+A possible future architecture would use independent scheduling or explicit workload budgeting for each process.
+
+This would allow the application to adjust processing rates without making every auxiliary operation dependent on successful completion of the indexer.
+
+Such a redesign is not part of version 0.9.11.
+
+---
+![signal-2026-10-13-13-01-40-659_003.jpg](https://files.peakd.com/file/peakd-hive/jocieprosza/23swg9vAwpkk5nE5VRpqwzmRETaXj8xLYXg24e3LumQyQo7QvKVHZWGoWQRqnJkpk7FJe.jpg)
+## 11. Administrator Authentication with Hive Keychain
+
+Hive Census includes an administrator interface protected by Hive-account authentication.
+
+The intended authorised administrator is:
+
+```text
+@jocieprosza
+```
+
+The reviewed administrator API imports functions for:
+
+- Creating authentication challenges.
+- Validating challenges.
+- Verifying Hive signatures.
+- Creating session tokens.
+- Hashing session tokens.
+- Creating and clearing session cookies.
+- Reading session cookies.
+- Determining session expiry.
+
+The implementation uses Hive Keychain authentication and HttpOnly sessions.
+
+### 11.1. Why not use an ordinary administrator password?
+
+Hive already has an account-based cryptographic authentication ecosystem.
+
+Using Hive Keychain makes it possible to authenticate through the account's Hive credentials without creating a separate application password.
+
+### 11.2. Server-side authorisation
+
+Administrative access must be enforced on the server.
+
+Hiding administrator controls in the frontend is not sufficient protection.
+
+The administrative API is responsible for validating the session and authorising privileged operations.
+
+### 11.3. Mutation request protection
+
+The reviewed administrator API includes checks for same-origin requests.
+
+It also defines security-related HTTP headers and limits request-body sizes.
+
+These measures reduce the attack surface of administrative endpoints.
+
+### 11.4. Session security
+
+HttpOnly cookies help prevent ordinary frontend JavaScript from reading session tokens.
+
+This does not eliminate every web security risk.
+
+Authentication, authorisation, session expiry, request validation and transport security must continue to be treated as separate responsibilities.
+
+---
+![signal-2026-10-13-13-01-40-659_002.jpg](https://files.peakd.com/file/peakd-hive/jocieprosza/23t74p8UFMFXHJpVLxAPsN44NghRss6t4RGMKLgLeARnhoa58mQXJTharUDMRyv4aiw6G.jpg)
+## 12. Manual Resolution and Account-Specific Overrides
+
+A major administrative requirement is the ability to correct geographical interpretations.
+
+This involves more than changing a coordinate.
+
+The application must distinguish between:
+
+1. A correction applicable to a shared location string.
+2. A correction intended for one particular account.
+
+For example, two accounts may both enter the same ambiguous city name but refer to different places.
+
+A global correction would not necessarily be appropriate for both.
+
+The project therefore includes account-specific override protection.
+
+The reviewed administrator API also includes functionality for manual matching and rejection, with audit-related fields.
+
+### 12.1. Preventing automated overwrites
+
+A manually resolved location should not automatically revert to an ambiguous or incorrect result during later classification.
+
+### 12.2. Handling rejection safely
+
+The administrator API version 0.2.3 explicitly documents handling for rejection operations involving database constraints.
+
+This is important because rejecting a geographical interpretation must not require inventing invalid geographical coordinates or violating non-null database fields.
+
+### 12.3. Practical lesson
+
+When building a data-enrichment pipeline, corrections made by a human reviewer should be represented explicitly.
+
+They should not be indistinguishable from automated results.
+
+Otherwise, later reprocessing can unintentionally destroy valuable manual work.
+
+---
+![signal-2026-10-13-13-01-40-659.jpg](https://files.peakd.com/file/peakd-hive/jocieprosza/23sweAcNKbVUxeHJ3PrrXTWL81gA7krResH3eMacr9Nn5qunfSRvwtNw2fyjiZsijjkJ4.jpg)
+
+## 13. Full Profile Rescanning
+
+The initial profile import is only the beginning.
+
+Hive users can change their profile information.
+
+A location recorded months earlier may no longer reflect the current profile.
+
+Hive Census therefore needs a mechanism to revisit previously processed accounts.
+
+### 13.1. Initial import versus rescan
+
+The initial import enumerates accounts and collects available location information.
+
+A full rescan revisits accounts that have already been imported.
+
+The rescan must handle:
+
+- Newly added locations.
+- Modified locations.
+- Removed locations.
+- Previously stored geographical matches.
+- Administrator overrides.
+- Interrupted processing.
+- Concurrent execution attempts.
+
+### 13.2. Manual execution
+
+The project was designed to support manually initiated full rescans rather than automatically repeating the entire account import indefinitely.
+
+This gives the administrator control over when an expensive operation begins.
+
+### 13.3. Current restriction
+
+In version 0.9.11, starting a full rescan requires:
+
+```text
+import_complete = true
+```
+
+If the initial import has not finished, the start operation returns:
+
+```text
+INITIAL_IMPORT_INCOMPLETE
+```
+
+On 12 October 2026, the live API reported:
+
+```json
+{
+  "version": "0.9.11",
+  "available": false,
+  "state": "idle",
+  "accounts_scanned": 0,
+  "locations_found": 0,
+  "locations_removed": 0
+}
+```
+
+These values refer to the rescan, not to the initial profile importer.
+
+The rescan was not active, and the initial import remained incomplete.
+
+### 13.4. Why concurrency matters
+
+A rescan may take many scheduled executions to complete.
+
+If two processes attempt to execute the same rescan simultaneously, several problems can occur:
+
+- Duplicate work.
+- Incorrect counters.
+- Conflicting cursor updates.
+- Stale data overwriting newer data.
+- Incorrect completion status.
+
+Preventing these failures requires more than a simple Boolean `running` flag.
+
+---
+
+## 14. The Rescan Concurrency Problem
+
+This is one of the most important technical issues addressed during the development of version 0.9.11.
+
+A naive background-job lock might work as follows:
+
+```text
+Read job state
+If idle:
+    Set state to running
+    Start processing
+```
+
+Unfortunately, this sequence is vulnerable to a race condition.
+
+Two processes can both read `idle` before either writes `running`.
+
+Both may then proceed.
+
+### 14.1. Atomic lease acquisition
+
+Version 0.9.11 introduces an atomic lease mechanism stored in D1.
+
+The lease contains a token and an expiration timestamp.
+
+A process must acquire the lease before processing rescan data.
+
+The relevant concept is:
+
+```sql
+UPDATE profile_import_meta
+SET value = ?
+WHERE key = 'rescan_lease'
+  AND <lease acquisition="" conditions="">;
+```
+
+The conditional update is executed as one database operation.
+
+This is fundamentally different from separately reading and updating the lock.
+
+### 14.2. Lease expiration
+
+A lease cannot remain valid forever.
+
+Otherwise, an interrupted Worker could permanently block further progress.
+
+The reviewed configuration includes:
+
+```javascript
+const RESCAN_LEASE_SECONDS = 600;
+const RESCAN_INIT_SECONDS = 600;
+```
+
+These values represent ten-minute intervals.
+
+### 14.3. Lease renewal
+
+An active process can renew its lease.
+
+This helps prevent another process from taking ownership while legitimate work is continuing.
+
+### 14.4. Fencing database writes
+
+Lease acquisition alone is not enough.
+
+A process whose lease has expired might continue executing and attempt to write results.
+
+Version 0.9.11 therefore uses guarded SQL statements that check the active lease and job identity.
+
+This is known as fencing.
+
+The purpose is to prevent a stale process from modifying rescan state after losing ownership.
+
+### 14.5. Transactional processing
+
+The implementation uses D1 batch operations for groups of related database changes.
+
+This is intended to keep account processing and progress updates consistent.
+
+### 14.6. Recovery from interrupted initialisation
+
+The rescan also uses an intermediate initialisation state.
+
+This prevents an incompletely initialised job from being exposed as an ordinary running job.
+
+Expired initialisation states can be recovered.
+
+### 14.7. Verification status
+
+The JavaScript syntax of version 0.9.11 has been checked.
+
+Selected SQL operations have also been reviewed and tested locally using SQLite.
+
+However, the complete rescan lifecycle has not yet been integration-tested against the live Cloudflare D1 environment.
+
+In particular, production testing has not established the behaviour of:
+
+- Two simultaneous rescan starts.
+- Lease expiration during processing.
+- Worker interruption during a database batch.
+- Competing workers after lease reassignment.
+- Completion and restart of a full rescan.
+- Preservation of all administrative overrides during reprocessing.
+
+Therefore, the mechanism should be described as **implemented but not yet fully validated**, rather than proven production-safe.
+
+This distinction is important.
+
+Code review and successful syntax checks are not substitutes for integration testing.
+
+---
+
+## 15. Database Architecture
+
+The application uses Cloudflare D1, a SQLite-based database service.
+
+The live Cloudflare dashboard reported nine tables as of 12 October 2026.
+
+The reviewed code references, among others:
+
+```text
+census_current
+profile_locations
+location_matches
+profile_import_meta
+```
+
+It also uses metadata storage for blockchain indexing, account-specific override information and geocoding-related state.
+
+The complete production schema, including every index, foreign key and migration, should be published only after verification against the actual D1 schema.
+
+### 15.1. Census records
+
+The `census_current` table represents the current state of explicit Hive Census declarations.
+
+### 15.2. Profile records
+
+The `profile_locations` table stores location information associated with individual Hive accounts.
+
+### 15.3. Shared geographical matches
+
+The `location_matches` table stores interpretations of location strings.
+
+### 15.4. Import metadata
+
+The `profile_import_meta` table stores processing progress and operational state.
+
+For example:
+
+```text
+last_account
+accounts_scanned
+import_complete
+rescan_state
+rescan_job_id
+rescan_lease
+rescan_last_account
+rescan_accounts_scanned
+```
+
+### 15.5. Why persistent metadata matters
+
+Cloudflare Workers are not continuously running processes.
+
+A Worker execution can finish or be interrupted.
+
+Progress therefore needs to be stored outside the execution's memory.
+
+Persistent metadata enables subsequent executions to resume processing.
+
+---
+
+## 16. Public API
+
+The reviewed core Worker exposes the following endpoints.
+
+| Endpoint | Purpose |
+|---|---|
+| `/api/status` | Application and configuration status |
+| `/api/census` | Current explicit census records |
+| `/api/indexer/status` | Blockchain indexer progress |
+| `/api/indexer/scan` | Manual indexer execution |
+| `/api/profiles/status` | Initial profile import statistics |
+| `/api/profiles/locations` | Sample of stored profile locations |
+| `/api/profiles/map` | Aggregated geographical map data |
+| `/api/profiles/classifier/status` | Classifier progress |
+| `/api/profiles/geocoder/status` | Geocoder progress |
+| `/api/profiles/rescan/status` | Full rescan status |
+
+The administrative API has additional authenticated endpoints.
+
+Those endpoints should be documented separately with their request methods, authorisation requirements, payloads and error responses.
+
+### 16.1. Example: profile import status
+
+```text
+GET https://app.hive-census.workers.dev/api/profiles/status
+```
+
+An observed response included:
+
+```json
+{
+  "ok": true,
+  "version": "0.9.11",
+  "import_complete": false,
+  "last_account": "albit",
+  "accounts_scanned": 61300,
+  "accounts_with_location": 8757,
+  "stored_profile_locations": 8757,
+  "unique_location_strings": 3276,
+  "pending_location_matches": 0,
+  "last_import_error": "",
+  "accounts_per_scheduled_run": 100,
+  "rescan_state": "idle",
+  "last_completed_full_scan": ""
+}
+```
+
+This is a historical snapshot, not a live counter.
+
+### 16.2. Map aggregation
+
+The map endpoint joins profile records with accepted geographical matches.
+
+It groups accounts by geographical fields and returns the number of accounts associated with each location.
+
+The essential query pattern is:
+
+```sql
+SELECT
+  m.country,
+  m.country_name,
+  m.region,
+  m.region_name,
+  m.city,
+  m.lat,
+  m.lon,
+  m.location_type,
+  COUNT(*) AS accounts
+FROM profile_locations p
+JOIN location_matches m
+  ON m.id = p.match_id
+WHERE p.match_status = 'matched'
+  AND m.status = 'matched'
+  AND m.lat IS NOT NULL
+  AND m.lon IS NOT NULL
+GROUP BY
+  m.country,
+  m.country_name,
+  m.region,
+  m.region_name,
+  m.city,
+  m.lat,
+  m.lon,
+  m.location_type
+ORDER BY accounts DESC;
+```
+
+This approach reduces the volume of data sent to the frontend by returning aggregated geographical results.
+
+It also means that the map endpoint represents matched profile locations, rather than every imported account.
+
+---
+
+## 17. Cloudflare D1 Costs and Performance
+
+One of the project's objectives is to remain inexpensive to operate.
+
+Cloudflare D1 charges or limits usage according to metrics such as rows read, rows written and storage.
+
+The number of SQL statements alone does not determine database cost.
+
+A single inefficient query can read many more rows than numerous well-indexed queries.
+
+### 17.1. Observed database usage
+
+The Cloudflare dashboard showed the following values on 12 October 2026.
+
+| Metric | Reported usage |
+|---|---:|
+| Databases | 1 |
+| Rows read, current usage period | 16.64 million |
+| Rows written, current usage period | 56,620 |
+| Storage | Approximately 2.65 MB |
+
+The dashboard also displayed the following limits:
+
+```text
+Rows read: 25 billion
+Rows written: 50 million
+Storage: 5 GB
+```
+
+These are the limits displayed in the account interface.
+
+They should not automatically be treated as the universal Cloudflare D1 free-plan limits.
+
+The account's actual billing configuration and current Cloudflare documentation must be checked before making general claims about plan eligibility.
+
+### 17.2. Last 24 hours
+
+A separate database overview showed approximately:
+
+| Metric | Value |
+|---|---:|
+| Total queries | 19,000 |
+| Rows read | 950,000 |
+| Rows written | 29,000 |
+| Storage | 2.7 MB |
+| Median query latency | 0.2 ms |
+| Tables | 9 |
+
+These measurements suggest that the database was operating with relatively low latency at the time of observation.
+
+They do not identify which individual SQL statements were responsible for the greatest resource consumption.
+
+### 17.3. Why premature optimisation is dangerous
+
+A large code refactor may introduce regressions without delivering meaningful savings.
+
+The correct sequence is:
+
+1. Measure actual database usage.
+2. Identify expensive operations.
+3. Inspect existing indexes.
+4. Examine query plans.
+5. Optimise one operation at a time.
+6. Compare performance before and after the change.
+
+### 17.4. Candidate optimisations
+
+The following improvements have been identified for further investigation.
+
+**Batching importer cursor updates**
+
+The importer currently performs frequent cursor writes.
+
+Reducing their frequency may lower database activity, but requires safe checkpointing.
+
+**Avoiding repeated full counts**
+
+The importer executes:
+
+```sql
+SELECT COUNT(*) AS count
+FROM profile_locations;
+```
+
+during its processing cycle.
+
+This count may be unnecessary on every importer run if equivalent information can be maintained safely.
+
+**Reviewing map query indexes**
+
+The map endpoint joins two tables and groups results across several geographical fields.
+
+Its execution plan should be reviewed as the database grows.
+
+**Reviewing classifier selection**
+
+Pending-location queries should use appropriate indexes for their filtering and ordering conditions.
+
+**Reducing unnecessary status polling**
+
+Repeated API requests can generate avoidable database reads, particularly when several users keep the application open.
+
+### 17.5. Current conclusion
+
+The available metrics do not demonstrate an urgent database-capacity problem.
+
+Consequently, major changes to the database architecture are not currently justified by measured resource usage alone.
+
+Optimisation remains an important maintenance task, particularly before increasing importer throughput or enabling full rescans.
+
+---
+
+## 18. Problems Encountered and Solutions Implemented
+
+This section summarises the principal technical problems identified in the available development records and reviewed code.
+
+It deliberately distinguishes implemented solutions from planned improvements.
+
+### Problem 1: Importing a large account population
+
+**Challenge:** Processing all Hive accounts in one execution is impractical.
+
+**Implemented approach:** Incremental account enumeration, bounded batches and persistent progress metadata.
+
+**Benefit:** Importing can continue across multiple scheduled executions.
+
+**Remaining issue:** Initial import takes considerable time.
+
+### Problem 2: Recovering after interrupted imports
+
+**Challenge:** Worker executions may fail or end before the overall import finishes.
+
+**Implemented approach:** Persistent account-name cursor and processing counters.
+
+**Benefit:** The importer does not need to restart from the first account after every interruption.
+
+**Remaining issue:** The consistency of future batch-level cursor optimisations requires careful design.
+
+### Problem 3: Unstructured geographical information
+
+**Challenge:** Hive profiles contain free-form location strings.
+
+**Implemented approach:** Normalisation, shared matching records and automatic classification.
+
+**Benefit:** Similar location strings can be processed consistently.
+
+**Remaining issue:** Some strings remain inherently ambiguous.
+
+### Problem 4: Geographical ambiguity
+
+**Challenge:** Multiple real places can share the same name.
+
+**Implemented approach:** Explicit ambiguous status, geocoding safeguards and administrator review.
+
+**Benefit:** Uncertain results need not be presented as reliable matches.
+
+**Remaining issue:** Manual review cannot guarantee the accuracy of every account's self-reported location.
+
+### Problem 5: Preserving administrator corrections
+
+**Challenge:** Automatic processing could overwrite manually corrected results.
+
+**Implemented approach:** Manual-source protection and account-specific overrides.
+
+**Benefit:** The application can distinguish automated results from administrative decisions.
+
+**Remaining issue:** Override preservation during full rescans still needs comprehensive integration tests.
+
+### Problem 6: Securing administrative operations
+
+**Challenge:** Privileged changes must not be accessible to ordinary visitors.
+
+**Implemented approach:** Hive Keychain authentication, server-side sessions and administrative request validation.
+
+**Benefit:** Administration is linked to the authorised Hive account.
+
+**Remaining issue:** Security should be periodically reviewed as the administrative API expands.
+
+### Problem 7: Background-job concurrency
+
+**Challenge:** Multiple processes could attempt to execute the same full rescan.
+
+**Implemented approach in v0.9.11:** Atomic lease acquisition, lease renewal, guarded writes and job ownership checks.
+
+**Benefit:** The implementation is designed to prevent conflicting rescan processes from modifying shared state.
+
+**Remaining issue:** Full production integration tests are outstanding.
+
+### Problem 8: Interrupted rescan initialisation
+
+**Challenge:** A Worker could terminate after claiming a job but before fully initialising it.
+
+**Implemented approach in v0.9.11:** An intermediate initialisation state with expiration and recovery logic.
+
+**Benefit:** The design allows abandoned initialisation to be recovered.
+
+**Remaining issue:** Failure-injection testing is outstanding.
+
+### Problem 9: Operating within Cloudflare limits
+
+**Challenge:** Database reads, writes and background processing can consume platform allowances.
+
+**Implemented approach:** Bounded batches, rotating auxiliary jobs and monitoring through Cloudflare metrics.
+
+**Benefit:** Workload intensity is controlled rather than unlimited.
+
+**Remaining issue:** Query-level optimisation has not yet been completed.
+
+### Problem 10: Keeping the geographical map useful during import
+
+**Challenge:** Waiting for every Hive account to be processed would delay access to useful geographical information.
+
+**Implemented approach:** The public map is based on currently stored, accepted geographical matches.
+
+**Benefit:** The application can display partial results while the initial import continues.
+
+**Remaining issue:** The map must clearly communicate that its coverage is incomplete.
+
+---
+
+## 19. Version History
+
+The following history is limited to changes supported by the available project materials.
+
+### Earlier development
+
+The project established:
+
+- Cloudflare Workers and D1 integration.
+- Blockchain census indexing.
+- Hive profile importing.
+- Location classification.
+- Geocoding.
+- Public geographical endpoints.
+- Administrative review of ambiguous locations.
+- Hive Keychain-based administrator access.
+
+The exact version in which every individual feature first appeared has not been independently reconstructed.
+
+### Version 0.9.9
+
+This version served as a reference point for subsequent core Worker changes.
+
+A complete historical diff is still needed to document every change accurately.
+
+### Version 0.9.10
+
+A substantially condensed core Worker version was prepared and deployed.
+
+During subsequent review, concerns were identified regarding the concurrency safety of full profile rescanning.
+
+In particular, the review highlighted the risks of non-atomic job ownership and writes not sufficiently protected against stale processes.
+
+The version was deployed, but no full profile rescan was initiated before the concerns were addressed.
+
+### Version 0.9.11
+
+This version introduced changes intended to strengthen the rescan mechanism, including:
+
+- Atomic lease acquisition.
+- Lease renewal and release.
+- Guarded database mutations.
+- Job ownership checks.
+- Initialisation-state recovery.
+- Rescan progress and completion metadata.
+
+The version was deployed successfully.
+
+The public status endpoints reported version `0.9.11`, and the existing profile importer continued operating.
+
+However, the complete rescan lifecycle remained untested in production because the initial profile import had not finished.
+
+### Administrator API 0.2.3
+
+The reviewed administrator API includes Hive Keychain authentication, session handling, ambiguous-location review, manual match/reject operations and account-specific override protection.
+
+Its version number is independent of the core Worker version.
+
+---
+
+## 20. Known Issues and Limitations
+
+Hive Census remains under active development.
+
+The following limitations are known or require additional verification.
+
+### 20.1. Incomplete profile coverage
+
+The initial import has not finished.
+
+Current geographical statistics therefore represent only processed accounts.
+
+### 20.2. Self-reported information
+
+Hive profile locations are not independently verified statements of residence.
+
+### 20.3. Multiple accounts
+
+The application counts accounts, not unique individuals.
+
+### 20.4. Ambiguous and fictional locations
+
+Some location strings cannot be resolved reliably.
+
+### 20.5. Full rescan availability
+
+The current rescan mechanism cannot be started until the initial import is marked complete.
+
+### 20.6. Rescan integration testing
+
+The concurrency protections introduced in version 0.9.11 require complete integration tests.
+
+### 20.7. Blockchain indexer concurrency
+
+Potential overlap between manual and scheduled indexer execution should be assessed.
+
+### 20.8. Background-job dependency
+
+Failure of the scheduled indexer currently prevents the selected auxiliary job from running in that execution.
+
+### 20.9. Query optimisation
+
+Database indexes and expensive SQL operations require a dedicated review using actual query plans.
+
+### 20.10. Documentation completeness
+
+A complete migration history, verified schema dump and exhaustive version-by-version changelog have not yet been reconstructed.
+
+---
+
+## 21. Future Development
+
+The next development priorities are:
+
+### 21.1. Complete the initial profile import
+
+Continue incremental processing without discarding existing progress.
+
+### 21.2. Validate the full rescan mechanism
+
+Test job ownership, interruptions, lease expiration, stale workers and preservation of administrator overrides.
+
+### 21.3. Optimise Cloudflare D1
+
+Review query plans and indexes before making changes.
+
+Prioritise optimisations with measurable benefits.
+
+### 21.4. Improve processing efficiency
+
+Investigate safer batch-level cursor persistence and independent scheduling of background jobs.
+
+### 21.5. Expand technical documentation
+
+Publish a verified database schema, deployment configuration, administrative API reference and migration instructions.
+
+### 21.6. Improve geographical data quality
+
+Continue reviewing ambiguous locations and evaluating classifier and geocoder accuracy.
+
+---
+
+## 22. Lessons for Other Hive Developers
+
+Several lessons from Hive Census may be useful beyond this particular application.
+
+### 22.1. Treat blockchain and profile data differently
+
+Blockchain protocol declarations and free-form account metadata have different semantics.
+
+Combining them without preserving their origins can produce misleading results.
+
+### 22.2. Make long-running jobs resumable from the beginning
+
+Persistent cursors are much easier to introduce during initial development than after an importer has already processed tens of thousands of accounts.
+
+### 22.3. Never assume that a `running` flag is a lock
+
+Concurrency control requires atomic ownership acquisition.
+
+For long-running jobs, it may also require expiration, renewal and fencing.
+
+### 22.4. Preserve manual corrections explicitly
+
+Human decisions should be distinguishable from automated classifications.
+
+Otherwise, reprocessing can undo valuable corrections.
+
+### 22.5. Do not confuse valid coordinates with correct coordinates
+
+A geocoder returning a result does not prove that it identified the location intended by a user.
+
+### 22.6. Measure database costs before optimising
+
+Rows read and rows written provide more useful information about D1 resource usage than the raw number of SQL statements.
+
+### 22.7. Avoid unnecessary full imports
+
+Once a system has processed a substantial dataset, preserving accumulated progress becomes an architectural requirement.
+
+### 22.8. Distinguish implementation from verification
+
+A feature can be implemented, syntactically correct and successfully deployed without being fully tested.
+
+Documentation should state that distinction clearly.
+
+---
+
+## 23. Conclusion
+
+Hive Census began with a simple question: where are Hive users located?
+
+The resulting application demonstrates that even a seemingly straightforward community map involves several distinct engineering problems.
+
+The blockchain indexer must process data incrementally and reliably.
+
+The profile importer must work across a large account population without losing progress.
+
+Geographical interpretation must account for ambiguity and unreliable input.
+
+Administrative corrections must survive subsequent automated processing.
+
+Background jobs must avoid concurrency conflicts.
+
+And the entire system must remain economical enough to operate on modest infrastructure.
+
+The project has already implemented solutions to many of these challenges.
+
+Others, particularly full-rescan integration testing and database optimisation, remain active areas of work.
+
+I hope that documenting both the successful approaches and the unresolved problems will help other Hive developers working with blockchain data, account metadata, Cloudflare Workers, D1 or geographical applications.
+
+Hive Census is still evolving.
+
+The map will improve as additional accounts are imported, locations are reviewed and the processing infrastructure is refined.
+
+**The goal is not merely to place Hive accounts on a map, but to build a useful, transparent and maintainable tool for understanding the geographical reach of the Hive community.**
+
+---
+
+**Hive Census:** https://app.hive-census.workers.dev/
+
+**Documentation snapshot:** 12 October 2026
+
+*This article describes the implementation and operational state available at the time of writing. Some features remain under development or require additional integration testing.*
+
+
+&lt;/div&gt;
+
+
+
+![image.png](https://files.peakd.com/file/peakd-hive/jocieprosza/23t77B6X3mWJCV7o7fcPp5VZmZNgWRJvx1iWgc5ZVmsKwZbAJ5TEHRC2CLuxGM95yngWZ.png)
+
+&lt;/div&gt;
+  <footer class="hive-post-embed__source">
+    <span class="hive-post-embed__source-label">Source:</span>
+    <a href="https://hive.blog/@jocieprosza/hive-census-building-a-geographical-map-of-the-hive-community-documentation">Hive Census: Building a Geographical Map of the Hive Community [DOCUMENTATION]</a>
+    by
+    <a href="https://hive.blog/@jocieprosza">@jocieprosza</a>
+  </footer>
+&lt;/div&gt;
+
+</lease></div></div></div></div></div>
+
+  </div><a class="u-url" href="/howto/javascript/api/2026/10/13/hive-census-building-a-geographical-map-of-the-hive-community-documentation.html" hidden></a>
+</article>
+
+        </div>
+
+        
+        <aside class="page-sidebar" aria-label="Search and browse">
+          <section class="sidebar-section sidebar-search">
+            <h2 class="sidebar-heading">Search posts</h2>
+            <p class="sidebar-copy">Search the locally indexed post archive.</p>
+            <input type="text" id="search-input" placeholder="Search posts" autocomplete="off" />
+            <ul id="results-container"></ul>
+          </section>
+
+          <section class="sidebar-section sidebar-topics">
+            <h2 class="sidebar-heading">Browse topics</h2>
+            <p class="sidebar-copy">Jump into curated topic landing pages.</p>
+            <ul class="topic-list topic-list-sidebar"><li><a class="page-link" href="/api-nodes/">API Nodes</a></li><li><a class="page-link" href="/account-recovery/">Account Recovery</a></li><li><a class="page-link" href="/authentication/">Authentication & Keys</a></li><li><a class="page-link" href="/core-development/">Core Development</a></li><li><a class="page-link" href="/dapps/">Dapps</a></li><li><a class="page-link" href="/docker/">Docker</a></li><li><a class="page-link" href="/haf/">HAF & HafSQL</a></li><li><a class="page-link" href="/hardfork/">Hardfork</a></li><li><a class="page-link" href="/hive-engine/">Hive-Engine</a></li><li><a class="page-link" href="/hivemind/">Hivemind</a></li><li><a class="page-link" href="/javascript/">Javascript</a></li><li><a class="page-link" href="/multisig/">Multisig</a></li><li><a class="page-link" href="/python/">Python</a></li><li><a class="page-link" href="/ruby/">Ruby</a></li><li><a class="page-link" href="/testnet/">Testnet</a></li><li><a class="page-link" href="/tools/">Tools</a></li><li><a class="page-link" href="/wallets/">Wallets & Clive</a></li><li><a class="page-link" href="/witness/">Witness</a></li></ul>
+          </section>
+        </aside>
+        
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading"><a rel="author" href="/">Hive Chain Documentation</a></h2>
+    
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">site curated by: @inertia</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>Your resource for various levels of Hive Documentation.</p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+<script src="/assets/javascript/search.js"></script>
+    <script>
+      (function () {
+        var input = document.getElementById('search-input');
+        var results = document.getElementById('results-container');
+        if (input && results && typeof SimpleJekyllSearch !== 'undefined') {
+          SimpleJekyllSearch({
+            searchInput: input,
+            resultsContainer: results,
+            json: '/search.json'
+          });
+        }
+
+        if (typeof SteemContentRenderer === 'undefined') return;
+
+        var targets = document.querySelectorAll('[data-hive-render-target="true"]');
+        if (!targets.length) return;
+
+        var renderer = new SteemContentRenderer.DefaultRenderer({
+          baseUrl: 'https://hive.blog/',
+          breaks: true,
+          skipSanitization: false,
+          allowInsecureScriptTags: false,
+          addNofollowToLinks: true,
+          doNotShowImages: false,
+          ipfsPrefix: '',
+          assetsWidth: 640,
+          assetsHeight: 480,
+          imageProxyFn: function (url) { return url; },
+          usertagUrlFn: function (account) { return '/@' + account; },
+          hashtagUrlFn: function (hashtag) { return '/tags/#' + hashtag; },
+          isLinkSafeFn: function () { return true; }
+        });
+
+        targets.forEach(function (target) {
+          try {
+            var inputHtml = target.innerHTML;
+            target.innerHTML = renderer.render(inputHtml);
+          } catch (e) {
+            console.log(e);
+          }
+        });
+      })();
+    </script>
+
+  </body>
+
+</html>
