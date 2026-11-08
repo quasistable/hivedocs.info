@@ -1,4 +1,80 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="https://hivedocs.info/feed.xml" rel="self" type="application/atom+xml" /><link href="https://hivedocs.info/" rel="alternate" type="text/html" /><updated>2026-11-04T16:40:32-08:00</updated><id>https://hivedocs.info/feed.xml</id><title type="html">Hive Chain Documentation</title><subtitle>Your resource for various levels of Hive Documentation.</subtitle><author><name>site curated by: @inertia</name></author><entry><title type="html">3Speak: Lightning Strikes, Podcasts Play, Thumbnails Shine</title><link href="https://hivedocs.info/news/infrastructure/3speak/2026/11/04/3speak-lightning-strikes-podcasts-play-thumbnails-shine-2026-11-04.html" rel="alternate" type="text/html" title="3Speak: Lightning Strikes, Podcasts Play, Thumbnails Shine" /><published>2026-11-04T03:05:54-08:00</published><updated>2026-11-04T03:05:54-08:00</updated><id>https://hivedocs.info/news/infrastructure/3speak/2026/11/04/3speak-lightning-strikes-podcasts-play-thumbnails-shine-2026-11-04</id><content type="html" xml:base="https://hivedocs.info/news/infrastructure/3speak/2026/11/04/3speak-lightning-strikes-podcasts-play-thumbnails-shine-2026-11-04.html"><![CDATA[<div class="hive-post-embed" data-hive-author="mantequilla-soft" data-hive-permlink="3speak-lightning-strikes-podcasts-play-thumbnails-shine-2026-11-04">
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="https://hivedocs.info/feed.xml" rel="self" type="application/atom+xml" /><link href="https://hivedocs.info/" rel="alternate" type="text/html" /><updated>2026-11-07T17:19:54-08:00</updated><id>https://hivedocs.info/feed.xml</id><title type="html">Hive Chain Documentation</title><subtitle>Your resource for various levels of Hive Documentation.</subtitle><author><name>site curated by: @inertia</name></author><entry><title type="html">I built a Hive witness widget for my desktop (dms/dux)</title><link href="https://hivedocs.info/tools/witness/monitoring/2026/11/05/i-built-a-hive-witness-widget-for-my-desktop-dmsdux.html" rel="alternate" type="text/html" title="I built a Hive witness widget for my desktop (dms/dux)" /><published>2026-11-05T19:10:06-08:00</published><updated>2026-11-05T19:10:06-08:00</updated><id>https://hivedocs.info/tools/witness/monitoring/2026/11/05/i-built-a-hive-witness-widget-for-my-desktop-dmsdux</id><content type="html" xml:base="https://hivedocs.info/tools/witness/monitoring/2026/11/05/i-built-a-hive-witness-widget-for-my-desktop-dmsdux.html"><![CDATA[<div class="hive-post-embed" data-hive-author="ausbitbank" data-hive-permlink="i-built-a-hive-witness-widget-for-my-desktop-dmsdux">
+  <div id="content-ausbitbank-i-built-a-hive-witness-widget-for-my-desktop-dmsdux" class="hive-post-embed__content" data-hive-render-target="true">I check the same three tabs most days: my witness rank, my wallet, and the price of HIVE. So I built the thing I wanted instead — a small DankMaterialShell (aka [dux](https://duxlabs.dev/)) plugin that puts it all on my bar and my desktop.
+
+It's called **HIVE Witness**, it's at [github.com/ausbitbank/hiveWitness](https://github.com/ausbitbank/hiveWitness), and today it's at **2.5.0** — the first public release.
+
+
+![image.png](https://files.peakd.com/file/peakd-hive/ausbitbank/Eo1w14CtXDfwcJG8u9eyXdiwxdYTrBVs2cTTHAfQGVEB1kEinhWm2mmtYuVMzu5Qrto.png)
+
+## What it does
+
+The bar pill is the glance: rank and votes by default, or rank plus portfolio value, or just one of them. Click it and you get the full card. The same card can sit on the desktop permanently, which is how I usually use it.
+
+The card shows:
+
+- **Witness standing** — rank, total votes, share of the vesting pool, and missed blocks.
+- **Balances and stake** — liquid HIVE and HBD, savings, staked HP, and delegation.
+- **Powerdown** — the next weekly drip, a countdown to it, and how many cycles are left.
+- **Portfolio value** — in USD, AUD, NZD, CAD, GBP or EUR, priced from CoinGecko with the node's HBD ticker as a fallback.
+- **A 7-day sparkline** — hover for values, with a 7d change pill.
+
+If the account isn't a witness, it still shows balances and stake, and the witness-only rows read `—` instead of making something up.
+
+## Installing it
+
+You'll need DankMaterialShell `&gt;= 1.2.0` and `curl` on your `PATH`. Any supported compositor should be fine.
+
+```bash
+git clone https://github.com/ausbitbank/hiveWitness.git \
+  ~/.config/dms/plugins/hiveWitness
+```
+
+Then tell DMS to rescan:
+
+```bash
+dms ipc call plugin-scan reload hiveWitness
+```
+
+If it was already enabled and the new code doesn't show up, restart the shell:
+
+```bash
+systemctl --user restart dms.service
+```
+
+Enable **HIVE Witness** in Settings → Plugins, then set your account in the plugin settings. A fresh install says **No account set** — I deliberately left the default empty rather than shipping someone else's account.
+
+## A note on privacy
+
+It only talks to public endpoints: your configured Hive node, CoinGecko for price, and Frankfurter (with an open.er-api fallback) for FX. There's no telemetry and no analytics. The only account it asks about is the one you give it, and only public on-chain data comes back.
+
+The optional CoinGecko key is the one caveat. DMS stores it in plain text in `~/.config/dms/plugin_settings.json`, and it's visible to local processes in the `curl` argument list while a request runs. Leave it blank unless you need the higher rate limit — the keyless endpoint is rate limited, but it works.
+
+HTTP goes through `curl` because that's the supported DMS process interface. Requests are launched with an argument array rather than a shell, so settings can't inject commands.
+
+## What I'd like from you
+
+First up, this is a pretty niche thing, I honestly don't know if any other hive witnesses are using dms/dux  but it exists so I may as well release it publicly anyway.
+
+This is the first public release, so I'd genuinely like to hear where it's wrong or where it's missing something. If you run a witness, the useful feedback is usually "this number doesn't match what the explorer says" — that's a bug, and I want it. If you don't run one, tell me whether the card is still useful for stake and portfolio, because that was a deliberate design choice.
+
+Issues and PRs are open. There's a [`docs/DEVELOPMENT.md`](https://github.com/ausbitbank/hiveWitness/blob/main/docs/DEVELOPMENT.md) with the architecture notes and the QML traps I hit, in case you want to poke at it.
+
+```bash
+git clone https://github.com/ausbitbank/hiveWitness.git \
+  ~/.config/dms/plugins/hiveWitness
+dms ipc call plugin-scan reload hiveWitness
+```
+
+MIT licensed.
+
+*My usual apologies for being crap at blogging and going silent for so long. I'm still around, just getting my ass kicked by life in general and struggling to find motivation to post publicly. &lt;3</div>
+  <footer class="hive-post-embed__source">
+    <span class="hive-post-embed__source-label">Source:</span>
+    <a href="https://hive.blog/@ausbitbank/i-built-a-hive-witness-widget-for-my-desktop-dmsdux">I built a Hive witness widget for my desktop (dms/dux)</a>
+    by
+    <a href="https://hive.blog/@ausbitbank">@ausbitbank</a>
+  </footer>
+</div>]]></content><author><name>ausbitbank</name></author><category term="tools" /><category term="witness" /><category term="monitoring" /><summary type="html"><![CDATA[Install a DankMaterialShell widget for Hive witness rank, missed blocks and balances, with RPC, privacy and process-handling notes.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://files.peakd.com/file/peakd-hive/ausbitbank/Eo1w14CtXDfwcJG8u9eyXdiwxdYTrBVs2cTTHAfQGVEB1kEinhWm2mmtYuVMzu5Qrto.png" /><media:content medium="image" url="https://files.peakd.com/file/peakd-hive/ausbitbank/Eo1w14CtXDfwcJG8u9eyXdiwxdYTrBVs2cTTHAfQGVEB1kEinhWm2mmtYuVMzu5Qrto.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">3Speak: Lightning Strikes, Podcasts Play, Thumbnails Shine</title><link href="https://hivedocs.info/news/infrastructure/3speak/2026/11/04/3speak-lightning-strikes-podcasts-play-thumbnails-shine-2026-11-04.html" rel="alternate" type="text/html" title="3Speak: Lightning Strikes, Podcasts Play, Thumbnails Shine" /><published>2026-11-04T03:05:54-08:00</published><updated>2026-11-04T03:05:54-08:00</updated><id>https://hivedocs.info/news/infrastructure/3speak/2026/11/04/3speak-lightning-strikes-podcasts-play-thumbnails-shine-2026-11-04</id><content type="html" xml:base="https://hivedocs.info/news/infrastructure/3speak/2026/11/04/3speak-lightning-strikes-podcasts-play-thumbnails-shine-2026-11-04.html"><![CDATA[<div class="hive-post-embed" data-hive-author="mantequilla-soft" data-hive-permlink="3speak-lightning-strikes-podcasts-play-thumbnails-shine-2026-11-04">
   <div id="content-mantequilla-soft-3speak-lightning-strikes-podcasts-play-thumbnails-shine-2026-11-04" class="hive-post-embed__content" data-hive-render-target="true"><div class="text-justify">
 
 ![3Speak dev update, October 28 to November 4, 2026](https://images.hive.blog/DQmXwcohU9s42mDcdy6LmmNeUxsb3unP8YtSqMWvAtXHVJz/thumbnail.png)
@@ -1636,32 +1712,4 @@ https://images.hive.blog/130x130/http://hivebuzz.me/badges/birthday-6.png
     by
     <a href="https://hive.blog/@brianoflondon">@brianoflondon</a>
   </footer>
-</div>]]></content><author><name>brianoflondon</name></author><category term="news" /><category term="authentication" /><category term="security" /><summary type="html"><![CDATA[V4V incident analysis explaining how a token-refresh identity flaw enabled unauthorized KeepSats transfers, with the author's account of remediation.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://files.peakd.com/file/peakd-hive/brianoflondon/AJiuxwqYXET1M2b78Jjq7qqfThRyNfcj2VRqyZHshUCPSCPgowxkxEMFPY4g5eT.jpg" /><media:content medium="image" url="https://files.peakd.com/file/peakd-hive/brianoflondon/AJiuxwqYXET1M2b78Jjq7qqfThRyNfcj2VRqyZHshUCPSCPgowxkxEMFPY4g5eT.jpg" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">[Proposal] Public HAF database &amp;amp; HafSQL maintenance for one year</title><link href="https://hivedocs.info/news/haf/sql/2026/10/18/proposal-public-haf-database-and-hafsql-maintenance-for-one-year.html" rel="alternate" type="text/html" title="[Proposal] Public HAF database &amp;amp; HafSQL maintenance for one year" /><published>2026-10-18T20:11:45-07:00</published><updated>2026-10-18T20:11:45-07:00</updated><id>https://hivedocs.info/news/haf/sql/2026/10/18/proposal-public-haf-database-and-hafsql-maintenance-for-one-year</id><content type="html" xml:base="https://hivedocs.info/news/haf/sql/2026/10/18/proposal-public-haf-database-and-hafsql-maintenance-for-one-year.html"><![CDATA[<div class="hive-post-embed" data-hive-author="mahdiyari" data-hive-permlink="proposal-public-haf-database-and-hafsql-maintenance-for-one-year">
-  <div id="content-mahdiyari-proposal-public-haf-database-and-hafsql-maintenance-for-one-year" class="hive-post-embed__content" data-hive-render-target="true">![image.png](https://files.peakd.com/file/peakd-hive/mahdiyari/23uQJFstu9WELzuWhgKxFERDXiae9zBtBJJx6zGGZazUEzG3e3cpWPNaU1WQeMUWzE3x3.png)
-
-This proposal is asking for funding to maintain the access to the [public HAF](https://mahdiyari.gitlab.io/hafsql/) database.
-
-The goal is simple. Keep the public HAF running and maintain HafSQL along the way. This means fixing the potential issues and adapting the code as HAF and other HAF apps that HafSQL depends on change.
-
-This proposal covers the server costs plus a Claude sub.
-
-Asking for 298 HBD/day for 12 days. Total 3,576 HBD which covers the costs for 12 months.
-
-Currently two servers with the same configuration are dedicated to this cause:
-AMD Ryzen 9 5950x
-128GB RAM
-2x 3.84TB NVMe
-
-I will probably cut one of the servers off if not funded.
-
-Proposal #390
-https://peakd.com/me/proposals/390
-https://ecency.com/proposals/390
-</div>
-  <footer class="hive-post-embed__source">
-    <span class="hive-post-embed__source-label">Source:</span>
-    <a href="https://hive.blog/@mahdiyari/proposal-public-haf-database-and-hafsql-maintenance-for-one-year">[Proposal] Public HAF database &amp; HafSQL maintenance for one year</a>
-    by
-    <a href="https://hive.blog/@mahdiyari">@mahdiyari</a>
-  </footer>
-</div>]]></content><author><name>mahdiyari</name></author><category term="news" /><category term="haf" /><category term="sql" /><summary type="html"><![CDATA[This proposal is asking for funding to maintain the access to the public HAF database]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://files.peakd.com/file/peakd-hive/mahdiyari/23uQJFstu9WELzuWhgKxFERDXiae9zBtBJJx6zGGZazUEzG3e3cpWPNaU1WQeMUWzE3x3.png" /><media:content medium="image" url="https://files.peakd.com/file/peakd-hive/mahdiyari/23uQJFstu9WELzuWhgKxFERDXiae9zBtBJJx6zGGZazUEzG3e3cpWPNaU1WQeMUWzE3x3.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>
+</div>]]></content><author><name>brianoflondon</name></author><category term="news" /><category term="authentication" /><category term="security" /><summary type="html"><![CDATA[V4V incident analysis explaining how a token-refresh identity flaw enabled unauthorized KeepSats transfers, with the author's account of remediation.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://files.peakd.com/file/peakd-hive/brianoflondon/AJiuxwqYXET1M2b78Jjq7qqfThRyNfcj2VRqyZHshUCPSCPgowxkxEMFPY4g5eT.jpg" /><media:content medium="image" url="https://files.peakd.com/file/peakd-hive/brianoflondon/AJiuxwqYXET1M2b78Jjq7qqfThRyNfcj2VRqyZHshUCPSCPgowxkxEMFPY4g5eT.jpg" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>
