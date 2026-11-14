@@ -1,4 +1,1110 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="https://hivedocs.info/feed.xml" rel="self" type="application/atom+xml" /><link href="https://hivedocs.info/" rel="alternate" type="text/html" /><updated>2026-11-07T17:19:54-08:00</updated><id>https://hivedocs.info/feed.xml</id><title type="html">Hive Chain Documentation</title><subtitle>Your resource for various levels of Hive Documentation.</subtitle><author><name>site curated by: @inertia</name></author><entry><title type="html">I built a Hive witness widget for my desktop (dms/dux)</title><link href="https://hivedocs.info/tools/witness/monitoring/2026/11/05/i-built-a-hive-witness-widget-for-my-desktop-dmsdux.html" rel="alternate" type="text/html" title="I built a Hive witness widget for my desktop (dms/dux)" /><published>2026-11-05T19:10:06-08:00</published><updated>2026-11-05T19:10:06-08:00</updated><id>https://hivedocs.info/tools/witness/monitoring/2026/11/05/i-built-a-hive-witness-widget-for-my-desktop-dmsdux</id><content type="html" xml:base="https://hivedocs.info/tools/witness/monitoring/2026/11/05/i-built-a-hive-witness-widget-for-my-desktop-dmsdux.html"><![CDATA[<div class="hive-post-embed" data-hive-author="ausbitbank" data-hive-permlink="i-built-a-hive-witness-widget-for-my-desktop-dmsdux">
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="https://hivedocs.info/feed.xml" rel="self" type="application/atom+xml" /><link href="https://hivedocs.info/" rel="alternate" type="text/html" /><updated>2026-11-13T20:54:25-08:00</updated><id>https://hivedocs.info/feed.xml</id><title type="html">Hive Chain Documentation</title><subtitle>Your resource for various levels of Hive Documentation.</subtitle><author><name>site curated by: @inertia</name></author><entry><title type="html">Introducing stinger: a hived plugin for matching operations of interest</title><link href="https://hivedocs.info/tools/node/stinger/2026/11/13/introducing-stinger-a-hived-plugin-for-matching-operations-of-interest.html" rel="alternate" type="text/html" title="Introducing stinger: a hived plugin for matching operations of interest" /><published>2026-11-13T13:17:24-08:00</published><updated>2026-11-13T13:17:24-08:00</updated><id>https://hivedocs.info/tools/node/stinger/2026/11/13/introducing-stinger-a-hived-plugin-for-matching-operations-of-interest</id><content type="html" xml:base="https://hivedocs.info/tools/node/stinger/2026/11/13/introducing-stinger-a-hived-plugin-for-matching-operations-of-interest.html"><![CDATA[<div class="hive-post-embed" data-hive-author="serpent7776" data-hive-permlink="introducing-stinger-a-hived-plugin-for-matching-operations-of-interest">
+  <div id="content-serpent7776-introducing-stinger-a-hived-plugin-for-matching-operations-of-interest" class="hive-post-embed__content" data-hive-render-target="true">![stinger-icon.png](https://images.hive.blog/DQmXFsp9c8oCSZU5jyzc8nfwtogRmnurPBZaSJD2PFUDJ2f/stinger-icon.png)
+
+I'd like to share **stinger**, a plugin for `hived` that watches every operation the node applies and hands the ones you care about to your own process, as JSON lines on a unix socket, as soon as the block is irreversible, or under a millisecond after it is applied if you ask for that.
+
+You describe what you care about in a small, readable JSON rules file. No database, no replay, no polling loop.
+
+## What is stinger
+
+Stinger sits inside the node, on the writer thread, right where blocks are applied. For every operation, real or virtual, it checks the operation against your rules. When one matches, the operation is sent to a socket your program is reading from, together with the block number, timestamp and transaction id. Delivery runs on a separate sink thread, so a slow consumer never holds up hived.
+
+A rule looks like this:
+
+```json
+{
+  "name": "shop-paid",
+  "match": "op_type in (transfer, fill_recurrent_transfer) and to = \"shop\"",
+  "exec": { "type": "socket" }
+}
+```
+
+That's a complete rule. `name` is how the match will be labelled on the stream, `match` is a boolean expression, `exec` says where the match goes: to the socket, or just to the node's log.
+
+Your side of it is a few lines in whatever language you like:
+
+```python
+import json, socket
+
+s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+s.connect("/run/hived/stinger.sock")
+for line in s.makefile("r"):
+    rec = json.loads(line)
+    if rec["kind"] == "match":
+        print(rec["rules"], rec["block"], rec["op"])
+```
+
+The socket is created readable and writeable by its owner only, so run the consumer as the same user as hived.
+
+The first line on every connection is a greeting:
+
+```json
+{"kind":"hello","seq":41,"version":1,"delivered":{"head":null,"irreversible":111339249}}
+```
+
+It exists because the socket keeps no history. `delivered` says where each stream stands, so you know what this connection will give you and what you have to fetch from the APIs: everything up to block 111339249 is yours to backfill, and everything after it will arrive on the socket. Irreversible matches at or below that block can still follow the greeting, because they were already on their way when you connected; your backfill has them, so skip them. `seq` is the position of the last record the node rendered, so a consumer that reconnects can tell from its new greeting how many records it missed while it was away. `version` is the format's; refuse one you don't know.
+
+Then the matches follow. This is what one line of the stream looks like (the operation is in the same form `block_api` and `account_history_api` return):
+
+```json
+{"kind":"match","seq":42,"delivery":"irreversible","rules":["shop-paid"],"block":111339250,"timestamp":"2026-11-03T12:00:00","trx_id":"6e1a...","trx_in_block":3,"op_in_trx":0,"virtual_op":false,"op":{"type":"transfer_operation","value":{"from":"alice","to":"shop","amount":{"amount":"5000","precision":3,"nai":"@@000000021"},"memo":"order 1234"}}}
+```
+
+`rules` lists every rule that matched the operation, so one operation is one line however many rules hit it. `delivery` is the class the line was delivered in, irreversible or head. `block`, `timestamp`, `trx_id`, `trx_in_block` and `op_in_trx` place the operation exactly where account history would, and `virtual_op` tells a virtual operation apart from one that was in a transaction. `op` is the operation itself. A match too large to send in one line arrives with `"op": null` and an `op_omitted` field saying why; the coordinates are still there, so you can fetch the operation from the API.
+
+## Why stinger
+
+Most of the things people commonly want from the chain are small. "Tell me when someone pays my account." "Give me every `custom_json` my app emits." "Tell me every time my witness produces a block." "Alert on transfers over some threshold."
+
+Today the choices for that are:
+
+- **Run HAF.** It's great if you need SQL over the full history, but it's a big thing to set up and keep running, and most of the time you only need one or two operation types going forward.
+- **Poll the APIs.** `get_ops_in_block`, `account_history`, or streaming blocks over HTTP and filtering on your side. It works, it's what [hive-index](https://index.hive-adventures.com/) does today, but you end up pulling the whole chain through your process to pick out a tiny fraction of it. You also pay latency for polling and put load on an API node for data you throw away.
+- **Patch hived.** Nobody does that, for good reasons.
+
+Stinger is the **missing small option**: the node already sees every operation, so let it do the filtering, and let your program receive just the matches.
+
+## Design
+
+A few decisions shape it, and they're worth spelling out because they're also the limits.
+
+**Matching happens in the node, but it's not code.** Rules are boolean expressions over a fixed set of attributes, parsed once at startup and put into an index (a be-tree, a structure built for matching one event against many subscriptions at once). There's no script and no user code on the consensus path, so the cost is a microsecond or so per operation for typical rule sets. On a live node that comes to a fraction of a millisecond per block. A node asked to match while it syncs (off by default) syncs about 8% slower with a handful of rules; the numbers are in the performance section below.
+
+**Irreversible by default, head if you ask.** Hive normally makes a block irreversible within about a second of applying it, so by default a block's matches are delivered once they can't be undone. You never see a fork. A rule can opt into `"delivery": "head"` to skip that wait, and then the stream also carries `block_applied`, `switch_fork` and `irreversible` markers, so it can retract and settle on its own.
+
+**The node keeps nothing.** No history, no per-consumer state. The stream is live only. Every record is self-contained, the greeting on connect tells you where the stream stands, and anything older than that you fetch from the regular APIs. This is deliberate: stinger isn't trying to be HAF.
+
+**The writer never waits.** Matches go from the writer thread to a sink thread through a queue bounded in bytes. If a consumer stops reading, it gets disconnected. If the sink falls behind the writer, the oldest waiting blocks are dropped and every consumer receives a `dropped` record naming which blocks. It fails loudly and the node is unaffected.
+
+**No outbound network.** The sinks are a log line and a local socket. If you want webhooks, a message queue or WebSockets, write a small bridge on the far side of the socket. That's where retries, timeouts and TLS belong, not inside `hived`.
+
+It's meant for API and seed nodes. It's extra work on the block-apply path, so don't put it on a witness node.
+
+## What a rule can test
+
+| Attribute | Meaning |
+|---|---|
+| `op_type` | operation type, by name (`transfer`, `custom_json`, `producer_reward`) or number; virtual ops included |
+| `is_virtual` | whether the op is virtual; used bare: `is_virtual`, `not is_virtual` |
+| `impacted_accounts` | every account the op touches, same as account history sees it |
+| `amount`, `symbol` | the op's own `amount` field in satoshis (so `1000000` is 1000.000 HIVE) and its symbol; only ops that actually have an `amount` field define it |
+| `custom_id` | the `id` of a `custom_json` |
+| `from`, `to` | the op's own `from` and `to` fields: transfers, savings, escrows, recurrent transfers |
+
+Expressions support `=`, `&lt;&gt;`, `&lt;`, `&lt;=`, `&gt;`, `&gt;=`, `in` / `not in` with a list, `"name" in impacted_accounts` for a single account and `one of` / `none of` / `all of` with a list for several, and `and` / `or` / `not` with parentheses. An undefined attribute fails every test, so `custom_id` only ever matches a `custom_json` and `amount` only an operation that has one. That is still ten operation types (transfers, power-ups, savings, converts, recurrent transfers and their virtual fills), so a rule on `amount` normally says which `op_type` it means. An `op_type` term is worth adding to any rule anyway: the index then only shows the rule operations of that type, which is what keeps large rule sets cheap (the numbers are in the performance section).
+
+A rule that doesn't parse stops the node at startup and tells you which rule.
+
+## Example use cases
+
+- **Payment notifications.** A shop or a service waits for transfers to its account and fulfils the order from the memo. `to = "shop"` on `transfer` and `fill_recurrent_transfer`, and you're done.
+- **Dapp ingestion.** Subscribe to your own `custom_json` ids and feed them straight into your backend. No block streaming, no filtering on your side. This is the one I'm most interested in for hive-index.
+- **Witness monitoring.** Match `producer_reward` for your witness with head delivery and alert if it goes quiet for longer than a round (for a top witness; a backup witness isn't scheduled every round, so give it a longer window).
+- **Early large-transfer alerts.** `amount &gt; 1000000` on HIVE transfers with head delivery, pushed to a bot.
+- **Account activity feed.** Everything that touches a given set of accounts, real ops only, for a dashboard or a notification service.
+- **Rewards tracking.** `author_reward` and `curation_reward` for a team of accounts, for payouts or accounting.
+- **NFT processing.** An NFT app that keeps its state in `custom_json` matches its own ids, plus the `account_created` virtual op so it knows which account names in the payloads are real. Everything it needs is in the match record, and its own state lives in its own database.
+
+## Example config
+
+The rules file:
+
+```json
+{
+  "rules": [
+    {
+      "name": "large-hive-transfer",
+      "match": "op_type = transfer and symbol = \"HIVE\" and amount &gt; 1000000",
+      "exec": { "type": "socket" },
+      "delivery": "head"
+    },
+    {
+      "name": "alice-activity",
+      "match": "\"alice\" in impacted_accounts and not is_virtual",
+      "exec": { "type": "log" }
+    },
+    {
+      "name": "shop-paid",
+      "match": "op_type in (transfer, fill_recurrent_transfer) and to = \"shop\"",
+      "exec": { "type": "socket" }
+    },
+    {
+      "name": "splinterlands-market",
+      "match": "op_type = custom_json and custom_id = \"sm_market\"",
+      "exec": { "type": "log" }
+    },
+    {
+      "name": "team-rewards",
+      "match": "op_type in (author_reward, curation_reward) and impacted_accounts one of (\"alice\", \"bob\", \"carol\")",
+      "exec": { "type": "socket" }
+    },
+    {
+      "name": "my-witness-produced",
+      "match": "op_type = producer_reward and \"mywitness\" in impacted_accounts",
+      "exec": { "type": "socket" },
+      "delivery": "head"
+    }
+  ]
+}
+```
+
+And the `config.ini` side:
+
+```ini
+plugin = stinger
+stinger-rules-file = rules.json
+stinger-socket = /run/hived/stinger.sock
+```
+
+Relative paths are taken from the data directory, like the other `hived` path options. Two more knobs exist, both optional: `stinger-ready-queue-mb` (memory for matches waiting to be delivered, 128 MB by default) and `stinger-match-during-sync` (also match blocks received while the node is still syncing; off by default, replayed blocks are never matched).
+
+## Performance
+
+Keeping hived fast matters, so I measured what enabling the plugin costs, both in live sync and in replay. Replay isn't how you'd use it (replayed blocks are never matched; I patched that out for the measurement), but it's the cleanest measurement of the matcher itself. All runs are a Release mainnet `hived` on the first 5M blocks of the chain (about 19.8M operations, 4 per block on average), on an 8-core box, inside a container. The live-sync runs are a fresh node syncing over P2P from a seed node on the same machine, with `stinger-match-during-sync` turned on, which is the closest I can get to real conditions without a network in the way. With default settings a syncing node doesn't match at all, so the sync figures are the price of asking for the backfill, not something every node pays. Each stinger run is compared with a base run made right next to it. The base sync itself ranged from 702 to 728 s over the day, so read the live-sync percentages as good to a few points, not to the decimal.
+
+With a set of 6 rules much like the example above (two large transfer rules, a power-up threshold, two account watches, one `custom_id`; log sinks, 13 matches in 5M blocks):
+
+| scenario | base | stinger | overhead |
+|---|---|---|---|
+| live P2P sync to 5M | 702 s | 758 s | +56 s (+8.1%) |
+| replay to 5M, matching forced on | 173 s | 202 s | +29 s (+17%) |
+
+On replay that's about **6 µs per block**, or **1.5 µs per operation**, and that's the matcher: building an event for each operation and searching the index. Live sync costs about 11 µs per block. The matching part carries over one to one; the other 5 µs or so per block is bookkeeping that only runs for live blocks (fork tracking, the irreversible window) and doesn't depend on the number of rules. It's a bigger percentage on replay because replay is about 4x faster per block than sync (no signature checks, no P2P, no undo sessions). The writer thread is saturated during sync, so every microsecond spent matching lands directly on sync throughput; there's no hiding it. A live node is the opposite case: it applies one block every three seconds, and at 1.5 µs per operation even a 100-operation block is about 0.15 ms of matching. Memory doesn't move at all with log-only rules.
+
+Where does the per-operation cost go? Not into the be-tree search. It's building the event for each operation: collecting the impacted accounts, pulling out the typed fields, interning the strings. That's a fixed cost you pay once per operation regardless of how many rules there are, and it's the obvious thing to optimise next.
+
+Then there's how the cost scales with the number of rules, which depends on the shape of the rule:
+
+| rules | 50 | 200 | 1000 |
+|---|---|---|---|
+| `op_type = X and ...`, spread over op types | +17% | +17% | +19% |
+| `"account" in impacted_accounts`, no `op_type` | +27% | +55% | +186% |
+
+(Replay overhead over 5M blocks. The live-sync check on the 1000-rule files took 770 s and 1092 s against a 728 s base, +5.7% and +50%, consistent with the above. That +5.7% is below the 6-rule +8.1% only because its base run was slower: in absolute terms it's 770 s against 758 s.)
+
+Rules with an `op_type` term are effectively free in bulk: the index partitions on operation type, so an operation only reaches the rules for its own type, and 1000 of them cost about the same as 6. Rules that watch an account across all operation types can't be partitioned yet, so every operation is tested against every one of them, at about 15 ns per operation per rule. It's linear, and at a few dozen such rules it's fine, but a thousand of them make the node almost 3x slower on replay. Loading 1000 rules at startup takes about 10 ms either way.
+
+The last thing I checked was the delivery path under the worst case: one rule matching every operation, pushing all 19.8M records (10 GB of JSON) down the socket to a consumer writing them to disk. That costs +20% on sync, of which about +13% is just rendering the JSON, which happens whether or not anyone is connected. Peak RSS stayed within 10 MB of the base with the consumer attached. In the run with nobody connected it peaked about 240 MB higher, and I haven't tracked down why yet. The consumer was never disconnected and every block was delivered. The hardest moment is a hardfork block with 106k virtual operations (53 MB of matches in one block); the queue is bounded in bytes precisely so that a block like that doesn't push its neighbours out.
+
+### Latency
+
+How long after a block is applied does a match reach your program? I measured it on a local testnet: two producing nodes holding the 21 witnesses, two API nodes running stinger (one matching a tenth of the transfers, one matching everything), a Python consumer on each socket, all on one box, with transfers at 10, 100 and 1000 ops per block.
+
+| matched ops per block | 1 | ~10 | ~100 | ~1000 |
+|---|---|---|---|---|
+| head delivery, block applied -&gt; match at the consumer, p50 / p99 | 0.1 / 0.6 ms | 0.3 / 0.8 ms | 0.9 / 2.3 ms | 6 / 16 ms |
+
+Handing a block's matches to the sink thread takes about 50 µs; the rest is rendering the JSON, about 11 µs per record. The table times each match, so in a block where all 1000 operations match the median match arrives after 6 ms and the last one after 12 ms (21 ms p99). Irreversible delivery adds however long the chain takes to make the block irreversible, which is not stinger's cost: 3-5 ms on the local testnet, and on mainnet, polling public API nodes for 43 minutes, the last irreversible block was already equal to head in about 90% of samples and otherwise caught up within a second. A deliberately slow consumer (one line every 50 ms) was disconnected after about 14 s, once it had fallen 4 MB behind, with nothing dropped and a negligible effect on the other consumer on the socket (about 1 µs per record).
+
+None of this is optimised yet. The fixed per-operation cost and the account-rule scaling both have known fixes, and this is the baseline I'll measure them against.
+
+## Where it stands
+
+The plugin works, has unit and functional tests (including one with a real fork), and the overhead numbers above come from running it against a syncing mainnet node. What it doesn't have yet is a way to catch a consumer up: if yours was down for an hour, you fetch that hour from the APIs yourself. That, and a few more attributes people ask for, is what I'd like to do next.
+
+The code is at https://github.com/serpent7776/hived-stinger, a fork of hive. The plugin isn't in a released hived yet, so trying it means building hived from that fork and adding `plugin = stinger` to the config.
+
+Hopefully you'll find this useful. Please let me know what you think, and if you have any suggestions or questions, just leave a comment.</div>
+  <footer class="hive-post-embed__source">
+    <span class="hive-post-embed__source-label">Source:</span>
+    <a href="https://hive.blog/@serpent7776/introducing-stinger-a-hived-plugin-for-matching-operations-of-interest">Introducing stinger: a hived plugin for matching operations of interest</a>
+    by
+    <a href="https://hive.blog/@serpent7776">@serpent7776</a>
+  </footer>
+</div>]]></content><author><name>serpent7776</name></author><category term="tools" /><category term="node" /><category term="stinger" /><summary type="html"><![CDATA[Configure Stinger to filter Hive operations and stream matches over a Unix socket, with rule examples, a Python consumer and delivery/recovery guidance. Requires the author's hived fork.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://images.hive.blog/DQmXFsp9c8oCSZU5jyzc8nfwtogRmnurPBZaSJD2PFUDJ2f/stinger-icon.png" /><media:content medium="image" url="https://images.hive.blog/DQmXFsp9c8oCSZU5jyzc8nfwtogRmnurPBZaSJD2PFUDJ2f/stinger-icon.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Home Assistant Users - View your Hive Witness stats at a glance with this dashboard card</title><link href="https://hivedocs.info/howto/witness/monitoring/2026/11/13/home-assistant-users-view-your-hive-witness-stats-at-a-glance-with-this-dashboard-card.html" rel="alternate" type="text/html" title="Home Assistant Users - View your Hive Witness stats at a glance with this dashboard card" /><published>2026-11-13T10:12:15-08:00</published><updated>2026-11-13T10:12:15-08:00</updated><id>https://hivedocs.info/howto/witness/monitoring/2026/11/13/home-assistant-users-view-your-hive-witness-stats-at-a-glance-with-this-dashboard-card</id><content type="html" xml:base="https://hivedocs.info/howto/witness/monitoring/2026/11/13/home-assistant-users-view-your-hive-witness-stats-at-a-glance-with-this-dashboard-card.html"><![CDATA[<div class="hive-post-embed" data-hive-author="c0ff33a" data-hive-permlink="home-assistant-users-view-your-hive-witness-stats-at-a-glance-with-this-dashboard-card">
+  <div id="content-c0ff33a-home-assistant-users-view-your-hive-witness-stats-at-a-glance-with-this-dashboard-card" class="hive-post-embed__content" data-hive-render-target="true"># Track Your Hive Witness in Home Assistant: Rank, Votes, Stake, Power Down &amp; Portfolio Value
+
+
+
+
+![Home Assistant Hive Stats Card](https://files.peakd.com/file/peakd-hive/c0ff33a/23swgEFtNgPrGSMikMg5TuMEcwbT4fxDvmHD2EKW1mGeNtLnJpxUqpFEz9QsVuyX9qqti.png)
+
+![Home Assistant Hive Stats Card lower portion](https://files.peakd.com/file/peakd-hive/c0ff33a/23swg9rTWKojVs886y4QYFe9sGXFXBY8zdH1r5T7rNvacMPPNByev7CseJ3xtCFuBnDRV.png)
+
+
+
+
+
+If you run a Hive witness and already use **Home Assistant** at home, you can add a dashboard card that keeps an eye on your witness and your wallet. No custom integrations, no HACS, and no API keys. It uses Home Assistant's built-in REST and template features, Hive's public API nodes, and CoinGecko for prices.
+
+---
+
+## What the card shows
+
+**Witness**
+- Witness rank (active witnesses only, so disabled witnesses are skipped)
+- Total witness votes received (in MHP)
+- Missed blocks
+
+**Stake**
+- Your own Hive Power, and your effective HP after delegations
+- HP delegated out and delegated in
+- How many witness votes you've cast
+
+**Power down**
+- Whether a power down is running
+- Weekly payout and amount remaining
+- Countdown to the next payout
+
+**Wallet &amp; portfolio**
+- Liquid and savings HIVE and HBD
+- Live HIVE and HBD prices
+- Total portfolio value (liquid HIVE + savings + own HP + HBD; HP delegated *to* you isn't counted)
+
+Prices are in **GBP (£)** by default. Changing currency is covered further down.
+
+---
+
+## How it works
+
+There are two parts:
+
+1. **A sensor package (`hive.yaml`).** This calls the Hive API (`condenser_api.get_accounts`, `get_dynamic_global_properties`, `get_witness_by_account` and `get_witnesses_by_vote`) and CoinGecko, then turns VESTS into HP for you.
+2. **A dashboard card.** A plain Lovelace card that displays those sensors.
+
+How often it updates:
+- Account data: every 5 minutes
+- Witness data: every 10 minutes
+- Rank: every 15 minutes
+- Prices: every 10 minutes
+- The VESTS → HP ratio: hourly
+
+---
+
+## Step 1: Edit the sensor package
+
+Copy the YAML below. Before saving it anywhere, **find and replace `YOUR_HIVE_ACCOUNT` with your account name**: lowercase, without the @. It appears **3 times**.
+
+```yaml
+###############################################################################
+#  HIVE BLOCKCHAIN PACKAGE for Home Assistant
+#
+#  &gt;&gt;&gt; FIND &amp; REPLACE every "YOUR_HIVE_ACCOUNT" with your account name
+#      (lowercase, no @). It appears 3 times in this file.
+#  &gt;&gt;&gt; Fiat currency is GBP. To change, replace "gbp" (3 places) and "£".
+#
+#  Install: save as /config/packages/hive.yaml and make sure
+#  configuration.yaml contains:
+#
+#    homeassistant:
+#      packages: !include_dir_named packages
+#
+#  Then restart Home Assistant (a YAML reload is not enough for new REST sensors).
+###############################################################################
+
+rest:
+  # ---------------------------------------------------------------- Account
+  - resource: https://api.hive.blog
+    method: POST
+    headers:
+      Content-Type: application/json
+    payload: '{"jsonrpc":"2.0","method":"condenser_api.get_accounts","params":[["YOUR_HIVE_ACCOUNT"]],"id":1}'
+    scan_interval: 300
+    timeout: 20
+    sensor:
+      - name: Hive Liquid HIVE
+        unique_id: hive_liquid_hive
+        unit_of_measurement: HIVE
+        state_class: measurement
+        value_template: "{{ value_json.result[0].balance.split(' ')[0] | float(0) }}"
+      - name: Hive Savings HIVE
+        unique_id: hive_savings_hive
+        unit_of_measurement: HIVE
+        state_class: measurement
+        value_template: "{{ value_json.result[0].savings_balance.split(' ')[0] | float(0) }}"
+      - name: Hive Liquid HBD
+        unique_id: hive_liquid_hbd
+        unit_of_measurement: HBD
+        state_class: measurement
+        value_template: "{{ value_json.result[0].hbd_balance.split(' ')[0] | float(0) }}"
+      - name: Hive Savings HBD
+        unique_id: hive_savings_hbd
+        unit_of_measurement: HBD
+        state_class: measurement
+        value_template: "{{ value_json.result[0].savings_hbd_balance.split(' ')[0] | float(0) }}"
+      - name: Hive Vests Own
+        unique_id: hive_vests_own
+        unit_of_measurement: VESTS
+        value_template: "{{ value_json.result[0].vesting_shares.split(' ')[0] | float(0) }}"
+      - name: Hive Vests Delegated Out
+        unique_id: hive_vests_delegated_out
+        unit_of_measurement: VESTS
+        value_template: "{{ value_json.result[0].delegated_vesting_shares.split(' ')[0] | float(0) }}"
+      - name: Hive Vests Received
+        unique_id: hive_vests_received
+        unit_of_measurement: VESTS
+        value_template: "{{ value_json.result[0].received_vesting_shares.split(' ')[0] | float(0) }}"
+      - name: Hive Powerdown Rate Vests
+        unique_id: hive_powerdown_rate_vests
+        unit_of_measurement: VESTS
+        value_template: "{{ value_json.result[0].vesting_withdraw_rate.split(' ')[0] | float(0) }}"
+      - name: Hive Powerdown Remaining Vests
+        unique_id: hive_powerdown_remaining_vests
+        unit_of_measurement: VESTS
+        # to_withdraw / withdrawn are raw integers (VESTS x 1,000,000)
+        value_template: &gt;
+          {% set a = value_json.result[0] %}
+          {{ ((a.to_withdraw | int(0)) - (a.withdrawn | int(0))) / 1000000 }}
+      - name: Hive Next Powerdown Raw
+        unique_id: hive_next_powerdown_raw
+        value_template: "{{ value_json.result[0].next_vesting_withdrawal }}"
+      - name: Hive Witness Votes Cast
+        unique_id: hive_witness_votes_cast
+        unit_of_measurement: votes
+        value_template: "{{ value_json.result[0].witness_votes | length }}"
+      - name: Hive Witness Proxy
+        unique_id: hive_witness_proxy
+        value_template: "{{ value_json.result[0].proxy if value_json.result[0].proxy else 'none' }}"
+
+  # ------------------------------------------------- Global props (VESTS -&gt; HP)
+  - resource: https://api.hive.blog
+    method: POST
+    headers:
+      Content-Type: application/json
+    payload: '{"jsonrpc":"2.0","method":"condenser_api.get_dynamic_global_properties","params":[],"id":1}'
+    scan_interval: 3600
+    timeout: 20
+    sensor:
+      - name: Hive Per MVests
+        unique_id: hive_per_mvests
+        unit_of_measurement: HIVE
+        value_template: &gt;
+          {% set fund = value_json.result.total_vesting_fund_hive.split(' ')[0] | float(0) %}
+          {% set shares = value_json.result.total_vesting_shares.split(' ')[0] | float(1) %}
+          {{ (fund / shares * 1000000) | round(6) }}
+
+  # ------------------------------------------------------- Witness details
+  - resource: https://api.hive.blog
+    method: POST
+    headers:
+      Content-Type: application/json
+    payload: '{"jsonrpc":"2.0","method":"condenser_api.get_witness_by_account","params":["YOUR_HIVE_ACCOUNT"],"id":1}'
+    scan_interval: 600
+    timeout: 20
+    sensor:
+      - name: Hive Witness Votes Vests
+        unique_id: hive_witness_votes_vests
+        unit_of_measurement: VESTS
+        # "votes" is raw VESTS x 1,000,000
+        value_template: "{{ (value_json.result.votes | int(0) / 1000000) if value_json.result else 0 }}"
+        json_attributes_path: "$.result"
+        json_attributes:
+          - total_missed
+          - last_confirmed_block_num
+          - running_version
+          - url
+          - signing_key
+      - name: Hive Witness Missed Blocks
+        unique_id: hive_witness_missed_blocks
+        unit_of_measurement: blocks
+        value_template: "{{ value_json.result.total_missed if value_json.result else 0 }}"
+
+  # ---------------------------------------- Witness rank (active witnesses only)
+  - resource: https://api.hive.blog
+    method: POST
+    headers:
+      Content-Type: application/json
+    payload: '{"jsonrpc":"2.0","method":"condenser_api.get_witnesses_by_vote","params":["",300],"id":1}'
+    scan_interval: 900
+    timeout: 30
+    sensor:
+      - name: Hive Witness Rank
+        unique_id: hive_witness_rank
+        # Disabled witnesses (null signing key) are skipped, so the rank matches
+        # the "active" rank shown on most Hive witness pages.
+        value_template: &gt;
+          {% set ns = namespace(i=0, rank=0) %}
+          {% for w in value_json.result %}
+            {% if w.signing_key != 'STM1111111111111111111111111111111114T1Anm' %}
+              {% set ns.i = ns.i + 1 %}
+              {% if w.owner == 'YOUR_HIVE_ACCOUNT' %}{% set ns.rank = ns.i %}{% endif %}
+            {% endif %}
+          {% endfor %}
+          {{ ns.rank if ns.rank &gt; 0 else '&gt;' ~ ns.i }}
+
+  # ---------------------------------------------------------------- Prices
+  - resource: https://api.coingecko.com/api/v3/simple/price?ids=hive,hive_dollar&amp;vs_currencies=gbp
+    scan_interval: 600
+    timeout: 20
+    sensor:
+      - name: Hive Price
+        unique_id: hive_price
+        unit_of_measurement: "£"
+        state_class: measurement
+        value_template: "{{ value_json.hive.gbp | float(0) }}"
+      - name: HBD Price
+        unique_id: hbd_price
+        unit_of_measurement: "£"
+        state_class: measurement
+        value_template: "{{ value_json.hive_dollar.gbp | float(0) }}"
+
+template:
+  - sensor:
+      - name: Hive Power Own
+        unique_id: hive_power_own
+        unit_of_measurement: HP
+        state_class: measurement
+        state: &gt;
+          {{ (states('sensor.hive_vests_own') | float(0)
+              * states('sensor.hive_per_mvests') | float(0) / 1000000) | round(3) }}
+
+      - name: Hive Power Effective
+        unique_id: hive_power_effective
+        unit_of_measurement: HP
+        state_class: measurement
+        state: &gt;
+          {% set v = states('sensor.hive_vests_own') | float(0)
+                   - states('sensor.hive_vests_delegated_out') | float(0)
+                   + states('sensor.hive_vests_received') | float(0) %}
+          {{ (v * states('sensor.hive_per_mvests') | float(0) / 1000000) | round(3) }}
+
+      - name: Hive Power Delegated Out
+        unique_id: hive_power_delegated_out
+        unit_of_measurement: HP
+        state: &gt;
+          {{ (states('sensor.hive_vests_delegated_out') | float(0)
+              * states('sensor.hive_per_mvests') | float(0) / 1000000) | round(3) }}
+
+      - name: Hive Power Received
+        unique_id: hive_power_received
+        unit_of_measurement: HP
+        state: &gt;
+          {{ (states('sensor.hive_vests_received') | float(0)
+              * states('sensor.hive_per_mvests') | float(0) / 1000000) | round(3) }}
+
+      - name: Hive Powerdown Weekly
+        unique_id: hive_powerdown_weekly
+        unit_of_measurement: HIVE
+        state: &gt;
+          {{ (states('sensor.hive_powerdown_rate_vests') | float(0)
+              * states('sensor.hive_per_mvests') | float(0) / 1000000) | round(3) }}
+
+      - name: Hive Powerdown Remaining
+        unique_id: hive_powerdown_remaining
+        unit_of_measurement: HIVE
+        state: &gt;
+          {{ (states('sensor.hive_powerdown_remaining_vests') | float(0)
+              * states('sensor.hive_per_mvests') | float(0) / 1000000) | round(3) }}
+
+      - name: Hive Powerdown Active
+        unique_id: hive_powerdown_active
+        state: "{{ 'Yes' if states('sensor.hive_powerdown_rate_vests') | float(0) &gt; 0 else 'No' }}"
+        icon: mdi:arrow-down-bold-circle-outline
+
+      - name: Hive Next Powerdown
+        unique_id: hive_next_powerdown
+        device_class: timestamp
+        availability: &gt;
+          {{ states('sensor.hive_next_powerdown_raw') not in ['unknown', 'unavailable', '']
+             and not states('sensor.hive_next_powerdown_raw').startswith('1969') }}
+        state: "{{ states('sensor.hive_next_powerdown_raw') ~ '+00:00' }}"
+
+      - name: Hive Witness Votes HP
+        unique_id: hive_witness_votes_hp
+        unit_of_measurement: HP
+        state_class: measurement
+        state: &gt;
+          {{ (states('sensor.hive_witness_votes_vests') | float(0)
+              * states('sensor.hive_per_mvests') | float(0) / 1000000) | round(0) }}
+
+      - name: Hive Witness Votes MHP
+        unique_id: hive_witness_votes_mhp
+        unit_of_measurement: MHP
+        state: "{{ (states('sensor.hive_witness_votes_hp') | float(0) / 1000000) | round(2) }}"
+
+      - name: Hive Portfolio Value
+        unique_id: hive_portfolio_value
+        unit_of_measurement: "£"
+        device_class: monetary
+        state: &gt;
+          {% set hive = states('sensor.hive_liquid_hive') | float(0)
+                      + states('sensor.hive_savings_hive') | float(0)
+                      + states('sensor.hive_power_own') | float(0) %}
+          {% set hbd = states('sensor.hive_liquid_hbd') | float(0)
+                     + states('sensor.hive_savings_hbd') | float(0) %}
+          {{ (hive * states('sensor.hive_price') | float(0)
+              + hbd * states('sensor.hbd_price') | float(0)) | round(2) }}
+```
+
+---
+
+## Step 2: Add the package to Home Assistant
+
+How you do this depends on how Home Assistant is installed. If **Settings** has an **Add-ons** or **Apps** section, you're on **Home Assistant OS**: use Option A or B. If you see *"Apps require the Home Assistant Operating System"*, you're on **Docker/Container** or **Core**: use Option C.
+
+### Option A: Home Assistant OS with the File editor app
+
+1. Go to **Settings → Apps** (called **Add-ons** on older versions) and open the **store**. Search for **File editor**, then install and start it. Switch on **Show in sidebar**.
+2. Open **File editor** from the sidebar. You'll be in the `/config` folder.
+3. Click the **folder icon** (top left), then the **new folder icon**, and create a folder called `packages`.
+4. Open `packages`, click the **new file icon** and name the file `hive.yaml`.
+5. Paste in the YAML from Step 1, with your account name in it, and click **Save**.
+6. Go back to `/config` and open `configuration.yaml` (see Step 3).
+
+### Option B: Home Assistant OS with the Studio Code Server app
+
+If you'd rather use a VS Code-style editor:
+
+1. Go to **Settings → Apps → store**, then install and start **Studio Code Server**. Switch on **Show in sidebar**.
+2. Open it from the sidebar. In the file explorer, right-click the root of `/config` → **New Folder** → `packages`.
+3. Right-click `packages` → **New File** → `hive.yaml`. Paste in the YAML and save (**Ctrl+S**).
+4. Open `configuration.yaml` from the explorer (see Step 3).
+
+### Option C: Docker / Container (or Core) by hand
+
+There are no apps on these installs, so you edit the files directly on the host.
+
+**1. Find your config folder.** It's the host folder mapped to `/config` in the container, the one containing `configuration.yaml`. In `docker-compose.yml` it's the line that looks like `- /some/path:/config`. If you're not sure, run this on the host:
+
+```
+docker inspect homeassistant --format '{{ range .Mounts }}{{ .Source }} -&gt; {{ .Destination }}{{ println }}{{ end }}'
+```
+
+The path on the left of `-&gt; /config` is your folder. Change `homeassistant` if your container has a different name. On a **Core** install the folder is usually `~/.homeassistant`.
+
+**2. Create the package file:**
+
+```
+cd /path/to/your/config
+mkdir -p packages
+nano packages/hive.yaml
+```
+
+Paste in the YAML. To save and exit, press **Ctrl+O**, **Enter**, then **Ctrl+X**.
+
+**3. Open `configuration.yaml`:**
+
+```
+nano configuration.yaml
+```
+
+Then follow Step 3 below.
+
+If your config folder is on a NAS or shared over the network, you can also do all of this in a normal desktop text editor.
+
+---
+
+## Step 3: Turn on packages in `configuration.yaml`
+
+Add these two lines to `configuration.yaml`:
+
+```yaml
+homeassistant:
+  packages: !include_dir_named packages
+```
+
+⚠️ If there's **already** a `homeassistant:` line in the file, don't add a second one. Put the `packages:` line, indented, underneath the existing one.
+
+---
+
+## Step 4: Check and restart
+
+1. Go to **Developer tools → YAML → Check configuration**. It should report the configuration as valid.
+2. Do a **full restart**. A YAML reload won't load new REST sensors.
+   - HA OS: **Settings → System → ⋮ (top right) → Restart Home Assistant**
+   - Docker: `docker restart homeassistant`
+
+Give it a minute or two for the sensors to fill in.
+
+---
+
+## Step 5: Add the dashboard card
+
+1. Open your dashboard and click the **pencil icon** (top right) to edit.
+2. Click **+ Add card**, scroll to the bottom and pick **Manual**.
+3. **Delete everything already in the box**, paste the YAML below, then click **Save**.
+
+```yaml
+type: vertical-stack
+cards:
+  - type: glance
+    title: HIVE Witness
+    columns: 3
+    entities:
+      - entity: sensor.hive_witness_rank
+        name: Rank
+        icon: mdi:podium
+      - entity: sensor.hive_witness_votes_mhp
+        name: Votes
+        icon: mdi:vote
+      - entity: sensor.hive_witness_missed_blocks
+        name: Missed
+        icon: mdi:cube-off-outline
+
+  - type: entities
+    entities:
+      - type: section
+        label: Stake
+      - entity: sensor.hive_power_own
+        name: Hive Power (own)
+        icon: mdi:lightning-bolt
+      - entity: sensor.hive_power_effective
+        name: Effective HP
+        icon: mdi:lightning-bolt-circle
+      - entity: sensor.hive_power_delegated_out
+        name: Delegated out
+        icon: mdi:arrow-right-bold
+      - entity: sensor.hive_power_received
+        name: Delegated in
+        icon: mdi:arrow-left-bold
+      - entity: sensor.hive_witness_votes_cast
+        name: Witness votes cast
+        icon: mdi:account-check
+
+      - type: section
+        label: Power Down
+      - entity: sensor.hive_powerdown_active
+        name: Powering down
+      - entity: sensor.hive_powerdown_weekly
+        name: Weekly payout
+        icon: mdi:calendar-week
+      - entity: sensor.hive_powerdown_remaining
+        name: Remaining
+        icon: mdi:progress-download
+      - entity: sensor.hive_next_powerdown
+        name: Next payout
+        format: relative
+        icon: mdi:clock-outline
+
+      - type: section
+        label: Wallet
+      - entity: sensor.hive_liquid_hive
+        name: HIVE (liquid)
+        icon: mdi:wallet
+      - entity: sensor.hive_savings_hive
+        name: HIVE (savings)
+        icon: mdi:piggy-bank
+      - entity: sensor.hive_liquid_hbd
+        name: HBD (liquid)
+        icon: mdi:currency-usd
+      - entity: sensor.hive_savings_hbd
+        name: HBD (savings)
+        icon: mdi:piggy-bank-outline
+      - entity: sensor.hive_price
+        name: HIVE price
+        icon: mdi:chart-line
+      - entity: sensor.hbd_price
+        name: HBD price
+        icon: mdi:chart-line-variant
+
+  - type: entity
+    entity: sensor.hive_portfolio_value
+    name: Portfolio Value
+    icon: mdi:cash-multiple
+```
+
+💡 **Getting a configuration error?** The Manual card starts with some placeholder text, often including a `type:` line. If you paste underneath it instead of replacing it, you end up with two `type:` lines and Home Assistant rejects the card. Clear the box completely first. If you still get an error, removing the `type: vertical-stack` line also fixes it.
+
+---
+
+## Customising
+
+- **Currency:** in `hive.yaml`, replace `gbp` (3 places) with `usd`, `eur` and so on, and `£` with your symbol.
+- **API node:** the package uses `api.hive.blog`. If that's slow for you, replace each `resource: https://api.hive.blog` with another node, such as `https://api.deathwing.me` or `https://api.openhive.network`. Or run it against your own node, since you're a witness 😉
+- **Rank:** this counts active witnesses only. If you're outside the top 300, it shows something like `&gt;290`.
+- **Not a witness?** The card still works for any account. The witness rows just show 0.
+
+## Troubleshooting
+
+- **Sensors show "unavailable":** check **Settings → System → Logs** for errors mentioning `rest` or `hive`. The usual cause is a typo in the account name, or `YOUR_HIVE_ACCOUNT` left in one of the 3 places.
+- **Entities not found on the card:** if you already had sensors with the same names, Home Assistant may have added `_2` to the new ones. Check **Settings → Devices &amp; services → Entities**, search for "hive" and update the card to match.
+
+---
+
+## Ideas for next steps
+
+- Add a **history graph** of witness votes or HIVE price.
+- Create an **automation** to notify you when your rank changes or missed blocks go up.
+
+Questions and improvements are welcome in the comments 👇
+</div>
+  <footer class="hive-post-embed__source">
+    <span class="hive-post-embed__source-label">Source:</span>
+    <a href="https://hive.blog/@c0ff33a/home-assistant-users-view-your-hive-witness-stats-at-a-glance-with-this-dashboard-card">Home Assistant Users - View your Hive Witness stats at a glance with this dashboard card</a>
+    by
+    <a href="https://hive.blog/@c0ff33a">@c0ff33a</a>
+  </footer>
+</div>]]></content><author><name>c0ff33a</name></author><category term="howto" /><category term="witness" /><category term="monitoring" /><summary type="html"><![CDATA[Build a Home Assistant dashboard for Hive witness and account statistics, with REST sensor YAML, installation steps, customization and troubleshooting.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://files.peakd.com/file/peakd-hive/c0ff33a/23swgEFtNgPrGSMikMg5TuMEcwbT4fxDvmHD2EKW1mGeNtLnJpxUqpFEz9QsVuyX9qqti.png" /><media:content medium="image" url="https://files.peakd.com/file/peakd-hive/c0ff33a/23swgEFtNgPrGSMikMg5TuMEcwbT4fxDvmHD2EKW1mGeNtLnJpxUqpFEz9QsVuyX9qqti.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">3Speak: A Whole New Look, Built to Last</title><link href="https://hivedocs.info/news/infrastructure/3speak/2026/11/13/3speak-a-whole-new-look-built-to-last-2026-11-13.html" rel="alternate" type="text/html" title="3Speak: A Whole New Look, Built to Last" /><published>2026-11-13T03:24:30-08:00</published><updated>2026-11-13T03:24:30-08:00</updated><id>https://hivedocs.info/news/infrastructure/3speak/2026/11/13/3speak-a-whole-new-look-built-to-last-2026-11-13</id><content type="html" xml:base="https://hivedocs.info/news/infrastructure/3speak/2026/11/13/3speak-a-whole-new-look-built-to-last-2026-11-13.html"><![CDATA[<div class="hive-post-embed" data-hive-author="mantequilla-soft" data-hive-permlink="3speak-a-whole-new-look-built-to-last-2026-11-13">
+  <div id="content-mantequilla-soft-3speak-a-whole-new-look-built-to-last-2026-11-13" class="hive-post-embed__content" data-hive-render-target="true"><div class="text-justify">
+
+![3Speak dev update, November 4 to November 13, 2026](https://images.hive.blog/DQmSihc6YqpPY1CoyUWMcoduzRx9Rzzp3eHygUD1PWjPVSB/thumbnail.png)
+
+**The short version**
+
+- **3Speak 2.0 is live:** every page of [3speak.tv](https://3speak.tv) has a new design, on desktop and on phones, and the video editor got the same look.
+- **Home** gets a sliding Spotlight with short video previews, plus a side panel with the latest from the community and your groups.
+- **On phones,** the audio player docks above the bottom bar and follows your swipes: left and right to skip 15 seconds, up to open, down to close.
+- **Your wallet** claims rewards in one click and shows a QR code to receive HIVE and HBD.
+- **The Audio Editor is open to everyone:** cut, clean up and level your podcast, make audiograms that go out as Shorts, and record with a teleprompter.
+- **Invite people and earn:** 10% of what the people you invite earn from ads, for their first 3 months, paid on top by 3Speak.
+- **Playlists can hold whole podcast shows** from anywhere, and audio and playlists can be embedded on other websites.
+- Under the hood: smoother video playback, no ads paid out to crawlers, more than 5,000 new tests that found and fixed over 100 bugs, and new Snapie content filters.
+
+---
+
+## 🌐 3speak.tv website
+
+[new-3speak-tv](https://github.com/Mantequilla-Soft/new-3speak-tv) · 18 merged changes, including the 2.0 release ([#566](https://github.com/Mantequilla-Soft/new-3speak-tv/pull/566))
+
+<hr />
+
+### 3Speak 2.0: a new look for every page
+
+Over the years, 3speak.tv grew one feature at a time. New things were built next to old code, each with its own look, and in some places it felt messy: buttons, menus and windows that didn't match from one page to the next.
+
+3Speak 2.0 fixes that. Every screen, menu and window has been redesigned from one design system, so the whole site now has **consistent branding and modern, state-of-the-art design**: flat cards, the 3Speak red and blue, one set of icons and the same building blocks everywhere.
+
+We know most of us humans don't love change, especially on a site we use every day. But we think this one is super slick and awesome, and we hope that after a few days you will agree.
+
+We rely on your feedback. If anything broke, or something you used every day is now hard to find, tell us in the comments or with the **Feedback** button on the site, and we will fix it as fast as we can, as always.
+
+![The 3Speak home page before and after 2.0](https://images.hive.blog/DQmRB5Kg4n8s3UGBJpxAWWbJAj6hg7nsRFkun9TWBr4MWnU/ba-home.png)
+
+- **Wider layouts:** on a big screen, Home now fits four videos side by side.
+- **A cleaner top bar:** Home, Shorts, Live, Audio and Groups always one click away, a Playlists menu with Watch Later and your history, and a **Create** button that sorts everything you can make into Video, Audio, Live and Others.
+- **The same look on every page:** watch pages, [Shorts](https://3speak.tv/shorts), the [Audio page](https://3speak.tv/audio), channels, communities, Settings, the uploaders and every popup.
+- **Faster first load:** icons, video players, popups and the emoji picker now load only when they are needed, and the Spotlight starts fetching its videos right away. The icon font alone went from 4.5 MB to 108 KB. On a prod-like build, the home page showed its main content in 1.25 s instead of 2.0 s on desktop, and in 5.2 s instead of 7.1 s on a phone on 4G.
+- **All 21 languages** are translated for every new and reworded text.
+
+<hr />
+
+### On your phone
+
+<div class="pull-right">
+
+![3Speak on a phone before and after 2.0](https://images.hive.blog/DQmUi7Kj3rkukdWQegNk7WG8mJsk8FiLiB6NJ9G1qndEgic/ba-phone.png)
+
+</div>
+
+Every screen of 3Speak 2.0 was designed for phones too, not just squeezed down from the desktop.
+
+- **A bottom bar that stays put:** it is docked to the bottom edge of the screen and no longer jumps while you scroll, Firefox on Android included. On iPhones, the area of the home indicator is part of the bar.
+- **A big red + in the middle** opens everything you can create: a video, a Short, a story, audio or a playlist.
+- **Audio has its own tab** in the bar now, next to Home and Shorts. Groups moved into the account menu.
+- **The Spotlight comes first:** the featured video fills the top of Home with a big Play button, and Save and Share right next to it.
+- **The audio player docks right above the bottom bar,** so you can keep listening while you browse.
+- **Swipe the audio player:** swipe left or right to jump 15 seconds back or forward, swipe up to open the full player and down to close it. On the open player, a swipe down tucks it away again.
+- **The queue always shows what is playing.** Removing the playing track goes on with the next one, and an empty queue closes the player.
+- **One video per row,** with the title, the creator, the votes and the payout easy to read.
+- **Popups open from the bottom** as sheets, each with a title bar and a close button, so they are easy to reach with your thumb.
+- **Warm-up accounts** see their progress as a ring around their avatar in the bottom bar.
+- **Channel pages** keep Follow, Message, Tip and Share in one row, and on small screens Message shortens to "DM" so everything fits.
+
+<hr />
+
+### Channel pages
+
+![A channel page before and after 2.0](https://images.hive.blog/DQmPHnEggot3n7sZJ9Kw2u6tT3LBnXNeEWxoJk94Bi53Ceo/ba-profile.png)
+
+[Channel pages](https://3speak.tv/@badadib) got a calmer header: the name, a row of stats with the channel's linked profiles, and Follow, Message, Tip, Share and More as clear buttons. The tabs below hold Videos, Shorts, Audio, Playlists, Community, Supporters and Members, with a search for the channel next to them.
+
+<hr />
+
+### A new Home
+
+![The Home feed with the new side panel](https://images.hive.blog/DQmbDuhpED9ZQw8GfjqANoRf6zyBNdYMRz99EwhdRxRB1qd/home-feed.png)
+
+- **A sliding Spotlight:** the top of [Home](https://3speak.tv) moves through all featured videos, one every 7 seconds. On desktop it plays a short, muted preview of each one, and you can turn previews off under Settings, Appearance.
+- **A side panel next to your feed:** new audio, playlists and posts from the community, plus your groups. People still in their warm-up see their goals there.
+- **"Mark all as seen"** on the strip of new videos from people you follow: it comes back only when someone you follow posts again.
+- The feed tabs are now **Discover, Following, Interests and New**, and picking your interests in Settings uses the same picture tiles as the first-visit popup.
+
+<div class="pull-right">
+
+![The new welcome card for first-time visitors](https://images.hive.blog/DQmTHYKVVSbD3BNc7mxkjKBTkzo1qqZJkfd3WzXSVZqNdqZ/welcome.png)
+
+</div>
+
+First-time visitors are greeted by a **new welcome card**: five tiles that say what 3Speak is about (a real alternative to corporate social media since 2019, community-owned, creators earn from upvotes and ads, viewers and listeners earn too, and we never sell your data), with a big button to take the tour and one for the FAQ.
+
+<hr />
+
+### Your wallet
+
+<div class="pull-right">
+
+![The new 3Speak wallet](https://images.hive.blog/DQmT8bWqWX8mnbvSRGmdX2ESSoFyWjvrXC4abBguG9b3xKM/wallet.png)
+
+</div>
+
+The [wallet](https://3speak.tv/wallet/badadib) is new too. When rewards are waiting, a banner shows how much, and **Claim** collects them in one click. **Receive** shows a QR code for your account, which can ask for an amount in HIVE or HBD and carry a memo. On phones, **Scan** in the Send window fills in the recipient from their QR code. A card shows your resource credits in plain words ("enough for about 458 posts right now"), and a chart shows what you earned in the last 30 days.
+
+<hr />
+
+### The Audio Editor, for everyone
+
+<div class="pull-right">
+
+![The Audio Editor in the Create menu](https://images.hive.blog/DQmYH95iMrKY3rCrZufYZxrXZGkF8EhQRqWUmrfdSJYjoMu/create.png)
+
+</div>
+
+The **Audio Editor** is open to every creator, from the Create menu and from every track in the audio upload (**Edit audio**). It is made for podcasts, music and voice:
+
+- **Cut silences** finds the pauses and closes the gaps, and **levelling** brings your episode to podcast loudness.
+- Voice and music on their own tracks, fades, noise reduction, a music library and sound effects, for recordings up to 3 hours.
+- A **template** with your intro, outro and music bed, applied by itself to every new recording.
+- **Chapters** that end up in the MP3 and in the episode's description.
+- **Audiograms:** pick a piece of up to 2 minutes and design a vertical video with your cover, title and a moving waveform. Each one goes out as a [Short](https://3speak.tv/shorts) together with your audio, and on the Shorts page it opens the full episode.
+
+<div class="pull-right">
+
+![The teleprompter in the audio upload](https://images.hive.blog/DQmZCvP1R4TCebhDBMUpmiEp8V8GiEvsJo4g2MjXtZgcxn5/audio-upload.png)
+
+</div>
+
+The audio upload got better too:
+
+- A **teleprompter** for recording in the browser, in the upload and in the editor: write your script, and it scrolls at a steady speed or follows your voice.
+- **Make a transcript** writes down what you said (English for now) and puts it under your post text, ready to edit.
+- **Covers:** your playlist's cover is picked for you, and you can design your own cover with text and stickers.
+- The post description has the full editor, with emoji, GIFs, images and a preview.
+
+([#555](https://github.com/Mantequilla-Soft/new-3speak-tv/pull/555), [#556](https://github.com/Mantequilla-Soft/new-3speak-tv/pull/556), [#557](https://github.com/Mantequilla-Soft/new-3speak-tv/pull/557), [#559](https://github.com/Mantequilla-Soft/new-3speak-tv/pull/559))
+
+<hr />
+
+### Invite people, earn 10%
+
+<div class="pull-right">
+
+![Referrals in Settings](https://images.hive.blog/DQmdns6kTnPnWhpQr3Txi2FHqno19Nkn9gtvJsYEuuXjdt7/referrals.png)
+
+</div>
+
+Settings has your personal **invite link**. Invite someone with it, and you get **10% of their ad rewards** for their first 3 months, whether they earn as a creator, a viewer or a listener, plus **2% of their ad campaigns** if they advertise. 3Speak pays this on top: the people you invite keep everything they earn.
+
+Listening now earns from the same pool as watching, at the same rate. Switch on "Count my listening too" in the same tab. ([#546](https://github.com/Mantequilla-Soft/new-3speak-tv/pull/546))
+
+<hr />
+
+### Playlists and podcasts
+
+- **Whole shows in a playlist:** add any podcast from anywhere with the new **External shows** button, and its new episodes show up by themselves.
+- **Playlist types:** mark a playlist as Video or Audio, and audio playlists as Podcast, Music, Voice notes or Other sounds. Tracks uploaded into a Music or Podcast playlist take that type.
+- **Embed on your website:** every audio, audio playlist and outside podcast has an **Embed** button. A playlist embed always shows the latest tracks.
+- Audio cards show the **title of the post** instead of the recording's file name.
+
+([#548](https://github.com/Mantequilla-Soft/new-3speak-tv/pull/548), [#554](https://github.com/Mantequilla-Soft/new-3speak-tv/pull/554))
+
+<hr />
+
+### Small touches
+
+- **"Not interested" really works now:** videos you mark, and creators you hide with "Don't show this creator", stay out of every feed right away, also when you come back to a page later. ([#565](https://github.com/Mantequilla-Soft/new-3speak-tv/issues/565))
+- **Powered by Hive:** a link to [hive.io](https://hive.io) in the account menu, on the About page and in the FAQ. ([#563](https://github.com/Mantequilla-Soft/new-3speak-tv/issues/563))
+- **Hiding a creator hides everything they post:** videos, Shorts, audio, playlists and stories.
+- **Mark all read** really clears everything, stories and podcast episodes included, and is in the bell too.
+- **Escape closes windows**, and the top bar, notifications, comments and the upload picker work with a keyboard and screen readers.
+- **Scheduled posts** can be edited in a popup that matches the uploader.
+- Videos that **stall** on one server now load the next piece from another one within seconds.
+- Thumbnails hosted on Ecency load through our own image cache, so they show up for everyone.
+- Shorts and story captions no longer repeat the "Watch on 3Speak" footer.
+- Remix drafts opened later still post under the original.
+- Uploads show a short notice: copyrighted material declines its payout.
+- Accounts that can't upload now see why, with a way to reach us.
+
+([#545](https://github.com/Mantequilla-Soft/new-3speak-tv/pull/545), [#549](https://github.com/Mantequilla-Soft/new-3speak-tv/pull/549), [#550](https://github.com/Mantequilla-Soft/new-3speak-tv/pull/550), [#551](https://github.com/Mantequilla-Soft/new-3speak-tv/pull/551), [#552](https://github.com/Mantequilla-Soft/new-3speak-tv/pull/552), [#553](https://github.com/Mantequilla-Soft/new-3speak-tv/pull/553), [#558](https://github.com/Mantequilla-Soft/new-3speak-tv/pull/558), [#560](https://github.com/Mantequilla-Soft/new-3speak-tv/pull/560), [#561](https://github.com/Mantequilla-Soft/new-3speak-tv/pull/561), [#562](https://github.com/Mantequilla-Soft/new-3speak-tv/pull/562))
+
+---
+
+## ⚡ Feeds and API
+
+[3speakchecks](https://github.com/Mantequilla-Soft/3speakchecks) · 27 changes
+
+The "checker" is the service behind 3Speak's feeds, ads, tips and the Audio page.
+
+![Test coverage before and after](https://images.hive.blog/DQmUvtrs4fMoCoNhFhimEoUutUxRtNfG86Y8GNZ6nmtVA4W/tests.png)
+
+- **Tested like never before:** the checker went from 17% to 98.5% of its code covered by tests, on a throwaway database that can never touch real data or real money. Writing the tests found 70 bugs, and all of them are fixed, from a request that could crash the service to a few security issues. The video player (99.4%) and the website (1,417 to 4,251 unit tests) got the same treatment. ([#120](https://github.com/Mantequilla-Soft/3speakchecks/pull/120), [#121](https://github.com/Mantequilla-Soft/3speakchecks/pull/121), [#123](https://github.com/Mantequilla-Soft/3speakchecks/pull/123), [#124](https://github.com/Mantequilla-Soft/3speakchecks/pull/124), [#125](https://github.com/Mantequilla-Soft/3speakchecks/pull/125), [#126](https://github.com/Mantequilla-Soft/3speakchecks/pull/126), [#127](https://github.com/Mantequilla-Soft/3speakchecks/pull/127))
+- **No ads paid out to crawlers:** search engines and AI crawlers that render watch pages were "watching" ads, which took money away from creators with real viewers. In two days of logs, 38,578 of 69,652 ad requests came from them, and they are refused now. ([#141](https://github.com/Mantequilla-Soft/3speakchecks/pull/141), [#142](https://github.com/Mantequilla-Soft/3speakchecks/pull/142))
+- **No ads on content that can't earn:** posts that decline their payout, and creators whose rewards are blocked, carry no ads at all. ([#143](https://github.com/Mantequilla-Soft/3speakchecks/pull/143))
+- **Audio ads, calmer:** at most one audio ad every 15 minutes per listener, and video tickers play in audio only when the advertiser chooses it. ([#116](https://github.com/Mantequilla-Soft/3speakchecks/pull/116), [#117](https://github.com/Mantequilla-Soft/3speakchecks/pull/117))
+- **Referral bonus and listener rewards** behind the new Settings tab. ([#118](https://github.com/Mantequilla-Soft/3speakchecks/pull/118), [#134](https://github.com/Mantequilla-Soft/3speakchecks/pull/134))
+- **A second checker in the US:** the site talks to whichever one answers faster for you, and every change now goes to the US one first. ([#132](https://github.com/Mantequilla-Soft/3speakchecks/pull/132), [#133](https://github.com/Mantequilla-Soft/3speakchecks/pull/133))
+- **Thumbnails for videos that had none:** some apps upload without a thumbnail, which left 1,740 videos with the placeholder. They now get a frame from the video. ([#136](https://github.com/Mantequilla-Soft/3speakchecks/pull/136))
+- **Audio:** real post titles instead of file names, podcast hosts listed under Creators on the Podcasts tab, playlist types in feeds and RSS, and outside shows inside playlists. ([#128](https://github.com/Mantequilla-Soft/3speakchecks/pull/128), [#130](https://github.com/Mantequilla-Soft/3speakchecks/pull/130), [#131](https://github.com/Mantequilla-Soft/3speakchecks/pull/131), [#141](https://github.com/Mantequilla-Soft/3speakchecks/pull/141))
+- **Faster, steadier:** a repeated search answers in about 2 ms instead of 2.5 seconds, and podcast crawlers can no longer slow down the whole site by reading every RSS feed at once. ([#127](https://github.com/Mantequilla-Soft/3speakchecks/pull/127), [#135](https://github.com/Mantequilla-Soft/3speakchecks/pull/135))
+- Hidden creators and unlisted videos stay out of every feed, the search and its suggestions, and "Mark all as seen" support for the new-videos strip. ([#119](https://github.com/Mantequilla-Soft/3speakchecks/pull/119), [#137](https://github.com/Mantequilla-Soft/3speakchecks/pull/137), [#144](https://github.com/Mantequilla-Soft/3speakchecks/pull/144))
+
+---
+
+## 🎚️ Video editor
+
+[3speak-editor-suite](https://github.com/Mantequilla-Soft/3speak-editor-suite) · 11 changes
+
+- **The 3Speak 2.0 look:** the audio and Shorts editor now match the new site, with the same colours, icons, buttons and popups, and popups become bottom sheets on phones. ([#25](https://github.com/Mantequilla-Soft/3speak-editor-suite/pull/25))
+- **Clearer camera errors:** the recorders used to say "Camera access denied" for every problem. Now they tell you what is really wrong, like a camera busy in a video call, and offer **Try again**. ([#25](https://github.com/Mantequilla-Soft/3speak-editor-suite/pull/25))
+- **The audio mode** behind the Audio Editor, with MP3 export, templates, the audiogram studio and the teleprompter in the voice recorder. ([#15](https://github.com/Mantequilla-Soft/3speak-editor-suite/pull/15), [#21](https://github.com/Mantequilla-Soft/3speak-editor-suite/pull/21), [#24](https://github.com/Mantequilla-Soft/3speak-editor-suite/pull/24))
+- **Flags:** press B to drop numbered, coloured markers on the timeline. They move along with your edits. ([#18](https://github.com/Mantequilla-Soft/3speak-editor-suite/pull/18))
+- **Drafts remember the view:** the zoom and the selected clip come back when you open a draft. ([#18](https://github.com/Mantequilla-Soft/3speak-editor-suite/pull/18))
+- **Taller or shorter tracks:** drag the handle under a track's name, and tracks scroll up and down when they don't fit. ([#19](https://github.com/Mantequilla-Soft/3speak-editor-suite/pull/19))
+- **Ripple** closes a gap on the selected clip's track only, so a music bed stays where it is. ([#17](https://github.com/Mantequilla-Soft/3speak-editor-suite/pull/17))
+- **Shorts editor fixes:** picking a sticker no longer crashes the editor, Add Text lands at the playhead, and remixes save drafts again. ([#22](https://github.com/Mantequilla-Soft/3speak-editor-suite/pull/22), [#23](https://github.com/Mantequilla-Soft/3speak-editor-suite/pull/23))
+- Every merged change is now tested and deployed by itself. ([#16](https://github.com/Mantequilla-Soft/3speak-editor-suite/pull/16), [#20](https://github.com/Mantequilla-Soft/3speak-editor-suite/pull/20))
+
+---
+
+## ▶️ Video player
+
+[snapievideoplayer](https://github.com/Mantequilla-Soft/snapievideoplayer) · 9 changes
+
+![Video player and ad numbers](https://images.hive.blog/DQmV9yGv71y78mdFkENFtYgw1iaWZcA9USTxM9SqJYqvVZf/player.png)
+
+- **No more endless spinners:** some new uploads played their first seconds and then hung. The player now picks the fastest server for every piece of a video. In a test run over 8 new videos, 0 of 100 pieces failed, where 19 failed across 3 videos before. ([#57](https://github.com/Mantequilla-Soft/snapievideoplayer/pull/57), [#58](https://github.com/Mantequilla-Soft/snapievideoplayer/pull/58), [#59](https://github.com/Mantequilla-Soft/snapievideoplayer/pull/59))
+- **A new home for older videos:** videos moved to our new archive storage play from there, and fall back to the usual servers if needed. ([#63](https://github.com/Mantequilla-Soft/snapievideoplayer/pull/63), [#64](https://github.com/Mantequilla-Soft/snapievideoplayer/pull/64), [#66](https://github.com/Mantequilla-Soft/snapievideoplayer/pull/66))
+- **99.4% of the code covered by tests**, which found 9 bugs, all fixed: watch time can't be counted faster than real time, clearer error messages, subtitles that stay with the right video. ([#60](https://github.com/Mantequilla-Soft/snapievideoplayer/pull/60), [#61](https://github.com/Mantequilla-Soft/snapievideoplayer/pull/61), [#62](https://github.com/Mantequilla-Soft/snapievideoplayer/pull/62))
+
+---
+
+## 🎧 Audio embed
+
+[snapieaudio](https://github.com/Mantequilla-Soft/snapieaudio) · 5 changes
+
+- **Playlist and podcast embeds:** one player with every track, page by page, a volume control and Next and Previous. ([#12](https://github.com/Mantequilla-Soft/snapieaudio/pull/12), [#13](https://github.com/Mantequilla-Soft/snapieaudio/pull/13))
+- **Audio that wouldn't start** (stuck at 0:00 in some browsers) plays again, and a server that fails is swapped for another one. ([#14](https://github.com/Mantequilla-Soft/snapieaudio/pull/14), [#15](https://github.com/Mantequilla-Soft/snapieaudio/pull/15))
+- A sponsor spot at the start now plays before any of the track, not a second into it. ([#16](https://github.com/Mantequilla-Soft/snapieaudio/pull/16))
+
+---
+
+## 📱 Snapie
+
+[snapie-io](https://github.com/Mantequilla-Soft/snapie-io) · 5 releases
+
+- **3Speak audio and playlists in snaps:** paste a 3Speak audio or playlist link into a snap or post, and it plays right there. ([#359](https://github.com/Mantequilla-Soft/snapie-io/pull/359))
+- **Content filters:** a "Hide game results" switch, muting by app or tag, and "Hide posts like this" on any snap. Your filters follow you to every device. ([#336](https://github.com/Mantequilla-Soft/snapie-io/pull/336))
+- **Easier to find:** a sitemap, real page titles and full posts for search engines, and proper "not found" pages. ([#332](https://github.com/Mantequilla-Soft/snapie-io/pull/332), [#340](https://github.com/Mantequilla-Soft/snapie-io/pull/340))
+- Chat can be closed on phones, images load again for visitors who were being rate limited, the Wallet tab has a real page, and a "Powered by Hive" link sits in the footer. ([#332](https://github.com/Mantequilla-Soft/snapie-io/pull/332), [#339](https://github.com/Mantequilla-Soft/snapie-io/pull/339), [#359](https://github.com/Mantequilla-Soft/snapie-io/pull/359))
+
+---
+
+## 🗄️ Storage
+
+[hotnode](https://github.com/Mantequilla-Soft/hotnode) · 2 changes · [trafficdirector](https://github.com/Mantequilla-Soft/trafficdirector) · 2 changes
+
+On November 9, new uploads stopped because a storage node was taken out of rotation over a backlog that didn't actually stop it from working. Now the node keeps taking uploads and sends an alert every hour instead, and it pauses on its own only when it is really filling up (80%), resuming at 75%. ([hotnode #17](https://github.com/Mantequilla-Soft/hotnode/pull/17), [#18](https://github.com/Mantequilla-Soft/hotnode/pull/18), [trafficdirector #3](https://github.com/Mantequilla-Soft/trafficdirector/pull/3), [#4](https://github.com/Mantequilla-Soft/trafficdirector/pull/4))
+
+---
+
+Questions about 3Speak 2.0, or something that broke or looks off after the update? Tell us in the comments, we read every one and fix things fast.
+
+<hr />
+
+<center>
+
+[![Mantequilla Soft](https://images.hive.blog/DQmSCTXSSRQ4R5Xq2pGTTiiMuSsTcJYAy1ozfkb35M7jVzB/mantequilla-soft-logo.png)](https://www.mantequilla-soft.com)
+
+**[GitHub](https://github.com/Mantequilla-Soft) · [Website](https://www.mantequilla-soft.com) · [Snapie](https://snapie.io) · [3Speak](https://3speak.tv)**
+
+</center>
+
+</div>
+</div>
+  <footer class="hive-post-embed__source">
+    <span class="hive-post-embed__source-label">Source:</span>
+    <a href="https://hive.blog/@mantequilla-soft/3speak-a-whole-new-look-built-to-last-2026-11-13">3Speak: A Whole New Look, Built to Last</a>
+    by
+    <a href="https://hive.blog/@mantequilla-soft">@mantequilla-soft</a>
+  </footer>
+</div>]]></content><author><name>mantequilla-soft</name></author><category term="news" /><category term="infrastructure" /><category term="3speak" /><summary type="html"><![CDATA[3Speak infrastructure updates covering regional API routing, playback failover and storage-capacity safeguards following an upload incident, with implementation links.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://images.hive.blog/DQmSihc6YqpPY1CoyUWMcoduzRx9Rzzp3eHygUD1PWjPVSB/thumbnail.png" /><media:content medium="image" url="https://images.hive.blog/DQmSihc6YqpPY1CoyUWMcoduzRx9Rzzp3eHygUD1PWjPVSB/thumbnail.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Core dev meeting #85</title><link href="https://hivedocs.info/news/core/development/2026/11/12/core-dev-meeting-85.html" rel="alternate" type="text/html" title="Core dev meeting #85" /><published>2026-11-12T05:10:33-08:00</published><updated>2026-11-12T05:10:33-08:00</updated><id>https://hivedocs.info/news/core/development/2026/11/12/core-dev-meeting-85</id><content type="html" xml:base="https://hivedocs.info/news/core/development/2026/11/12/core-dev-meeting-85.html"><![CDATA[<div class="hive-post-embed" data-hive-author="howo" data-hive-permlink="core-dev-meeting-85">
+  <div id="content-howo-core-dev-meeting-85" class="hive-post-embed__content" data-hive-render-target="true">https://www.youtube.com/watch?v=Blvm5pvinHo
+
+  Hello, here's the core dev meeting of the month. It's been a while, last time we all met in person at HiveFest so there's quite a bit to cover.
+
+  AI generated summary, some mistakes may have slipped through so please listen to the meeting for the accurate info.
+
+  # Me (@howo)
+  - Gopherd: mostly unglamorous work now, optimizations, security fixes and getting the experience on par with hived. It's been producing quite a few blocks which is nice.
+  - Floated the idea of a client identifier in the witness version field so voters can see which client a witness runs. Conclusion: since both clients have feature parity there's no real need yet, people can just say it in a post. We'll revisit later.
+  - Two MRs that have been waiting for review for a while:
+    - DHF `daily_pay` overflow: there's no upper bound, so a big enough proposal could overflow and crash the chain during maintenance. It would never get voted in, but no reason to leave it open. It's a hardfork change, so there's no rush.
+    - Moderation audit log on hivemind: a new table logging every mod action (mute, unmute, pin, set role etc.) plus 3 endpoints (log, per account, moderator activity). No perf impact since mod actions are rare.
+  - Side experiment I still want to get to: using hive + HAF as a data availability layer for the OP stack (Optimism) to get EVM compatibility as an L2, no L1 changes needed.
+
+  # @blocktrades
+  - Release is getting close. Dan estimates the pace is ~10x faster than at the start of the year thanks to AI.
+  - Lite accounts are in testing, with the API up on api.syncad.com. Now is the time to send feedback (good-karma and asgarth are already looking at it).
+  - REST API for hivemind is in.
+  - HAF and all its apps now replay at the same time: a full node with every app (FYP and haf-stats included) replays in under 24h instead of ~2 days.
+  - Big API speedups across HAF apps, especially hivemind and account history (no more timeouts on huge accounts). There's also an option to get discussions without vote data for lighter responses.
+  - Denser: new chat, better proposals page, FYP page, doesn't load wax on every page anymore. The healthchecker component can now pick a different API node per API.
+  - Beekeeper hardening following Gandalf's security feedback.
+  - API node: tracked down slowdowns to a memory/garbage collection issue in drone (rust) and worked around it, and added load shedding against AI scraper bots. GitLab now requires login for non rate limited access.
+  - AI went through all the open issues (43 of Gandalf's got closed in one night), labels were harmonized and old issues/MRs cleaned up.
+  - Experimenting with speeding up hived replay/sync, not sure it'll make the release.
+
+  # @mcfarhat
+  - HAF FYP and haf-stats are now part of the HAF API node bundle. PeakD and Denser integrated FYP, Ecency is working on it.
+  - FYP algorithm 1.4.1 is the default on a fresh deploy. Weights are configurable per node, the post window went to 48h so less active languages still get content, and storage went from 300GB to ~7.4GB.
+  - haf-stats no longer locks hivemind and now records actual RC costs instead of estimates.
+  - HiveSense: search by author and by time range is on the test API.
+  - Block explorer: light vs full mode via an env var (hivescan.info and classic.hivescan.info), missed blocks and voting power on the witness list, top holders combine liquid + savings, phantom null/steem.dao balances fixed.
+  - Actifit: big security hardening, Fitbit moved to Health Connect, signups in the mobile app.
+  - HiveSense MR !148 has been waiting on CI for a while, Dan will follow up.
+
+  Also welcome to @acid who joined for the first time!
+</div>
+  <footer class="hive-post-embed__source">
+    <span class="hive-post-embed__source-label">Source:</span>
+    <a href="https://hive.blog/@howo/core-dev-meeting-85">Core dev meeting #85</a>
+    by
+    <a href="https://hive.blog/@howo">@howo</a>
+  </footer>
+</div>]]></content><author><name>howo</name></author><category term="news" /><category term="core" /><category term="development" /><summary type="html"><![CDATA[Core development meeting recording and an AI-generated summary covering Gopherd, lite accounts, Hivemind, HAF and API work.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://hivedocs.info/assets/images/favicon.png" /><media:content medium="image" url="https://hivedocs.info/assets/images/favicon.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">How to embed any Hive post on another website</title><link href="https://hivedocs.info/howto/javascript/2026/11/09/how-to-embed-any-hive-post-on-another-website-mw96b8wt.html" rel="alternate" type="text/html" title="How to embed any Hive post on another website" /><published>2026-11-09T03:24:03-08:00</published><updated>2026-11-09T03:24:03-08:00</updated><id>https://hivedocs.info/howto/javascript/2026/11/09/how-to-embed-any-hive-post-on-another-website-mw96b8wt</id><content type="html" xml:base="https://hivedocs.info/howto/javascript/2026/11/09/how-to-embed-any-hive-post-on-another-website-mw96b8wt.html"><![CDATA[<div class="hive-post-embed" data-hive-author="vikisecrets" data-hive-permlink="how-to-embed-any-hive-post-on-another-website-mw96b8wt">
+  <div id="content-vikisecrets-how-to-embed-any-hive-post-on-another-website-mw96b8wt" class="hive-post-embed__content" data-hive-render-target="true">Mit der neuen Cyberspace-App könnt ihr jedes beliebige Hive Posting und auch Kommentare professionell in einer anderen Website einbinden.
+
+Das Feature funnktioniert so ähnlich wie auf X/Twitter. 
+
+Um einen Hive-Artikel einzubinden, öffnet diesen auf [cyberspace77.com](https://cyberspace77.com/). Dann klickt auf die drei Punkte, wählt "Embed post" aus, und kopiert den Code auf eure Website.
+
+Voilà!
+
+Habe technisch mehrere Varianten getestet, dieses Feature zu implementieren. Anfangs nur mit einem iframe. Das Problem ist bei iframes allerdings, dass man die Größe im Nachhinein vom eingebundenen Frame aus nicht ändern kann, und das ist vor allem bei Posts von sozialen Medien ein Problem, da diese unterschiedlich lange sind und sogar im Nachhinein durch Edits die Größe verändern können.
+
+Daher benötigt man ein Hilfsskript, das die Postings in der richtigen Größe dynamisch einbindet.
+
+Theoretisch kann man das Posting auch ohne Skript einbinden, wenn man die richtige Größe des iframes statisch setzt, was allerdings aus obigen Gründen nicht empfehlenswert ist.
+
+Das Posting selbst ist aber wieder in einem iframe, in diesem Fall, was Vorteile in Bezug auf die Sicherheit hat. Nur ein kleines Open-Source-Skript muss dazu im Kontext der Website laufen, das man auch jederzeit nachprüfen kann.
+
+Habe mich designtechnisch im Moment gegen ein starkes Branding des Embed-Frames entschieden, damit man Hive-Artikeln auch professionell zum Beispiel auf News-Seiten einbinden kann. Ein zu starkes Branding oder ein zu auffälliger Krypto-Bezug könnte Newseditoren abschrecken. Der Inhalt und der Autor des Postings sollen im Vordergrund stehen.
+
+Was sagt ihr dazu? Habt ihr dieses Feature auf Hive auch vermisst? Wolltet ihr schon einmal ein Posting außerhalb von Hive irgendwo einbinden?
+
+![image.png](https://images.hive.blog/DQmSuoNex5rK9yL1G9oF57Dw39Wem556Dr43ptcRyZbf7e7/image.png)
+
+https://cyberspace77.com/
+
+@cyberspace77
+
+## English
+
+With the new Cyberspace app, you can professionally embed any Hive post, including comments, into another website.
+
+The feature works similarly to how it does on X/Twitter.
+
+To embed a Hive article, open it on [cyberspace77.com](https://cyberspace77.com/). Then click the three dots, select “Embed post,” and copy the code to your website.
+
+Voilà!
+
+I’ve tested several technical approaches to implementing this feature. Initially, I used only an iframe. The problem with iframes, however, is that you can’t change the size of the embedded frame afterward, and this is especially an issue with social media posts, since they vary in length and can even change size later due to edits.
+
+Therefore, you need a helper script that dynamically embeds the posts at the correct size.
+
+Theoretically, you could embed the post without a script by statically setting the correct size of the iframe, but this isn’t recommended for the reasons mentioned above.
+
+The post itself, however, is embedded in an iframe, which offers security benefits. Only a small open-source script needs to run within the website’s context, and you can verify it at any time.
+
+From a design perspective, I’ve decided against heavy branding of the embed frame for now, so that Hive articles can be embedded professionally on news sites, for example. Branding that’s too strong or a crypto reference that’s too conspicuous could deter news editors. The content and the author of the post should take center stage.
+
+What do you think? Have you also missed this feature on Hive? Have you ever wanted to embed a post somewhere outside of Hive?</div>
+  <footer class="hive-post-embed__source">
+    <span class="hive-post-embed__source-label">Source:</span>
+    <a href="https://hive.blog/@vikisecrets/how-to-embed-any-hive-post-on-another-website-mw96b8wt">How to embed any Hive post on another website</a>
+    by
+    <a href="https://hive.blog/@vikisecrets">@vikisecrets</a>
+  </footer>
+</div>]]></content><author><name>vikisecrets</name></author><category term="howto" /><category term="javascript" /><summary type="html"><![CDATA[Embed Hive posts and comments on another website using cyberspace77, with automatic iframe sizing and a static-size alternative.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://images.hive.blog/DQmSuoNex5rK9yL1G9oF57Dw39Wem556Dr43ptcRyZbf7e7/image.png" /><media:content medium="image" url="https://images.hive.blog/DQmSuoNex5rK9yL1G9oF57Dw39Wem556Dr43ptcRyZbf7e7/image.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">I built a Hive witness widget for my desktop (dms/dux)</title><link href="https://hivedocs.info/tools/witness/monitoring/2026/11/05/i-built-a-hive-witness-widget-for-my-desktop-dmsdux.html" rel="alternate" type="text/html" title="I built a Hive witness widget for my desktop (dms/dux)" /><published>2026-11-05T19:10:06-08:00</published><updated>2026-11-05T19:10:06-08:00</updated><id>https://hivedocs.info/tools/witness/monitoring/2026/11/05/i-built-a-hive-witness-widget-for-my-desktop-dmsdux</id><content type="html" xml:base="https://hivedocs.info/tools/witness/monitoring/2026/11/05/i-built-a-hive-witness-widget-for-my-desktop-dmsdux.html"><![CDATA[<div class="hive-post-embed" data-hive-author="ausbitbank" data-hive-permlink="i-built-a-hive-witness-widget-for-my-desktop-dmsdux">
   <div id="content-ausbitbank-i-built-a-hive-witness-widget-for-my-desktop-dmsdux" class="hive-post-embed__content" data-hive-render-target="true">I check the same three tabs most days: my witness rank, my wallet, and the price of HIVE. So I built the thing I wanted instead — a small DankMaterialShell (aka [dux](https://duxlabs.dev/)) plugin that puts it all on my bar and my desktop.
 
 It's called **HIVE Witness**, it's at [github.com/ausbitbank/hiveWitness](https://github.com/ausbitbank/hiveWitness), and today it's at **2.5.0** — the first public release.
@@ -738,978 +1844,4 @@ It's an exchange node, but other nodes run almost the same way: a seed node, a w
     by
     <a href="https://hive.blog/@gtg">@gtg</a>
   </footer>
-</div>]]></content><author><name>gtg</name></author><category term="howto" /><category term="node" /><category term="docker" /><summary type="html"><![CDATA[Run a Hive 1.28.8 exchange node with Docker Compose, snapshots and reusable block logs, with API examples for tracking deposits.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://images.hive.blog/DQmTZJyTj2iXDnJBRZ8ZpEN4FeGZMwm65H1hvGKvrSU1Muv/Cyberpunk-Hive-chan.png" /><media:content medium="image" url="https://images.hive.blog/DQmTZJyTj2iXDnJBRZ8ZpEN4FeGZMwm65H1hvGKvrSU1Muv/Cyberpunk-Hive-chan.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Hive Dev Proposal #3</title><link href="https://hivedocs.info/news/core/development/2026/10/29/hive-dev-proposal-3.html" rel="alternate" type="text/html" title="Hive Dev Proposal #3" /><published>2026-10-29T14:35:39-07:00</published><updated>2026-10-29T14:35:39-07:00</updated><id>https://hivedocs.info/news/core/development/2026/10/29/hive-dev-proposal-3</id><content type="html" xml:base="https://hivedocs.info/news/core/development/2026/10/29/hive-dev-proposal-3.html"><![CDATA[<div class="hive-post-embed" data-hive-author="hdev" data-hive-permlink="hive-dev-proposal-3">
-  <div id="content-hdev-hive-dev-proposal-3" class="hive-post-embed__content" data-hive-render-target="true">Since mid-2024, our team has been building Hive tools in the HAF ecosystem, working alongside @blocktrades and the core development team. This is our third Hive Dev proposal, and we want to start with a big thank you to everyone who supported the first two.
-
-![Hive logo above the words "Dev Proposal #3", with three developers at a laptop, an analytics dashboard and mobile apps](https://usermedia.actifit.io/MVU1N298R4N5J3DDRT8S3NYZDYVWZD)
-
-Proposal #2 was funded for only about the second half of its term. During that period, 25 people contributed through our work, and we merged **434 merge requests** across 10 Hive repositories and shipped:
-
-- **Two new HAF apps:** **haf\_stats** (network analytics) and **haf\_fyp** (a personalised For You feed), both now standard modules in the latest haf\_api\_node release. **PeakD serves haf\_fyp's ranking** to its readers.
-- **hivescan.info as an analytics hub:** a dashboard you arrange yourself, sign-in with Keychain and HiveSigner, account analytics with a delegation map, a **DHF Governance Hub**, and network, RC and governance reports in 12 languages.
-- **New endpoints and fixes in Hive's core backends:** Balance Tracker, HAF Block Explorer, Hivemind, HiveSense and HAF, including rebuilt escrow tracking, corrected witness vote counts, and a Hivemind bug that silently skipped blocks, which we found and diagnosed on our node.
-- **Two public HAF API nodes** that we run, carrying the full stack.
-- **Apps that bring people to Hive:** Waggle; HivePulse, now a Hive wallet with a Scam Shield, on Chrome and Firefox; Hive Runner; four apps, not yet launched, from our **summer developer cohort**; Actifit's on-chain challenges engine, **The Arena**, with redesigned Android and iOS apps; weekly contests that pay Hive writers in HIVE, run in our new Hdev Contests community; and **Vylor**, a finance app built this year and live on Google Play and the App Store.
-
-Our ask is 275 HBD/day, about 34% less than our prior proposal's adjusted rate, after streamlining our developer allocation and infrastructure. Below is what we delivered, what comes next and what the ask pays for. Thank you for reading, and for helping us keep improving Hive.
-
-## Summary
-
-In the year of proposal #2 (2025-11-01 to 2026-10-28) the team merged **434 merge requests across 10 Hive GitLab repositories**. It also shipped two new HAF applications, **haf\_stats** and **haf\_fyp**, and both are standard modules in the latest haf\_api\_node release, 1.28.8. This proposal (#3) funds the next year: keeping those apps and the Block Explorer moving, and the new work listed under Upcoming work.
-
-What the year delivered, at a glance:
-
-- **haf\_stats**, a new HAF analytics app: 114 MRs, with network statistics, governance, RC and per-account endpoints feeding the Block Explorer's dashboards.
-- **haf\_fyp**, a new HAF app for a personalised For You feed: 112 MRs. It is live: PeakD, Waggle and HivePulse serve its ranking, and Denser plans to.
-- **Block Explorer UI** ([hivescan.info](https://hivescan.info)): 148 MRs, adding a modular dashboard, sign-in with Keychain and HiveSigner, a full analytics and reporting section, and per-account analytics that complete roadmap items 2 and 5.
-- **Backend work** in Balance Tracker, HAF Block Explorer, HAF, Hivemind, HiveSense and haf\_api\_node: 60 MRs.
-- **Waggle**, a For You feed front end, the Hive Runner game and the **HivePulse** browser extension and wallet, on GitHub; four Hive apps in development from our summer cohort of Hive developers; Actifit's new on-chain challenges engine (The Arena), its apps and site; and Vylor, a personal finance app that works with Hive, live on Google Play and the App Store. In all, 3,192 commits on GitHub, cohort developers and contributors included.
-- **Two public HAF API nodes** we run: testapi.hivescan.info and hiveapi.actifit.io.
-
-### Roadmap from proposal #2
-
-| # | Item | Status | Where |
-| --- | --- | --- | --- |
-| 1 | Customizable modular dashboard | Done | [block\_explorer\_ui#673](https://gitlab.syncad.com/hive/block_explorer_ui/-/issues/673), then templates and synced workspaces |
-| 2 | Interactive financial sunburst | Done: Financial Summary sunburst in the Account Analytics tab | [block\_explorer\_ui#653](https://gitlab.syncad.com/hive/block_explorer_ui/-/issues/653) |
-| 3 | User authentication | Done: Keychain and HiveSigner sign-in | [block\_explorer\_ui#672](https://gitlab.syncad.com/hive/block_explorer_ui/-/issues/672) |
-| 4 | RC footprint and DApp usage dashboard | Done, now priced from each transaction's recorded RC | [haf\_stats](https://gitlab.syncad.com/hive/haf_stats), [block\_explorer\_ui#654](https://gitlab.syncad.com/hive/block_explorer_ui/-/issues/654) |
-| 5 | Influence and delegation map | Done: Influence &amp; Delegation Map in the Account Analytics tab | [block\_explorer\_ui#655](https://gitlab.syncad.com/hive/block_explorer_ui/-/issues/655) |
-| 6 | Hive reporting dashboard | Done: dashboard widgets plus reports pages | [hivescan.info](https://hivescan.info) |
-| 7 | HAF backend endpoints (DAU, TVL, RC footprint, financial, RC delegations) | Done | haf\_stats, balance\_tracker, haf |
-| 9 | HAF\_FYP | Done and live | [haf\_fyp](https://gitlab.syncad.com/hive/haf_fyp) |
-| 8 | HAF\_CHAT | Not started this year | — |
-
-## Delivered work, by project
-
-Everything below is public. Each project links to its merged MRs, and most features can be tried on [hivescan.info](https://hivescan.info) or on our API node [testapi.hivescan.info](https://testapi.hivescan.info).
-
-| Project | Merged MRs | Who |
-| --- | --- | --- |
-| [block\_explorer\_ui](https://gitlab.syncad.com/hive/block_explorer_ui/-/merge_requests?scope=all&amp;state=merged) | 148 | delrifai 121, mcfarhat 27 |
-| [haf\_stats](https://gitlab.syncad.com/hive/haf_stats/-/merge_requests?scope=all&amp;state=merged) | 114 | mcfarhat 86, mahdi 28 |
-| [haf\_fyp](https://gitlab.syncad.com/hive/haf_fyp/-/merge_requests?scope=all&amp;state=merged) | 112 | mcfarhat 104, mahdi 8 |
-| [haf\_block\_explorer](https://gitlab.syncad.com/hive/haf_block_explorer/-/merge_requests?scope=all&amp;state=merged) | 24 | mzander 13, mahdi 10, mcfarhat 1 |
-| [balance\_tracker](https://gitlab.syncad.com/hive/balance_tracker/-/merge_requests?scope=all&amp;state=merged) | 15 | mzander 8, mahdi 6, mcfarhat 1 |
-| [haf\_api\_node](https://gitlab.syncad.com/hive/haf_api_node/-/merge_requests?scope=all&amp;state=merged) | 7 | mcfarhat 7 |
-| [hivemind](https://gitlab.syncad.com/hive/hivemind/-/merge_requests?scope=all&amp;state=merged) | 5 | mzander 4, mcfarhat 1 |
-| [haf](https://gitlab.syncad.com/hive/haf/-/merge_requests?scope=all&amp;state=merged) | 4 | mzander 4 |
-| [healthchecker-component](https://gitlab.syncad.com/hive/healthchecker-component/-/merge_requests?scope=all&amp;state=merged) | 3 | mcfarhat 3 |
-| [hivesense](https://gitlab.syncad.com/hive/hivesense/-/merge_requests?scope=all&amp;state=merged) | 2 | mcfarhat 2 |
-
-### haf\_stats — Hive network analytics (new HAF app)
-
-A new HAF app that turns raw chain data into chart-ready network statistics and per-account metrics: activity, governance, Resource Credits and DApp usage. It is the data layer behind hivescan.info's analytics and reports. Because it ships in the standard HAF API node stack, any node operator can serve it and any front end can build on it. [Repository](https://gitlab.syncad.com/hive/haf_stats).
-
-- **Network statistics:** daily active users, vote stats, content volume, engagement, a top-accounts leaderboard, HP distribution and author retention and signup-cohort funnels. Values are checked against a real 5M-block replay. ([daily active users](https://testapi.hivescan.info/haf-stats-api/network/daily-active-users), [top accounts](https://testapi.hivescan.info/haf-stats-api/network/top-accounts))
-- **Checked against Hivemind:** post counts match Hivemind exactly on all 3,864 days from 2016-03-24 to 2026-10-21, and comment counts stay within 2%. That gap came from a Hivemind sync issue we reported and the core team fixed on October 26, [hivemind#394](https://gitlab.syncad.com/hive/hivemind/-/issues/394). Two counting bugs found on the way, a double count and a ~19% over-report, were fixed first. ([the check](https://gitlab.syncad.com/hive/haf_stats/-/merge_requests/124))
-- **Governance:** stake concentration (Gini coefficient, top-1% and top-10% shares) and per-witness missed-block stats. ([influence concentration](https://testapi.hivescan.info/haf-stats-api/governance/influence-concentration))
-- **Resource Credits:** network RC utilization, per-account RC footprint and a DApp footprint that maps custom\_json to named apps in 9 categories. It adds a per-event RC timeline for each account, and RC estimates calibrated against the node's own rc\_api (the old model priced a typical custom\_json about 3× too high). Since October, RC uses each transaction's **recorded cost** where the node has it. ([RC footprint](https://testapi.hivescan.info/haf-stats-api/account/actifit/rc-footprint))
-- **Communities and social graph:** an account's activity per community (each reply traced up to its root post, checked against Hivemind on 120 real threads), its top partners for replies, votes, transfers, reblogs and follows, and a network-wide DApp usage leaderboard by app or category. These power hivescan.info's community, Sankey and DApp-usage reports.
-- **Account finances:** a per-account financial summary covering 15 operation types, incoming and outgoing.
-- **Performance:** a year of daily active users went from 7.8 s to 4.6 ms (~1,700× faster), a heavy account's RC footprint from ~104 s to ~4.3 s and the 365-day top-accounts query from ~22 s to 0.98 s. A nightly refresh's slowest read fell from 8.3 s to 2–4 ms, and the network DApp usage leaderboard from ~20 s to about 0.55 s. A full rebuild of account financial history went from tens of hours to 1–2 hours. All were measured on our node, testapi.
-- **Operations:** a safe install, upgrade and uninstall, tested in CI against the real installer; a version endpoint and a corrected sync status; a published image; and a published disk footprint for operators (about 125 GB on compressed ZFS). It also fixed a stall in which haf\_stats, waiting on Hivemind, could hold up Hivemind and its API on the whole node. It ships as a standard module in the latest release, 1.28.8, of the [haf\_api\_node](https://gitlab.syncad.com/hive/haf_api_node) stack.
-
-### haf\_fyp — personalised For You feed (new HAF app)
-
-The open-source discovery engine promised as item 9 of proposal #2: a personalised For You feed computed from HAF data. Front ends get a ready-made feed in Hive bridge format, readers get posts picked for them, and a score explainer shows why each post was picked. [Repository](https://gitlab.syncad.com/hive/haf_fyp).
-
-- **Ranking:** recency, engagement, author credibility (stake and reputation) and semantic relevance from HiveSense embeddings, with a per-community diversity cap. New readers pick a few interests, so their first feed is never empty. Posts the reader or their community muted are left out.
-- **Ranking that works as designed:** only 0.31% of posts had a community recorded, so the community boost barely applied; it is now 21.35%, with a stronger boost for communities a reader subscribes to. New readers' interest profiles were never built for established communities, and readers who picked interests but never voted were never re-ranked, so their feeds sat 12–15 days old. All three are fixed.
-- **Fresh for people who read it:** a reader's feed used to be about 11 hours old on average, and up to 22. Readers who open their feed are now ranked first, and a read that arrived during a ranking pass no longer waits 12–16 minutes but about 2 s; in a test on our node, a stale feed was re-ranked 9 s after it was opened. ([MR](https://gitlab.syncad.com/hive/haf_fyp/-/merge_requests/99))
-- **API:** personalised and global feeds in Hive bridge format, a score explainer and an algorithm registry. A 20-post page is served in about 0.13–0.16 s end to end. Rendered posts are cached, so on the server a 20-post page takes 35 ms personalised (was 911 ms) and 12 ms global (was 345 ms). ([global feed](https://testapi.hivescan.info/haf-fyp-api/v1/fyp/global), [a personal feed](https://testapi.hivescan.info/haf-fyp-api/v1/fyp/feed/mcfarhat))
-- **Telemetry:** front ends report impressions, opens and dwell time, and the app rolls them into daily metrics. It can also A/B test two ranking versions against each other. PeakD has sent these events since October 6: 322 from 18 accounts by October 15.
-- **Security:** changes to a reader's interests must be signed with their posting key, and delegated posting authority is accepted. Readers can opt out with a signed request; the same change fixed a bug that made saving interests fail for every reader on some installs. Rate limits apply per client, charged before a request is read when the node gateway identifies the caller. An opt-in setting stops forged reads from claiming ranking slots.
-- **Adoption:** **PeakD** serves haf\_fyp's ranking to its readers. From September 23 to October 15, 326 of 442 feed requests (74%) came from PeakD, for 105 accounts, on all 23 days. We measure this from request origins in our node's logs. Our own Waggle and HivePulse's For You tab run on it too, and Denser plans to adopt it.
-- **Operations:** one query had used about 98% of the app's CPU and starved the whole node: Block Explorer and Balance Tracker fell 43 blocks behind and returned errors. A partial index fixed it (load from ~5.7 to ~1.6) and both recovered. Node operators can now tune feed freshness: on our node a full re-ranking pass went from ~22 h to under 4 h. It also gained a /metrics health endpoint, a personalised fallback when HiveSense is down, HAF app locks, truthful health checks, install lanes tested against real HAF in CI and a published image. It ships as a standard module in the latest haf\_api\_node release, 1.28.8.
-
-
-![Waggle screenshot](https://usermedia.actifit.io/MVU1H2L3LTJ01GN2UMRCJ33JHQTVK)
-
-*Waggle, running on haf\_fyp, shows each reader why a post was picked: relevance, recency, engagement and credibility, plus a boost for communities they follow.*
-
-### Block Explorer UI — hivescan.info
-
-The explorer front end. This year it became an analytics hub for Hive: a dashboard you arrange yourself, sign-in with Keychain or HiveSigner, and reports on activity, resources, communities, wallets and governance, in 12 languages. Try it live at [hivescan.info](https://hivescan.info). [Repository](https://gitlab.syncad.com/hive/block_explorer_ui).
-
-- **Modular dashboard** (roadmap item 1): drag-and-drop widgets, then 7 ready-made templates (Me, Network, Market, Governance, Creator, Growth and Essentials), and workspaces that sync encrypted on chain.
-- **Sign-in with Keychain and HiveSigner** (roadmap item 3); HiveSigner returns you to the page you came from. The signed-in menu shows upvote mana, downvote mana and RC.
-- **Analytics and reports** (items 4 and 6), built on haf\_stats:
-  - activity dashboards: DAU, voting, HP distribution with a stake-concentration Lorenz curve, top accounts, retention, content volume and engagement quality;
-  - resource and community reports: RC utilization, DApp usage, community activity and social interactions;
-  - top holders: supply concentration (top-10 and top-100 shares, Nakamoto coefficient), labels for exchanges, the DHF and witnesses, and where you rank.
-- **Account Analytics (roadmap items 2 and 5):** a tab on every account page with a Financial Summary sunburst, RC footprint and DApp usage, RC consumption, content and activity, and an Influence &amp; Delegation Map of who delegates to whom. Each report is also a dashboard widget, and most export to CSV.
-- **Tools hub:** Compare Accounts, a shareable account card, and a Bad Actors lookup that shows whether an account is flagged.
-- **Blocks page, rebuilt:** block insights, each block's mix of operation types, and a slot-health strip that shows missed slots and which witness missed them.
-- **Wallet and governance:** the new balances view, Total Value Locked, transfer volume, proposal vote history, incoming RC delegations, a witness missed-blocks widget, pending author and curation rewards, open orders and pending conversions, and recurring-transfer details. A fix corrected total account value, which had counted the weekly power-down twice.
-- **Governance tools:** a [DHF Governance Hub](https://gitlab.syncad.com/hive/block_explorer_ui/-/merge_requests/892) with a proposal watchlist, an impact simulator, reminders and voting straight from each proposal card, and a [Witness Dashboard](https://gitlab.syncad.com/hive/block_explorer_ui/-/merge_requests/895) where signed-in users see and change their witness votes.
-- **Quality:** 12 languages, SEO (server-side meta, sitemap, Open Graph images), link previews that now show on Telegram, Discord and X, app-wide pagination and many fixes. The explorer runs on any HAF node: where an optional app is missing, it says so instead of showing errors or empty values.
-
-![Hivescan overview](https://usermedia.actifit.io/MVU1HUC14PEKEK7J0JIX9AB7T39OZK)
-
-*The hivescan.info overview on 2026-10-29: live blocks, account growth, daily active users, retention funnels and HP distribution, mostly served by haf\_stats.*
-
-### Backend apps: Balance Tracker, HAF Block Explorer, HAF, Hivemind, HiveSense, haf\_api\_node
-
-These are the HAF backends that hivescan.info and other Hive front ends query. We added the endpoints the new dashboards needed, made slow queries fast, and fixed problems upstream where we found them, including a silent block-skip bug in Hivemind.
-
-- **[balance\_tracker](https://gitlab.syncad.com/hive/balance_tracker):**
-  - new endpoints: Total Value Locked, power-up and power-down history, RC delegations, and a top-holders balance range;
-  - fixes: escrow tracking, which was broken for transfers, releases, approvals, disputes and fees, rebuilt with new escrow state and fee tables; routed power-downs no longer credited to the wrong account; HBD savings interest tracked per account, which the pending-interest endpoint relies on; recurrent-transfer fixes for HF28; and faster live sync.
-- **[haf\_block\_explorer](https://gitlab.syncad.com/hive/haf_block_explorer):**
-  - new endpoints: proposals and proposal votes with voter stake, operation-type statistics, pending HBD interest on accounts, an HBD status endpoint, a wallet-address growth endpoint (worst case from ~350 ms to under 10 ms), and a hardforks endpoint that lists HF0 to HF28 and the hardfork in force at any block;
-  - fixes and speed: witness vote counts, which dropped lost votes and were wrong for every witness, now correct; operation-type counts read from per-block totals (about 9 ms for 1,000 blocks); a codebase restructure; and proposal-vote timeouts fixed on develop and live on testapi, shipping in the next release.
-- **[hivemind](https://gitlab.syncad.com/hive/hivemind):** a new endpoint for each user's pending author and curation rewards, with a breakdown of how each reward is calculated, and a notification wording fix. We also found a bug on our node that made Hivemind silently skip a block, diagnosed how it happens and filed it (hivemind #336); the core team traced it to a 2024 regression and fixed it.
-- **[hivesense](https://gitlab.syncad.com/hive/hivesense):** version and sync-status endpoints and a bounded retry for missing posts. Three more fixes are in review (see Upcoming work).
-- **[haf\_api\_node](https://gitlab.syncad.com/hive/haf_api_node):** haf\_stats and haf\_fyp added as standard modules, shipped in the 1.28.8 release, with gateway routes and health checks.
-- **Also:** a theme-aware [health checker](https://gitlab.syncad.com/hive/healthchecker-component).
-
-### GitHub (hdev-core)
-
-Beyond GitLab, we build Hive apps in the open on GitHub under hdev-core: two front ends for haf\_fyp, a game, and four apps from our summer developer cohort that are still in development. Commit counts are for 2025-11-01 to 2026-10-28, all branches.
-
-- **[Waggle](https://hdev-core.github.io/waggle/)**, the For You feed front end built on haf\_fyp (42 commits, mcfarhat). It offers a swipe feed, sign-in with Keychain or HiveAuth, "why this post" explanations and telemetry, voting, reblogs, follows and comments signed on-chain, and 3Speak and YouTube playback. It runs as an installable web app with no backend of its own.
-- **[HivePulse](https://chromewebstore.google.com/detail/hivepulse/hakcpohpejoejmlhiphpkjobpjeckdlg)**, a Hive browser extension and wallet for Chrome, Brave, Edge, Firefox and Firefox for Android (272 commits, mcfarhat; releases up to 1.16). From its popup, users send HIVE and HBD, claim rewards, earn HBD savings interest with an APR calculator, power up and down, delegate and manage Hive-Engine tokens, all signed through Keychain. Its Scam Shield blocks transfers and delegations to about 1,000 known scam accounts and warns on about 14,000 more. It also has a For You tab on haf\_fyp, an SEO analyzer, Ecency chat, a notification hub, an RC cost estimator and a market tab. Its weekly SEO contest pays Hive writers for posts that score well for search and AI answers: 300 to 500 HIVE in prizes each week depending on how many enter, plus referral and engagement prizes. Week 14 opened on 2026-10-27.
-- **[Hdev Contests](https://peakd.com/c/hive-177727)**, a Hive community we created in July 2026 to run our contests in the open. It hosts the weekly HivePulse SEO contest and the Vylor contests, and each round's rules, results and payouts are posted there.
-- **[Hive Runner](https://hdev-core.github.io/hive-runner/)**, a Hive-powered arcade game (Runner Dash) with Keychain login, scores posted on-chain, a live block feed, ghost racers and community teams (45 commits, mcfarhat; plus 1,387 automated leaderboard updates, not counted). It is already playable in public, ahead of its official launch.
-- **Summer cohort of Hive developers**: four Hive apps started over the summer and still in development, none launched yet, mentored by mcfarhat:
-  - [Hive Freelance](https://github.com/hdev-core/hive-freelance) (140 commits), a freelance marketplace with Hive escrow;
-  - [LINGO](https://github.com/hdev-core/lingo) (140), a daily word puzzle with an HBD reward pool;
-  - [HiveLore](https://github.com/hdev-core/hivelore) (153), shared world-building that publishes approved stories to Hive;
-  - [Hive Chameleon](https://github.com/hdev-core/hive-chameleon) (55), a 3D multiplayer hide-and-seek game that records match results on-chain.
-
-### Actifit (GitHub)
-
-[Actifit](https://actifit.io) is a move-to-earn app on Hive: users are rewarded in AFIT for logging physical activity. Actifit's own proposal, #337, ended on 2026-04-15, and its work is now covered by this one. This year brought The Arena, an on-chain challenges engine, plus a redesigned Android app, a revamped iOS app and a refreshed actifit.io: 1,473 commits in all.
-
-- **[actifit-bot](https://github.com/actifit/actifit-bot)** (415 commits, mcfarhat): **The Arena**, a new challenges engine built on Hive. Joining, leaving and creating a challenge are signed custom\_json operations that the backend indexes from the chain. It went live in September with 6 recurring official contests, and any user can create a challenge. It has:
-  - a challenge schema and indexer, with anti-cheat score verification;
-  - user-created challenges, with badges or AFIT prizes split 50/30/20 among the top three;
-  - creator-funded and recurring contests, and badges;
-  - payouts in AFIT, and proposal-payout notifications.
-
-  Released 0.1.0 to 0.3.1. Rewards rounds also gained Hive SBI units for up to 5 winners per round.
-- **[actifit-landingpage](https://github.com/actifit/actifit-landingpage)** (606 commits; mcfarhat 488, reemnii 57, ShahdQaddoura 39, moamensoo 15): the [actifit.io](https://actifit.io) site, releases 1.8 to 1.14. Highlights: The Arena (create wizard, profile badges), friends, a new wallet and a revamped market (1.13), on-chain proof before web activity rewards are granted and a new signup flow (1.10), and Actifitter of the Month.
-- **[actifit](https://github.com/actifit/actifit)** (447 commits; mcfarhat 409, AsmaaZeid 30, Adam-Diab1 8): the Android app.
-  - A Material Design 3 redesign, with a streak strip, a native profile screen and a signup wizard.
-  - Health Connect integration with custom workouts and an exercise library, Fitbit step history with charts, GPS route maps, friends, an in-app DHF vote prompt, shareable "Flex" achievement cards, a configurable daily step goal and 13 languages.
-  - Releases 0.13 "The Pump" and 0.14 "Momentum", up to 0.14.2. The Arena is now built into the app (browse, standings, join and badges) and ships in the next release.
-- **[iOS app](https://apps.apple.com/app/actifit-fitness-tracker/id1433969051):** public on the App Store for years. This year's 1.0.0 "Liftoff" release (August) is a complete revamp: GPS route tracking, a native profile, Snaps, Waves and Threads inside the app, a redesigned dashboard with activity rings, a social feed, an in-app AFIT market, and distance and calorie tracking from Apple Health, phone sensors and Fitbit.
-- **[image-hoster](https://github.com/actifit/image-hoster)** (5 commits, mcfarhat): object storage added as a third storage tier.
-- **Security, through the year:** in March, actifit.io began sanitizing user posts against cross-site scripting and moved its API keys behind a server-side proxy. In April and May, the backend replaced outdated and vulnerable libraries, removed unsafe handling of user input, added security tests, rate-limited login, put sensitive endpoints behind authentication and began checking on-chain proof before granting rewards. In October, a login overhaul and hack attempt prevention.
-
-**The Actifit team:** alfamano, rabihfarhat, pjansen, katerinaramm, priyanarc, elizabethbit, silvertop and urasoul.
-
-### Vylor
-
-[Vylor](https://vylor.money) is a voice-first personal finance and expense-tracking app, built by mcfarhat (860 commits, private repository). It puts Hive inside an everyday money app, where users meet HIVE and HBD alongside their regular accounts. Its Hive side:
-
-- it imports HIVE, HBD and HP balances read-only;
-- its PRO plan can be paid in HIVE or HBD through Keychain or HiveSigner, verified on-chain;
-- milestones from its Journey (XP, streaks and badges) can be posted to Hive as posts or as Waves, Snaps and Threads, signed with Keychain, HiveSigner or HiveAuth;
-- a Hive account counts in one live net-worth figure next to bank, crypto and brokerage accounts, with HBD valued at its $1 peg.
-
-Vylor was built from scratch this year and launched on Hive on 2026-08-27. Beyond Hive, it has an AI voice assistant, receipt scanning, proactive alerts, a referral program, multiple accounts, CSV import, PRO reports, an Android home-screen widget, wallet portfolios across other chains, Spanish localisation and support for 44 currencies. It is live on Google Play and the App Store, at version 1.7.4. We also ran Vylor contests on Hive, in Hdev Contests: a launch contest that paid 190 HIVE and a month of Vylor PRO to its three winners, and a Talk-to-Log challenge with a $50 USDT prize.
-
-### Public HAF API nodes we run
-
-- **testapi.hivescan.info:** the API behind [hivescan.info](https://hivescan.info), with the full stack including haf\_stats and haf\_fyp. It was rebuilt on HAF 1.28.8 in October 2026.
-- **hiveapi.actifit.io:** a production 1.28.8 node that also runs a public seed (hive-seed.actifit.io).
-
-## The team, and thanks
-
-In all, 25 people worked on these projects this year: 4 developers on GitLab, 8 summer-cohort developers, 5 Actifit code contributors and the 8-person Actifit team. The four developers below did this year's GitLab work. A big thank you to each of them, and to everyone below who helped along the way.
-
-| Who | Focus this year | Merged MRs |
-| --- | --- | --- |
-| mcfarhat | haf\_fyp and haf\_stats (design, build, operations), haf\_api\_node modules, HiveSense fixes, Block Explorer fixes, node operations, Waggle, HivePulse and Hive Runner, Actifit (Arena, apps, site) and Vylor | 232 |
-| delrifai | Block Explorer UI: dashboard, sign-in, analytics and reports, SEO, wallet and governance views | 121 |
-| mahdi | haf\_stats endpoints, HAF Block Explorer proposals and statistics, Balance Tracker endpoints including TVL, haf\_fyp fixes | 52 |
-| mzander | Balance Tracker and HAF Block Explorer backends, HAF parsers and Hivemind | 29 |
-
-Thanks also to:
-
-- **@blocktrades and the core team at Syncad**, and **Eric Frias (efrias)** in particular, for reviews, merges and the release work that made haf\_stats and haf\_fyp standard modules of the HAF API node stack.
-- **Our summer cohort of Hive developers:** lauremhsn, harfoushleen and sweidweb2 (Hive Freelance); intissarsoulaiman and laura1025 (LINGO); KareemN1936 and perlaimad (HiveLore); and mhmdibrahimm (Hive Chameleon).
-- **Actifit contributors:** reemnii, ShahdQaddoura and moamensoo (actifit.io), and AsmaaZeid and Adam-Diab1 (the Android app).
-- **Actifit socials team and moderators:** rabihfarhat, alfamano and urasoul run Actifit's socials, and our moderators keep the community going.
-- **louis88**, for their help with Actifit's security reviews.
-- **PeakD** (@asgarth), for being the first front end to serve haf\_fyp's ranking to its readers.
-
-## Upcoming and pending work
-
-The coming year continues our existing Hive projects and our two HAF apps, adds a new HAF app, **HAF AI**, and keeps building our other Hive projects, Actifit and Vylor. Everything in it serves one goal: bringing new users and new functionality to Hive. The plans by area follow.
-
-### Existing Hive projects
-
-- **Block Explorer UI ([hivescan.info](https://hivescan.info)):** grow the analytics and reports built on haf\_stats, adding dashboards as new metrics land. Extend RC as recorded cost, already shown on the account and network RC screens, to every report. Widen what signed-in users can do, building on Keychain and HiveSigner sign-in and synced workspaces. Keep the explorer current with each HAF release.
-- **Backend HAF apps** (Balance Tracker, HAF Block Explorer, HiveSense): new endpoints and speed-ups as the explorer and other front ends need them. Sharper HiveSense semantic search, with author and time-range filters, no deleted posts in results and safer sync checks. The author filter is already in review (hivesense !149): a search for one large author used to return nothing after 12–14 s, and for 99% of authors a search drops from ~0.4–0.75 s to ~10–25 ms. Fixes upstream where we find problems. This year, for example, we reported that any app's role could empty the HAF tables that record every app's progress (haf #348), and the core team has since closed that hole in HAF.
-- **Public nodes:** keep testapi.hivescan.info and hiveapi.actifit.io current with each HAF release. testapi is where our new work goes live first.
-
-### Our HAF apps: haf\_stats and haf\_fyp
-
-- **haf\_stats:** use each transaction's recorded RC across every report, and add network and account metrics as the explorer's reports call for them. Keep its queries fast as history grows, and keep it current in each haf\_api\_node release.
-- **haf\_fyp:** improve the ranking with the reading signals front ends now send: impressions, opens and dwell time. Expose the feed-freshness settings operators can now tune in the haf\_api\_node configuration, and make sure front ends' telemetry passes the node gateway. Bring the feed to more front ends, Denser included, and keep it current in the standard release.
-
-### New: HAF AI
-
-HAF AI is an MCP server that gives AI agents (Claude, ChatGPT, Cursor and others) citable, fresh access to Hive data that HAF nodes already serve. That covers HiveSense search, Hivemind posts and communities, HAfAH account history, haf\_stats metrics and haf\_fyp's ranked feed. Every answer links back to Hive, which turns AI answers into a way into Hive. It is read-only, holds no keys and runs no language model of its own.
-
-1. **Pilot:** 7 tools on testapi.hivescan.info, with one real user through a Claude connector (about 3 weeks).
-2. **Public listing:** account and community tools, metrics, the ranked feed, a haf\_api\_node module and a citation resolver (about 8 more weeks). This phase needs reviews from HiveSense and haf\_api\_node maintainers, one front end, and a second node operator.
-3. **After listing:** topic briefs, onboarding answers and an agent-disclosure standard.
-4. **Intelligence:** a curation score that resists gaming, profiles and topic tools, built with the HiveSense maintainers.
-
-Success target, 90 days after listing: 500 citation click-throughs a week, and 40 distinct callers a week with 15 of them returning. If it falls short (fewer than 5 returning callers, or fewer than 100 click-throughs a week), we reassess before building further.
-
-### Other Hive projects on GitHub
-
-- **Waggle:** keep it as the reference front end for haf\_fyp, picking up new ranking features as they land and extending its "why this post" explanations.
-- **HivePulse:** keep improving the extension, its wallet, Scam Shield, For You tab and SEO analyzer, and keep running its weekly contests.
-- **Hive Runner:** take the game from public preview to launch, with its live block feed and on-chain scores.
-- **The summer cohort's apps** (Hive Freelance, LINGO, HiveLore, Hive Chameleon): take them from development to a public launch on Hive.
-
-### Actifit
-
-- **The Arena:** more challenge types and contests on the on-chain challenges engine launched this year, building on its AFIT prizes and badges, and release it in the Android app.
-- **Apps and site:** keep improving the Android and iOS apps, and grow actifit.io alongside them.
-
-### Vylor
-
-- Deepen its Hive integration. Planned items include HBD savings and transfers by voice, an on-chain backup and habit rewards.
-
-## Proposal ask
-
-We are requesting **275 HBD/day** from 2026-12-01 to 2027-12-31, **about 34% less** than the adjusted rate of our recent proposal, [#360](https://peakd.com/proposals/360).
-
-Actifit's own proposal, #337, ended on 2026-04-15, and the team has not filed another since. Its work is covered by this one, so the DHF now funds one proposal from us instead of two.
-
-Proposal #2 was funded for only about half its term, yet the year's work went on: 434 merged MRs, two new HAF apps in the standard node release, and the Block Explorer's analytics hub.
-
-Given the state of crypto prices, we cut our own costs before setting the ask. We have reduced the developer time this proposal pays for, and cut our infrastructure: last year we ran more API nodes and servers, and we now run only the two public HAF API nodes named above. The ask splits roughly as follows, based on last year's spending:
-
-| Area | Share | HBD/day (approx.) |
-| --- | --- | --- |
-| Development | 77% | 210 |
-| Outreach and growth (socials, marketing and contest payouts) | 18% | 51 |
-| Infrastructure | 5% | 14 |
-
-## How to follow our work
-
-We post regular progress updates on Hive, and all our work is open source: the HAF apps and the Block Explorer on [GitLab](https://gitlab.syncad.com/hive), and our other apps on GitHub ([hdev-core](https://github.com/hdev-core), [Actifit](https://github.com/actifit)). Every item in this proposal links to a merge request or a live endpoint, so anyone can check our progress at any time, and withdraw their vote if we fall short.
-
-## Support this proposal (391)
-
-We invite you to support our third proposal and help us keep building Hive's open-source tools and bringing new users to Hive.
-
-- [Vote on PeakD](https://peakd.com/me/proposals/391)
-- [Vote on Ecency](https://ecency.com/proposals/391)
-- [Vote on the Hive wallet](https://wallet.hive.blog/proposals)
-- [Vote via HiveSigner](https://hivesigner.com/sign/update_proposal_votes?proposal_ids=%5B%22391%22%5D&amp;approve=true)
-
-Thank you for your continued support.
-
-Hive Dev Team
-</div>
-  <footer class="hive-post-embed__source">
-    <span class="hive-post-embed__source-label">Source:</span>
-    <a href="https://hive.blog/@hdev/hive-dev-proposal-3">Hive Dev Proposal #3</a>
-    by
-    <a href="https://hive.blog/@hdev">@hdev</a>
-  </footer>
-</div>]]></content><author><name>hdev</name></author><category term="news" /><category term="core" /><category term="development" /><summary type="html"><![CDATA[Hdev team DHF proposal 3 for development focused on growing hive core code, apps and projects serving hive and bringing it further to the world]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://usermedia.actifit.io/MVU1N298R4N5J3DDRT8S3NYZDYVWZD" /><media:content medium="image" url="https://usermedia.actifit.io/MVU1N298R4N5J3DDRT8S3NYZDYVWZD" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">3Speak: Your Profile, Your Stories, Your Supporters</title><link href="https://hivedocs.info/news/api/3speak/2026/10/27/3speak-your-profile-your-stories-your-supporters-2026-10-27.html" rel="alternate" type="text/html" title="3Speak: Your Profile, Your Stories, Your Supporters" /><published>2026-10-27T17:35:48-07:00</published><updated>2026-10-27T17:35:48-07:00</updated><id>https://hivedocs.info/news/api/3speak/2026/10/27/3speak-your-profile-your-stories-your-supporters-2026-10-27</id><content type="html" xml:base="https://hivedocs.info/news/api/3speak/2026/10/27/3speak-your-profile-your-stories-your-supporters-2026-10-27.html"><![CDATA[<div class="hive-post-embed" data-hive-author="mantequilla-soft" data-hive-permlink="3speak-your-profile-your-stories-your-supporters-2026-10-27">
-  <div id="content-mantequilla-soft-3speak-your-profile-your-stories-your-supporters-2026-10-27" class="hive-post-embed__content" data-hive-render-target="true"><div class="text-justify">
-
-![3Speak dev update, October 21 to 27, 2026](https://images.hive.blog/DQmRj62mF3en5JzJe277aYdPVWHQ3TSn97e89iL81ZaTf6G/thumbnail.png)
-
-**The short version**
-
-- **24-hour Stories** are live for everyone: post your own, and watch them on the home page and first in the Shorts feed.
-- A new **leaderboard** for Videos, Shorts, Stories and Tags, and a **Customize profile** editor.
-- Comments got sorting, creator pins, images and a preview tab.
-- **Supporters**: every tip on a video is now recorded and shown.
-- Reshare is now called **Hype**, and there is a real Hive **Reblog** button next to it.
-- Hive-style addresses like `3speak.tv/@yourname`, and a preview image for every shared link.
-- Faster home feeds, fewer stalls when a Hive node goes down, and much better visibility on Google and Bing.
-- Ads play quieter, fill portrait videos properly and adapt to slow connections.
-- Under the hood: hot storage node fixes, a smarter encoder and a new Snapie release.
-
----
-
-## 🌐 3speak.tv website
-
-[new-3speak-tv](https://github.com/Mantequilla-Soft/new-3speak-tv) · 9 releases, all live
-
-<hr />
-
-### 24-hour Stories are here
-
-<div class="pull-right">
-
-![A 24-hour story playing on 3Speak](https://images.hive.blog/DQmTMrRJ8EvGPjtpbHD6ZUZZwNzQLSVKDrKWCtzWHeiqu5C/stories-live.png)
-
-</div>
-
-**Stories** are short videos that disappear after 24 hours. They lead the [home page](https://3speak.tv) in a row with a countdown ring, come first in the [Shorts feed](https://3speak.tv/shorts) with a "time left" badge, and your followers get a notification when you post one. They are open to everyone: anyone with a Hive account can post a story, and everyone can watch them.
-
-- **Two taps to post** a story.
-- **Seen by:** see who watched your story.
-- **Keep as short:** turn a story into a normal short before it runs out.
-- **Streaks:** count the days in a row you posted a story, with its own spot on the [leaderboard](https://3speak.tv/leaderboard).
-
-![Stories lead the 3Speak home page](https://images.hive.blog/DQmPkpU8nzGJnEo7M3YgSNDLX6pFXnDuqvT7mjfaWW12FHr/stories-row.png)
-
-([#534](https://github.com/Mantequilla-Soft/new-3speak-tv/pull/534))
-
-<hr />
-
-### A leaderboard for every kind of video
-
-<div class="pull-right">
-
-![The new 3Speak leaderboard](https://images.hive.blog/DQmbrQFK7798ListQ2UamzkkDWQcTaQELefaxBchY1YKTK7/leaderboard.png)
-
-</div>
-
-The [leaderboard](https://3speak.tv/leaderboard) now has chips for Videos, Shorts, Stories and Tags. Rank creators by watch time or by count, and pick the time range right in the header: 7 days, 30 days, a year or all time. ([#534](https://github.com/Mantequilla-Soft/new-3speak-tv/pull/534))
-
-<hr />
-
-### Customize your profile
-
-<div class="pull-right">
-
-![The profile layout editor on 3Speak](https://images.hive.blog/DQmNzeFBimJqKduB8mafJAQUyYWAmFNfGQ67iBWtev18aiH/profile-editor.png)
-
-</div>
-
-On your own profile, **Customize profile** lets you drag the Overview sections into the order you like, resize them, hide the ones you don't need and set up a separate layout for phones. Nothing changes for your visitors until you press Save. ([#534](https://github.com/Mantequilla-Soft/new-3speak-tv/pull/534))
-
-<hr />
-
-### Titles for Shorts
-
-[Shorts](https://3speak.tv/shorts) can now carry a title, set when you upload or edit them. ([#534](https://github.com/Mantequilla-Soft/new-3speak-tv/pull/534))
-
-<hr />
-
-### Remix chains share the rewards
-
-A remix of a remix used to pay and credit only the video it came from directly. Now every earlier creator in the chain, up to six videos back, gets a share of the rewards and a link in the post. ([#534](https://github.com/Mantequilla-Soft/new-3speak-tv/pull/534))
-
-<hr />
-
-### Comments: sort, pin, add images, preview
-
-<div class="pull-right">
-
-![The new comment tools on a 3Speak watch page](https://images.hive.blog/DQmbqa6ce976udUEkMM84ccxvPCbVCbwRvLVz8PyQogrk58/comments.png)
-
-</div>
-
-Comments on [videos](https://3speak.tv/@enraizar/richard-avedon-in-the-ameri-475) and [Shorts](https://3speak.tv/shorts) can now be sorted, and creators can pin up to three comments to the top of their video. You can add images to a comment, and a Write / Preview tab shows how it will look before you send it. ([#525](https://github.com/Mantequilla-Soft/new-3speak-tv/pull/525))
-
-<hr />
-
-### Supporters: every tip counts
-
-<div class="pull-right">
-
-![The Supporters tab on a 3Speak profile](https://images.hive.blog/DQmeGvW6AXkYaHfsny5cekGesW6cY359A3NK1rkE2LKmXzT/supporters.png)
-
-</div>
-
-Every tip sent to a video's creator is now recorded, after checking the real transfer on Hive, so nobody can fake one. Profiles show tips received and given, and a [Supporters tab](https://3speak.tv/@enraizar?tab=supporters) lists who supported whom, with their memos. A tip can also be hidden, and tip memos now link to the video or audio post you tipped. ([#525](https://github.com/Mantequilla-Soft/new-3speak-tv/pull/525), [#534](https://github.com/Mantequilla-Soft/new-3speak-tv/pull/534))
-
-<hr />
-
-### Hype, and a real Hive Reblog
-
-<div class="pull-right">
-
-![Hype and Reblog buttons on the watch page](https://images.hive.blog/DQmXUrqHog5MVRyndownb9jdnBKbGfsXozCperTGy5WKabE/hype-reblog.png)
-
-</div>
-
-Many people took our "Reshare" button for a Hive reblog. It isn't one, so it is now called **Hype** and has a flame icon. Next to it there is now a real **Reblog** button that reblogs the post on Hive, on the [watch page](https://3speak.tv/@enraizar/richard-avedon-in-the-ameri-475) and the post page. It asks for a second tap to confirm, and doesn't show on your own posts. ([#529](https://github.com/Mantequilla-Soft/new-3speak-tv/pull/529))
-
-<hr />
-
-### "For Hive post" in the share menu
-
-<div class="pull-right">
-
-![The share menu with the new For Hive post option](https://images.hive.blog/DQmZYjquB22n1tGigU37ACRBFTKwoGvCK4w1YW52m9wN5Ss/share-menu.png)
-
-</div>
-
-The [share menu](https://3speak.tv/@enraizar/richard-avedon-in-the-ameri-475) on the watch page has a new option that copies the classic `3speak.tv/watch?v=` link, the one that works in every Hive frontend when you put it in a post. ([#529](https://github.com/Mantequilla-Soft/new-3speak-tv/pull/529))
-
-<hr />
-
-### Autoplay you can stop
-
-Before the next video starts you now see a 3, 2, 1 countdown you can cancel, and it waits while you're away from the player. Autoplay also no longer skips past a video that is still processing: it checks again every 20 seconds and plays it once it's ready. ([#524](https://github.com/Mantequilla-Soft/new-3speak-tv/pull/524), [#525](https://github.com/Mantequilla-Soft/new-3speak-tv/pull/525))
-
-<hr />
-
-### Hive-style addresses: /@user and /@author/permlink
-
-<div class="pull-right">
-
-![A 3Speak profile at its new /@ address](https://images.hive.blog/DQmT9nwp6zNdS3BVKTayK7ynhSmRJW5TD39Wvuf1vNzk15C/profile-address.png)
-
-</div>
-
-Profiles and videos now live at the same kind of address you know from other Hive apps. Take a Hive link, swap the domain for 3speak.tv, and you land on the same [profile](https://3speak.tv/@enraizar) or [video](https://3speak.tv/@enraizar/richard-avedon-in-the-ameri-475).
-
-Your old links still work: `/user/...`, `/p/...` and `/watch?v=...` open the same page and move you to the new address. Links that 3Speak writes into your Hive posts stay as `watch?v=`, so they keep working everywhere. ([#532](https://github.com/Mantequilla-Soft/new-3speak-tv/pull/532))
-
-<hr />
-
-### A preview image for every link you share
-
-<div class="pull-right">
-
-![Share card of the Threespeak community](https://images.hive.blog/DQmSeUuMpgv7J5L9twJrMfv9Vhu3yxnog29RDVLWJq34vQB/share-card.png)
-
-</div>
-
-Paste a 3Speak link into Discord, Telegram, X or a chat app and you get a picture card instead of a bare link. Every channel and every [Hive community](https://3speak.tv/communities) now has its own card with its picture and name, and tags, [badges](https://3speak.tv/badges), playlists, [audio posts](https://3speak.tv/audio), invite links and the main feeds got cards too. The homepage got a proper wide banner instead of a stretched square logo. ([#529](https://github.com/Mantequilla-Soft/new-3speak-tv/pull/529), [#532](https://github.com/Mantequilla-Soft/new-3speak-tv/pull/532))
-
-<hr />
-
-### Easier to find on Google and Bing
-
-Search engines used to see only about 3,600 of our videos. Now:
-
-- the [sitemap](https://3speak.tv/sitemap.xml) lists about **123,000 videos and shorts**, and every channel with a video (about 6,500, up from 249)
-- every watch page tells search engines it holds a video, with the player, chapters and links to the channel and tags, so videos can appear in video search results
-- each page has one clear address, and pages that don't exist answer with a real "not found"
-- new uploads are announced to Bing and the other IndexNow search engines every 10 minutes
-
-The same work fixed a slow network lookup that had stopped Discord from showing inline video previews. ([#530](https://github.com/Mantequilla-Soft/new-3speak-tv/pull/530))
-
-<hr />
-
-### Shared playlist links open the playlist
-
-When someone sends you a link to a video inside a playlist, you now get the playlist bar next to the video, the same as when you click through the playlist yourself. Private playlists stay private. ([#533](https://github.com/Mantequilla-Soft/new-3speak-tv/pull/533))
-
-<hr />
-
-### Smaller fixes
-
-- **[Discover](https://3speak.tv/discover) Spotlight** no longer disappears when you hide AI videos. It now just skips the AI-flagged ones.
-- [Discover](https://3speak.tv/discover) shows one community snap per creator, so one busy account can't fill the row.
-- Members-only videos now say "Members".
-- The share menu got wider rows with short descriptions and a Playlist shortcut, and opens as a sheet from the bottom on phones.
-- [Discover](https://3speak.tv/discover) Spotlight loads sooner and keeps its place while it loads.
-- Thumbnails stored on IPFS load again, through 3Speak's own gateway.
-- Warm-up videos: the Follow feed shows only warm-up creators you follow, and [New](https://3speak.tv/new) places their videos by date.
-- Switching between Butter Auth and a Hive wallet login now asks whether to reuse or replace the wallet login.
-- Calmer buttons, and one consistent header on every pop-up.
-- Spotlight link icons show the right logo again (Dropbox and Netflix links had been getting the X icon), plus a few other bugs our new test suite caught.
-- A round of security fixes for the site's API.
-- Warm-up accounts get a clear message, in all 21 languages, when they try to post the same comment twice.
-
-([#525](https://github.com/Mantequilla-Soft/new-3speak-tv/pull/525), [#527](https://github.com/Mantequilla-Soft/new-3speak-tv/pull/527), [#531](https://github.com/Mantequilla-Soft/new-3speak-tv/pull/531), [#532](https://github.com/Mantequilla-Soft/new-3speak-tv/pull/532), [#534](https://github.com/Mantequilla-Soft/new-3speak-tv/pull/534))
-
-<hr />
-
-### For developers
-
-The site's code got unit, API and browser test suites, a rewritten README, contributing docs and an MIT license. ([#527](https://github.com/Mantequilla-Soft/new-3speak-tv/pull/527))
-
----
-
-## ⚡ Feeds and API
-
-[3speakchecks](https://github.com/Mantequilla-Soft/3speakchecks) · 12 changes
-
-The "checker" is the service behind 3Speak's feeds, ads, the [leaderboard](https://3speak.tv/leaderboard) and many other features. It also got the server side of comment pins and Supporters ([#80](https://github.com/Mantequilla-Soft/3speakchecks/pull/80)).
-
-<hr />
-
-### Home feeds load faster
-
-<div class="pull-right">
-
-![Feed load times before and after](https://images.hive.blog/DQmbo3vXTkw5oByzpnJWYa34C3sTJLi85vpzS1pSEZxjtMj/feeds.png)
-
-</div>
-
-[Trending](https://3speak.tv/trend), [New](https://3speak.tv/new) and [Shorts](https://3speak.tv/shorts) used to rebuild the same list of candidate videos for every visitor, waiting on the database and on Hive each time. Now that list is built once, kept fresh in the background and shared. Your personal touches (creators you follow, your interests, hidden and watched videos) are still applied on every visit.
-
-The trade-off: a brand new upload can take a minute or two longer to show up in these three feeds. ([#82](https://github.com/Mantequilla-Soft/3speakchecks/pull/82))
-
-<hr />
-
-### No more 10-second waits when a Hive node is down
-
-When a Hive API node stops answering, the checker now moves on after 3 seconds instead of 10, and lets that node sit out for a minute while the next one takes over. On October 25 one node failed 135 times in a day. In a test with a dead node first in line, the first request took 3.4 seconds and the ones after it less than 0.1 seconds. ([#83](https://github.com/Mantequilla-Soft/3speakchecks/pull/83))
-
-<hr />
-
-### Ads that fit the video
-
-![Ad changes before and after](https://images.hive.blog/DQmZtNkp4kgdzHUWByYiKNQ4KzYVVrbqU9BEVWDHLEGvtmN/ads.png)
-
-- **Quieter.** Every ad now plays 2 dB below its original level, the same on every playback.
-- **Landscape ads fill portrait videos.** A landscape ad inside a portrait video used to play as a tiny letterboxed picture (268x151 pixels in one real case). It now plays as a proper landscape video that fills the player.
-- **Ads between [Shorts](https://3speak.tv/shorts) adapt to your connection.** They used to play only in 1080p and could stall on a phone. Now they start near 720p and adapt like any other video.
-
-([#76](https://github.com/Mantequilla-Soft/3speakchecks/pull/76), [#78](https://github.com/Mantequilla-Soft/3speakchecks/pull/78))
-
-<hr />
-
-### Warm-up posts
-
-Warm-up accounts are new people trying 3Speak before they have their own Hive account. Their posts get a few slots in [Discover](https://3speak.tv/discover).
-
-- **More variety:** one very active account was filling most of those slots, so each account now gets at most one post per load. ([#81](https://github.com/Mantequilla-Soft/3speakchecks/pull/81))
-- **No doubles:** people who already made their own Hive account under their warm-up name no longer show up twice. ([#79](https://github.com/Mantequilla-Soft/3speakchecks/pull/79))
-- **Announcements arrive:** personal announcements sent to a warm-up user by name now reach them. ([#84](https://github.com/Mantequilla-Soft/3speakchecks/pull/84))
-
-<hr />
-
-### 24-hour Stories, behind the scenes
-
-The checker does the server side of Stories, live since this week's release:
-
-- a Stories row with the creators you follow first, and a "seen" state
-- live stories lead the [shorts feed](https://3speak.tv/shorts) and disappear everywhere once they expire
-- **Keep as short**: turn a story into a normal short before it runs out
-- **Seen by**: see who watched your story
-- **Streaks**: the number of days in a row you posted a story
-- two new [leaderboard](https://3speak.tv/leaderboard) metrics, story uploads and story streak
-
-([#85](https://github.com/Mantequilla-Soft/3speakchecks/pull/85), [#86](https://github.com/Mantequilla-Soft/3speakchecks/pull/86), [#87](https://github.com/Mantequilla-Soft/3speakchecks/pull/87), [#88](https://github.com/Mantequilla-Soft/3speakchecks/pull/88))
-
----
-
-## ▶️ Video player
-
-[snapievideoplayer](https://github.com/Mantequilla-Soft/snapievideoplayer) · 3 changes
-
-![The expired-story screen in the player](https://images.hive.blog/DQmdwCCaMo1zjUqAgjf3Cw7ognjC2279xEojpRA7nmQAmdF/story.png)
-
-- **No ads on notice videos.** When a video is still processing, deleted or failed, the player shows a short notice instead. Ads no longer play on top of those, so [advertisers](https://3speak.tv/advertise) don't pay for an empty view. ([#51](https://github.com/Mantequilla-Soft/snapievideoplayer/pull/51))
-- **Portrait stays portrait.** A landscape ad at the start of a portrait video no longer makes the player treat the whole video as landscape. ([#52](https://github.com/Mantequilla-Soft/snapievideoplayer/pull/52))
-- **Expired stories.** Once a story's 24 hours are up, the player shows a short "This story has expired" clip instead, in embeds too. On 3speak.tv an expired story already gets its own screen; embeds get this clip with the next player update. ([#53](https://github.com/Mantequilla-Soft/snapievideoplayer/pull/53))
-
----
-
-## 🎞️ Encoder
-
-[3speakencoder](https://github.com/Mantequilla-Soft/3speakencoder) · 1 change
-
-Some uploads are small in resolution but huge in file size, like a 480p video of about 700 MB. The encoder used to pass those through untouched. Now it only skips re-encoding when a video is already at or below the normal size for its resolution, so oversized uploads get brought down to the usual quality settings like every other video. ([#39](https://github.com/Mantequilla-Soft/3speakencoder/pull/39))
-
----
-
-## 🤖 AI check and leaderboard jobs
-
-[3speak-subtitle-generator](https://github.com/Mantequilla-Soft/3speak-subtitle-generator) · 1 change
-
-This project runs background jobs for 3Speak, including the AI-content check and the [leaderboard](https://3speak.tv/leaderboard) numbers.
-
-- Leaderboard numbers for Stories: story uploads and story streaks.
-- The AI-content check now also covers videos from warm-up accounts.
-- A video with broken or unusual details no longer stops a whole batch.
-- Copying video files to the storage nodes is more reliable.
-
-([#2](https://github.com/Mantequilla-Soft/3speak-subtitle-generator/pull/2))
-
----
-
-## ✂️ Video editor
-
-[3speak-editor-suite](https://github.com/Mantequilla-Soft/3speak-editor-suite) · 5 changes
-
-The editor opens when you [upload](https://3speak.tv/upload) a Short or make a remix on 3speak.tv. Its code is now public on GitHub.
-
-![The editor's sound fixes, before and after](https://images.hive.blog/DQmQuXM3VQ3TB7i8RFsVb4R9bbnL8vP6WCVsn2L5jps9EvD/editor-audio.png)
-
-- **Teleprompter follows your voice in any browser.** "Follow voice" used to work only in Chrome-based browsers. It now works in Firefox and others too. ([#7](https://github.com/Mantequilla-Soft/3speak-editor-suite/pull/7))
-- **Volume 0 means silent.** A clip set to volume 0 used to play and render at full volume. Muted tracks, hidden tracks and clips with sound turned off now stay out of the final video, just like in the preview. ([#8](https://github.com/Mantequilla-Soft/3speak-editor-suite/pull/8))
-- **The mix sounds like the preview.** With music and several clips together, the final video came out much quieter than the preview (four sources each played at a quarter). Each source now keeps its own volume. ([#8](https://github.com/Mantequilla-Soft/3speak-editor-suite/pull/8))
-- **Remixing never touches your draft.** Opening a remix used to ask "Replace your saved draft?". Remixes no longer autosave, so your saved draft stays exactly as it was. ([#13](https://github.com/Mantequilla-Soft/3speak-editor-suite/pull/13))
-- **Cropped overlays render like the preview.** In a camera-overlay remix, a freely placed and cropped clip came out zoomed and shifted in the final video. It now lands where the preview shows it. ([#14](https://github.com/Mantequilla-Soft/3speak-editor-suite/pull/14))
-- **Sign-in to upload and render.** Uploading and rendering in the editor now needs a 3Speak sign-in. ([#10](https://github.com/Mantequilla-Soft/3speak-editor-suite/pull/10))
-
----
-
-## 💾 Hot storage node
-
-[hotnode](https://github.com/Mantequilla-Soft/hotnode) · 6 changes
-
-![Hot node pin lookups before and after](https://images.hive.blog/DQmRQLTSnxE5xujFDzWvoJA6t13o2xHLnZYjqaFf785xRqC/hotnode.png)
-
-The hot node keeps fresh uploads on fast IPFS storage so they start quickly, before they move to long-term storage.
-
-- **Popular videos stay on fast storage.** A video used to leave the hot node as soon as it was old enough and copied to long-term storage. Now it also has to go quiet: a video watched in the last 7 days keeps its place, however old it is. ([#2](https://github.com/Mantequilla-Soft/hotnode/pull/2))
-- **No more crashes while finding new videos.** Each lookup loaded about 150,000 video records into memory and ran out of it. It now asks the database for just the one it needs. ([#6](https://github.com/Mantequilla-Soft/hotnode/pull/6))
-- **Fewer false "copy failed" errors.** Checking that a video arrived on long-term storage now gets 2 minutes instead of 30 seconds, because that node can be slow under load. ([#1](https://github.com/Mantequilla-Soft/hotnode/pull/1))
-- **Deploys itself.** Once set up on the server, a merge goes live within about two minutes, and a failed deploy rolls back on its own. ([#5](https://github.com/Mantequilla-Soft/hotnode/pull/5))
-- **A stats page you can trust.** Fixed daily counters that reset to empty, migration sizes that always read 0, freed storage that was counted twice, and CPU numbers that showed 0% most of the time. ([#9](https://github.com/Mantequilla-Soft/hotnode/pull/9), [#10](https://github.com/Mantequilla-Soft/hotnode/pull/10))
-
----
-
-## 📱 Snapie
-
-[snapie-io](https://github.com/Mantequilla-Soft/snapie-io) · 1 release · live on [snapie.io](https://snapie.io)
-
-- **Games:** floating touch controls for Rush, Puff Quest and Blocks, and Blocks fits fullscreen. Jump's title no longer overlaps in landscape.
-- **Feed:** when your mute list hides most of a page, the feed keeps loading instead of looking stuck.
-- **Images:** a missing Hivemoji no longer shows up as a server error.
-- **Composer:** the emoji picker no longer covers the Post button.
-
-([#313](https://github.com/Mantequilla-Soft/snapie-io/pull/313))
-
----
-
-## 🚦 Traffic director
-
-[trafficdirector](https://github.com/Mantequilla-Soft/trafficdirector) · 1 change
-
-Cleanup: an unused example endpoint is gone, so there is less code facing the internet. ([#2](https://github.com/Mantequilla-Soft/trafficdirector/pull/2))
-
----
-
-That's it for this week. Most of our code is open on GitHub at [github.com/Mantequilla-Soft](https://github.com/Mantequilla-Soft). Questions, bug reports or ideas? Drop them in the comments below.
-
-<hr />
-
-<center>
-
-[![Mantequilla Soft](https://images.hive.blog/DQmSCTXSSRQ4R5Xq2pGTTiiMuSsTcJYAy1ozfkb35M7jVzB/mantequilla-soft-logo.png)](https://www.mantequilla-soft.com)
-
-**[GitHub](https://github.com/Mantequilla-Soft) · [Website](https://www.mantequilla-soft.com) · [Snapie](https://snapie.io) · [3Speak](https://3speak.tv)**
-
-</center>
-
-</div>
-</div>
-  <footer class="hive-post-embed__source">
-    <span class="hive-post-embed__source-label">Source:</span>
-    <a href="https://hive.blog/@mantequilla-soft/3speak-your-profile-your-stories-your-supporters-2026-10-27">3Speak: Your Profile, Your Stories, Your Supporters</a>
-    by
-    <a href="https://hive.blog/@mantequilla-soft">@mantequilla-soft</a>
-  </footer>
-</div>]]></content><author><name>mantequilla-soft</name></author><category term="news" /><category term="api" /><category term="3speak" /><summary type="html"><![CDATA[3Speak development update covering API failover, feed caching, IPFS storage fixes, open-source tooling and new frontend features.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://images.hive.blog/DQmRj62mF3en5JzJe277aYdPVWHQ3TSn97e89iL81ZaTf6G/thumbnail.png" /><media:content medium="image" url="https://images.hive.blog/DQmRj62mF3en5JzJe277aYdPVWHQ3TSn97e89iL81ZaTf6G/thumbnail.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Peakd Blog, a blog that is truly yours</title><link href="https://hivedocs.info/news/projects/peakd/2026/10/20/peakd-blog-a-blog-that-is-truly-yours.html" rel="alternate" type="text/html" title="Peakd Blog, a blog that is truly yours" /><published>2026-10-20T01:54:42-07:00</published><updated>2026-10-20T01:54:42-07:00</updated><id>https://hivedocs.info/news/projects/peakd/2026/10/20/peakd-blog-a-blog-that-is-truly-yours</id><content type="html" xml:base="https://hivedocs.info/news/projects/peakd/2026/10/20/peakd-blog-a-blog-that-is-truly-yours.html"><![CDATA[<div class="hive-post-embed" data-hive-author="asgarth" data-hive-permlink="peakd-blog-a-blog-that-is-truly-yours">
-  <div id="content-asgarth-peakd-blog-a-blog-that-is-truly-yours" class="hive-post-embed__content" data-hive-render-target="true">A while back, I shared [a sneak peek at a project I was working on](https://peakd.com/hive-139531/@asgarth/a-sneak-peek-at-a-new-project-coming-soon). There were screenshots, quite a few themes, and a conveniently vague “coming soon.”
-
-Well, it finally has a link I can share. PeakD Blog is live at **[peakd.blog](https://peakd.blog).**
-
-The idea is simple: give your Hive writing a home that feels like your own website. Your posts, your profile, your style, and an address you can put on a business card, share with a friend, or add to your social profiles.
-
-<iframe src="https://play.3speak.tv/embed?v=asgarth%2Femz4mpur&amp;mode=iframe"></iframe>
-
-## Your writing, with a place of its own
-
-If you already publish on PeakD, you already have the content to get started.
-
-![image.png](https://files.peakd.com/file/peakd-hive/asgarth/23u6Yr2NYjaoznaioWdQMDMBKEid8Z1114ivw9qsS4q2zVpXKsEb2wJjnqX328ziuL6T4.png)
-
-PeakD Blog brings your existing Hive posts together in a dedicated blog, with an archive, individual article pages, and About and Contact pages based on your Hive profile.
-
-You keep publishing through PeakD, and your posts appear on your blog. The content stays on Hive, and your blog settings are saved in your account metadata.
-
-Once you've claimed your blog, anyone can open it and read your articles without signing in or having a Hive account. That makes it an easy link to share with people who are interested in your writing and might be discovering Hive for the first time.
-
-PeakD remains the place to write, discover communities, and take part in the wider Hive experience. Your blog gives people a place to spend time with your work.
-
-## Pick a look that feels like you
-
-If you read the preview, you might remember that I got a little carried away with the themes. That hasn't really changed.
-
-There are clean personal blogs, photography-focused designs, bold typography, field notebooks, retro pixels, and terminal-inspired layouts. The themes have their own character, including how they handle navigation, archives, and article pages.
-
-**Default, Minimalist, Brutalist, and Aperture are available to everyone**, with more designs choices available through [PeakD Horizon](https://peakd.com/@peakd/subscriptions).
-
-Depending on the theme, you can choose top or side navigation, list or grid views, content width, light or dark mode, and accent colors. You can also change your blog's name and description, preview your choices, and save them through your wallet.
-
-I wanted this part to be fun: try a few things, find something you like, and get back to writing.
-
-## A few useful details
-
-Alongside the design choices, there are some practical features to help people enjoy and follow your work:
-
-- **Topic browsing:** enable a topic bar so readers can find more posts about the subjects they like.
-- **RSS:** readers can follow your blog in their preferred feed reader.
-- **Sharing:** article pages include sharing options and previews for links shared elsewhere.
-- **Mobile layouts:** your blog adapts to phones, tablets, and larger screens.
-- **Interface languages:** optional localization lets readers use the navigation and interface in their preferred supported language. Your articles stay in the language you wrote them in.
-
-And the Hive connection is still there. Readers with a Hive account can connect a supported wallet, choose their vote weight, comment, and reply directly on the blog. Those interactions happen on Hive, with signing handled by the wallet.
-
-## A little more room with Horizon
-
-You can get started for free. The free blog shows posts published through PeakD and includes the four free themes mentioned above.
-
-An active **[PeakD Horizon subscription](https://peakd.com/@peakd/subscriptions) for the blog owner** adds:
-
-- **Posts from other Hive publishing apps**, so your blog can bring together writing published across Hive.
-- **Premium themes**, for more ways to make the site your own.
-- **Up to three posts pinned in your navigation**, useful for a “Start here” guide, a project introduction, or information you want visitors to find easily.
-- **A portfolio gallery**, displaying images from posts you've marked “Show in Portfolio” on PeakD, with topic filters and a full-screen image viewer.
-
-If you already have Horizon on the account that owns your blog, those extras are available to that blog. Readers don't need Horizon to visit it.
-
-## More than a place for the latest post
-
-This is the part I'm looking forward to seeing people use.
-
-A travel writer could turn years of posts into a journal worth exploring. A photographer or artist could pair their stories with a portfolio. Someone building a project could pin an introduction and keep publishing updates under one address.
-
-There is also a **Products page for accounts with their Hive shop enabled**, bringing existing product and subscription listings into the blog. That gives people another way to discover what you offer alongside your writing.
-
-You may already have a lot of useful work on Hive. A dedicated blog gives you another way to put it in front of people, including people outside our usual circles.
-
-## Give it a try
-
-Getting started is straightforward:
-
-1. Visit **[peakd.blog](https://peakd.blog)** and enter your Hive username.
-2. Connect the wallet for that account to open your owner preview.
-3. Open **Customize blog**, try the available settings, and preview the result.
-4. Choose **Claim &amp; Save** and approve the operation in your wallet.
-5. Share **`yourname.peakd.blog`** and keep publishing through PeakD.
-
-Until you claim it, the blog preview is only accessible to you as the owner. Claiming makes the blog public; your existing Hive posts remain public on Hive throughout.
-
-If you're new to Hive, you can [create an account](https://signup.hive.io/) first and start from there.
-
-I'm happy to finally get this into people's hands. If you set up a blog, drop your link in the comments — I'd love to see which themes you choose and what you do with it.
-
-Feedback, suggestions, and the inevitable “this looks a bit strange on my phone” reports are welcome here or [on Discord](https://discord.gg/uPxmXjX).
-
-**[Come have a look at peakd.blog](https://peakd.blog).**
-</div>
-  <footer class="hive-post-embed__source">
-    <span class="hive-post-embed__source-label">Source:</span>
-    <a href="https://hive.blog/@asgarth/peakd-blog-a-blog-that-is-truly-yours">Peakd Blog, a blog that is truly yours</a>
-    by
-    <a href="https://hive.blog/@asgarth">@asgarth</a>
-  </footer>
-</div>]]></content><author><name>asgarth</name></author><category term="news" /><category term="projects" /><category term="peakd" /><summary type="html"><![CDATA[Introducing peakd.blog, your own customizable corner of Hive]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://files.peakd.com/file/peakd-hive/asgarth/23u6Yr2NYjaoznaioWdQMDMBKEid8Z1114ivw9qsS4q2zVpXKsEb2wJjnqX328ziuL6T4.png" /><media:content medium="image" url="https://files.peakd.com/file/peakd-hive/asgarth/23u6Yr2NYjaoznaioWdQMDMBKEid8Z1114ivw9qsS4q2zVpXKsEb2wJjnqX328ziuL6T4.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Ecency Web 4.4.3 - Faster, More Social, More Fun</title><link href="https://hivedocs.info/news/libraries/ecency/2026/10/18/ecency-web-4-4-3.html" rel="alternate" type="text/html" title="Ecency Web 4.4.3 - Faster, More Social, More Fun" /><published>2026-10-18T22:41:30-07:00</published><updated>2026-10-18T22:41:30-07:00</updated><id>https://hivedocs.info/news/libraries/ecency/2026/10/18/ecency-web-4-4-3</id><content type="html" xml:base="https://hivedocs.info/news/libraries/ecency/2026/10/18/ecency-web-4-4-3.html"><![CDATA[<div class="hive-post-embed" data-hive-author="ecency" data-hive-permlink="ecency-web-4-4-3">
-  <div id="content-ecency-ecency-web-4-4-3" class="hive-post-embed__content" data-hive-render-target="true">A new Ecency release is here! 🚀
-
-Version **4.4.3** brings a large collection of improvements across Ecency - from faster feeds and better reading performance to major upgrades for curation, chat, audio, and the first steps into something a little more playful.
-
-A lot has changed under the hood too. This release includes dozens of fixes and optimizations aimed at making Ecency faster, more reliable, and more resilient across desktop and mobile.
-
-<img src="https://i.ecency.com/DQmdvFivzUnNU8z4YkWS2BiyG2CAzxsBKd3eF6tLQYa79Us/release_thumb.png" alt="" />
-
-Here are some of the highlights.
-
-Faster feeds and reading
-------------------------
-
-Speed has been a major focus of this release.
-
-Feeds, community pages, profiles, and individual posts have received significant rendering and caching improvements. More content can now arrive with the initial page response, helping pages become useful sooner instead of waiting for additional client-side loading.
-
-Feed navigation has also been improved to make returning to content feel more natural. Cached rows can be restored during navigation, feed cards now have unique identifiers for restoring reading position, unnecessary image/GIF requests have been reduced, and several sources of perceived slowness have been removed.
-
-The result: **less waiting and a smoother experience while browsing Ecency.**
-
-Curation Desk gets much more powerful
--------------------------------------
-
-The **Curation Desk** continues to evolve into a serious workspace for community curation.
-
-This release adds and improves:
-
-*   A curator roster administration panel
-    
-*   Quick actions for recommended posts
-    
-*   Better mobile support for reviewing and marking posts
-    
-*   Smarter handling of already-reviewed recommendations
-    
-*   More accurate recommendation counts
-    
-*   Improved review workflow and toolbar
-    
-*   Guest curator applications, which is open at the moment, go Apply: [https://ecency.com/curation/applications](https://ecency.com/curation/applications)
-    
-*   Tools for curation teams to review and elect guest curators
-    
-*   Better handling and labeling of excluded content
-    
-
-These changes make it easier for curation teams to organize themselves, discover content, and collaborate on rewarding valuable contributions.
-
-Better group chats and private channels
----------------------------------------
-
-Ecency Chat also received a substantial update.
-
-Group conversations are now supported on the web, along with improvements such as seeing who reacted to messages, displaying sender names correctly in groups, renaming groups, sorting conversations by activity, and showing previews for post links.
-
-The New Chat experience and responsive layouts have been polished as well, making conversations easier to manage across different screen sizes.
-
-Listen with natural voices
---------------------------
-
-Reading isn't always the most convenient way to enjoy a great Hive post.
-
-The new **Listen** experience introduces natural-voice audio generation for posts, unlocked using Ecency Points.
-
-Instead of relying on the browser's Web Speech text-to-speech system, Ecency can generate a more natural listening experience. The player includes playback speeds up to **2.5×** and shows generation progress while your audio is being prepared.
-
-Whether you're walking, driving, exercising, or simply prefer listening, this gives you another way to experience content on Hive.
-
-Welcome to Raidstead
---------------------
-
-Something different has also been growing inside Ecency.
-
-**Raidstead** is a new community raid game where alliances become towns, players rally together, build their war chest and town, follow their allies' progress, and prepare to face weekly pests.
-
-The first version introduces the Raidstead world, heroes, alliance towns, a pre-season field guide, weekly pest reveals, progress tracking, town news, season countdowns, and more.
-
-HiveSigner users can participate too.
-
-This is an experiment in making community participation more interactive and fun - and we're looking forward to seeing where it goes.
-
-Reliability, security and SDK improvements
-------------------------------------------
-
-A lot of work in 4.4.3 isn't immediately visible, but it matters just as much.
-
-We've strengthened several areas of the application, including safer handling of untrusted metadata, improved error handling, protection against malformed content, URL-secret redaction from error reports, safer opening of external tabs, and better handling of taken-down content.
-
-The Ecency SDK also received important transaction improvements, including transaction-size validation, better compatibility with encrypted memos, node failover when broadcasting transactions, improved block references for lagging nodes, correct authority serialization, and safer retries for ambiguous AI Assist requests.
-
-Image uploads now retry temporary server failures as well, alongside numerous fixes for media rendering, metadata, editors, feeds, profiles, Waves, and browser-specific issues. Are you developer and building your own app on Hive? Go try out `@ecency/sdk` library smart and convenient...
-
-Better media everywhere
------------------------
-
-This release includes a number of smaller changes that add up to a better media experience.
-
-YouTube Shorts now render in their proper vertical format, 3Speak audio embeds appear as audio players rather than video frames, GIF handling has been improved, list thumbnails maintain their intended 16:9 ratio, classic editor previews can display video embeds, and NSFW media in Waves is covered appropriately.
-
-We've also improved compatibility with content originating from other Hive applications.
-
-Community contributions
------------------------
-
-Open source remains an important part of Ecency.
-
-A warm welcome to **@hiveuprss** and **@tibfox**, who made their first contributions to Ecency Vision in this release. ❤️
-
-And, as always, thank you to everyone reporting bugs, testing changes, suggesting improvements, curating content, building communities, and simply using Ecency every day.
-
-What's next?
-------------
-
-Ecency continues to grow beyond being simply another interface for Hive.
-
-We're improving the fundamentals - **speed, reliability, publishing, reading and discovery** - while also building better tools for **communities, curation, communication and new ways to interact with content**.
-
-Version 4.4.3 is a big step in that direction.
-
-Update, explore the new features, try the Curation Desk, start a group conversation, listen to a post - and maybe pay Raidstead a visit while you're there. ⚔️
-
-See you around Ecency! 💙</div>
-  <footer class="hive-post-embed__source">
-    <span class="hive-post-embed__source-label">Source:</span>
-    <a href="https://hive.blog/@ecency/ecency-web-4-4-3">Ecency Web 4.4.3 - Faster, More Social, More Fun</a>
-    by
-    <a href="https://hive.blog/@ecency">@ecency</a>
-  </footer>
-</div>]]></content><author><name>ecency</name></author><category term="news" /><category term="libraries" /><category term="ecency" /><summary type="html"><![CDATA[Ecency 4.4.3 includes SDK fixes for transaction validation, encrypted memos, RPC failover, block references and authority serialization.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://i.ecency.com/DQmZFLVjEkxTqLCj3JQTmasLEP4YNrtWUVg5TNtAzkRW6Vr/release_thumbn.png" /><media:content medium="image" url="https://i.ecency.com/DQmZFLVjEkxTqLCj3JQTmasLEP4YNrtWUVg5TNtAzkRW6Vr/release_thumbn.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Security Incident @v4vapp: KeepSats Transfer via Authentication Flaw — Now Resolved</title><link href="https://hivedocs.info/news/authentication/security/2026/10/18/security-incident-v4vapp-keepsats-transfer-via-authentication-flaw-now-resolved.html" rel="alternate" type="text/html" title="Security Incident @v4vapp: KeepSats Transfer via Authentication Flaw — Now Resolved" /><published>2026-10-18T22:40:33-07:00</published><updated>2026-10-18T22:40:33-07:00</updated><id>https://hivedocs.info/news/authentication/security/2026/10/18/security-incident-v4vapp-keepsats-transfer-via-authentication-flaw-now-resolved</id><content type="html" xml:base="https://hivedocs.info/news/authentication/security/2026/10/18/security-incident-v4vapp-keepsats-transfer-via-authentication-flaw-now-resolved.html"><![CDATA[<div class="hive-post-embed" data-hive-author="brianoflondon" data-hive-permlink="security-incident-v4vapp-keepsats-transfer-via-authentication-flaw-now-resolved">
-  <div id="content-brianoflondon-security-incident-v4vapp-keepsats-transfer-via-authentication-flaw-now-resolved" class="hive-post-embed__content" data-hive-render-target="true">**[Vote for Brianoflondon's Witness KeyChain or HiveSigner](https://vote.hive.uno/@brianoflondon)**
-
-***This is a value for value post: see the explanation in the footer.***
-
----
-
-
-![v4vapp-hack-attempt-october-2026-banner.jpg](https://files.peakd.com/file/peakd-hive/brianoflondon/48GgLtv42RfcbD1R6XM6rxN1WBB4CLb5TYdW6ZmznhsFDfA3uzE1MbBwv5evCHWNh7.jpg)
-
-
-**Security Incident: KeepSats Transfer via Authentication Flaw — Now Resolved**
-
-On 12 October 2026 an attacker exploited a flaw in the v4v.app authentication flow.
-
-After signing a normal Ethereum wallet challenge that requested `hive:active` scope, the attacker called the token-refresh endpoint and supplied an arbitrary Hive username. The API issued a valid access token for that username while keeping the elevated scope.
-
-With the resulting token the attacker called the KeepSats transfer endpoint. The public API used the username from the JWT as the sender; the backend then broadcast a `v4vapp_transfer` custom_json operation signed by the server account `v4vapp`. This moved 40,000 sats on the internal KeepSats ledger from `one_of_my_accounts` to `emem0515`.
-
-No Hive posting or active keys belonging to `one_of_my_accounts` were presented or used, and no Lightning payment or Hive/HBD left the service. The same client first performed smaller test transfers and username switches, confirming the behaviour before the larger movement.
-
-The authentication path that allowed a refresh to mint a token for an arbitrary username without a corresponding signature or membership check has been closed. The affected session is no longer valid and the vulnerability has been patched.
-
-
-## The Attacker?
-
-I have a number of Hive account IDs and ETH addresses which were used to do this. Fortunately my alert systems were quick enough to shut this down before any funds could move out of my system, and those accounts are now all blocked permanently. 
-
-## After the Attack
-
-Repeat log on attempts:
-
-| Time (UTC)                 | Name     | Source                       | Result                 |
-|----------------------------|----------|------------------------------|------------------------|
-| 13:32–13:33, four tries    | hiveln   | 186.247.41.86                | Bad User, no challenge |
-
-186.247.41.86 is still showing up. Right after the restart it read KeepSats, refreshed, and logged out, then polled `/v1?get_crypto=true` every 10 minutes until 10:23. At 13:32–13:33, with no Referer, it asked for challenges for `brianoflondon` and `v4vapp` (`clientId=audit-check-2`, `scope=hive:active`). Those challenges were issued and never signed.
-
-It also asked for `nonexistentuser12345`. It then signed in as `ryum216` in 1.21s and posted a KeepSats transfer of 999,999,999 sats from `ryum216` to `ryum216`, memo `audit-overbalance`. The backend returned 402 Insufficient funds. No sats moved. The same IP then called convert and invoice.
-
-Thank you to everyone who uses v4v.app and KeepSats.
-
--------
-
-## Value for Value
-
-For the last few months while building @v4vapp I was generously supported by the DHF. Going forward I have a much more modest support which covers direct server costs and a little of my time.
-
-If you appreciate the work I do on and around Hive, you can express this directly: upvoting posts on Hive is great. Also consider a direct donation (there's a Tip button on Hive or a Lightning Address) on all my posts.
-
-<div class="pull-right">
-
-
-![hivebuzz-orca-120.png](https://files.peakd.com/file/peakd-hive/brianoflondon/AJmtP4HQY8c2Ej3D2k6ZxhKZqUh6R2hDWcVDkpVacwCbt5c9R9R2LowiycVhAM7.png)
-
-</div>
-
-<div class="pull-right">
-
-https://images.hive.blog/130x130/http://hivebuzz.me/badges/birthday-6.png
-
-</div>
-
-**[Vote for Brianoflondon's Witness KeyChain or HiveSigner](https://vote.hive.uno/@brianoflondon)**
-
-
-
-
-![v4vapp-hack-attempt-october-2026-square.jpg](https://files.peakd.com/file/peakd-hive/brianoflondon/AJiuxwqYXET1M2b78Jjq7qqfThRyNfcj2VRqyZHshUCPSCPgowxkxEMFPY4g5eT.jpg)
-
-
--------
-
-<div class="pull-right">
-
-![Send Lightning to Me!](https://files.peakd.com/file/peakd-hive/brianoflondon/AK3gcbmQA5oP28nnfgu5MiW8JCXw1XA6tYghwFWbSkPW2P6hXto5i7TDRTkPRVa.png)
-</div>
-
-- [Find me on Telegram](https://t.me/brianoflondon)
-- [V4VAPP Support on Telegram](https://t.me/brianoflondon)
-- [Vote for Brianoflondon's Witness KeyChain or HiveSigner](https://vote.hive.uno/@brianoflondon)
-- [Vote for Brianoflondon's Witness direct with HiveSigner](https://hivesigner.com/sign/account-witness-vote?witness=brianoflondon&amp;approve=1)
-- [Find my videos on 3speak](https://3speak.tv/user/brianoflondon)</div>
-  <footer class="hive-post-embed__source">
-    <span class="hive-post-embed__source-label">Source:</span>
-    <a href="https://hive.blog/@brianoflondon/security-incident-v4vapp-keepsats-transfer-via-authentication-flaw-now-resolved">Security Incident @v4vapp: KeepSats Transfer via Authentication Flaw — Now Resolved</a>
-    by
-    <a href="https://hive.blog/@brianoflondon">@brianoflondon</a>
-  </footer>
-</div>]]></content><author><name>brianoflondon</name></author><category term="news" /><category term="authentication" /><category term="security" /><summary type="html"><![CDATA[V4V incident analysis explaining how a token-refresh identity flaw enabled unauthorized KeepSats transfers, with the author's account of remediation.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://files.peakd.com/file/peakd-hive/brianoflondon/AJiuxwqYXET1M2b78Jjq7qqfThRyNfcj2VRqyZHshUCPSCPgowxkxEMFPY4g5eT.jpg" /><media:content medium="image" url="https://files.peakd.com/file/peakd-hive/brianoflondon/AJiuxwqYXET1M2b78Jjq7qqfThRyNfcj2VRqyZHshUCPSCPgowxkxEMFPY4g5eT.jpg" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>
+</div>]]></content><author><name>gtg</name></author><category term="howto" /><category term="node" /><category term="docker" /><summary type="html"><![CDATA[Run a Hive 1.28.8 exchange node with Docker Compose, snapshots and reusable block logs, with API examples for tracking deposits.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://images.hive.blog/DQmTZJyTj2iXDnJBRZ8ZpEN4FeGZMwm65H1hvGKvrSU1Muv/Cyberpunk-Hive-chan.png" /><media:content medium="image" url="https://images.hive.blog/DQmTZJyTj2iXDnJBRZ8ZpEN4FeGZMwm65H1hvGKvrSU1Muv/Cyberpunk-Hive-chan.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>

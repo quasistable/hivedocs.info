@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta property="og:image" content="/assets/images/sticker.png" />
+  <meta name="apple-mobile-web-app-title" content="Hive Docs" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" /><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Introducing stinger: a hived plugin for matching operations of interest | Hive Chain Documentation</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Introducing stinger: a hived plugin for matching operations of interest" />
+<meta name="author" content="serpent7776" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Configure Stinger to filter Hive operations and stream matches over a Unix socket, with rule examples, a Python consumer and delivery/recovery guidance. Requires the author’s hived fork." />
+<meta property="og:description" content="Configure Stinger to filter Hive operations and stream matches over a Unix socket, with rule examples, a Python consumer and delivery/recovery guidance. Requires the author’s hived fork." />
+<link rel="canonical" href="https://hive.blog/hivedev/@serpent7776/introducing-stinger-a-hived-plugin-for-matching-operations-of-interest" />
+<meta property="og:url" content="https://hive.blog/hivedev/@serpent7776/introducing-stinger-a-hived-plugin-for-matching-operations-of-interest" />
+<meta property="og:site_name" content="Hive Chain Documentation" />
+<meta property="og:image" content="https://images.hive.blog/DQmXFsp9c8oCSZU5jyzc8nfwtogRmnurPBZaSJD2PFUDJ2f/stinger-icon.png" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2026-11-13T13:17:24-08:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="https://images.hive.blog/DQmXFsp9c8oCSZU5jyzc8nfwtogRmnurPBZaSJD2PFUDJ2f/stinger-icon.png" />
+<meta property="twitter:title" content="Introducing stinger: a hived plugin for matching operations of interest" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"serpent7776"},"dateModified":"2026-11-13T13:17:24-08:00","datePublished":"2026-11-13T13:17:24-08:00","description":"Configure Stinger to filter Hive operations and stream matches over a Unix socket, with rule examples, a Python consumer and delivery/recovery guidance. Requires the author’s hived fork.","headline":"Introducing stinger: a hived plugin for matching operations of interest","image":"https://images.hive.blog/DQmXFsp9c8oCSZU5jyzc8nfwtogRmnurPBZaSJD2PFUDJ2f/stinger-icon.png","mainEntityOfPage":{"@type":"WebPage","@id":"https://hive.blog/hivedev/@serpent7776/introducing-stinger-a-hived-plugin-for-matching-operations-of-interest"},"url":"https://hive.blog/hivedev/@serpent7776/introducing-stinger-a-hived-plugin-for-matching-operations-of-interest"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://hivedocs.info/feed.xml" title="Hive Chain Documentation" /><script>
+if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNotTrack === "yes" || navigator.msDoNotTrack === "1")) {
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-161692811-1', 'auto');
+  ga('send', 'pageview');
+}
+</script>
+  
+<script src='https://unpkg.com/steem-content-renderer'></script>
+  <script src="/assets/javascript/universal-bridge-against-phishing.js"></script>
+  <script src="/assets/javascript/lazysizes.min.js" async=""></script>
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet" />
+  <link rel="shortcut icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="152x152" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="167x167" href="/assets/images/favicon-80x80.png" />
+</head>
+<body><header class="site-header" role="banner">
+  <div class="wrapper site-header-inner">
+    <a class="site-title" rel="author" href="/">Hive Chain Documentation</a>
+
+    <nav class="site-nav" aria-label="Primary">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/news/">News</a><a class="page-link" href="/howto/">How To</a><a class="page-link" href="/links/">Useful Links</a><a class="page-link" href="/authors/">Authors</a><a class="page-link" href="/topics/">Topics</a><a class="page-link" href="/search/">Search</a></div>
+    </nav>
+  </div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper page-layout has-search-panel">
+        <div class="page-main">
+          <article class="post h-entry post-article" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header post-hero">
+    <div class="post-hero-main">
+      <p class="post-kicker">Archive post</p>
+      <h1 class="post-title p-name" itemprop="name headline">Introducing stinger: a hived plugin for matching operations of interest</h1>
+      <p class="post-meta">
+        <time class="dt-published" datetime="2026-11-13T13:17:24-08:00" itemprop="datePublished">Nov 13, 2026
+        </time>• <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">
+            <a href="/authors/#author-serpent7776">serpent7776</a>
+          </span></span></p><p class="post-summary">Configure Stinger to filter Hive operations and stream matches over a Unix socket, with rule examples, a Python consumer and delivery/recovery guidance. Requires the author's hived fork.</p></div><aside class="post-author-card">
+      <img src="https://images.hive.blog/u/serpent7776/avatar" width="128" height="128" class="lazyload post-author-avatar" alt="Avatar for @serpent7776" />
+      <div class="post-author-name">@serpent7776</div>
+    </aside></header>
+
+  <div class="post-content e-content post-body" itemprop="articleBody">
+    <div class="hive-post-embed" data-hive-author="serpent7776" data-hive-permlink="introducing-stinger-a-hived-plugin-for-matching-operations-of-interest">
+  <div id="content-serpent7776-introducing-stinger-a-hived-plugin-for-matching-operations-of-interest" class="hive-post-embed__content" data-hive-render-target="true">![stinger-icon.png](https://images.hive.blog/DQmXFsp9c8oCSZU5jyzc8nfwtogRmnurPBZaSJD2PFUDJ2f/stinger-icon.png)
+
+I'd like to share **stinger**, a plugin for `hived` that watches every operation the node applies and hands the ones you care about to your own process, as JSON lines on a unix socket, as soon as the block is irreversible, or under a millisecond after it is applied if you ask for that.
+
+You describe what you care about in a small, readable JSON rules file. No database, no replay, no polling loop.
+
+## What is stinger
+
+Stinger sits inside the node, on the writer thread, right where blocks are applied. For every operation, real or virtual, it checks the operation against your rules. When one matches, the operation is sent to a socket your program is reading from, together with the block number, timestamp and transaction id. Delivery runs on a separate sink thread, so a slow consumer never holds up hived.
+
+A rule looks like this:
+
+```json
+{
+  "name": "shop-paid",
+  "match": "op_type in (transfer, fill_recurrent_transfer) and to = \"shop\"",
+  "exec": { "type": "socket" }
+}
+```
+
+That's a complete rule. `name` is how the match will be labelled on the stream, `match` is a boolean expression, `exec` says where the match goes: to the socket, or just to the node's log.
+
+Your side of it is a few lines in whatever language you like:
+
+```python
+import json, socket
+
+s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+s.connect("/run/hived/stinger.sock")
+for line in s.makefile("r"):
+    rec = json.loads(line)
+    if rec["kind"] == "match":
+        print(rec["rules"], rec["block"], rec["op"])
+```
+
+The socket is created readable and writeable by its owner only, so run the consumer as the same user as hived.
+
+The first line on every connection is a greeting:
+
+```json
+{"kind":"hello","seq":41,"version":1,"delivered":{"head":null,"irreversible":111339249}}
+```
+
+It exists because the socket keeps no history. `delivered` says where each stream stands, so you know what this connection will give you and what you have to fetch from the APIs: everything up to block 111339249 is yours to backfill, and everything after it will arrive on the socket. Irreversible matches at or below that block can still follow the greeting, because they were already on their way when you connected; your backfill has them, so skip them. `seq` is the position of the last record the node rendered, so a consumer that reconnects can tell from its new greeting how many records it missed while it was away. `version` is the format's; refuse one you don't know.
+
+Then the matches follow. This is what one line of the stream looks like (the operation is in the same form `block_api` and `account_history_api` return):
+
+```json
+{"kind":"match","seq":42,"delivery":"irreversible","rules":["shop-paid"],"block":111339250,"timestamp":"2026-11-03T12:00:00","trx_id":"6e1a...","trx_in_block":3,"op_in_trx":0,"virtual_op":false,"op":{"type":"transfer_operation","value":{"from":"alice","to":"shop","amount":{"amount":"5000","precision":3,"nai":"@@000000021"},"memo":"order 1234"}}}
+```
+
+`rules` lists every rule that matched the operation, so one operation is one line however many rules hit it. `delivery` is the class the line was delivered in, irreversible or head. `block`, `timestamp`, `trx_id`, `trx_in_block` and `op_in_trx` place the operation exactly where account history would, and `virtual_op` tells a virtual operation apart from one that was in a transaction. `op` is the operation itself. A match too large to send in one line arrives with `"op": null` and an `op_omitted` field saying why; the coordinates are still there, so you can fetch the operation from the API.
+
+## Why stinger
+
+Most of the things people commonly want from the chain are small. "Tell me when someone pays my account." "Give me every `custom_json` my app emits." "Tell me every time my witness produces a block." "Alert on transfers over some threshold."
+
+Today the choices for that are:
+
+- **Run HAF.** It's great if you need SQL over the full history, but it's a big thing to set up and keep running, and most of the time you only need one or two operation types going forward.
+- **Poll the APIs.** `get_ops_in_block`, `account_history`, or streaming blocks over HTTP and filtering on your side. It works, it's what [hive-index](https://index.hive-adventures.com/) does today, but you end up pulling the whole chain through your process to pick out a tiny fraction of it. You also pay latency for polling and put load on an API node for data you throw away.
+- **Patch hived.** Nobody does that, for good reasons.
+
+Stinger is the **missing small option**: the node already sees every operation, so let it do the filtering, and let your program receive just the matches.
+
+## Design
+
+A few decisions shape it, and they're worth spelling out because they're also the limits.
+
+**Matching happens in the node, but it's not code.** Rules are boolean expressions over a fixed set of attributes, parsed once at startup and put into an index (a be-tree, a structure built for matching one event against many subscriptions at once). There's no script and no user code on the consensus path, so the cost is a microsecond or so per operation for typical rule sets. On a live node that comes to a fraction of a millisecond per block. A node asked to match while it syncs (off by default) syncs about 8% slower with a handful of rules; the numbers are in the performance section below.
+
+**Irreversible by default, head if you ask.** Hive normally makes a block irreversible within about a second of applying it, so by default a block's matches are delivered once they can't be undone. You never see a fork. A rule can opt into `"delivery": "head"` to skip that wait, and then the stream also carries `block_applied`, `switch_fork` and `irreversible` markers, so it can retract and settle on its own.
+
+**The node keeps nothing.** No history, no per-consumer state. The stream is live only. Every record is self-contained, the greeting on connect tells you where the stream stands, and anything older than that you fetch from the regular APIs. This is deliberate: stinger isn't trying to be HAF.
+
+**The writer never waits.** Matches go from the writer thread to a sink thread through a queue bounded in bytes. If a consumer stops reading, it gets disconnected. If the sink falls behind the writer, the oldest waiting blocks are dropped and every consumer receives a `dropped` record naming which blocks. It fails loudly and the node is unaffected.
+
+**No outbound network.** The sinks are a log line and a local socket. If you want webhooks, a message queue or WebSockets, write a small bridge on the far side of the socket. That's where retries, timeouts and TLS belong, not inside `hived`.
+
+It's meant for API and seed nodes. It's extra work on the block-apply path, so don't put it on a witness node.
+
+## What a rule can test
+
+| Attribute | Meaning |
+|---|---|
+| `op_type` | operation type, by name (`transfer`, `custom_json`, `producer_reward`) or number; virtual ops included |
+| `is_virtual` | whether the op is virtual; used bare: `is_virtual`, `not is_virtual` |
+| `impacted_accounts` | every account the op touches, same as account history sees it |
+| `amount`, `symbol` | the op's own `amount` field in satoshis (so `1000000` is 1000.000 HIVE) and its symbol; only ops that actually have an `amount` field define it |
+| `custom_id` | the `id` of a `custom_json` |
+| `from`, `to` | the op's own `from` and `to` fields: transfers, savings, escrows, recurrent transfers |
+
+Expressions support `=`, `&lt;&gt;`, `&lt;`, `&lt;=`, `&gt;`, `&gt;=`, `in` / `not in` with a list, `"name" in impacted_accounts` for a single account and `one of` / `none of` / `all of` with a list for several, and `and` / `or` / `not` with parentheses. An undefined attribute fails every test, so `custom_id` only ever matches a `custom_json` and `amount` only an operation that has one. That is still ten operation types (transfers, power-ups, savings, converts, recurrent transfers and their virtual fills), so a rule on `amount` normally says which `op_type` it means. An `op_type` term is worth adding to any rule anyway: the index then only shows the rule operations of that type, which is what keeps large rule sets cheap (the numbers are in the performance section).
+
+A rule that doesn't parse stops the node at startup and tells you which rule.
+
+## Example use cases
+
+- **Payment notifications.** A shop or a service waits for transfers to its account and fulfils the order from the memo. `to = "shop"` on `transfer` and `fill_recurrent_transfer`, and you're done.
+- **Dapp ingestion.** Subscribe to your own `custom_json` ids and feed them straight into your backend. No block streaming, no filtering on your side. This is the one I'm most interested in for hive-index.
+- **Witness monitoring.** Match `producer_reward` for your witness with head delivery and alert if it goes quiet for longer than a round (for a top witness; a backup witness isn't scheduled every round, so give it a longer window).
+- **Early large-transfer alerts.** `amount &gt; 1000000` on HIVE transfers with head delivery, pushed to a bot.
+- **Account activity feed.** Everything that touches a given set of accounts, real ops only, for a dashboard or a notification service.
+- **Rewards tracking.** `author_reward` and `curation_reward` for a team of accounts, for payouts or accounting.
+- **NFT processing.** An NFT app that keeps its state in `custom_json` matches its own ids, plus the `account_created` virtual op so it knows which account names in the payloads are real. Everything it needs is in the match record, and its own state lives in its own database.
+
+## Example config
+
+The rules file:
+
+```json
+{
+  "rules": [
+    {
+      "name": "large-hive-transfer",
+      "match": "op_type = transfer and symbol = \"HIVE\" and amount &gt; 1000000",
+      "exec": { "type": "socket" },
+      "delivery": "head"
+    },
+    {
+      "name": "alice-activity",
+      "match": "\"alice\" in impacted_accounts and not is_virtual",
+      "exec": { "type": "log" }
+    },
+    {
+      "name": "shop-paid",
+      "match": "op_type in (transfer, fill_recurrent_transfer) and to = \"shop\"",
+      "exec": { "type": "socket" }
+    },
+    {
+      "name": "splinterlands-market",
+      "match": "op_type = custom_json and custom_id = \"sm_market\"",
+      "exec": { "type": "log" }
+    },
+    {
+      "name": "team-rewards",
+      "match": "op_type in (author_reward, curation_reward) and impacted_accounts one of (\"alice\", \"bob\", \"carol\")",
+      "exec": { "type": "socket" }
+    },
+    {
+      "name": "my-witness-produced",
+      "match": "op_type = producer_reward and \"mywitness\" in impacted_accounts",
+      "exec": { "type": "socket" },
+      "delivery": "head"
+    }
+  ]
+}
+```
+
+And the `config.ini` side:
+
+```ini
+plugin = stinger
+stinger-rules-file = rules.json
+stinger-socket = /run/hived/stinger.sock
+```
+
+Relative paths are taken from the data directory, like the other `hived` path options. Two more knobs exist, both optional: `stinger-ready-queue-mb` (memory for matches waiting to be delivered, 128 MB by default) and `stinger-match-during-sync` (also match blocks received while the node is still syncing; off by default, replayed blocks are never matched).
+
+## Performance
+
+Keeping hived fast matters, so I measured what enabling the plugin costs, both in live sync and in replay. Replay isn't how you'd use it (replayed blocks are never matched; I patched that out for the measurement), but it's the cleanest measurement of the matcher itself. All runs are a Release mainnet `hived` on the first 5M blocks of the chain (about 19.8M operations, 4 per block on average), on an 8-core box, inside a container. The live-sync runs are a fresh node syncing over P2P from a seed node on the same machine, with `stinger-match-during-sync` turned on, which is the closest I can get to real conditions without a network in the way. With default settings a syncing node doesn't match at all, so the sync figures are the price of asking for the backfill, not something every node pays. Each stinger run is compared with a base run made right next to it. The base sync itself ranged from 702 to 728 s over the day, so read the live-sync percentages as good to a few points, not to the decimal.
+
+With a set of 6 rules much like the example above (two large transfer rules, a power-up threshold, two account watches, one `custom_id`; log sinks, 13 matches in 5M blocks):
+
+| scenario | base | stinger | overhead |
+|---|---|---|---|
+| live P2P sync to 5M | 702 s | 758 s | +56 s (+8.1%) |
+| replay to 5M, matching forced on | 173 s | 202 s | +29 s (+17%) |
+
+On replay that's about **6 µs per block**, or **1.5 µs per operation**, and that's the matcher: building an event for each operation and searching the index. Live sync costs about 11 µs per block. The matching part carries over one to one; the other 5 µs or so per block is bookkeeping that only runs for live blocks (fork tracking, the irreversible window) and doesn't depend on the number of rules. It's a bigger percentage on replay because replay is about 4x faster per block than sync (no signature checks, no P2P, no undo sessions). The writer thread is saturated during sync, so every microsecond spent matching lands directly on sync throughput; there's no hiding it. A live node is the opposite case: it applies one block every three seconds, and at 1.5 µs per operation even a 100-operation block is about 0.15 ms of matching. Memory doesn't move at all with log-only rules.
+
+Where does the per-operation cost go? Not into the be-tree search. It's building the event for each operation: collecting the impacted accounts, pulling out the typed fields, interning the strings. That's a fixed cost you pay once per operation regardless of how many rules there are, and it's the obvious thing to optimise next.
+
+Then there's how the cost scales with the number of rules, which depends on the shape of the rule:
+
+| rules | 50 | 200 | 1000 |
+|---|---|---|---|
+| `op_type = X and ...`, spread over op types | +17% | +17% | +19% |
+| `"account" in impacted_accounts`, no `op_type` | +27% | +55% | +186% |
+
+(Replay overhead over 5M blocks. The live-sync check on the 1000-rule files took 770 s and 1092 s against a 728 s base, +5.7% and +50%, consistent with the above. That +5.7% is below the 6-rule +8.1% only because its base run was slower: in absolute terms it's 770 s against 758 s.)
+
+Rules with an `op_type` term are effectively free in bulk: the index partitions on operation type, so an operation only reaches the rules for its own type, and 1000 of them cost about the same as 6. Rules that watch an account across all operation types can't be partitioned yet, so every operation is tested against every one of them, at about 15 ns per operation per rule. It's linear, and at a few dozen such rules it's fine, but a thousand of them make the node almost 3x slower on replay. Loading 1000 rules at startup takes about 10 ms either way.
+
+The last thing I checked was the delivery path under the worst case: one rule matching every operation, pushing all 19.8M records (10 GB of JSON) down the socket to a consumer writing them to disk. That costs +20% on sync, of which about +13% is just rendering the JSON, which happens whether or not anyone is connected. Peak RSS stayed within 10 MB of the base with the consumer attached. In the run with nobody connected it peaked about 240 MB higher, and I haven't tracked down why yet. The consumer was never disconnected and every block was delivered. The hardest moment is a hardfork block with 106k virtual operations (53 MB of matches in one block); the queue is bounded in bytes precisely so that a block like that doesn't push its neighbours out.
+
+### Latency
+
+How long after a block is applied does a match reach your program? I measured it on a local testnet: two producing nodes holding the 21 witnesses, two API nodes running stinger (one matching a tenth of the transfers, one matching everything), a Python consumer on each socket, all on one box, with transfers at 10, 100 and 1000 ops per block.
+
+| matched ops per block | 1 | ~10 | ~100 | ~1000 |
+|---|---|---|---|---|
+| head delivery, block applied -&gt; match at the consumer, p50 / p99 | 0.1 / 0.6 ms | 0.3 / 0.8 ms | 0.9 / 2.3 ms | 6 / 16 ms |
+
+Handing a block's matches to the sink thread takes about 50 µs; the rest is rendering the JSON, about 11 µs per record. The table times each match, so in a block where all 1000 operations match the median match arrives after 6 ms and the last one after 12 ms (21 ms p99). Irreversible delivery adds however long the chain takes to make the block irreversible, which is not stinger's cost: 3-5 ms on the local testnet, and on mainnet, polling public API nodes for 43 minutes, the last irreversible block was already equal to head in about 90% of samples and otherwise caught up within a second. A deliberately slow consumer (one line every 50 ms) was disconnected after about 14 s, once it had fallen 4 MB behind, with nothing dropped and a negligible effect on the other consumer on the socket (about 1 µs per record).
+
+None of this is optimised yet. The fixed per-operation cost and the account-rule scaling both have known fixes, and this is the baseline I'll measure them against.
+
+## Where it stands
+
+The plugin works, has unit and functional tests (including one with a real fork), and the overhead numbers above come from running it against a syncing mainnet node. What it doesn't have yet is a way to catch a consumer up: if yours was down for an hour, you fetch that hour from the APIs yourself. That, and a few more attributes people ask for, is what I'd like to do next.
+
+The code is at https://github.com/serpent7776/hived-stinger, a fork of hive. The plugin isn't in a released hived yet, so trying it means building hived from that fork and adding `plugin = stinger` to the config.
+
+Hopefully you'll find this useful. Please let me know what you think, and if you have any suggestions or questions, just leave a comment.</div>
+  <footer class="hive-post-embed__source">
+    <span class="hive-post-embed__source-label">Source:</span>
+    <a href="https://hive.blog/@serpent7776/introducing-stinger-a-hived-plugin-for-matching-operations-of-interest">Introducing stinger: a hived plugin for matching operations of interest</a>
+    by
+    <a href="https://hive.blog/@serpent7776">@serpent7776</a>
+  </footer>
+</div>
+
+
+  </div><a class="u-url" href="/tools/node/stinger/2026/11/13/introducing-stinger-a-hived-plugin-for-matching-operations-of-interest.html" hidden></a>
+</article>
+
+        </div>
+
+        
+        <aside class="page-sidebar" aria-label="Search and browse">
+          <section class="sidebar-section sidebar-search">
+            <h2 class="sidebar-heading">Search posts</h2>
+            <p class="sidebar-copy">Search the locally indexed post archive.</p>
+            <input type="text" id="search-input" placeholder="Search posts" autocomplete="off" />
+            <ul id="results-container"></ul>
+          </section>
+
+          <section class="sidebar-section sidebar-topics">
+            <h2 class="sidebar-heading">Browse topics</h2>
+            <p class="sidebar-copy">Jump into curated topic landing pages.</p>
+            <ul class="topic-list topic-list-sidebar"><li><a class="page-link" href="/api-nodes/">API Nodes</a></li><li><a class="page-link" href="/account-recovery/">Account Recovery</a></li><li><a class="page-link" href="/authentication/">Authentication & Keys</a></li><li><a class="page-link" href="/core-development/">Core Development</a></li><li><a class="page-link" href="/dapps/">Dapps</a></li><li><a class="page-link" href="/docker/">Docker</a></li><li><a class="page-link" href="/haf/">HAF & HafSQL</a></li><li><a class="page-link" href="/hardfork/">Hardfork</a></li><li><a class="page-link" href="/hive-engine/">Hive-Engine</a></li><li><a class="page-link" href="/hivemind/">Hivemind</a></li><li><a class="page-link" href="/javascript/">Javascript</a></li><li><a class="page-link" href="/multisig/">Multisig</a></li><li><a class="page-link" href="/python/">Python</a></li><li><a class="page-link" href="/ruby/">Ruby</a></li><li><a class="page-link" href="/testnet/">Testnet</a></li><li><a class="page-link" href="/tools/">Tools</a></li><li><a class="page-link" href="/wallets/">Wallets & Clive</a></li><li><a class="page-link" href="/witness/">Witness</a></li></ul>
+          </section>
+        </aside>
+        
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading"><a rel="author" href="/">Hive Chain Documentation</a></h2>
+    
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">site curated by: @inertia</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>Your resource for various levels of Hive Documentation.</p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+<script src="/assets/javascript/search.js"></script>
+    <script>
+      (function () {
+        var input = document.getElementById('search-input');
+        var results = document.getElementById('results-container');
+        if (input && results && typeof SimpleJekyllSearch !== 'undefined') {
+          SimpleJekyllSearch({
+            searchInput: input,
+            resultsContainer: results,
+            json: '/search.json'
+          });
+        }
+
+        if (typeof SteemContentRenderer === 'undefined') return;
+
+        var targets = document.querySelectorAll('[data-hive-render-target="true"]');
+        if (!targets.length) return;
+
+        var renderer = new SteemContentRenderer.DefaultRenderer({
+          baseUrl: 'https://hive.blog/',
+          breaks: true,
+          skipSanitization: false,
+          allowInsecureScriptTags: false,
+          addNofollowToLinks: true,
+          doNotShowImages: false,
+          ipfsPrefix: '',
+          assetsWidth: 640,
+          assetsHeight: 480,
+          imageProxyFn: function (url) { return url; },
+          usertagUrlFn: function (account) { return '/@' + account; },
+          hashtagUrlFn: function (hashtag) { return '/tags/#' + hashtag; },
+          isLinkSafeFn: function () { return true; }
+        });
+
+        targets.forEach(function (target) {
+          try {
+            var inputHtml = target.innerHTML;
+            target.innerHTML = renderer.render(inputHtml);
+          } catch (e) {
+            console.log(e);
+          }
+        });
+      })();
+    </script>
+
+  </body>
+
+</html>

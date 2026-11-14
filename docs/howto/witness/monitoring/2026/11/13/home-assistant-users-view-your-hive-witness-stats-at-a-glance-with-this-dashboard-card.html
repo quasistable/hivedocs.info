@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta property="og:image" content="/assets/images/sticker.png" />
+  <meta name="apple-mobile-web-app-title" content="Hive Docs" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" /><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Home Assistant Users - View your Hive Witness stats at a glance with this dashboard card | Hive Chain Documentation</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Home Assistant Users - View your Hive Witness stats at a glance with this dashboard card" />
+<meta name="author" content="c0ff33a" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Build a Home Assistant dashboard for Hive witness and account statistics, with REST sensor YAML, installation steps, customization and troubleshooting." />
+<meta property="og:description" content="Build a Home Assistant dashboard for Hive witness and account statistics, with REST sensor YAML, installation steps, customization and troubleshooting." />
+<link rel="canonical" href="https://hive.blog/hive/@c0ff33a/home-assistant-users-view-your-hive-witness-stats-at-a-glance-with-this-dashboard-card" />
+<meta property="og:url" content="https://hive.blog/hive/@c0ff33a/home-assistant-users-view-your-hive-witness-stats-at-a-glance-with-this-dashboard-card" />
+<meta property="og:site_name" content="Hive Chain Documentation" />
+<meta property="og:image" content="https://files.peakd.com/file/peakd-hive/c0ff33a/23swgEFtNgPrGSMikMg5TuMEcwbT4fxDvmHD2EKW1mGeNtLnJpxUqpFEz9QsVuyX9qqti.png" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2026-11-13T10:12:15-08:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="https://files.peakd.com/file/peakd-hive/c0ff33a/23swgEFtNgPrGSMikMg5TuMEcwbT4fxDvmHD2EKW1mGeNtLnJpxUqpFEz9QsVuyX9qqti.png" />
+<meta property="twitter:title" content="Home Assistant Users - View your Hive Witness stats at a glance with this dashboard card" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"c0ff33a"},"dateModified":"2026-11-13T10:12:15-08:00","datePublished":"2026-11-13T10:12:15-08:00","description":"Build a Home Assistant dashboard for Hive witness and account statistics, with REST sensor YAML, installation steps, customization and troubleshooting.","headline":"Home Assistant Users - View your Hive Witness stats at a glance with this dashboard card","image":"https://files.peakd.com/file/peakd-hive/c0ff33a/23swgEFtNgPrGSMikMg5TuMEcwbT4fxDvmHD2EKW1mGeNtLnJpxUqpFEz9QsVuyX9qqti.png","mainEntityOfPage":{"@type":"WebPage","@id":"https://hive.blog/hive/@c0ff33a/home-assistant-users-view-your-hive-witness-stats-at-a-glance-with-this-dashboard-card"},"url":"https://hive.blog/hive/@c0ff33a/home-assistant-users-view-your-hive-witness-stats-at-a-glance-with-this-dashboard-card"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://hivedocs.info/feed.xml" title="Hive Chain Documentation" /><script>
+if(!(window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNotTrack === "yes" || navigator.msDoNotTrack === "1")) {
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-161692811-1', 'auto');
+  ga('send', 'pageview');
+}
+</script>
+  
+<script src='https://unpkg.com/steem-content-renderer'></script>
+  <script src="/assets/javascript/universal-bridge-against-phishing.js"></script>
+  <script src="/assets/javascript/lazysizes.min.js" async=""></script>
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet" />
+  <link rel="shortcut icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" type="image/png" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="152x152" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/favicon-80x80.png" />
+  <link rel="apple-touch-icon" sizes="167x167" href="/assets/images/favicon-80x80.png" />
+</head>
+<body><header class="site-header" role="banner">
+  <div class="wrapper site-header-inner">
+    <a class="site-title" rel="author" href="/">Hive Chain Documentation</a>
+
+    <nav class="site-nav" aria-label="Primary">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger"><a class="page-link" href="/news/">News</a><a class="page-link" href="/howto/">How To</a><a class="page-link" href="/links/">Useful Links</a><a class="page-link" href="/authors/">Authors</a><a class="page-link" href="/topics/">Topics</a><a class="page-link" href="/search/">Search</a></div>
+    </nav>
+  </div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper page-layout has-search-panel">
+        <div class="page-main">
+          <article class="post h-entry post-article" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header post-hero">
+    <div class="post-hero-main">
+      <p class="post-kicker">Archive post</p>
+      <h1 class="post-title p-name" itemprop="name headline">Home Assistant Users - View your Hive Witness stats at a glance with this dashboard card</h1>
+      <p class="post-meta">
+        <time class="dt-published" datetime="2026-11-13T10:12:15-08:00" itemprop="datePublished">Nov 13, 2026
+        </time>• <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">
+            <a href="/authors/#author-c0ff33a">c0ff33a</a>
+          </span></span></p><p class="post-summary">Build a Home Assistant dashboard for Hive witness and account statistics, with REST sensor YAML, installation steps, customization and troubleshooting.</p></div><aside class="post-author-card">
+      <img src="https://images.hive.blog/u/c0ff33a/avatar" width="128" height="128" class="lazyload post-author-avatar" alt="Avatar for @c0ff33a" />
+      <div class="post-author-name">@c0ff33a</div>
+    </aside></header>
+
+  <div class="post-content e-content post-body" itemprop="articleBody">
+    <div class="hive-post-embed" data-hive-author="c0ff33a" data-hive-permlink="home-assistant-users-view-your-hive-witness-stats-at-a-glance-with-this-dashboard-card">
+  <div id="content-c0ff33a-home-assistant-users-view-your-hive-witness-stats-at-a-glance-with-this-dashboard-card" class="hive-post-embed__content" data-hive-render-target="true"># Track Your Hive Witness in Home Assistant: Rank, Votes, Stake, Power Down &amp; Portfolio Value
+
+
+
+
+![Home Assistant Hive Stats Card](https://files.peakd.com/file/peakd-hive/c0ff33a/23swgEFtNgPrGSMikMg5TuMEcwbT4fxDvmHD2EKW1mGeNtLnJpxUqpFEz9QsVuyX9qqti.png)
+
+![Home Assistant Hive Stats Card lower portion](https://files.peakd.com/file/peakd-hive/c0ff33a/23swg9rTWKojVs886y4QYFe9sGXFXBY8zdH1r5T7rNvacMPPNByev7CseJ3xtCFuBnDRV.png)
+
+
+
+
+
+If you run a Hive witness and already use **Home Assistant** at home, you can add a dashboard card that keeps an eye on your witness and your wallet. No custom integrations, no HACS, and no API keys. It uses Home Assistant's built-in REST and template features, Hive's public API nodes, and CoinGecko for prices.
+
+---
+
+## What the card shows
+
+**Witness**
+- Witness rank (active witnesses only, so disabled witnesses are skipped)
+- Total witness votes received (in MHP)
+- Missed blocks
+
+**Stake**
+- Your own Hive Power, and your effective HP after delegations
+- HP delegated out and delegated in
+- How many witness votes you've cast
+
+**Power down**
+- Whether a power down is running
+- Weekly payout and amount remaining
+- Countdown to the next payout
+
+**Wallet &amp; portfolio**
+- Liquid and savings HIVE and HBD
+- Live HIVE and HBD prices
+- Total portfolio value (liquid HIVE + savings + own HP + HBD; HP delegated *to* you isn't counted)
+
+Prices are in **GBP (£)** by default. Changing currency is covered further down.
+
+---
+
+## How it works
+
+There are two parts:
+
+1. **A sensor package (`hive.yaml`).** This calls the Hive API (`condenser_api.get_accounts`, `get_dynamic_global_properties`, `get_witness_by_account` and `get_witnesses_by_vote`) and CoinGecko, then turns VESTS into HP for you.
+2. **A dashboard card.** A plain Lovelace card that displays those sensors.
+
+How often it updates:
+- Account data: every 5 minutes
+- Witness data: every 10 minutes
+- Rank: every 15 minutes
+- Prices: every 10 minutes
+- The VESTS → HP ratio: hourly
+
+---
+
+## Step 1: Edit the sensor package
+
+Copy the YAML below. Before saving it anywhere, **find and replace `YOUR_HIVE_ACCOUNT` with your account name**: lowercase, without the @. It appears **3 times**.
+
+```yaml
+###############################################################################
+#  HIVE BLOCKCHAIN PACKAGE for Home Assistant
+#
+#  &gt;&gt;&gt; FIND &amp; REPLACE every "YOUR_HIVE_ACCOUNT" with your account name
+#      (lowercase, no @). It appears 3 times in this file.
+#  &gt;&gt;&gt; Fiat currency is GBP. To change, replace "gbp" (3 places) and "£".
+#
+#  Install: save as /config/packages/hive.yaml and make sure
+#  configuration.yaml contains:
+#
+#    homeassistant:
+#      packages: !include_dir_named packages
+#
+#  Then restart Home Assistant (a YAML reload is not enough for new REST sensors).
+###############################################################################
+
+rest:
+  # ---------------------------------------------------------------- Account
+  - resource: https://api.hive.blog
+    method: POST
+    headers:
+      Content-Type: application/json
+    payload: '{"jsonrpc":"2.0","method":"condenser_api.get_accounts","params":[["YOUR_HIVE_ACCOUNT"]],"id":1}'
+    scan_interval: 300
+    timeout: 20
+    sensor:
+      - name: Hive Liquid HIVE
+        unique_id: hive_liquid_hive
+        unit_of_measurement: HIVE
+        state_class: measurement
+        value_template: "{{ value_json.result[0].balance.split(' ')[0] | float(0) }}"
+      - name: Hive Savings HIVE
+        unique_id: hive_savings_hive
+        unit_of_measurement: HIVE
+        state_class: measurement
+        value_template: "{{ value_json.result[0].savings_balance.split(' ')[0] | float(0) }}"
+      - name: Hive Liquid HBD
+        unique_id: hive_liquid_hbd
+        unit_of_measurement: HBD
+        state_class: measurement
+        value_template: "{{ value_json.result[0].hbd_balance.split(' ')[0] | float(0) }}"
+      - name: Hive Savings HBD
+        unique_id: hive_savings_hbd
+        unit_of_measurement: HBD
+        state_class: measurement
+        value_template: "{{ value_json.result[0].savings_hbd_balance.split(' ')[0] | float(0) }}"
+      - name: Hive Vests Own
+        unique_id: hive_vests_own
+        unit_of_measurement: VESTS
+        value_template: "{{ value_json.result[0].vesting_shares.split(' ')[0] | float(0) }}"
+      - name: Hive Vests Delegated Out
+        unique_id: hive_vests_delegated_out
+        unit_of_measurement: VESTS
+        value_template: "{{ value_json.result[0].delegated_vesting_shares.split(' ')[0] | float(0) }}"
+      - name: Hive Vests Received
+        unique_id: hive_vests_received
+        unit_of_measurement: VESTS
+        value_template: "{{ value_json.result[0].received_vesting_shares.split(' ')[0] | float(0) }}"
+      - name: Hive Powerdown Rate Vests
+        unique_id: hive_powerdown_rate_vests
+        unit_of_measurement: VESTS
+        value_template: "{{ value_json.result[0].vesting_withdraw_rate.split(' ')[0] | float(0) }}"
+      - name: Hive Powerdown Remaining Vests
+        unique_id: hive_powerdown_remaining_vests
+        unit_of_measurement: VESTS
+        # to_withdraw / withdrawn are raw integers (VESTS x 1,000,000)
+        value_template: &gt;
+          {% set a = value_json.result[0] %}
+          {{ ((a.to_withdraw | int(0)) - (a.withdrawn | int(0))) / 1000000 }}
+      - name: Hive Next Powerdown Raw
+        unique_id: hive_next_powerdown_raw
+        value_template: "{{ value_json.result[0].next_vesting_withdrawal }}"
+      - name: Hive Witness Votes Cast
+        unique_id: hive_witness_votes_cast
+        unit_of_measurement: votes
+        value_template: "{{ value_json.result[0].witness_votes | length }}"
+      - name: Hive Witness Proxy
+        unique_id: hive_witness_proxy
+        value_template: "{{ value_json.result[0].proxy if value_json.result[0].proxy else 'none' }}"
+
+  # ------------------------------------------------- Global props (VESTS -&gt; HP)
+  - resource: https://api.hive.blog
+    method: POST
+    headers:
+      Content-Type: application/json
+    payload: '{"jsonrpc":"2.0","method":"condenser_api.get_dynamic_global_properties","params":[],"id":1}'
+    scan_interval: 3600
+    timeout: 20
+    sensor:
+      - name: Hive Per MVests
+        unique_id: hive_per_mvests
+        unit_of_measurement: HIVE
+        value_template: &gt;
+          {% set fund = value_json.result.total_vesting_fund_hive.split(' ')[0] | float(0) %}
+          {% set shares = value_json.result.total_vesting_shares.split(' ')[0] | float(1) %}
+          {{ (fund / shares * 1000000) | round(6) }}
+
+  # ------------------------------------------------------- Witness details
+  - resource: https://api.hive.blog
+    method: POST
+    headers:
+      Content-Type: application/json
+    payload: '{"jsonrpc":"2.0","method":"condenser_api.get_witness_by_account","params":["YOUR_HIVE_ACCOUNT"],"id":1}'
+    scan_interval: 600
+    timeout: 20
+    sensor:
+      - name: Hive Witness Votes Vests
+        unique_id: hive_witness_votes_vests
+        unit_of_measurement: VESTS
+        # "votes" is raw VESTS x 1,000,000
+        value_template: "{{ (value_json.result.votes | int(0) / 1000000) if value_json.result else 0 }}"
+        json_attributes_path: "$.result"
+        json_attributes:
+          - total_missed
+          - last_confirmed_block_num
+          - running_version
+          - url
+          - signing_key
+      - name: Hive Witness Missed Blocks
+        unique_id: hive_witness_missed_blocks
+        unit_of_measurement: blocks
+        value_template: "{{ value_json.result.total_missed if value_json.result else 0 }}"
+
+  # ---------------------------------------- Witness rank (active witnesses only)
+  - resource: https://api.hive.blog
+    method: POST
+    headers:
+      Content-Type: application/json
+    payload: '{"jsonrpc":"2.0","method":"condenser_api.get_witnesses_by_vote","params":["",300],"id":1}'
+    scan_interval: 900
+    timeout: 30
+    sensor:
+      - name: Hive Witness Rank
+        unique_id: hive_witness_rank
+        # Disabled witnesses (null signing key) are skipped, so the rank matches
+        # the "active" rank shown on most Hive witness pages.
+        value_template: &gt;
+          {% set ns = namespace(i=0, rank=0) %}
+          {% for w in value_json.result %}
+            {% if w.signing_key != 'STM1111111111111111111111111111111114T1Anm' %}
+              {% set ns.i = ns.i + 1 %}
+              {% if w.owner == 'YOUR_HIVE_ACCOUNT' %}{% set ns.rank = ns.i %}{% endif %}
+            {% endif %}
+          {% endfor %}
+          {{ ns.rank if ns.rank &gt; 0 else '&gt;' ~ ns.i }}
+
+  # ---------------------------------------------------------------- Prices
+  - resource: https://api.coingecko.com/api/v3/simple/price?ids=hive,hive_dollar&amp;vs_currencies=gbp
+    scan_interval: 600
+    timeout: 20
+    sensor:
+      - name: Hive Price
+        unique_id: hive_price
+        unit_of_measurement: "£"
+        state_class: measurement
+        value_template: "{{ value_json.hive.gbp | float(0) }}"
+      - name: HBD Price
+        unique_id: hbd_price
+        unit_of_measurement: "£"
+        state_class: measurement
+        value_template: "{{ value_json.hive_dollar.gbp | float(0) }}"
+
+template:
+  - sensor:
+      - name: Hive Power Own
+        unique_id: hive_power_own
+        unit_of_measurement: HP
+        state_class: measurement
+        state: &gt;
+          {{ (states('sensor.hive_vests_own') | float(0)
+              * states('sensor.hive_per_mvests') | float(0) / 1000000) | round(3) }}
+
+      - name: Hive Power Effective
+        unique_id: hive_power_effective
+        unit_of_measurement: HP
+        state_class: measurement
+        state: &gt;
+          {% set v = states('sensor.hive_vests_own') | float(0)
+                   - states('sensor.hive_vests_delegated_out') | float(0)
+                   + states('sensor.hive_vests_received') | float(0) %}
+          {{ (v * states('sensor.hive_per_mvests') | float(0) / 1000000) | round(3) }}
+
+      - name: Hive Power Delegated Out
+        unique_id: hive_power_delegated_out
+        unit_of_measurement: HP
+        state: &gt;
+          {{ (states('sensor.hive_vests_delegated_out') | float(0)
+              * states('sensor.hive_per_mvests') | float(0) / 1000000) | round(3) }}
+
+      - name: Hive Power Received
+        unique_id: hive_power_received
+        unit_of_measurement: HP
+        state: &gt;
+          {{ (states('sensor.hive_vests_received') | float(0)
+              * states('sensor.hive_per_mvests') | float(0) / 1000000) | round(3) }}
+
+      - name: Hive Powerdown Weekly
+        unique_id: hive_powerdown_weekly
+        unit_of_measurement: HIVE
+        state: &gt;
+          {{ (states('sensor.hive_powerdown_rate_vests') | float(0)
+              * states('sensor.hive_per_mvests') | float(0) / 1000000) | round(3) }}
+
+      - name: Hive Powerdown Remaining
+        unique_id: hive_powerdown_remaining
+        unit_of_measurement: HIVE
+        state: &gt;
+          {{ (states('sensor.hive_powerdown_remaining_vests') | float(0)
+              * states('sensor.hive_per_mvests') | float(0) / 1000000) | round(3) }}
+
+      - name: Hive Powerdown Active
+        unique_id: hive_powerdown_active
+        state: "{{ 'Yes' if states('sensor.hive_powerdown_rate_vests') | float(0) &gt; 0 else 'No' }}"
+        icon: mdi:arrow-down-bold-circle-outline
+
+      - name: Hive Next Powerdown
+        unique_id: hive_next_powerdown
+        device_class: timestamp
+        availability: &gt;
+          {{ states('sensor.hive_next_powerdown_raw') not in ['unknown', 'unavailable', '']
+             and not states('sensor.hive_next_powerdown_raw').startswith('1969') }}
+        state: "{{ states('sensor.hive_next_powerdown_raw') ~ '+00:00' }}"
+
+      - name: Hive Witness Votes HP
+        unique_id: hive_witness_votes_hp
+        unit_of_measurement: HP
+        state_class: measurement
+        state: &gt;
+          {{ (states('sensor.hive_witness_votes_vests') | float(0)
+              * states('sensor.hive_per_mvests') | float(0) / 1000000) | round(0) }}
+
+      - name: Hive Witness Votes MHP
+        unique_id: hive_witness_votes_mhp
+        unit_of_measurement: MHP
+        state: "{{ (states('sensor.hive_witness_votes_hp') | float(0) / 1000000) | round(2) }}"
+
+      - name: Hive Portfolio Value
+        unique_id: hive_portfolio_value
+        unit_of_measurement: "£"
+        device_class: monetary
+        state: &gt;
+          {% set hive = states('sensor.hive_liquid_hive') | float(0)
+                      + states('sensor.hive_savings_hive') | float(0)
+                      + states('sensor.hive_power_own') | float(0) %}
+          {% set hbd = states('sensor.hive_liquid_hbd') | float(0)
+                     + states('sensor.hive_savings_hbd') | float(0) %}
+          {{ (hive * states('sensor.hive_price') | float(0)
+              + hbd * states('sensor.hbd_price') | float(0)) | round(2) }}
+```
+
+---
+
+## Step 2: Add the package to Home Assistant
+
+How you do this depends on how Home Assistant is installed. If **Settings** has an **Add-ons** or **Apps** section, you're on **Home Assistant OS**: use Option A or B. If you see *"Apps require the Home Assistant Operating System"*, you're on **Docker/Container** or **Core**: use Option C.
+
+### Option A: Home Assistant OS with the File editor app
+
+1. Go to **Settings → Apps** (called **Add-ons** on older versions) and open the **store**. Search for **File editor**, then install and start it. Switch on **Show in sidebar**.
+2. Open **File editor** from the sidebar. You'll be in the `/config` folder.
+3. Click the **folder icon** (top left), then the **new folder icon**, and create a folder called `packages`.
+4. Open `packages`, click the **new file icon** and name the file `hive.yaml`.
+5. Paste in the YAML from Step 1, with your account name in it, and click **Save**.
+6. Go back to `/config` and open `configuration.yaml` (see Step 3).
+
+### Option B: Home Assistant OS with the Studio Code Server app
+
+If you'd rather use a VS Code-style editor:
+
+1. Go to **Settings → Apps → store**, then install and start **Studio Code Server**. Switch on **Show in sidebar**.
+2. Open it from the sidebar. In the file explorer, right-click the root of `/config` → **New Folder** → `packages`.
+3. Right-click `packages` → **New File** → `hive.yaml`. Paste in the YAML and save (**Ctrl+S**).
+4. Open `configuration.yaml` from the explorer (see Step 3).
+
+### Option C: Docker / Container (or Core) by hand
+
+There are no apps on these installs, so you edit the files directly on the host.
+
+**1. Find your config folder.** It's the host folder mapped to `/config` in the container, the one containing `configuration.yaml`. In `docker-compose.yml` it's the line that looks like `- /some/path:/config`. If you're not sure, run this on the host:
+
+```
+docker inspect homeassistant --format '{{ range .Mounts }}{{ .Source }} -&gt; {{ .Destination }}{{ println }}{{ end }}'
+```
+
+The path on the left of `-&gt; /config` is your folder. Change `homeassistant` if your container has a different name. On a **Core** install the folder is usually `~/.homeassistant`.
+
+**2. Create the package file:**
+
+```
+cd /path/to/your/config
+mkdir -p packages
+nano packages/hive.yaml
+```
+
+Paste in the YAML. To save and exit, press **Ctrl+O**, **Enter**, then **Ctrl+X**.
+
+**3. Open `configuration.yaml`:**
+
+```
+nano configuration.yaml
+```
+
+Then follow Step 3 below.
+
+If your config folder is on a NAS or shared over the network, you can also do all of this in a normal desktop text editor.
+
+---
+
+## Step 3: Turn on packages in `configuration.yaml`
+
+Add these two lines to `configuration.yaml`:
+
+```yaml
+homeassistant:
+  packages: !include_dir_named packages
+```
+
+⚠️ If there's **already** a `homeassistant:` line in the file, don't add a second one. Put the `packages:` line, indented, underneath the existing one.
+
+---
+
+## Step 4: Check and restart
+
+1. Go to **Developer tools → YAML → Check configuration**. It should report the configuration as valid.
+2. Do a **full restart**. A YAML reload won't load new REST sensors.
+   - HA OS: **Settings → System → ⋮ (top right) → Restart Home Assistant**
+   - Docker: `docker restart homeassistant`
+
+Give it a minute or two for the sensors to fill in.
+
+---
+
+## Step 5: Add the dashboard card
+
+1. Open your dashboard and click the **pencil icon** (top right) to edit.
+2. Click **+ Add card**, scroll to the bottom and pick **Manual**.
+3. **Delete everything already in the box**, paste the YAML below, then click **Save**.
+
+```yaml
+type: vertical-stack
+cards:
+  - type: glance
+    title: HIVE Witness
+    columns: 3
+    entities:
+      - entity: sensor.hive_witness_rank
+        name: Rank
+        icon: mdi:podium
+      - entity: sensor.hive_witness_votes_mhp
+        name: Votes
+        icon: mdi:vote
+      - entity: sensor.hive_witness_missed_blocks
+        name: Missed
+        icon: mdi:cube-off-outline
+
+  - type: entities
+    entities:
+      - type: section
+        label: Stake
+      - entity: sensor.hive_power_own
+        name: Hive Power (own)
+        icon: mdi:lightning-bolt
+      - entity: sensor.hive_power_effective
+        name: Effective HP
+        icon: mdi:lightning-bolt-circle
+      - entity: sensor.hive_power_delegated_out
+        name: Delegated out
+        icon: mdi:arrow-right-bold
+      - entity: sensor.hive_power_received
+        name: Delegated in
+        icon: mdi:arrow-left-bold
+      - entity: sensor.hive_witness_votes_cast
+        name: Witness votes cast
+        icon: mdi:account-check
+
+      - type: section
+        label: Power Down
+      - entity: sensor.hive_powerdown_active
+        name: Powering down
+      - entity: sensor.hive_powerdown_weekly
+        name: Weekly payout
+        icon: mdi:calendar-week
+      - entity: sensor.hive_powerdown_remaining
+        name: Remaining
+        icon: mdi:progress-download
+      - entity: sensor.hive_next_powerdown
+        name: Next payout
+        format: relative
+        icon: mdi:clock-outline
+
+      - type: section
+        label: Wallet
+      - entity: sensor.hive_liquid_hive
+        name: HIVE (liquid)
+        icon: mdi:wallet
+      - entity: sensor.hive_savings_hive
+        name: HIVE (savings)
+        icon: mdi:piggy-bank
+      - entity: sensor.hive_liquid_hbd
+        name: HBD (liquid)
+        icon: mdi:currency-usd
+      - entity: sensor.hive_savings_hbd
+        name: HBD (savings)
+        icon: mdi:piggy-bank-outline
+      - entity: sensor.hive_price
+        name: HIVE price
+        icon: mdi:chart-line
+      - entity: sensor.hbd_price
+        name: HBD price
+        icon: mdi:chart-line-variant
+
+  - type: entity
+    entity: sensor.hive_portfolio_value
+    name: Portfolio Value
+    icon: mdi:cash-multiple
+```
+
+💡 **Getting a configuration error?** The Manual card starts with some placeholder text, often including a `type:` line. If you paste underneath it instead of replacing it, you end up with two `type:` lines and Home Assistant rejects the card. Clear the box completely first. If you still get an error, removing the `type: vertical-stack` line also fixes it.
+
+---
+
+## Customising
+
+- **Currency:** in `hive.yaml`, replace `gbp` (3 places) with `usd`, `eur` and so on, and `£` with your symbol.
+- **API node:** the package uses `api.hive.blog`. If that's slow for you, replace each `resource: https://api.hive.blog` with another node, such as `https://api.deathwing.me` or `https://api.openhive.network`. Or run it against your own node, since you're a witness 😉
+- **Rank:** this counts active witnesses only. If you're outside the top 300, it shows something like `&gt;290`.
+- **Not a witness?** The card still works for any account. The witness rows just show 0.
+
+## Troubleshooting
+
+- **Sensors show "unavailable":** check **Settings → System → Logs** for errors mentioning `rest` or `hive`. The usual cause is a typo in the account name, or `YOUR_HIVE_ACCOUNT` left in one of the 3 places.
+- **Entities not found on the card:** if you already had sensors with the same names, Home Assistant may have added `_2` to the new ones. Check **Settings → Devices &amp; services → Entities**, search for "hive" and update the card to match.
+
+---
+
+## Ideas for next steps
+
+- Add a **history graph** of witness votes or HIVE price.
+- Create an **automation** to notify you when your rank changes or missed blocks go up.
+
+Questions and improvements are welcome in the comments 👇
+</div>
+  <footer class="hive-post-embed__source">
+    <span class="hive-post-embed__source-label">Source:</span>
+    <a href="https://hive.blog/@c0ff33a/home-assistant-users-view-your-hive-witness-stats-at-a-glance-with-this-dashboard-card">Home Assistant Users - View your Hive Witness stats at a glance with this dashboard card</a>
+    by
+    <a href="https://hive.blog/@c0ff33a">@c0ff33a</a>
+  </footer>
+</div>
+
+
+  </div><a class="u-url" href="/howto/witness/monitoring/2026/11/13/home-assistant-users-view-your-hive-witness-stats-at-a-glance-with-this-dashboard-card.html" hidden></a>
+</article>
+
+        </div>
+
+        
+        <aside class="page-sidebar" aria-label="Search and browse">
+          <section class="sidebar-section sidebar-search">
+            <h2 class="sidebar-heading">Search posts</h2>
+            <p class="sidebar-copy">Search the locally indexed post archive.</p>
+            <input type="text" id="search-input" placeholder="Search posts" autocomplete="off" />
+            <ul id="results-container"></ul>
+          </section>
+
+          <section class="sidebar-section sidebar-topics">
+            <h2 class="sidebar-heading">Browse topics</h2>
+            <p class="sidebar-copy">Jump into curated topic landing pages.</p>
+            <ul class="topic-list topic-list-sidebar"><li><a class="page-link" href="/api-nodes/">API Nodes</a></li><li><a class="page-link" href="/account-recovery/">Account Recovery</a></li><li><a class="page-link" href="/authentication/">Authentication & Keys</a></li><li><a class="page-link" href="/core-development/">Core Development</a></li><li><a class="page-link" href="/dapps/">Dapps</a></li><li><a class="page-link" href="/docker/">Docker</a></li><li><a class="page-link" href="/haf/">HAF & HafSQL</a></li><li><a class="page-link" href="/hardfork/">Hardfork</a></li><li><a class="page-link" href="/hive-engine/">Hive-Engine</a></li><li><a class="page-link" href="/hivemind/">Hivemind</a></li><li><a class="page-link" href="/javascript/">Javascript</a></li><li><a class="page-link" href="/multisig/">Multisig</a></li><li><a class="page-link" href="/python/">Python</a></li><li><a class="page-link" href="/ruby/">Ruby</a></li><li><a class="page-link" href="/testnet/">Testnet</a></li><li><a class="page-link" href="/tools/">Tools</a></li><li><a class="page-link" href="/wallets/">Wallets & Clive</a></li><li><a class="page-link" href="/witness/">Witness</a></li></ul>
+          </section>
+        </aside>
+        
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading"><a rel="author" href="/">Hive Chain Documentation</a></h2>
+    
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">site curated by: @inertia</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>Your resource for various levels of Hive Documentation.</p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+<script src="/assets/javascript/search.js"></script>
+    <script>
+      (function () {
+        var input = document.getElementById('search-input');
+        var results = document.getElementById('results-container');
+        if (input && results && typeof SimpleJekyllSearch !== 'undefined') {
+          SimpleJekyllSearch({
+            searchInput: input,
+            resultsContainer: results,
+            json: '/search.json'
+          });
+        }
+
+        if (typeof SteemContentRenderer === 'undefined') return;
+
+        var targets = document.querySelectorAll('[data-hive-render-target="true"]');
+        if (!targets.length) return;
+
+        var renderer = new SteemContentRenderer.DefaultRenderer({
+          baseUrl: 'https://hive.blog/',
+          breaks: true,
+          skipSanitization: false,
+          allowInsecureScriptTags: false,
+          addNofollowToLinks: true,
+          doNotShowImages: false,
+          ipfsPrefix: '',
+          assetsWidth: 640,
+          assetsHeight: 480,
+          imageProxyFn: function (url) { return url; },
+          usertagUrlFn: function (account) { return '/@' + account; },
+          hashtagUrlFn: function (hashtag) { return '/tags/#' + hashtag; },
+          isLinkSafeFn: function () { return true; }
+        });
+
+        targets.forEach(function (target) {
+          try {
+            var inputHtml = target.innerHTML;
+            target.innerHTML = renderer.render(inputHtml);
+          } catch (e) {
+            console.log(e);
+          }
+        });
+      })();
+    </script>
+
+  </body>
+
+</html>
