@@ -84,6 +84,22 @@ Current state:
 - visible `lighten(...)` / `darken(...)` deprecation warnings were replaced with `color.adjust(...)`
 - local builds now complete without the earlier Sass deprecation warning pile
 
+## Analytics
+
+The site uses the Google tag for GA4 pageview tracking. Set `google_analytics`
+in `_config.yml` to the web stream's measurement ID (`G-...`), found in Google
+Analytics under **Admin → Data streams → the website stream**. An unset or
+empty value disables tracking. The retired Universal Analytics ID cannot be
+reused for GA4.
+
+The local `_includes/google-analytics.html` overrides Minima's legacy snippet.
+Only production builds include it; `rake build` sets the production environment
+and writes the publishable output to `docs/`. Local development builds omit it.
+The tag also preserves the previous integration's Do Not Track opt-out.
+
+After publishing, verify a visit appears in GA4 Realtime. Account-side stream
+setup and successful collection must be checked separately from the site build.
+
 ## Curation notes
 
 The hard part is not rendering the site. The hard part is deciding what deserves to be tracked.
